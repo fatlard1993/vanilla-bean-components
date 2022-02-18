@@ -1,0 +1,50 @@
+{
+	"name": "vanilla-bean-components",
+	"version": "0.0.1",
+	"type": "module",
+	"exports": "./index.js",
+	"description": "JS class-based components",
+	"author": "justfatlard",
+	"license": "ISC",
+	"engines": {
+		"node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+	},
+	"scripts": {
+		"start": "npm run dev",
+		"dev": "vite",
+		"lint": "eslint",
+		"lint:fix": "eslint --fix --ext .js .",
+		"pretty": "prettier .",
+		"pretty:fix": "prettier --write .",
+		"test": "npm run test:dev",
+		"test:dev": "cypress open",
+		"test:cli": "cypress run"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/fatlard1993/vanilla-bean-components.git"
+	},
+	"bugs": {
+		"url": "https://github.com/fatlard1993/vanilla-bean-components/issues"
+	},
+	"homepage": "https://github.com/fatlard1993/vanilla-bean-components#readme",
+	"dependencies": {
+		"@fortawesome/fontawesome-free": "^5.15.4",
+		"source-code-pro": "^2.30.2"
+	},
+	"devDependencies": {
+		"autoprefixer": "^10.4.0",
+		"cypress": "^9.1.1",
+		"eslint": "^8.2.0",
+		"eslint-config-prettier": "^8.3.0",
+		"eslint-plugin-cypress": "^2.12.1",
+		"eslint-plugin-prettier": "^4.0.0",
+		"husky": "^7.0.4",
+		"lint-staged": "^12.0.1",
+		"postcss-mixins": "^8.1.0",
+		"postcss-nested": "^5.0.6",
+		"postcss-simple-vars": "^6.0.3",
+		"prettier": "2.4.1",
+		"vite": "^2.6.14"
+	}
+}

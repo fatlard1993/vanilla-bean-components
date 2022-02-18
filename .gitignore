@@ -1,0 +1,13 @@
+# npm
+node_modules
+
+# macos
+.DS_Store
+
+# vite
+dist
+dist-ssr
+*.local
+
+# cypress
+cypress

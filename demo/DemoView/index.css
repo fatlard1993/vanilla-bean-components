@@ -1,0 +1,25 @@
+@import '../../styles/index.css';
+
+div.view.demoView {
+	div.demoWrapper {
+		position: relative;
+		border: 1px solid;
+		margin: 5%;
+		padding: 5%;
+
+		& > div.dialog,
+		& > select.select,
+		& > button.button {
+			margin: 0 auto;
+		}
+
+		& > button.button {
+			display: block;
+		}
+	}
+
+	a.link.docLink {
+		margin: 12px auto;
+		padding: 6px 12px;
+	}
+}

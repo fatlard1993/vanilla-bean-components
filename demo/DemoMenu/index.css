@@ -1,0 +1,9 @@
+@import '../../styles/colors';
+
+div.demoMenu {
+	padding: 6px;
+
+	a.link.disabled {
+		background-color: $grey;
+	}
+}
