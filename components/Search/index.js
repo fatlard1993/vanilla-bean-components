@@ -1,7 +1,5 @@
 import './index.css';
 
-import socketClient from 'socket-client';
-
 import TextInput from '../TextInput';
 
 export default class Search extends TextInput {
@@ -9,14 +7,6 @@ export default class Search extends TextInput {
 		super({
 			className: ['search', className],
 			placeholder: 'Search',
-			onKeyUp: ({ key }) => {
-				// todo debounced search
-
-				if (key === 'Enter') {
-					// todo search
-					socketClient.reply('search', this.value);
-				}
-			},
 			...rest,
 		});
 	}

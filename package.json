@@ -8,6 +8,12 @@
 		"./css": "./styles/index.css",
 		"./styles/*": "./styles/*.css"
 	},
+	"files": [
+		"./components/**/*",
+		"./styles/**/*",
+		"./utils/**/*",
+		"index.js"
+	],
 	"description": "JS class-based components",
 	"author": "justfatlard",
 	"license": "ISC",
@@ -21,7 +27,8 @@
 		"lint:fix": "eslint --fix --ext .js .",
 		"pretty": "prettier .",
 		"pretty:fix": "prettier --write .",
-		"test": "npm run test:dev",
+		"fix": "npm run lint:fix ; npm run pretty:fix",
+		"test": "npm run test",
 		"test:dev": "cypress open",
 		"test:cli": "cypress run"
 	},
@@ -40,7 +47,6 @@
 	"devDependencies": {
 		"autoprefixer": "^10.4.12",
 		"cypress": "^10.10.0",
-		"dom": "github:fatlard1993/dom",
 		"eslint": "^8.25.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-cypress": "^2.12.1",
@@ -51,7 +57,6 @@
 		"postcss-nested": "^6.0.0",
 		"postcss-simple-vars": "^7.0.0",
 		"prettier": "2.7.1",
-		"socket-client": "github:fatlard1993/socket-client",
 		"vite": "^3.1.7"
 	}
 }

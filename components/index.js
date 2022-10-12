@@ -18,6 +18,7 @@ import TagList from './TagList';
 import Textarea from './Textarea';
 import TextInput from './TextInput';
 import View from './View';
+import Router from '../utils/Router';
 
 export {
 	View,
@@ -40,4 +41,5 @@ export {
 	TagList,
 	Textarea,
 	TextInput,
+	Router,
 };
