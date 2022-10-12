@@ -1,11 +1,9 @@
-import { paths } from '../../demo/router/constants';
+import TagList from '.';
 
 context('TagList', () => {
-	before(() => {
-		cy.visit(`#${paths.tagList}`);
-	});
+	it('must render', () => {
+		cy.mount(new TagList({}));
 
-	it('Exists', () => {
 		cy.get('.tagList').should('be.visible');
 	});
 });

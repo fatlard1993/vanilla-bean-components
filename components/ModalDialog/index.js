@@ -1,4 +1,4 @@
-import dom from 'dom';
+import dom from '../../utils/dom';
 
 import Modal from '../Modal';
 import Dialog from '../Dialog';

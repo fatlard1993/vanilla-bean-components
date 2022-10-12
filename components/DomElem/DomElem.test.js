@@ -1,11 +1,9 @@
-import { paths } from '../../demo/router/constants';
+import DomElem from '.';
 
 context('DomElem', () => {
-	before(() => {
-		cy.visit(`#${paths.domElem}`);
-	});
+	it('must render', () => {
+		cy.mount(new DomElem('p', { textContent: 'test' }));
 
-	it('Exists', () => {
-		cy.get('.domElem').should('be.visible');
+		cy.findByText('test').should('be.visible');
 	});
 });

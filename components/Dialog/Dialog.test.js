@@ -1,11 +1,9 @@
-import { paths } from '../../demo/router/constants';
+import Dialog from '.';
 
 context('Dialog', () => {
-	before(() => {
-		cy.visit(`#${paths.dialog}`);
-	});
+	it('must render', () => {
+		cy.mount(new Dialog({ header: 'test' }));
 
-	it('Exists', () => {
 		cy.get('.dialog').should('be.visible');
 	});
 });

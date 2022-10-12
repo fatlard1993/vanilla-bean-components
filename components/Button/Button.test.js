@@ -1,11 +1,9 @@
-import { paths } from '../../demo/router/constants';
+import Button from '.';
 
 context('Button', () => {
-	before(() => {
-		cy.visit(`#${paths.button}`);
-	});
+	it('must render', () => {
+		cy.mount(new Button({ textContent: 'test' }));
 
-	it('Exists', () => {
-		cy.get('.button').should('be.visible');
+		cy.findByRole('button').should('be.visible');
 	});
 });

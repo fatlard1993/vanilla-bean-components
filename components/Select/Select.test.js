@@ -1,11 +1,9 @@
-import { paths } from '../../demo/router/constants';
+import Select from '.';
 
 context('Select', () => {
-	before(() => {
-		cy.visit(`#${paths.select}`);
-	});
+	it('must render', () => {
+		cy.mount(new Select({ options: ['test'] }));
 
-	it('Exists', () => {
 		cy.get('.select').should('be.visible');
 	});
 });

@@ -1,11 +1,9 @@
-import { paths } from '../../demo/router/constants';
+import NoData from '.';
 
 context('NoData', () => {
-	before(() => {
-		cy.visit(`#${paths.noData}`);
-	});
+	it('must render', () => {
+		cy.mount(new NoData({ textContent: 'test' }));
 
-	it('Exists', () => {
 		cy.get('.noData').should('be.visible');
 	});
 });

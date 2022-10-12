@@ -1,11 +1,9 @@
-import { paths } from '../../demo/router/constants';
+import Search from '.';
 
 context('Search', () => {
-	before(() => {
-		cy.visit(`#${paths.search}`);
-	});
+	it('must render', () => {
+		cy.mount(new Search({}));
 
-	it('Exists', () => {
 		cy.get('.search').should('be.visible');
 	});
 });

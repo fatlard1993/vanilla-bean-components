@@ -1,11 +1,9 @@
-import { paths } from '../../demo/router/constants';
+import Menu from '.';
 
 context('Menu', () => {
-	before(() => {
-		cy.visit(`#${paths.menu}`);
-	});
+	it('must render', () => {
+		cy.mount(new Menu({}));
 
-	it('Exists', () => {
 		cy.get('.menu').should('exist');
 	});
 });

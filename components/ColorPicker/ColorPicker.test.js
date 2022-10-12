@@ -1,11 +1,9 @@
-import { paths } from '../../demo/router/constants';
+import ColorPicker from '.';
 
 context('ColorPicker', () => {
-	before(() => {
-		cy.visit(`#${paths.colorPicker}`);
-	});
+	it('must render', () => {
+		cy.mount(new ColorPicker({ label: 'ColorPicker' }).elem);
 
-	it('Exists', () => {
 		cy.get('.colorPicker').should('be.visible');
 	});
 });

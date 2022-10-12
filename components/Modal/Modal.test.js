@@ -1,11 +1,9 @@
-import { paths } from '../../demo/router/constants';
+import Modal from '.';
 
 context('Modal', () => {
-	before(() => {
-		cy.visit(`#${paths.modal}`);
-	});
+	it('must render', () => {
+		cy.mount(new Modal({}));
 
-	it('Exists', () => {
 		cy.get('.modal').should('be.visible');
 	});
 });

@@ -1,10 +1,10 @@
-navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
-
 const dom = {
-	isIOS: navigator.platform && /iP(hone|ad)/.test(navigator.platform),
-	isSafari: navigator.vendor === 'Apple Computer, Inc.' && !navigator.userAgent.match('CriOS'),
+	isIOS: () => navigator.platform && /iP(hone|ad)/.test(navigator.platform),
+	isSafari: () => navigator.vendor === 'Apple Computer, Inc.' && !navigator.userAgent.match('CriOS'),
 	onLoad: func => {
 		dom.onLoader = func;
+
+		navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
 
 		if (document.readyState !== 'loading') dom.onLoaded();
 		else document.addEventListener('DOMContentLoaded', dom.onLoaded);
@@ -665,7 +665,7 @@ const dom = {
 	remove: elem_s => {
 		if (dom.isNodeList(elem_s)) elem_s = [].slice.call(elem_s);
 
-		elem_s.parentElement.removeChild(elem_s);
+		elem_s?.parentElement?.removeChild(elem_s);
 	},
 	show: (elem, className, done) => {
 		dom.animation.add('write', () => {

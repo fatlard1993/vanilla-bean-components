@@ -1,11 +1,9 @@
-import { paths } from '../../demo/router/constants';
+import IconButton from '.';
 
 context('IconButton', () => {
-	before(() => {
-		cy.visit(`#${paths.iconButton}`);
-	});
+	it('must render', () => {
+		cy.mount(new IconButton({ icon: 'test' }));
 
-	it('Exists', () => {
 		cy.get('.iconButton').should('be.visible');
 	});
 });

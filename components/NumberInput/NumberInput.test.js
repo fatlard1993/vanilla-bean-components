@@ -1,11 +1,9 @@
-import { paths } from '../../demo/router/constants';
+import NumberInput from '.';
 
 context('NumberInput', () => {
-	before(() => {
-		cy.visit(`#${paths.numberInput}`);
-	});
+	it('must render', () => {
+		cy.mount(new NumberInput({}));
 
-	it('Exists', () => {
 		cy.get('.numberInput').should('be.visible');
 	});
 });

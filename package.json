@@ -15,7 +15,8 @@
 		"/utils/**/*",
 		"index.js",
 		"!/components/**/demo.js",
-		"!/components/**/*.test.js"
+		"!/components/**/*.test.js",
+		"!/utils/**/*.test.js"
 	],
 	"description": "JS class-based components",
 	"author": "justfatlard",
@@ -31,9 +32,11 @@
 		"pretty": "prettier .",
 		"pretty:fix": "prettier --write .",
 		"fix": "npm run lint:fix ; npm run pretty:fix",
-		"test": "npm run test",
-		"test:dev": "cypress open",
-		"test:cli": "cypress run"
+		"test": "npm run test:unit",
+		"test:component": "cypress run --component --browser chrome",
+		"test:component:dev": "cypress open --component --browser chrome",
+		"test:unit": "vitest run",
+		"test:unit:dev": "vitest"
 	},
 	"repository": {
 		"type": "git",
@@ -48,6 +51,7 @@
 		"source-code-pro": "^2.38.0"
 	},
 	"devDependencies": {
+		"@testing-library/cypress": "^8.0.3",
 		"autoprefixer": "^10.4.12",
 		"cypress": "^10.10.0",
 		"eslint": "^8.25.0",
@@ -60,6 +64,7 @@
 		"postcss-nested": "^6.0.0",
 		"postcss-simple-vars": "^7.0.0",
 		"prettier": "2.7.1",
-		"vite": "^3.1.7"
+		"vite": "^3.1.7",
+		"vitest": "^0.24.1"
 	}
 }

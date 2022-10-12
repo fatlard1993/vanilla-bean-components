@@ -1,6 +1,6 @@
 import './index.css';
 
-import dom from 'dom';
+import dom from '../../utils/dom';
 
 import DomElem from '../DomElem';
 

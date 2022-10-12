@@ -1,11 +1,9 @@
-import { paths } from '../../demo/router/constants';
+import TextInput from '.';
 
 context('TextInput', () => {
-	before(() => {
-		cy.visit(`#${paths.textInput}`);
-	});
+	it('must render', () => {
+		cy.mount(new TextInput({}));
 
-	it('Exists', () => {
 		cy.get('.textInput').should('be.visible');
 	});
 });

@@ -4,7 +4,7 @@ import DomElem from '../DomElem';
 
 import { toHSV, hsvToRGB, randomRGB } from '../../utils/color';
 import { saturation, hue } from './svg';
-import dom from 'dom';
+import dom from '../../utils/dom';
 import TextInput from '../TextInput';
 import Label from '../Label';
 

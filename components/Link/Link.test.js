@@ -1,11 +1,9 @@
-import { paths } from '../../demo/router/constants';
+import Link from '.';
 
 context('Link', () => {
-	before(() => {
-		cy.visit(`#${paths.link}`);
-	});
+	it('must render', () => {
+		cy.mount(new Link({ textContent: 'test' }));
 
-	it('Exists', () => {
 		cy.get('.link').should('be.visible');
 	});
 });

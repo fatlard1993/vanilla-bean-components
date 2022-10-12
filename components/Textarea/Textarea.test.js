@@ -1,11 +1,9 @@
-import { paths } from '../../demo/router/constants';
+import Textarea from '.';
 
 context('Textarea', () => {
-	before(() => {
-		cy.visit(`#${paths.textarea}`);
-	});
+	it('must render', () => {
+		cy.mount(new Textarea({}));
 
-	it('Exists', () => {
 		cy.get('.textarea').should('be.visible');
 	});
 });

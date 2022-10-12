@@ -40,7 +40,7 @@ export const toHSV = color => {
 			parseInt(color.substr(5, 2), 16),
 		);
 	} else {
-		color = color.split(/a?\(|\)|,\s?/gi);
+		color = color.split(/a?\(|\)|,?\s?/gi);
 
 		const type = color.shift().toLowerCase();
 		const transform = {

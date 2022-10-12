@@ -1,11 +1,9 @@
-import { paths } from '../../demo/router/constants';
+import Tag from '.';
 
 context('Tag', () => {
-	before(() => {
-		cy.visit(`#${paths.tag}`);
-	});
+	it('must render', () => {
+		cy.mount(new Tag({}));
 
-	it('Exists', () => {
 		cy.get('.tag').should('be.visible');
 	});
 });

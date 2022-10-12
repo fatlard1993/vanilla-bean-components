@@ -1,11 +1,9 @@
-import { paths } from '../../demo/router/constants';
+import Popover from '.';
 
 context('Popover', () => {
-	before(() => {
-		cy.visit(`#${paths.popover}`);
-	});
+	it('must render', () => {
+		cy.mount(new Popover({}));
 
-	it('Exists', () => {
 		cy.get('.popover').should('exist');
 	});
 });

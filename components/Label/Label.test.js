@@ -1,11 +1,9 @@
-import { paths } from '../../demo/router/constants';
+import Label from '.';
 
 context('Label', () => {
-	before(() => {
-		cy.visit(`#${paths.label}`);
-	});
+	it('must render', () => {
+		cy.mount(new Label({ label: 'test' }));
 
-	it('Exists', () => {
 		cy.get('.label').should('be.visible');
 	});
 });
