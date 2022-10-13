@@ -1,11 +1,8 @@
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-	root: './demo',
 	server: {
+		open: '/demo/index.html',
 		port: 9999,
-	},
-	test: {
-		include: ['../**/*.unit.test.js'],
 	},
 });

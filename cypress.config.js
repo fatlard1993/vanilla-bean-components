@@ -5,7 +5,7 @@ export default defineConfig({
 	video: false,
 
 	component: {
-		specPattern: 'components/**/*.test.js',
+		specPattern: 'components/**/test.js',
 		devServer: {
 			bundler: 'vite',
 		},
