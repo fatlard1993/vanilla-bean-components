@@ -5,20 +5,19 @@ export default class Demo extends DemoView {
 	constructor(props) {
 		super(props);
 
-		const appendTo = this.elem;
 		const textContent = 'textContent';
-		const href = '#/link?test=success';
+		const href = '#/Dialog';
 
 		const linkElem = new Link({ appendTo: this.demoWrapper, textContent, href });
+
+		const appendTo = this.demoContent;
 
 		new Label({
 			label: 'textContent',
 			appendTo,
 			appendChild: new TextInput({
 				value: textContent,
-				onChange: ({ value }) => {
-					linkElem.textContent = value;
-				},
+				onKeyUp: ({ target: { value } }) => (linkElem.textContent = value),
 			}),
 		});
 
@@ -27,9 +26,7 @@ export default class Demo extends DemoView {
 			appendTo,
 			appendChild: new TextInput({
 				value: href,
-				onChange: ({ value }) => {
-					linkElem.href = value;
-				},
+				onKeyUp: ({ target: { value } }) => (linkElem.href = value),
 			}),
 		});
 	}

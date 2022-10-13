@@ -8,6 +8,7 @@ export const paths = {
 	link: '/Link',
 	menu: '/Menu',
 	modal: '/Modal',
+	modalDialog: '/ModalDialog',
 	noData: '/NoData',
 	numberInput: '/NumberInput',
 	popover: '/Popover',

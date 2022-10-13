@@ -9,14 +9,14 @@ export default class Demo extends DemoView {
 
 		const labelElem = new Label({ appendTo: this.demoWrapper, label });
 
+		const appendTo = this.demoContent;
+
 		new Label({
 			label: 'label',
-			appendTo: this.elem,
+			appendTo,
 			appendChild: new TextInput({
 				value: label,
-				onChange: ({ value }) => {
-					labelElem.textContent = value;
-				},
+				onKeyUp: ({ target: { value } }) => (labelElem.textContent = value),
 			}),
 		});
 	}

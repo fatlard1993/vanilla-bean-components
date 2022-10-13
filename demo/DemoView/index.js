@@ -11,6 +11,8 @@ export default class DemoView extends View {
 
 		this.demoMenu = new DemoMenu({ appendTo });
 
-		this.demoWrapper = new DomElem('div', { className: 'demoWrapper', appendTo });
+		this.demoContent = new DomElem('div', { className: 'demoContent', appendTo });
+
+		this.demoWrapper = new DomElem('div', { className: 'demoWrapper', appendTo: this.demoContent });
 	}
 }

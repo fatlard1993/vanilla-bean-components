@@ -33,6 +33,9 @@ export default class ColorPicker {
 			onChange: ({ value }) => {
 				this.set(value);
 			},
+			onKeyUp: ({ target: { value } }) => {
+				this.set(value);
+			},
 		});
 
 		this.set(initialValue);

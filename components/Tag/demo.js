@@ -5,6 +5,9 @@ export default class Demo extends DemoView {
 	constructor(props) {
 		super(props);
 
-		new Tag({ appendTo: this.demoWrapper });
+		const tag = 'tag';
+		const readOnly = false;
+
+		new Tag({ appendTo: this.demoWrapper, tag, readOnly });
 	}
 }

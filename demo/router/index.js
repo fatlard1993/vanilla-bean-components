@@ -7,6 +7,7 @@ import Label from '../../components/Label/demo';
 import Link from '../../components/Link/demo';
 import Menu from '../../components/Menu/demo';
 import Modal from '../../components/Modal/demo';
+import ModalDialog from '../../components/ModalDialog/demo';
 import NoData from '../../components/NoData/demo';
 import NumberInput from '../../components/NumberInput/demo';
 import Popover from '../../components/Popover/demo';
@@ -33,6 +34,7 @@ export const views = {
 	[paths.link]: Link,
 	[paths.menu]: Menu,
 	[paths.modal]: Modal,
+	[paths.modalDialog]: ModalDialog,
 	[paths.noData]: NoData,
 	[paths.numberInput]: NumberInput,
 	[paths.popover]: Popover,

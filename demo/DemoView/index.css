@@ -1,6 +1,10 @@
 @import '../../styles/index.css';
 
 div.view.demoView {
+	div.demoContent {
+		overflow: auto;
+	}
+
 	div.demoWrapper {
 		position: relative;
 		border: 1px solid;
@@ -16,10 +20,5 @@ div.view.demoView {
 		& > button.button {
 			display: block;
 		}
-	}
-
-	a.link.docLink {
-		margin: 12px auto;
-		padding: 6px 12px;
 	}
 }

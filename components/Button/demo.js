@@ -5,14 +5,19 @@ export default class Demo extends DemoView {
 	constructor(props) {
 		super(props);
 
-		const textContent = 'demo';
+		const textContent = 'onPointerPress: console.log';
 
-		const button = new Button({ appendTo: this.demoWrapper, textContent });
+		const button = new Button({ appendTo: this.demoWrapper, onPointerPress: console.log, textContent });
+
+		const appendTo = this.demoContent;
 
 		new Label({
 			label: 'textContent',
-			appendTo: this.elem,
-			appendChild: new TextInput({ value: textContent, onChange: ({ value }) => (button.textContent = value) }),
+			appendTo,
+			appendChild: new TextInput({
+				value: textContent,
+				onKeyUp: ({ target: { value } }) => (button.textContent = value),
+			}),
 		});
 	}
 }

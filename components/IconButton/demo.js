@@ -5,16 +5,20 @@ export default class Demo extends DemoView {
 	constructor(props) {
 		super(props);
 
-		const appendTo = this.elem;
 		const icon = 'icons';
 
 		const iconButton = new IconButton({ appendTo: this.demoWrapper, icon });
 
-		new Link({
+		const appendTo = this.demoContent;
+
+		new Label({
+			label: 'Docs Link',
 			appendTo,
-			className: 'docLink',
-			textContent: 'FontAwesome Icon Docs',
-			href: 'https://fontawesome.com/search?m=free&s=solid%2Cregular%2Cbrands',
+			appendChild: new Link({
+				appendTo,
+				textContent: 'FontAwesome Icon Docs',
+				href: 'https://fontawesome.com/search?m=free&s=solid%2Cregular%2Cbrands',
+			}),
 		});
 
 		new Label({
@@ -22,9 +26,8 @@ export default class Demo extends DemoView {
 			appendTo,
 			appendChild: new TextInput({
 				value: icon,
-				onChange: ({ value }) => {
-					iconButton.className = iconButton.className.replace(/fa-\w+/, `fa-${value}`);
-				},
+				onKeyUp: ({ target: { value } }) =>
+					(iconButton.className = iconButton.className.replace(/fa-\w+/, `fa-${value}`)),
 			}),
 		});
 	}

@@ -5,6 +5,6 @@ export default class Demo extends DemoView {
 	constructor(props) {
 		super(props);
 
-		new NumberInput({ appendTo: this.demoWrapper });
+		new NumberInput({ appendTo: this.demoWrapper, value: 42 });
 	}
 }

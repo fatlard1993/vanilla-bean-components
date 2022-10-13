@@ -1,3 +1,5 @@
+import './index.css';
+
 import dom from '../../utils/dom';
 
 import Modal from '../Modal';

@@ -7,7 +7,6 @@ export default class Demo extends DemoView {
 
 		new DomElem('p', {
 			appendTo: this.demoWrapper,
-			className: 'domElem',
 			textContent: 'A general purpose base element building block',
 		});
 	}

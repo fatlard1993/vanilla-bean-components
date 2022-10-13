@@ -1,0 +1,14 @@
+div.modal {
+	div.dialog {
+		/* Default size: small */
+		margin: 17% auto 0;
+
+		&.standard {
+			margin: 13% auto 0;
+		}
+
+		&.large {
+			margin: 5vh auto 0;
+		}
+	}
+}
