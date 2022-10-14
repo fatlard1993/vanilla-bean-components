@@ -4,7 +4,7 @@ import state from '../state';
 
 import { buildClassName } from '../../utils/class';
 
-export default class DomElem {
+export class DomElem {
 	constructor(nodeName, options) {
 		this.nodeName = nodeName;
 		this.options = options || {};
@@ -48,3 +48,5 @@ export default class DomElem {
 		dom.prependChild(this, child);
 	}
 }
+
+export default DomElem;

@@ -2,7 +2,7 @@ import './index.css';
 
 import DomElem from '../DomElem';
 
-export default class TextInput extends DomElem {
+export class TextInput extends DomElem {
 	constructor({ className, value = '', autocomplete = 'off', autocapitalize = 'off', autocorrect = 'off', ...rest }) {
 		const initialValue = value;
 
@@ -19,3 +19,5 @@ export default class TextInput extends DomElem {
 		this.isDirty = () => initialValue !== this.value;
 	}
 }
+
+export default TextInput;

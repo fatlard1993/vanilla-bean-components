@@ -4,7 +4,7 @@ import dom from '../../utils/dom';
 
 import DomElem from '../DomElem';
 
-export default class View {
+export class View {
 	constructor(options) {
 		if (options) this.render(options);
 	}
@@ -19,3 +19,5 @@ export default class View {
 		if (this.elem) dom.remove(this.elem);
 	}
 }
+
+export default View;

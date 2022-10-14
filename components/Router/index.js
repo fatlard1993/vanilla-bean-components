@@ -1,10 +1,15 @@
-export default class Router {
-	constructor({ views, defaultPath, appendTo }) {
+export class Router {
+	constructor({ views, paths, defaultPath, appendTo }) {
 		this.views = views;
+		this.paths = paths;
 		this.defaultPath = defaultPath;
 		this.parent = appendTo;
 
+		console.log({ views, paths, defaultPath, appendTo });
+
 		window.addEventListener('popstate', () => this.renderView());
+
+		this.renderView();
 	}
 
 	get path() {
@@ -74,6 +79,8 @@ export default class Router {
 		const { route } = this;
 		const appendTo = this.parent;
 
+		console.log('renderView', { route, views: this.views });
+
 		if (!this.views[route]) {
 			this.path = this.defaultPath;
 
@@ -85,3 +92,5 @@ export default class Router {
 		this.view = new this.views[route]({ appendTo });
 	}
 }
+
+export default Router;

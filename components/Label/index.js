@@ -2,7 +2,7 @@ import './index.css';
 
 import DomElem from '../DomElem';
 
-export default class Label extends DomElem {
+export class Label extends DomElem {
 	constructor({ className, label, elem, ...rest }) {
 		super('div', { className: ['label', className], ...rest });
 
@@ -15,3 +15,5 @@ export default class Label extends DomElem {
 		if (label) super.prependChild(new DomElem('div', { className: 'label-text', textContent: label }));
 	}
 }
+
+export default Label;

@@ -6,7 +6,7 @@ import Tag from '../Tag';
 import TextInput from '../TextInput';
 import IconButton from '../IconButton';
 
-export default class TagList extends DomElem {
+export class TagList extends DomElem {
 	constructor({ tags = [], readOnly = true, className, ...rest }) {
 		let tagInput, addTag, addButton;
 
@@ -46,3 +46,5 @@ export default class TagList extends DomElem {
 		this.addTag = addTag;
 	}
 }
+
+export default TagList;

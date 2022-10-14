@@ -5,7 +5,7 @@ import dom from '../../utils/dom';
 import Modal from '../Modal';
 import Dialog from '../Dialog';
 
-export default class ModalDialog {
+export class ModalDialog {
 	constructor({ appendTo, header, content, footer, buttons, ...rest }) {
 		this.modal = new Modal({ appendTo });
 		this.dialog = new Dialog({
@@ -25,3 +25,5 @@ export default class ModalDialog {
 		dom.remove(this.modal);
 	}
 }
+
+export default ModalDialog;

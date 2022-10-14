@@ -2,7 +2,7 @@ import './index.css';
 
 import DomElem from '../DomElem';
 
-export default class Select extends DomElem {
+export class Select extends DomElem {
 	constructor({ value = '', className, options = [], ...rest }) {
 		const initialValue = value;
 
@@ -18,3 +18,5 @@ export default class Select extends DomElem {
 		return this;
 	}
 }
+
+export default Select;

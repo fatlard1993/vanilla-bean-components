@@ -8,7 +8,7 @@ import dom from '../../utils/dom';
 import TextInput from '../TextInput';
 import Label from '../Label';
 
-export default class ColorPicker {
+export class ColorPicker {
 	constructor({ className, value: initialValue = '#666', onChange = () => {}, label, appendTo, ...rest } = {}) {
 		this.isDirty = () => initialValue !== this.value;
 
@@ -184,3 +184,5 @@ export default class ColorPicker {
 				value;
 	}
 }
+
+export default ColorPicker;

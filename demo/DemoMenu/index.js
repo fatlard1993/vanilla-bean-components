@@ -2,7 +2,7 @@ import './index.css';
 
 import { DomElem, Link } from '../../components';
 
-import { paths } from '../router';
+import { paths } from '../Router';
 import { capitalize } from '../../utils/string';
 
 export default class DemoMenu extends DomElem {

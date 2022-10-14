@@ -1,9 +1,9 @@
-import router from './router';
+import Router from './Router';
 
 import dom from '../utils/dom';
 
 dom.onLoad(() => {
 	dom.mobile.detect();
 
-	router.renderView();
+	new Router({ appendTo: document.getElementById('app') });
 });

@@ -3,7 +3,7 @@ import './index.css';
 import DomElem from '../DomElem';
 import Button from '../Button';
 
-export default class Dialog extends DomElem {
+export class Dialog extends DomElem {
 	constructor({ className, header, content, footer, buttons = [], onDismiss = () => {}, closeDialog, size, ...rest }) {
 		super('div', {
 			className: ['dialog', className, size],
@@ -33,3 +33,5 @@ export default class Dialog extends DomElem {
 		});
 	}
 }
+
+export default Dialog;

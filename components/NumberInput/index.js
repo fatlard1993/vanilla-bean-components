@@ -2,7 +2,7 @@ import './index.css';
 
 import DomElem from '../DomElem';
 
-export default class NumberInput extends DomElem {
+export class NumberInput extends DomElem {
 	constructor({ className, value, ...rest }) {
 		const initialValue = value;
 
@@ -11,3 +11,5 @@ export default class NumberInput extends DomElem {
 		this.isDirty = () => initialValue !== this.value;
 	}
 }
+
+export default NumberInput;
