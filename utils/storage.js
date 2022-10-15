@@ -43,7 +43,7 @@ export const storage = {
 			if (expHours) {
 				const date = new Date();
 
-				date.setTime(date.getTime() + (expHours || 1) * 60 * 60 * 1000);
+				date.setTime(date.getTime() + expHours * 60 * 60 * 1000);
 
 				cookie += `; expires=${date.toUTCString()}`;
 			}
@@ -55,3 +55,5 @@ export const storage = {
 		},
 	},
 };
+
+export default storage;

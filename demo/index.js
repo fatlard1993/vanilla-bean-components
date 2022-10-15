@@ -1,9 +1,5 @@
+import { Page } from '../';
+
 import Router from './Router';
 
-import dom from '../utils/dom';
-
-dom.onLoad(() => {
-	dom.mobile.detect();
-
-	new Router({ appendTo: document.getElementById('app') });
-});
+new Page({ appendTo: document.getElementById('app'), appendChild: new Router().elem });

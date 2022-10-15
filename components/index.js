@@ -10,6 +10,7 @@ export * from './Modal';
 export * from './ModalDialog';
 export * from './NoData';
 export * from './NumberInput';
+export * from './Page';
 export * from './Popover';
 export * from './Router';
 export * from './Search';

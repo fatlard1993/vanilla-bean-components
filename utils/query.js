@@ -1,59 +1,53 @@
-const query = {
-	write({ query, fetch }) {
-		query = query && !query.startsWith('?') ? `?${query}` : query;
+export const query = {
+	write({ query: newQuery, fetch = false }) {
+		if (typeof newQuery === 'object') newQuery = query.stringify(newQuery);
 
-		if (fetch) window.location.search = query;
-		else history.replaceState(null, query, query);
+		newQuery = newQuery.length && newQuery[0] !== '?' ? `?${newQuery}` : newQuery;
+
+		if (fetch) window.location.search = newQuery;
+		else history.replaceState(null, newQuery, newQuery);
 	},
 	fetch() {
 		query.write({ query: window.location.search, fetch: true });
 	},
 	stringify(obj) {
 		return Object.keys(obj)
-			.reduce((arr, key) => {
-				arr.push(`${key}=${encodeURIComponent(obj[key])}`);
-				return arr;
-			}, [])
+			.map(key => `${key}=${encodeURIComponent(obj[key])}`)
 			.join('&');
 	},
 	parse() {
-		const queryObj = {};
+		const obj = {};
 
-		if (!window.location.search.length) return queryObj;
+		if (!window.location.search.length) return obj;
 
-		const queryString = window.location.search.slice(1);
-		const urlVariables = queryString.split('&');
+		const variables = window.location.search.slice(1).split('&');
 
-		for (let x = 0; x < urlVariables.length; ++x) {
-			const [key, value] = urlVariables[x].split('=');
+		variables.forEach(variable => {
+			const [key, value] = variable.split('=');
 
-			queryObj[decodeURIComponent(key)] = decodeURIComponent(value);
-		}
+			obj[decodeURIComponent(key)] = decodeURIComponent(value);
+		});
 
-		return queryObj;
+		return obj;
 	},
-	get(param) {
-		return query.parse()[param];
+	get(key) {
+		return query.parse()[key];
 	},
-	set() {
-		let obj = {};
+	set(key, value, fetch) {
+		const obj = query.parse();
 
-		if (typeof arguments[0] === 'object') obj = arguments[0];
-		else {
-			obj[arguments[0]] = arguments[1];
-			obj = Object.assign(query.parse(), obj);
-		}
+		obj[key] = value;
 
-		query.write({ query: query.stringify(obj) });
+		query.write({ query: obj, fetch });
 	},
-	delete(param) {
-		if (!param) return query.write({ query: '' });
+	delete(key, fetch) {
+		if (!key) return (window.location.search = '');
 
 		const obj = query.parse();
 
-		delete obj[param];
+		delete obj[key];
 
-		query.write({ query: query.stringify(obj) });
+		query.write({ query: obj, fetch });
 	},
 };
 

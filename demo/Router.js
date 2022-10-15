@@ -10,6 +10,7 @@ import ModalDemo from '../components/Modal/demo';
 import ModalDialogDemo from '../components/ModalDialog/demo';
 import NoDataDemo from '../components/NoData/demo';
 import NumberInputDemo from '../components/NumberInput/demo';
+import PageDemo from '../components/Page/demo';
 import PopoverDemo from '../components/Popover/demo';
 import RouterDemo from '../components/Router/demo';
 import SearchDemo from '../components/Search/demo';
@@ -35,6 +36,7 @@ export const paths = {
 	modalDialog: '/ModalDialog',
 	noData: '/NoData',
 	numberInput: '/NumberInput',
+	page: '/Page',
 	popover: '/Popover',
 	router: '/Router',
 	search: '/Search',
@@ -59,6 +61,7 @@ export const views = {
 	[paths.modalDialog]: ModalDialogDemo,
 	[paths.noData]: NoDataDemo,
 	[paths.numberInput]: NumberInputDemo,
+	[paths.page]: PageDemo,
 	[paths.popover]: PopoverDemo,
 	[paths.router]: RouterDemo,
 	[paths.search]: SearchDemo,

@@ -4,15 +4,19 @@ import dom from '../../utils/dom';
 
 import DomElem from '../DomElem';
 
-export class View {
+export class Page {
 	constructor(options) {
-		this.render(options);
+		dom.onLoad(() => {
+			dom.mobile.detect();
+
+			this.render(options);
+		});
 	}
 
 	render({ className, ...rest } = {}) {
 		this.cleanup();
 
-		this.elem = new DomElem('div', { className: ['view', className], ...rest });
+		this.elem = new DomElem('div', { className: ['page', className], ...rest });
 	}
 
 	cleanup() {
@@ -20,4 +24,4 @@ export class View {
 	}
 }
 
-export default View;
+export default Page;

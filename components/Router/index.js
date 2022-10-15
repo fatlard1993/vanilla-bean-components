@@ -1,15 +1,14 @@
+import DomElem from '../DomElem';
+
 export class Router {
-	constructor({ views, paths, defaultPath, appendTo }) {
+	constructor({ views, paths, defaultPath, ...rest }) {
 		this.views = views;
 		this.paths = paths;
 		this.defaultPath = defaultPath;
-		this.parent = appendTo;
-
-		console.log({ views, paths, defaultPath, appendTo });
 
 		window.addEventListener('popstate', () => this.renderView());
 
-		this.renderView();
+		this.render(rest);
 	}
 
 	get path() {
@@ -75,21 +74,22 @@ export class Router {
 		return params;
 	}
 
-	renderView() {
-		const { route } = this;
-		const appendTo = this.parent;
+	render({ className, ...rest } = {}) {
+		this?.elem?.cleanup();
 
-		console.log('renderView', { route, views: this.views });
+		this.elem = new DomElem('div', { className: ['router', className], ...rest });
 
-		if (!this.views[route]) {
-			this.path = this.defaultPath;
+		this.renderView(this.defaultPath);
+	}
 
-			return;
-		}
+	renderView(view) {
+		const route = view || this.route;
 
-		if (this?.view?.cleanup) this.view.cleanup();
+		this?.view?.cleanup();
 
-		this.view = new this.views[route]({ appendTo });
+		if (!this.views[route]) return;
+
+		this.view = new this.views[route]({ appendTo: this.elem });
 	}
 }
 
