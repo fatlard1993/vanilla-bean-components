@@ -1,9 +1,16 @@
+import { findByText } from '@testing-library/dom';
+import { JSDOM } from 'jsdom';
+
 import NoData from '.';
 
-context('NoData', () => {
-	it('must render', () => {
-		cy.mount(new NoData({ textContent: 'test' }));
+const container = new JSDOM().window.document.body;
 
-		cy.get('.noData').should('be.visible');
+describe('NoData', () => {
+	test('must render', async () => {
+		const textContent = 'textContent';
+
+		new NoData({ textContent, appendTo: container });
+
+		await findByText(container, textContent);
 	});
 });

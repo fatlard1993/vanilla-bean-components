@@ -4,23 +4,18 @@ import dom from '../../utils/dom';
 
 import DomElem from '../DomElem';
 
-export class Page {
+export class Page extends DomElem {
 	constructor(options) {
-		dom.onLoad(() => {
-			dom.mobile.detect();
+		super({ autoRender: false, ...options });
 
-			this.render(options);
-		});
+		if (document.readyState !== 'loading') this.onLoad();
+		else document.addEventListener('DOMContentLoaded', this.onLoad);
 	}
 
-	render({ className, ...rest } = {}) {
-		this.cleanup();
+	onLoad() {
+		if (this.options.mobileSupport !== false) dom.mobile.detect();
 
-		this.elem = new DomElem('div', { className: ['page', className], ...rest });
-	}
-
-	cleanup() {
-		if (this.elem) dom.remove(this.elem);
+		this.render();
 	}
 }
 

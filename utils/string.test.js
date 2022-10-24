@@ -1,5 +1,3 @@
-import { expect, test } from 'vitest';
-
 import { capitalize, fromCamelCase, toCamelCase } from './string';
 
 test('capitalize', () => {

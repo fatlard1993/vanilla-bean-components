@@ -16,7 +16,7 @@ export default class Demo extends DemoView {
 			appendTo,
 			appendChild: new TextInput({
 				value: label,
-				onKeyUp: ({ target: { value } }) => (colorPicker.label.children[0].textContent = value),
+				onKeyUp: ({ target: { value } }) => (colorPicker.label.elem.children[0].textContent = value),
 			}),
 		});
 		new Label({

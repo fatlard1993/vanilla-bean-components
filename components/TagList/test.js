@@ -1,9 +1,16 @@
+import { findByText } from '@testing-library/dom';
+import { JSDOM } from 'jsdom';
+
 import TagList from '.';
 
-context('TagList', () => {
-	it('must render', () => {
-		cy.mount(new TagList({}));
+const container = new JSDOM().window.document.body;
 
-		cy.get('.tagList').should('be.visible');
+describe('TagList', () => {
+	test('must render', async () => {
+		const textContent = 'textContent';
+
+		new TagList({ tags: [textContent], appendTo: container });
+
+		await findByText(container, textContent);
 	});
 });

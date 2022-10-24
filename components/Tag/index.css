@@ -1,6 +1,6 @@
 @import '../../styles/colors';
 
-li.tag {
+.DomElem.Tag {
 	border: 1px solid white;
 	padding: 0 3px;
 	margin: 3px;

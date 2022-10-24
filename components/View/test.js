@@ -1,9 +1,17 @@
+import { findByText } from '@testing-library/dom';
+import { JSDOM } from 'jsdom';
+
 import View from '.';
+import DomElem from '../DomElem';
 
-context('View', () => {
-	it('must render', () => {
-		cy.mount(new View({ views: {}, paths: {} }).elem);
+const container = new JSDOM().window.document.body;
 
-		cy.get('.view').should('exist');
+describe('View', () => {
+	test('must render', async () => {
+		const textContent = 'textContent';
+
+		new View({ appendTo: container, appendChild: new DomElem({ textContent }) });
+
+		await findByText(container, textContent);
 	});
 });

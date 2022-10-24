@@ -1,9 +1,16 @@
+import { findByText } from '@testing-library/dom';
+import { JSDOM } from 'jsdom';
+
 import ColorPicker from '.';
 
-context('ColorPicker', () => {
-	it('must render', () => {
-		cy.mount(new ColorPicker({ label: 'ColorPicker' }).elem);
+const container = new JSDOM().window.document.body;
 
-		cy.get('.colorPicker').should('be.visible');
+describe('ColorPicker', () => {
+	test('must render', async () => {
+		const label = 'test:ColorPicker';
+
+		new ColorPicker({ label, appendTo: container });
+
+		await findByText(container, label);
 	});
 });

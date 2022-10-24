@@ -8,7 +8,7 @@ export default class Demo extends DemoView {
 		const textContent = 'textContent';
 		const href = '#/Dialog';
 
-		const linkElem = new Link({ appendTo: this.demoWrapper, textContent, href });
+		const link = new Link({ appendTo: this.demoWrapper, textContent, href });
 
 		const appendTo = this.demoContent;
 
@@ -17,7 +17,7 @@ export default class Demo extends DemoView {
 			appendTo,
 			appendChild: new TextInput({
 				value: textContent,
-				onKeyUp: ({ target: { value } }) => (linkElem.textContent = value),
+				onKeyUp: ({ target: { value } }) => (link.elem.textContent = value),
 			}),
 		});
 
@@ -26,7 +26,7 @@ export default class Demo extends DemoView {
 			appendTo,
 			appendChild: new TextInput({
 				value: href,
-				onKeyUp: ({ target: { value } }) => (linkElem.href = value),
+				onKeyUp: ({ target: { value } }) => (link.elem.href = value),
 			}),
 		});
 	}

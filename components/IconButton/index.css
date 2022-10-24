@@ -2,7 +2,7 @@
 @import '../../styles/fonts';
 @import '../Button';
 
-button.iconButton {
+.DomElem.IconButton {
 	@mixin Button;
 
 	width: 2.4rem;

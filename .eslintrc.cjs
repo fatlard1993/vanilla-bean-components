@@ -11,5 +11,6 @@ module.exports = {
 	extends: ['eslint:recommended', 'plugin:prettier/recommended', 'plugin:cypress/recommended'],
 	rules: {
 		'no-async-promise-executor': 'off',
+		'no-prototype-builtins': 'off',
 	},
 };

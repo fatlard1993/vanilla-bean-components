@@ -1,9 +1,16 @@
+import { findByRole } from '@testing-library/dom';
+import { JSDOM } from 'jsdom';
+
 import Button from '.';
 
-context('Button', () => {
-	it('must render', () => {
-		cy.mount(new Button({ textContent: 'test' }));
+const container = new JSDOM().window.document.body;
 
-		cy.findByRole('button').should('be.visible');
+describe('Button', () => {
+	test('must render', async () => {
+		const name = 'test:button';
+
+		new Button({ textContent: name, appendTo: container });
+
+		await findByRole(container, 'button', { name });
 	});
 });

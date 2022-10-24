@@ -1,10 +1,18 @@
+import { findByText } from '@testing-library/dom';
+import { JSDOM } from 'jsdom';
+
 import ModalDialog from '.';
 
-context('ModalDialog', () => {
-	it('must render', () => {
-		cy.mount(new ModalDialog({}).modal);
+const container = new JSDOM().window.document.body;
 
-		cy.get('.modal').should('be.visible');
-		cy.get('.dialog').should('be.visible');
+describe('ModalDialog', () => {
+	test('must render', async () => {
+		const header = 'header';
+		const content = 'content';
+
+		new ModalDialog({ header, content, appendTo: container });
+
+		await findByText(container, header);
+		await findByText(container, content);
 	});
 });

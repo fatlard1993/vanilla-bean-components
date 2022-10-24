@@ -1,22 +1,10 @@
 import './index.css';
 
-import dom from '../../utils/dom';
-
 import DomElem from '../DomElem';
 
-export class View {
+export class View extends DomElem {
 	constructor(options) {
-		this.render(options);
-	}
-
-	render({ className, ...rest } = {}) {
-		this.cleanup();
-
-		this.elem = new DomElem('div', { className: ['view', className], ...rest });
-	}
-
-	cleanup() {
-		if (this.elem) dom.remove(this.elem);
+		super({ ...options });
 	}
 }
 

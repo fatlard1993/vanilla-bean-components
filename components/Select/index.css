@@ -1,5 +1,5 @@
 @import '../../styles/input';
 
-select.select {
+.DomElem.Select {
 	@mixin Input;
 }

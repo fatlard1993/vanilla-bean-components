@@ -1,9 +1,16 @@
+import { findByDisplayValue } from '@testing-library/dom';
+import { JSDOM } from 'jsdom';
+
 import Search from '.';
 
-context('Search', () => {
-	it('must render', () => {
-		cy.mount(new Search({}));
+const container = new JSDOM().window.document.body;
 
-		cy.get('.search').should('be.visible');
+describe('Search', () => {
+	test('must render', async () => {
+		const value = 'search';
+
+		new Search({ value, appendTo: container });
+
+		await findByDisplayValue(container, value);
 	});
 });

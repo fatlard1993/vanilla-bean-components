@@ -3,19 +3,17 @@ import './index.css';
 import DomElem from '../DomElem';
 
 export class Select extends DomElem {
-	constructor({ value = '', className, options = [], ...rest }) {
+	constructor({ value = '', options = [], ...rest }) {
 		const initialValue = value;
 
-		super('select', {
+		super({
+			tag: 'select',
 			value,
-			className: ['select', className],
-			appendChildren: options.map(textContent => new DomElem('option', { textContent })),
+			appendChildren: options.map(textContent => new DomElem({ tag: 'option', textContent })),
 			...rest,
 		});
 
 		this.isDirty = () => initialValue !== this.value;
-
-		return this;
 	}
 }
 

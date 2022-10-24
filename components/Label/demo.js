@@ -7,7 +7,7 @@ export default class Demo extends DemoView {
 
 		const label = 'label';
 
-		const labelElem = new Label({ appendTo: this.demoWrapper, label });
+		const labelElem = new Label({ appendTo: this.demoWrapper, label }).elem;
 
 		const appendTo = this.demoContent;
 
@@ -16,7 +16,7 @@ export default class Demo extends DemoView {
 			appendTo,
 			appendChild: new TextInput({
 				value: label,
-				onKeyUp: ({ target: { value } }) => (labelElem.textContent = value),
+				onKeyUp: ({ target: { value } }) => (labelElem.children[0].textContent = value),
 			}),
 		});
 	}

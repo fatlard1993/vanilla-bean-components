@@ -1,12 +1,10 @@
 import dom from './dom';
 
-export const buildClassList = (...classNames) => {
-	return [...new Set(classNames.flat(Infinity).filter(className => typeof className === 'string' && className.length))];
-};
+export const buildClassList = (...classNames) => [
+	...new Set(classNames.flat(Infinity).filter(className => typeof className === 'string' && className.length)),
+];
 
-export const buildClassName = (...classNames) => {
-	return buildClassList(...classNames).join(' ');
-};
+export const buildClassName = (...classNames) => buildClassList(...classNames).join(' ');
 
 export const classList = (elem_s, add_remove, classes) => {
 	if (dom.isNodeList(elem_s)) elem_s = [].slice.call(elem_s);

@@ -1,14 +1,10 @@
 import './index.css';
 
-import DomElem from '../DomElem';
+import Input from '../Input';
 
-export class NumberInput extends DomElem {
-	constructor({ className, value, ...rest }) {
-		const initialValue = value;
-
-		super('input', { type: 'number', className: ['numberInput', className], value, ...rest });
-
-		this.isDirty = () => initialValue !== this.value;
+export class NumberInput extends Input {
+	constructor({ value, ...options }) {
+		super({ type: 'number', value, ...options });
 	}
 }
 

@@ -1,9 +1,16 @@
+import { findByDisplayValue } from '@testing-library/dom';
+import { JSDOM } from 'jsdom';
+
 import TextInput from '.';
 
-context('TextInput', () => {
-	it('must render', () => {
-		cy.mount(new TextInput({}));
+const container = new JSDOM().window.document.body;
 
-		cy.get('.textInput').should('be.visible');
+describe('TextInput', () => {
+	test('must render', async () => {
+		const value = 'textValue';
+
+		new TextInput({ value, appendTo: container });
+
+		await findByDisplayValue(container, value);
 	});
 });

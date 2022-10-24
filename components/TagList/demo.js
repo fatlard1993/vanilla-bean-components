@@ -8,12 +8,12 @@ export default class Demo extends DemoView {
 		const readOnlyOptions = ['enabled', 'disabled'];
 		const tags = ['one', '2', 'three'];
 
-		let tag = 'tag';
+		let textContent = 'textContent';
 		let readOnly = false;
 
 		const tagList = new TagList({ tags, appendTo: this.demoWrapper });
 
-		const addTag = () => new Tag({ appendTo: tagList, tag, readOnly });
+		const addTag = () => new Tag({ appendTo: tagList, textContent, readOnly });
 
 		new Label({
 			label: 'ReadOnly',
@@ -41,10 +41,10 @@ export default class Demo extends DemoView {
 					}),
 				}),
 				new Label({
-					label: 'Tag',
+					label: 'textContent',
 					appendChild: new TextInput({
-						value: tag,
-						onKeyUp: ({ target: { value } }) => (tag = value),
+						value: textContent,
+						onKeyUp: ({ target: { value } }) => (textContent = value),
 					}),
 				}),
 				new Button({ textContent: 'Create', onPointerPress: addTag }),

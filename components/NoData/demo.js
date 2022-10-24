@@ -16,7 +16,7 @@ export default class Demo extends DemoView {
 			appendTo,
 			appendChild: new TextInput({
 				value: textContent,
-				onKeyUp: ({ target: { value } }) => (noData.textContent = value),
+				onKeyUp: ({ target: { value } }) => (noData.elem.textContent = value),
 			}),
 		});
 	}

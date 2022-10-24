@@ -1,18 +1,16 @@
 import DomElem from '../DomElem';
 
-export class Router {
-	constructor({ views, paths, defaultPath, ...rest }) {
-		this.views = views;
-		this.paths = paths;
-		this.defaultPath = defaultPath;
+import { dom } from '../../utils';
+
+export class Router extends DomElem {
+	constructor(options) {
+		super(options);
 
 		window.addEventListener('popstate', () => this.renderView());
-
-		this.render(rest);
 	}
 
 	get path() {
-		return window.location.hash.replace(/^#\/?/, '/');
+		return window.location.hash.replace(/^#\/?/, '/').replace(/\?.*$/, '');
 	}
 
 	set path(path) {
@@ -74,22 +72,20 @@ export class Router {
 		return params;
 	}
 
-	render({ className, ...rest } = {}) {
-		this?.elem?.cleanup();
+	render({ views, paths, defaultPath, ...options } = this.options) {
+		this.views = views;
+		this.paths = paths;
+		this.defaultPath = defaultPath;
 
-		this.elem = new DomElem('div', { className: ['router', className], ...rest });
+		super.render(options);
 
-		this.renderView(this.defaultPath);
+		this.renderView(this.route || this.defaultPath);
 	}
 
-	renderView(view) {
-		const route = view || this.route;
+	renderView(view = this.route || this.defaultPath) {
+		dom.empty(this.elem);
 
-		this?.view?.cleanup();
-
-		if (!this.views[route]) return;
-
-		this.view = new this.views[route]({ appendTo: this.elem });
+		if (this.views[view]) this.view = new this.views[view]({ appendTo: this.elem });
 	}
 }
 

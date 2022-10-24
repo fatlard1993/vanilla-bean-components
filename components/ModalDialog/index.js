@@ -1,12 +1,10 @@
 import './index.css';
 
-import dom from '../../utils/dom';
-
 import Modal from '../Modal';
 import Dialog from '../Dialog';
 
 export class ModalDialog {
-	constructor({ appendTo, header, content, footer, buttons, ...rest }) {
+	constructor({ appendTo, header, content, footer, buttons, ...options }) {
 		this.modal = new Modal({ appendTo });
 		this.dialog = new Dialog({
 			appendTo: this.modal,
@@ -14,15 +12,11 @@ export class ModalDialog {
 			content,
 			footer,
 			buttons,
-			closeDialog: () => this.cleanup(),
-			...rest,
+			closeDialog: () => this.modal.cleanup(),
+			...options,
 		});
 
-		return this;
-	}
-
-	cleanup() {
-		dom.remove(this.modal);
+		this.elem = this.modal;
 	}
 }
 

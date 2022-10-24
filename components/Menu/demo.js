@@ -5,6 +5,10 @@ export default class Demo extends DemoView {
 	constructor(props) {
 		super(props);
 
-		new Menu({ appendTo: this.demoWrapper });
+		new Menu({
+			appendTo: this.demoWrapper,
+			items: [{ textContent: 'one' }, { textContent: 'two' }, { textContent: 'three' }],
+			onSelect: console.log,
+		});
 	}
 }

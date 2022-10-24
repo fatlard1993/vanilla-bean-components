@@ -1,0 +1,5 @@
+@import '../../styles/colors';
+
+.DomElem.Overlay {
+	background-color: $grey-darkest;
+}

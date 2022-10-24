@@ -7,7 +7,7 @@ import TextInput from '../TextInput';
 import IconButton from '../IconButton';
 
 export class TagList extends DomElem {
-	constructor({ tags = [], readOnly = true, className, ...rest }) {
+	constructor({ tags = [], readOnly = true, ...rest }) {
 		let tagInput, addTag, addButton;
 
 		if (!readOnly) {
@@ -35,9 +35,9 @@ export class TagList extends DomElem {
 			});
 		}
 
-		super('ul', {
-			className: ['tagList', className],
-			appendChildren: [...tags.map(tag => new Tag({ readOnly, tag })), ...(addTag ? [addTag] : [])],
+		super({
+			tag: 'ul',
+			appendChildren: [...tags.map(textContent => new Tag({ readOnly, textContent })), ...(addTag ? [addTag] : [])],
 			...rest,
 		});
 

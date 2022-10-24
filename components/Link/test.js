@@ -1,9 +1,16 @@
+import { findByText } from '@testing-library/dom';
+import { JSDOM } from 'jsdom';
+
 import Link from '.';
 
-context('Link', () => {
-	it('must render', () => {
-		cy.mount(new Link({ textContent: 'test' }));
+const container = new JSDOM().window.document.body;
 
-		cy.get('.link').should('be.visible');
+describe('Link', () => {
+	test('must render', async () => {
+		const textContent = 'textContent';
+
+		new Link({ textContent, appendTo: container });
+
+		await findByText(container, textContent);
 	});
 });

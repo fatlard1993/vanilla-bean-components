@@ -1,9 +1,17 @@
+import { findByText } from '@testing-library/dom';
+import { JSDOM } from 'jsdom';
+
 import Modal from '.';
+import DomElem from '../DomElem';
 
-context('Modal', () => {
-	it('must render', () => {
-		cy.mount(new Modal({}));
+const container = new JSDOM().window.document.body;
 
-		cy.get('.modal').should('be.visible');
+describe('Modal', () => {
+	test('must render', async () => {
+		const textContent = 'textContent';
+
+		new Modal({ appendTo: container, appendChild: new DomElem({ textContent }) });
+
+		await findByText(container, textContent);
 	});
 });

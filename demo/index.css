@@ -1,0 +1,30 @@
+@import '../styles/index.css';
+
+.DomElem.DemoMenu {
+	padding: 6px;
+
+	a.link.disabled {
+		background-color: $grey;
+	}
+}
+
+div.demoContent {
+	overflow: auto;
+}
+
+div.demoWrapper {
+	position: relative;
+	border: 1px solid;
+	margin: 5%;
+	padding: 5%;
+
+	& > div.dialog,
+	& > select.select,
+	& > button.button {
+		margin: 0 auto;
+	}
+
+	& > button.button {
+		display: block;
+	}
+}

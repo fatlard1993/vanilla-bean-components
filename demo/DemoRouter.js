@@ -11,7 +11,7 @@ import ModalDialogDemo from '../components/ModalDialog/demo';
 import NoDataDemo from '../components/NoData/demo';
 import NumberInputDemo from '../components/NumberInput/demo';
 import PageDemo from '../components/Page/demo';
-import PopoverDemo from '../components/Popover/demo';
+import OverlayDemo from '../components/Overlay/demo';
 import RouterDemo from '../components/Router/demo';
 import SearchDemo from '../components/Search/demo';
 import SelectDemo from '../components/Select/demo';
@@ -21,7 +21,7 @@ import TextareaDemo from '../components/Textarea/demo';
 import TextInputDemo from '../components/TextInput/demo';
 import ViewDemo from '../components/View/demo';
 
-import BaseRouter from '../components/Router';
+import Router from '../components/Router';
 
 export const paths = {
 	button: '/Button',
@@ -36,8 +36,8 @@ export const paths = {
 	modalDialog: '/ModalDialog',
 	noData: '/NoData',
 	numberInput: '/NumberInput',
+	overlay: '/Overlay',
 	page: '/Page',
-	popover: '/Popover',
 	router: '/Router',
 	search: '/Search',
 	select: '/Select',
@@ -61,8 +61,8 @@ export const views = {
 	[paths.modalDialog]: ModalDialogDemo,
 	[paths.noData]: NoDataDemo,
 	[paths.numberInput]: NumberInputDemo,
+	[paths.overlay]: OverlayDemo,
 	[paths.page]: PageDemo,
-	[paths.popover]: PopoverDemo,
 	[paths.router]: RouterDemo,
 	[paths.search]: SearchDemo,
 	[paths.select]: SelectDemo,
@@ -73,8 +73,8 @@ export const views = {
 	[paths.view]: ViewDemo,
 };
 
-export default class Router extends BaseRouter {
-	constructor(props) {
-		super({ views, paths, defaultPath: paths.button, ...props });
+export default class DemoRouter extends Router {
+	constructor(options) {
+		super({ views, paths, defaultPath: paths.button, ...options });
 	}
 }

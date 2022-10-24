@@ -1,14 +1,10 @@
 import './index.css';
 
-import DomElem from '../DomElem';
+import Input from '../Input';
 
-export class Textarea extends DomElem {
-	constructor({ className, value = '', ...rest }) {
-		const initialValue = value;
-
-		super('textarea', { className: ['textarea', className], value, ...rest });
-
-		this.isDirty = () => initialValue !== this.value;
+export class Textarea extends Input {
+	constructor({ value = '', ...options }) {
+		super({ tag: 'textarea', value, ...options });
 	}
 }
 

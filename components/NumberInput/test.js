@@ -1,9 +1,16 @@
+import { findByDisplayValue } from '@testing-library/dom';
+import { JSDOM } from 'jsdom';
+
 import NumberInput from '.';
 
-context('NumberInput', () => {
-	it('must render', () => {
-		cy.mount(new NumberInput({}));
+const container = new JSDOM().window.document.body;
 
-		cy.get('.numberInput').should('be.visible');
+describe('NumberInput', () => {
+	test('must render', async () => {
+		const value = 42;
+
+		new NumberInput({ value, appendTo: container });
+
+		await findByDisplayValue(container, value);
 	});
 });

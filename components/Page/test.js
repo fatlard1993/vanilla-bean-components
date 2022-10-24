@@ -1,9 +1,17 @@
+import { findByText } from '@testing-library/dom';
+import { JSDOM } from 'jsdom';
+
 import Page from '.';
+import DomElem from '../DomElem';
 
-context('Page', () => {
-	it('must render', () => {
-		cy.mount(new Page().elem);
+const container = new JSDOM().window.document.body;
 
-		cy.get('.page').should('exist');
+describe('Page', () => {
+	test('must render', async () => {
+		const textContent = 'textContent';
+
+		new Page({ appendTo: container, appendChild: new DomElem({ textContent }) });
+
+		await findByText(container, textContent);
 	});
 });

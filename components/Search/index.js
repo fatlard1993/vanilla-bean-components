@@ -3,11 +3,10 @@ import './index.css';
 import TextInput from '../TextInput';
 
 export class Search extends TextInput {
-	constructor({ className, ...rest } = {}) {
+	constructor(options) {
 		super({
-			className: ['search', className],
 			placeholder: 'Search',
-			...rest,
+			...options,
 		});
 	}
 }

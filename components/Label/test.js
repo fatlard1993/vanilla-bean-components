@@ -1,9 +1,16 @@
+import { findByText } from '@testing-library/dom';
+import { JSDOM } from 'jsdom';
+
 import Label from '.';
 
-context('Label', () => {
-	it('must render', () => {
-		cy.mount(new Label({ label: 'test' }));
+const container = new JSDOM().window.document.body;
 
-		cy.get('.label').should('be.visible');
+describe('Label', () => {
+	test('must render', async () => {
+		const label = 'label';
+
+		new Label({ label, appendTo: container });
+
+		await findByText(container, label);
 	});
 });

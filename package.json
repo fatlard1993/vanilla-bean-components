@@ -32,11 +32,8 @@
 		"pretty": "prettier .",
 		"pretty:fix": "prettier --write .",
 		"fix": "npm run lint:fix ; npm run pretty:fix",
-		"test": "npm run test:unit",
-		"test:component": "cypress run --component --browser chrome",
-		"test:component:dev": "cypress open --component --browser chrome",
-		"test:unit": "vitest run",
-		"test:unit:dev": "vitest"
+		"test": "vitest run",
+		"test:dev": "vitest"
 	},
 	"repository": {
 		"type": "git",
@@ -47,17 +44,18 @@
 	},
 	"homepage": "https://github.com/fatlard1993/vanilla-bean-components#readme",
 	"dependencies": {
+		"@ctrl/tinycolor": "^3.4.1",
 		"@fortawesome/fontawesome-free": "^6.2.0",
 		"source-code-pro": "^2.38.0"
 	},
 	"devDependencies": {
-		"@testing-library/cypress": "^8.0.3",
+		"@testing-library/dom": "^8.19.0",
 		"autoprefixer": "^10.4.12",
-		"cypress": "^10.10.0",
 		"eslint": "^8.25.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-cypress": "^2.12.1",
 		"eslint-plugin-prettier": "^4.2.1",
+		"jsdom": "^20.0.1",
 		"postcss-mixins": "^9.0.4",
 		"postcss-nested": "^6.0.0",
 		"postcss-simple-vars": "^7.0.0",

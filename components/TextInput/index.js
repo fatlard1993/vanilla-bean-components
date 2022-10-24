@@ -1,22 +1,16 @@
 import './index.css';
 
-import DomElem from '../DomElem';
+import Input from '../Input';
 
-export class TextInput extends DomElem {
-	constructor({ className, value = '', autocomplete = 'off', autocapitalize = 'off', autocorrect = 'off', ...rest }) {
-		const initialValue = value;
-
-		super('input', {
+export class TextInput extends Input {
+	constructor({ autocomplete = 'off', autocapitalize = 'off', autocorrect = 'off', ...options }) {
+		super({
 			type: 'text',
-			className: ['textInput', className],
-			value,
 			autocomplete,
 			autocapitalize,
 			autocorrect,
-			...rest,
+			...options,
 		});
-
-		this.isDirty = () => initialValue !== this.value;
 	}
 }
 

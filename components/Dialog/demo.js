@@ -24,7 +24,7 @@ export default class Demo extends DemoView {
 			appendTo,
 			appendChild: new TextInput({
 				value: header,
-				onKeyUp: ({ target: { value } }) => (dialog.children[0].textContent = value),
+				onKeyUp: ({ target: { value } }) => (dialog.elem.children[0].textContent = value),
 			}),
 		});
 		new Label({
@@ -32,7 +32,7 @@ export default class Demo extends DemoView {
 			appendTo,
 			appendChild: new TextInput({
 				value: content,
-				onKeyUp: ({ target: { value } }) => (dialog.children[1].textContent = value),
+				onKeyUp: ({ target: { value } }) => (dialog.elem.children[1].textContent = value),
 			}),
 		});
 		new Label({
@@ -42,8 +42,8 @@ export default class Demo extends DemoView {
 				value: sizes[0],
 				options: sizes,
 				onChange: ({ value }) => {
-					dialog.classList.remove(...sizes);
-					dialog.classList.add(value);
+					dialog.elem.classList.remove(...sizes);
+					dialog.elem.classList.add(value);
 				},
 			}),
 		});

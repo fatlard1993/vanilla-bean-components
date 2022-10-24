@@ -1,9 +1,18 @@
+import { findByText } from '@testing-library/dom';
+import { JSDOM } from 'jsdom';
+
 import Dialog from '.';
 
-context('Dialog', () => {
-	it('must render', () => {
-		cy.mount(new Dialog({ header: 'test' }));
+const container = new JSDOM().window.document.body;
 
-		cy.get('.dialog').should('be.visible');
+describe('Dialog', () => {
+	test('must render', async () => {
+		const header = 'header';
+		const content = 'content';
+
+		new Dialog({ header, content, appendTo: container });
+
+		await findByText(container, header);
+		await findByText(container, content);
 	});
 });

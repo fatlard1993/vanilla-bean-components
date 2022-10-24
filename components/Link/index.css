@@ -1,6 +1,6 @@
 @import '../../styles/colors';
 @import '../Button';
 
-a.link {
+.DomElem.Link {
 	@mixin Button;
 }

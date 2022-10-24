@@ -1,9 +1,16 @@
+import { findByText } from '@testing-library/dom';
+import { JSDOM } from 'jsdom';
+
 import IconButton from '.';
 
-context('IconButton', () => {
-	it('must render', () => {
-		cy.mount(new IconButton({ icon: 'test' }));
+const container = new JSDOM().window.document.body;
 
-		cy.get('.iconButton').should('be.visible');
+describe('IconButton', () => {
+	test('must render', async () => {
+		const textContent = 'textContent';
+
+		new IconButton({ textContent, appendTo: container });
+
+		await findByText(container, textContent);
 	});
 });

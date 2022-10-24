@@ -1,4 +1,5 @@
 import { Button, Label, TextInput } from '../';
+
 import DemoView from '../../demo/DemoView';
 
 export default class Demo extends DemoView {
@@ -16,7 +17,7 @@ export default class Demo extends DemoView {
 			appendTo,
 			appendChild: new TextInput({
 				value: textContent,
-				onKeyUp: ({ target: { value } }) => (button.textContent = value),
+				onKeyUp: ({ target: { value } }) => (button.elem.textContent = value),
 			}),
 		});
 	}

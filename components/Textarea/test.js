@@ -1,9 +1,16 @@
+import { findByDisplayValue } from '@testing-library/dom';
+import { JSDOM } from 'jsdom';
+
 import Textarea from '.';
 
-context('Textarea', () => {
-	it('must render', () => {
-		cy.mount(new Textarea({}));
+const container = new JSDOM().window.document.body;
 
-		cy.get('.textarea').should('be.visible');
+describe('Textarea', () => {
+	test('must render', async () => {
+		const value = 'textValue';
+
+		new Textarea({ value, appendTo: container });
+
+		await findByDisplayValue(container, value);
 	});
 });

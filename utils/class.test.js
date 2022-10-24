@@ -1,5 +1,3 @@
-import { expect, test } from 'vitest';
-
 import { buildClassList, buildClassName } from './class';
 
 test('buildClassList', () => {

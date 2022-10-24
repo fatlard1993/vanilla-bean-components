@@ -1,5 +1,5 @@
-@import '../../styles/input';
+@import '../Input/index.css';
 
-textarea.textarea {
+.DomElem.Textarea {
 	@mixin Input;
 }

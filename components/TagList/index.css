@@ -1,6 +1,6 @@
 @import '../../styles/colors';
 
-ul.tagList {
+.DomElem.TagList {
 	background-color: $grey-darkest;
 	margin: 1% auto;
 	border-radius: 3px;

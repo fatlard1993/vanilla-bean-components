@@ -1,5 +1,3 @@
-import { expect, test } from 'vitest';
-
 global.document = {};
 
 import storage from './storage';

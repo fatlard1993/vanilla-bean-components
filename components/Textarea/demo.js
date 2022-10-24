@@ -5,6 +5,6 @@ export default class Demo extends DemoView {
 	constructor(props) {
 		super(props);
 
-		new Textarea({ appendTo: this.demoWrapper, value: 'value' });
+		new Textarea({ appendTo: this.demoWrapper, value: 'multiline\nvalue' });
 	}
 }

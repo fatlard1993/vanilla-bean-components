@@ -1,6 +1,6 @@
 @import '../../styles/colors';
 
-div.label {
+.DomElem.Label {
 	position: relative;
 	display: block;
 	font-size: 1em;
@@ -10,7 +10,7 @@ div.label {
 	padding: 3px 12px 12px;
 	background-color: $grey-darkest;
 
-	div.label-text {
+	.label-text {
 		margin: 12px 0;
 		color: $white;
 	}

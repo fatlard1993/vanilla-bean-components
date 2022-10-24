@@ -1,5 +1,5 @@
-div.modal {
-	div.dialog {
+.DomElem.Modal {
+	.DomElem.Dialog {
 		/* Default size: small */
 		margin: 17% auto 0;
 

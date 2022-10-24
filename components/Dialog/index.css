@@ -1,6 +1,6 @@
 @import '../../styles/colors';
 
-div.dialog {
+.DomElem.Dialog {
 	background-color: $grey-darker;
 	border-radius: 3px;
 	display: flex;

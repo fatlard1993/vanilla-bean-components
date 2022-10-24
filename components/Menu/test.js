@@ -1,9 +1,16 @@
+import { findByText } from '@testing-library/dom';
+import { JSDOM } from 'jsdom';
+
 import Menu from '.';
 
-context('Menu', () => {
-	it('must render', () => {
-		cy.mount(new Menu({}));
+const container = new JSDOM().window.document.body;
 
-		cy.get('.menu').should('exist');
+describe('Menu', () => {
+	test('must render', async () => {
+		const textContent = 'textContent';
+
+		new Menu({ items: [{ textContent }], appendTo: container });
+
+		await findByText(container, textContent);
 	});
 });

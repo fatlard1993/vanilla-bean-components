@@ -89,6 +89,6 @@
 	}
 }
 
-button.button {
+.DomElem.Button {
 	@mixin Button;
 }

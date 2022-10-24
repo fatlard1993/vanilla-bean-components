@@ -1,6 +1,6 @@
 @import '../../styles/colors';
 
-div.modal {
+.DomElem.Modal {
 	position: absolute;
 	top: 0;
 	left: 0;

@@ -1,4 +1,4 @@
-import { IconButton, Label, TextInput, Link } from '../';
+import { IconButton, Label, TextInput, NumberInput, Link } from '../';
 import DemoView from '../../demo/DemoView';
 
 export default class Demo extends DemoView {
@@ -7,7 +7,11 @@ export default class Demo extends DemoView {
 
 		const icon = 'icons';
 
-		const iconButton = new IconButton({ appendTo: this.demoWrapper, icon });
+		const iconButton = new IconButton({
+			appendTo: this.demoWrapper,
+			icon,
+			style: { fontSize: '16px', width: '32px', height: '32px' },
+		});
 
 		const appendTo = this.demoContent;
 
@@ -27,7 +31,19 @@ export default class Demo extends DemoView {
 			appendChild: new TextInput({
 				value: icon,
 				onKeyUp: ({ target: { value } }) =>
-					(iconButton.className = iconButton.className.replace(/fa-\w+/, `fa-${value}`)),
+					(iconButton.elem.className = iconButton.elem.className.replace(/fa-\w+/, `fa-${value}`)),
+			}),
+		});
+
+		new Label({
+			label: 'fontSize',
+			appendTo,
+			appendChild: new NumberInput({
+				value: 16,
+				onKeyUp: ({ target: { value } }) => {
+					iconButton.elem.style.fontSize = `${value}px`;
+					iconButton.elem.style.height = iconButton.elem.style.width = `${value * 2}px`;
+				},
 			}),
 		});
 	}

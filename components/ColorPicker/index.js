@@ -1,61 +1,59 @@
+import TinyColor from '@ctrl/tinycolor';
+
 import './index.css';
 
 import DomElem from '../DomElem';
 
-import { toHSV, hsvToRGB, randomRGB } from '../../utils/color';
 import { saturation, hue } from './svg';
 import dom from '../../utils/dom';
 import TextInput from '../TextInput';
 import Label from '../Label';
+import { debounceCb } from '../../utils';
 
-export class ColorPicker {
-	constructor({ className, value: initialValue = '#666', onChange = () => {}, label, appendTo, ...rest } = {}) {
+export class ColorPicker extends DomElem {
+	constructor({ value: initialValue = '#666', onChange = () => {}, label, appendTo, ...options } = {}) {
+		super({ appendTo, ...options });
+
 		this.isDirty = () => initialValue !== this.value;
 
 		this.onChange = onChange;
 
-		if (label) this.label = new Label({ label, appendTo, className: 'colorPickerLabel' });
+		if (label) this.label = new Label({ label, appendTo, appendChild: this.elem, className: 'colorPickerLabel' });
 
-		this.elem = new DomElem('div', {
-			className: ['colorPicker', className],
-			appendTo: label ? this.label : appendTo,
-			...rest,
-		});
+		this.pickerArea = new DomElem({ className: 'pickerArea', innerHTML: saturation, appendTo: this.elem });
+		this.pickerIndicator = new DomElem({ className: 'indicator', appendTo: this.pickerArea });
 
-		this.pickerArea = new DomElem('div', { className: 'pickerArea', innerHTML: saturation, appendTo: this.elem });
-		this.pickerIndicator = new DomElem('div', { className: 'indicator', appendTo: this.pickerArea });
-
-		this.hueArea = new DomElem('div', { className: 'hueArea', innerHTML: hue, appendTo: this.elem });
-		this.hueIndicator = new DomElem('div', { className: 'indicator', appendTo: this.hueArea });
+		this.hueArea = new DomElem({ className: 'hueArea', innerHTML: hue, appendTo: this.elem });
+		this.hueIndicator = new DomElem({ className: 'indicator', appendTo: this.hueArea });
 
 		this.textInput = new TextInput({
 			appendTo: this.label,
-			onChange: ({ value }) => {
-				this.set(value);
-			},
-			onKeyUp: ({ target: { value } }) => {
-				this.set(value);
-			},
+			onChange: ({ value }) => this.set(value),
+			onKeyUp: ({ target: { value } }) => debounceCb(() => this.set(value), 700),
 		});
 
-		this.set(initialValue);
+		this.set(initialValue, true);
 
 		document.addEventListener('mousedown', this.onPointerDown.bind(this));
 		document.addEventListener('touchstart', this.onPointerDown.bind(this));
 	}
 
-	set(color) {
-		if (!color) return;
+	set(userInput, triggerEvent) {
+		if (!userInput) return;
 
-		const hsv = toHSV(color === 'random' ? randomRGB() : color);
+		const color = userInput === 'random' ? new TinyColor.random() : new TinyColor(userInput);
+		const hsv = color.toHsv();
+		const rgbString = color.toRgbString();
 
-		this.elem.style.backgroundColor = this.value = hsvToRGB(hsv);
+		this.color = color;
 
-		this.pickerArea.style.backgroundColor = `hsl(${hsv.h}, 100%, 50%)`;
+		this.value = rgbString;
+		this.textInput.elem.value = rgbString;
+		this.elem.style.backgroundColor = rgbString;
 
-		this.textInput.value = this.value;
+		this.pickerArea.elem.style.backgroundColor = `hsl(${hsv.h}, 100%, 50%)`;
 
-		this.onChange(this.value);
+		if (triggerEvent) this.onChange(this);
 	}
 
 	normalizePosition(evt, parent, offsetX, offsetY) {
@@ -86,25 +84,24 @@ export class ColorPicker {
 		if (this.runningAnim) return;
 		this.runningAnim = true;
 
-		const indicatorOffsetX = this.pickerIndicator.clientWidth / 2;
-		const indicatorOffsetY = this.pickerIndicator.clientHeight / 2;
-		const position = this.normalizePosition(evt, this.pickerArea, indicatorOffsetX, indicatorOffsetY);
-		const pickerAreaWidth = this.pickerArea.clientWidth;
-		const pickerAreaHeight = this.pickerArea.clientHeight;
+		const indicatorOffsetX = this.pickerIndicator.elem.clientWidth / 2;
+		const indicatorOffsetY = this.pickerIndicator.elem.clientHeight / 2;
+		const position = this.normalizePosition(evt, this.pickerArea.elem, indicatorOffsetX, indicatorOffsetY);
+		const pickerAreaWidth = this.pickerArea.elem.clientWidth;
+		const pickerAreaHeight = this.pickerArea.elem.clientHeight;
 
 		position.x -= indicatorOffsetX;
 		position.y -= indicatorOffsetY;
 
-		const { h } = toHSV(this.value);
+		const { h } = this.color.toHsv();
 
 		const newS = position.x / pickerAreaWidth;
 		const newV = (pickerAreaHeight - position.y) / pickerAreaHeight;
-		const newValue = hsvToRGB({ h, s: newS, v: newV });
 
 		this.addAnimation(() => {
-			this.setTransform(this.pickerIndicator, `translate3d(${position.x}px, ${position.y}px, 0)`);
+			this.pickerIndicator.setTransform(`translate3d(${position.x}px, ${position.y}px, 0)`);
 
-			this.set(newValue);
+			this.set({ h, s: newS, v: newV }, true);
 
 			this.runningAnim = false;
 		});
@@ -116,23 +113,22 @@ export class ColorPicker {
 		if (this.runningAnim) return;
 		this.runningAnim = true;
 
-		const indicatorOffset = this.hueIndicator.clientWidth / 2;
-		const position = this.normalizePosition(evt, this.hueArea, indicatorOffset, indicatorOffset);
-		const hueAreaWidth = this.hueArea.clientWidth;
+		const indicatorOffset = this.hueIndicator.elem.clientWidth / 2;
+		const position = this.normalizePosition(evt, this.hueArea.elem, indicatorOffset, indicatorOffset);
+		const hueAreaWidth = this.hueArea.elem.clientWidth;
 
 		position.x -= indicatorOffset;
 
-		const { s, v } = toHSV(this.value);
+		const { s, v } = this.color.toHsv();
 
 		const newHue = (position.x / hueAreaWidth) * 360;
-		const newValue = hsvToRGB({ h: newHue, s, v });
 
 		this.addAnimation(() => {
-			this.setTransform(this.hueIndicator, `translate3d(${position.x - indicatorOffset / 2}px, 0, 0)`);
+			this.hueIndicator.setTransform(`translate3d(${position.x - indicatorOffset / 2}px, 0, 0)`);
 
-			this.set(newValue);
+			this.set({ h: newHue, s, v }, true);
 
-			this.pickerArea.style.backgroundColor = `hsl(${newHue}, 100%, 50%)`;
+			this.pickerArea.elem.style.backgroundColor = `hsl(${newHue}, 100%, 50%)`;
 
 			this.runningAnim = false;
 		});
@@ -141,8 +137,8 @@ export class ColorPicker {
 	onPointerDown(evt) {
 		if (dom.isMobile && !evt.targetTouches) return;
 
-		if (['pickerArea', 'hueArea'].includes(evt.target.className)) {
-			const moveFunc = this[`${evt.target.className.replace('Area', '')}Move`].bind(this);
+		if (evt.target === this.pickerArea.elem || evt.target === this.hueArea.elem) {
+			const moveFunc = this[`${evt.target === this.hueArea.elem ? 'hue' : 'picker'}Move`].bind(this);
 
 			const dropFunc = () => {
 				document.removeEventListener('mouseup', dropFunc);
@@ -160,28 +156,6 @@ export class ColorPicker {
 
 			moveFunc(evt);
 		}
-	}
-
-	addAnimation(func) {
-		const raf =
-			window.requestAnimationFrame ||
-			window.webkitRequestAnimationFrame ||
-			window.mozRequestAnimationFrame ||
-			window.msRequestAnimationFrame ||
-			function (cb) {
-				return setTimeout(cb, 16);
-			};
-
-		raf(func);
-	}
-
-	setTransform(elem, value) {
-		elem.style.transform =
-			elem.style.webkitTransform =
-			elem.style.MozTransform =
-			elem.style.msTransform =
-			elem.style.OTransform =
-				value;
 	}
 }
 

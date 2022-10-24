@@ -3,13 +3,12 @@ import './index.css';
 import DomElem from '../DomElem';
 
 export class Tag extends DomElem {
-	constructor({ appendTo, readOnly = false, className, tag, ...rest }) {
-		super('li', {
-			className: ['tag', className],
+	constructor({ appendTo, readOnly = false, ...options }) {
+		super({
+			tag: 'li',
 			appendTo,
-			textContent: tag,
 			onPointerPressAndHold: readOnly ? () => {} : () => this.remove(),
-			...rest,
+			...options,
 		});
 	}
 }
