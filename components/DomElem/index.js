@@ -47,6 +47,8 @@ export class DomElem {
 			...new Set(this.ancestry().map(({ constructor: { name } }) => name)),
 		].join(' ')}`;
 
+		if (this.options.onRender) this.options.onRender(options);
+
 		// dom.createElem(tagName, {
 		// 	onPointerPress: evt => {
 		// 		if (state.disablePointerPress) {
