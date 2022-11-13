@@ -1,5 +1,38 @@
 @import '../../styles/colors';
 
+.DomElem.Tag {
+	border: 1px solid white;
+	padding: 6px;
+	margin: 3px;
+	display: inline-block;
+	float: left;
+	border: 2px solid;
+	border-radius: 3px;
+	border-top-left-radius: 0;
+	font-size: 18px;
+	background-color: $black;
+
+	&.addTag {
+		display: flex;
+		flex-direction: row;
+		padding: 0 3px;
+		border: 1px solid;
+		min-width: 260px;
+
+		.DomElem.TextInput {
+			display: inline-block;
+			flex: 1;
+			margin: 3px;
+		}
+	}
+
+	.DomElem.IconButton {
+		width: 30px;
+		height: 30px;
+		margin: 3px 0 3px 3px;
+	}
+}
+
 .DomElem.TagList {
 	background-color: $grey-darkest;
 	margin: 1% auto;
@@ -20,21 +53,5 @@
 		background: none;
 		width: 100%;
 		margin: 0;
-	}
-
-	li.tag.addTag {
-		display: flex;
-		flex-direction: row;
-
-		input.textInput {
-			flex: 1;
-			margin: 3px;
-		}
-
-		button.iconButton {
-			width: 30px;
-			height: 30px;
-			margin: 3px 0 3px 3px;
-		}
 	}
 }

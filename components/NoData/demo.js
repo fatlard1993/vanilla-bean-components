@@ -1,9 +1,9 @@
-import { NoData, Label, TextInput } from '../';
+import { DomElem, NoData, Label, TextInput } from '../';
 import DemoView from '../../demo/DemoView';
 
 export default class Demo extends DemoView {
-	constructor(props) {
-		super(props);
+	constructor(options) {
+		super(options);
 
 		const textContent = 'There is no data to display';
 
@@ -18,6 +18,12 @@ export default class Demo extends DemoView {
 				value: textContent,
 				onKeyUp: ({ target: { value } }) => (noData.elem.textContent = value),
 			}),
+		});
+
+		new Label({
+			label: 'Props',
+			appendTo: this.demoContent,
+			appendChildren: [new DomElem({ tag: 'pre', textContent: '- ...rest => DomElem' })],
 		});
 	}
 }

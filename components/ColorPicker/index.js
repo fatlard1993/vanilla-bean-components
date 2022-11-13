@@ -2,13 +2,14 @@ import TinyColor from '@ctrl/tinycolor';
 
 import './index.css';
 
-import DomElem from '../DomElem';
-
-import { saturation, hue } from './svg';
 import dom from '../../utils/dom';
+import { debounceCb } from '../../utils';
+
+import DomElem from '../DomElem';
 import TextInput from '../TextInput';
 import Label from '../Label';
-import { debounceCb } from '../../utils';
+
+import { saturation, hue } from './svg';
 
 export class ColorPicker extends DomElem {
 	constructor({ value: initialValue = '#666', onChange = () => {}, label, appendTo, ...options } = {}) {
@@ -28,6 +29,7 @@ export class ColorPicker extends DomElem {
 
 		this.textInput = new TextInput({
 			appendTo: this.label,
+			value: initialValue,
 			onChange: ({ value }) => this.set(value),
 			onKeyUp: ({ target: { value } }) => debounceCb(() => this.set(value), 700),
 		});

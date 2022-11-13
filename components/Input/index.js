@@ -8,7 +8,7 @@ export class Input extends DomElem {
 
 		super({ tag: 'input', value, ...options });
 
-		this.isDirty = () => initialValue !== this.value;
+		this.isDirty = () => initialValue !== this.elem.value;
 	}
 }
 

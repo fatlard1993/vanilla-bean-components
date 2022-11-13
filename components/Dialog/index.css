@@ -39,9 +39,12 @@
 	div.footer {
 		height: 40px;
 		border-top: 1px solid $grey-dark;
+		display: flex;
+		flex-direction: row;
 
-		button.button {
-			margin: 6px 0 6px 6px;
+		.DomElem.Button {
+			margin: 6px;
+			flex: 1;
 		}
 	}
 }

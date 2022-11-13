@@ -1,9 +1,9 @@
-import { ColorPicker, Label, TextInput } from '../';
+import { DomElem, ColorPicker, Label, TextInput } from '../';
 import DemoView from '../../demo/DemoView';
 
 export default class Demo extends DemoView {
-	constructor(props) {
-		super(props);
+	constructor(options) {
+		super(options);
 
 		const label = 'label';
 
@@ -19,9 +19,21 @@ export default class Demo extends DemoView {
 				onKeyUp: ({ target: { value } }) => (colorPicker.label.elem.children[0].textContent = value),
 			}),
 		});
+
 		new Label({
 			label: 'onChange: console.log',
 			appendTo,
+		});
+
+		new Label({
+			label: 'Props',
+			appendTo,
+			appendChildren: [
+				new DomElem({ tag: 'pre', textContent: '- value [string] (optional) :: "#666"' }),
+				new DomElem({ tag: 'pre', textContent: '- onChange [function] (optional) :: () => {}' }),
+				new DomElem({ tag: 'pre', textContent: '- label [string] (optional)' }),
+				new DomElem({ tag: 'pre', textContent: '- ...rest => DomElem' }),
+			],
 		});
 	}
 }

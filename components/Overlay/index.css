@@ -1,5 +1,9 @@
 @import '../../styles/colors';
 
 .DomElem.Overlay {
+	position: absolute;
 	background-color: $grey-darkest;
+	padding: 6px 12px;
+	border-radius: 3px;
+	border: 1px solid $grey-lightest;
 }

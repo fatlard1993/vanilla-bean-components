@@ -4,7 +4,7 @@ import DomElem from '../DomElem';
 
 export class View extends DomElem {
 	constructor(options) {
-		super({ ...options });
+		super(options);
 	}
 }
 

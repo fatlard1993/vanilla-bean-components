@@ -1,10 +1,11 @@
 import './index.css';
 
-import TextInput from '../TextInput';
+import Input from '../Input';
 
-export class Search extends TextInput {
+export class Search extends Input {
 	constructor(options) {
 		super({
+			type: 'search',
 			placeholder: 'Search',
 			...options,
 		});

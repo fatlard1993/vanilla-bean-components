@@ -3,7 +3,7 @@ import './index.css';
 import DomElem from '../DomElem';
 
 export class Menu extends DomElem {
-	constructor({ appendChildren, appendChild, items = [], onSelect, ...options } = {}) {
+	constructor({ appendChildren, appendChild, items = [], onSelect = () => {}, ...options } = {}) {
 		super({
 			tag: 'ul',
 			...options,
@@ -14,9 +14,7 @@ export class Menu extends DomElem {
 					item =>
 						new DomElem({
 							tag: 'li',
-							onPointerPress: evt => {
-								if (onSelect) onSelect(evt);
-							},
+							onPointerPress: onSelect,
 							...item,
 						}),
 				),

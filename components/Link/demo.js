@@ -1,9 +1,9 @@
-import { Link, Label, TextInput } from '../';
+import { DomElem, Link, Label, TextInput } from '../';
 import DemoView from '../../demo/DemoView';
 
 export default class Demo extends DemoView {
-	constructor(props) {
-		super(props);
+	constructor(options) {
+		super(options);
 
 		const textContent = 'textContent';
 		const href = '#/Dialog';
@@ -28,6 +28,12 @@ export default class Demo extends DemoView {
 				value: href,
 				onKeyUp: ({ target: { value } }) => (link.elem.href = value),
 			}),
+		});
+
+		new Label({
+			label: 'Props',
+			appendTo: this.demoContent,
+			appendChildren: [new DomElem({ tag: 'pre', textContent: '- ...rest => DomElem' })],
 		});
 	}
 }

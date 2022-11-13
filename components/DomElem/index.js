@@ -57,12 +57,16 @@ export class DomElem {
 
 		// 		if (typeof onPointerPress === 'function') onPointerPress(evt);
 		// 	},
-		// 	...rest,
+		// 	...options,
 		// });
 	}
 
-	cleanup() {
+	remove() {
 		dom.remove(this.elem);
+	}
+
+	cleanup() {
+		this.remove();
 	}
 
 	ancestry(targetClass = this) {
@@ -148,6 +152,27 @@ export class DomElem {
 
 			cb.call(this, evt);
 		};
+	}
+
+	onHover(cb) {
+		cb = this.wrapPointerCallback(cb);
+
+		const mouseEnter = evt => {
+			cb(evt);
+
+			this.elem.addEventListener('mousemove', cb, true);
+		};
+
+		const mouseLeave = () => {
+			this.elem.removeEventListener('mousemove', cb, true);
+		};
+
+		this.elem.addEventListener('mouseenter', mouseEnter, true);
+		this.elem.addEventListener('mouseleave', mouseLeave, true);
+	}
+
+	onMouseLeave(cb) {
+		this.elem.addEventListener('mouseleave', cb, true);
 	}
 
 	onPointerDown(cb) {
@@ -290,7 +315,7 @@ export class DomElem {
 
 	onChange(cb) {
 		this.elem.addEventListener('change', evt => {
-			evt.value = this.elem.value;
+			evt.value = evt.target.value || this.elem.value;
 
 			cb(evt);
 		});

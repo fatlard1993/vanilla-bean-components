@@ -1,4 +1,4 @@
-import { findByText } from '@testing-library/dom';
+import { findAllByText } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 
 import Router from '.';
@@ -8,20 +8,19 @@ const container = new JSDOM().window.document.body;
 
 const textContent = 'textContent';
 
-class DemoView extends View {
+class TestView extends View {
 	constructor(options) {
 		super({ textContent, ...options });
 	}
 }
 
 describe('Router', () => {
-	test('must render', async () => {
-		const paths = { demo: '/Demo' };
-		const views = { '/Demo': DemoView };
-		const defaultPath = paths.demo;
+	test('must render default view', async () => {
+		const paths = { test: '/Test' };
+		const views = { [paths.test]: TestView };
 
-		new Router({ paths, views, defaultPath, appendTo: container });
+		new Router({ views, appendTo: container });
 
-		await findByText(container, textContent);
+		await findAllByText(container, textContent);
 	});
 });

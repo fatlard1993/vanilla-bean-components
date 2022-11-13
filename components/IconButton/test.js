@@ -1,4 +1,4 @@
-import { findByText } from '@testing-library/dom';
+import { findByRole } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 
 import IconButton from '.';
@@ -7,10 +7,10 @@ const container = new JSDOM().window.document.body;
 
 describe('IconButton', () => {
 	test('must render', async () => {
-		const textContent = 'textContent';
+		const name = 'test:iconButton';
 
-		new IconButton({ textContent, appendTo: container });
+		new IconButton({ textContent: name, appendTo: container });
 
-		await findByText(container, textContent);
+		await findByRole(container, 'button', { name });
 	});
 });

@@ -1,9 +1,9 @@
-import { Dialog, Label, TextInput, Select } from '../';
+import { DomElem, Dialog, Label, TextInput, Select } from '../';
 import DemoView from '../../demo/DemoView';
 
 export default class Demo extends DemoView {
-	constructor(props) {
-		super(props);
+	constructor(options) {
+		super(options);
 
 		const header = 'header';
 		const content = 'content';
@@ -13,8 +13,9 @@ export default class Demo extends DemoView {
 			appendTo: this.demoWrapper,
 			header,
 			content,
-			buttons: ['onDismiss: console.log'],
-			onDismiss: console.log,
+			buttons: ['noop', 'dismiss'],
+			onButtonPress: console.log,
+			style: { margin: '0 auto' },
 		});
 
 		const appendTo = this.demoContent;
@@ -27,6 +28,7 @@ export default class Demo extends DemoView {
 				onKeyUp: ({ target: { value } }) => (dialog.elem.children[0].textContent = value),
 			}),
 		});
+
 		new Label({
 			label: 'content',
 			appendTo,
@@ -35,6 +37,7 @@ export default class Demo extends DemoView {
 				onKeyUp: ({ target: { value } }) => (dialog.elem.children[1].textContent = value),
 			}),
 		});
+
 		new Label({
 			label: 'size',
 			appendTo,
@@ -46,6 +49,26 @@ export default class Demo extends DemoView {
 					dialog.elem.classList.add(value);
 				},
 			}),
+		});
+
+		new Label({
+			label: 'onButtonPress: console.log',
+			appendTo,
+		});
+
+		new Label({
+			label: 'Props',
+			appendTo,
+			appendChildren: [
+				new DomElem({ tag: 'pre', textContent: '- size ["small"|"standard"|"large"] (optional) :: "small' }),
+				new DomElem({ tag: 'pre', textContent: '- header [string|DomElem|Array(DomElem)] (optional)' }),
+				new DomElem({ tag: 'pre', textContent: '- content [string|DomElem|Array(DomElem)] (optional)' }),
+				new DomElem({ tag: 'pre', textContent: '- footer((!buttons)) [DomElem|Array(DomElem)] (optional)' }),
+				new DomElem({ tag: 'pre', textContent: '- buttons((!footer)) [Array(string)] (optional)' }),
+				new DomElem({ tag: 'pre', textContent: '- onButtonPress((buttons)) [function] (optional) :: () => {}' }),
+				new DomElem({ tag: 'pre', textContent: '- closeDialog [function] (optional)' }),
+				new DomElem({ tag: 'pre', textContent: '- ...rest => DomElem' }),
+			],
 		});
 	}
 }

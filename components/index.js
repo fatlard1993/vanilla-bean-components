@@ -16,7 +16,6 @@ export * from './Overlay';
 export * from './Router';
 export * from './Search';
 export * from './Select';
-export * from './Tag';
 export * from './TagList';
 export * from './Textarea';
 export * from './TextInput';

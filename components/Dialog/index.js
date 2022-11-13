@@ -10,9 +10,9 @@ export class Dialog extends DomElem {
 		content,
 		footer,
 		buttons = [],
-		onDismiss = () => {},
+		onButtonPress = () => {},
 		closeDialog,
-		size,
+		size = 'small',
 		...options
 	}) {
 		super({
@@ -34,7 +34,7 @@ export class Dialog extends DomElem {
 							button =>
 								new Button({
 									textContent: button,
-									onPointerPress: () => onDismiss({ button, closeDialog: closeDialog || (() => super.cleanup()) }),
+									onPointerPress: () => onButtonPress({ button, closeDialog: closeDialog || (() => super.cleanup()) }),
 								}),
 						),
 				}),

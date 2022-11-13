@@ -1,5 +1,18 @@
 @import '../../styles/colors';
 
 .DomElem.Menu {
-	/* todo: style or remove */
+	li {
+		cursor: pointer;
+		padding: 6px;
+
+		&:not(:last-of-type) {
+			border-bottom: 1px solid $grey-lightest;
+		}
+
+		&:hover {
+			color: $blue-light;
+			padding-top: 4px;
+			padding-bottom: 8px;
+		}
+	}
 }

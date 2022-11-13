@@ -1,30 +1,36 @@
 @import '../styles/index.css';
 
-.DomElem.DemoMenu {
-	padding: 6px;
+.DomElem.DemoView {
+	display: flex;
+	flex-direction: column;
 
-	a.link.disabled {
-		background-color: $grey;
-	}
-}
+	.DomElem.DemoMenu {
+		padding: 6px;
 
-div.demoContent {
-	overflow: auto;
-}
-
-div.demoWrapper {
-	position: relative;
-	border: 1px solid;
-	margin: 5%;
-	padding: 5%;
-
-	& > div.dialog,
-	& > select.select,
-	& > button.button {
-		margin: 0 auto;
+		a.link.disabled {
+			background-color: $grey;
+		}
 	}
 
-	& > button.button {
-		display: block;
+	div.demoContent {
+		flex: 1;
+		overflow: auto;
+
+		div.demoWrapper {
+			position: relative;
+			border: 1px solid;
+			margin: 5%;
+			padding: 5%;
+
+			& > div.dialog,
+			& > select.select,
+			& > button.button {
+				margin: 0 auto;
+			}
+
+			& > button.button {
+				display: block;
+			}
+		}
 	}
 }

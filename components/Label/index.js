@@ -7,7 +7,7 @@ export class Label extends DomElem {
 		super({
 			appendChildren: [
 				new DomElem({ className: 'label-text', textContent: label }),
-				...(appendChildren || []),
+				...(appendChildren ? (Array.isArray(appendChildren) ? appendChildren : [appendChildren]) : []),
 				...(appendChild ? [appendChild] : []),
 			],
 			...options,

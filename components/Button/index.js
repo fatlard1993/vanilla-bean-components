@@ -3,8 +3,8 @@ import './index.css';
 import DomElem from '../DomElem';
 
 export class Button extends DomElem {
-	constructor(options) {
-		super({ tag: 'button', ...options });
+	constructor({ icon, className, ...options }) {
+		super({ tag: 'button', className: [...(icon ? [`fa-${icon}`] : []), className], ...options });
 	}
 }
 

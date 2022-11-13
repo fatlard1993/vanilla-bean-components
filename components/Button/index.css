@@ -15,13 +15,14 @@
 	text-overflow: ellipsis;
 	overflow: hidden;
 	border: none;
-	max-width: 250px;
+	cursor: pointer;
 
 	&:before {
 		@mixin fontAwesomeSolid;
 
 		position: relative;
 		pointer-events: none;
+		padding: 0 6px 0 3px;
 	}
 
 	&:after {

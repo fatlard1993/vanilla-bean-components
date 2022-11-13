@@ -1,9 +1,9 @@
-import { Label, TextInput } from '../';
+import { DomElem, Label, TextInput } from '../';
 import DemoView from '../../demo/DemoView';
 
 export default class Demo extends DemoView {
-	constructor(props) {
-		super(props);
+	constructor(options) {
+		super(options);
 
 		const label = 'label';
 
@@ -18,6 +18,15 @@ export default class Demo extends DemoView {
 				value: label,
 				onKeyUp: ({ target: { value } }) => (labelElem.children[0].textContent = value),
 			}),
+		});
+
+		new Label({
+			label: 'Props',
+			appendTo: this.demoContent,
+			appendChildren: [
+				new DomElem({ tag: 'pre', textContent: '- label [string] (required)' }),
+				new DomElem({ tag: 'pre', textContent: '- ...rest => DomElem' }),
+			],
 		});
 	}
 }

@@ -1,4 +1,4 @@
-import { findByDisplayValue } from '@testing-library/dom';
+import { findByDisplayValue, findByRole } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 
 import TextInput from '.';
@@ -12,5 +12,7 @@ describe('TextInput', () => {
 		new TextInput({ value, appendTo: container });
 
 		await findByDisplayValue(container, value);
+
+		await findByRole(container, 'textbox');
 	});
 });

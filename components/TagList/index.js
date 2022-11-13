@@ -2,30 +2,40 @@ import './index.css';
 
 import DomElem from '../DomElem';
 
-import Tag from '../Tag';
 import TextInput from '../TextInput';
 import IconButton from '../IconButton';
+import Tag from './Tag';
+
+export { Tag };
 
 export class TagList extends DomElem {
-	constructor({ tags = [], readOnly = true, ...rest }) {
+	constructor({ tags = [], readOnly = false, ...options }) {
 		let tagInput, addTag, addButton;
 
 		if (!readOnly) {
-			tagInput = new TextInput({ placeholder: 'New Tag' });
+			tagInput = new TextInput({
+				placeholder: 'New Tag',
+				onKeyUp: () => {
+					addTag.elem.style.width = `${Math.max(
+						260,
+						tagInput.elem.value.length * Math.round(parseInt(window.getComputedStyle(tagInput.elem).fontSize) * 0.75),
+					)}px`;
+				},
+			});
 			addButton = new IconButton({
 				icon: 'plus',
 				onPointerPress: () => {
-					const tags = Array.from(this.children).map(elem => elem.textContent);
+					const tags = Array.from(this.elem.children).map(elem => elem.textContent);
 
-					if (tagInput.value.length < 2 || tags.includes(tagInput.value)) return;
+					if (tagInput.elem.value.length < 2 || tags.includes(tagInput.elem.value)) return;
 
-					new Tag({ appendTo: this, tag: tagInput.value });
+					const newTag = new Tag({ textContent: tagInput.elem.value });
 
-					this.appendChild(addTag);
+					this.elem.insertBefore(newTag.elem, addTag.elem);
 
-					tagInput.value = '';
+					tagInput.elem.value = '';
 
-					tagInput.focus();
+					tagInput.elem.focus();
 				},
 			});
 			addTag = new Tag({
@@ -38,7 +48,7 @@ export class TagList extends DomElem {
 		super({
 			tag: 'ul',
 			appendChildren: [...tags.map(textContent => new Tag({ readOnly, textContent })), ...(addTag ? [addTag] : [])],
-			...rest,
+			...options,
 		});
 
 		this.tagInput = tagInput;

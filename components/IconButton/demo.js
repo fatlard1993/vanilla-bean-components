@@ -1,9 +1,9 @@
-import { IconButton, Label, TextInput, NumberInput, Link } from '../';
+import { DomElem, IconButton, Label, TextInput, NumberInput, Link } from '../';
 import DemoView from '../../demo/DemoView';
 
 export default class Demo extends DemoView {
-	constructor(props) {
-		super(props);
+	constructor(options) {
+		super(options);
 
 		const icon = 'icons';
 
@@ -45,6 +45,15 @@ export default class Demo extends DemoView {
 					iconButton.elem.style.height = iconButton.elem.style.width = `${value * 2}px`;
 				},
 			}),
+		});
+
+		new Label({
+			label: 'Props',
+			appendTo,
+			appendChildren: [
+				new DomElem({ tag: 'pre', textContent: '- icon [string] (required)' }),
+				new DomElem({ tag: 'pre', textContent: '- ...rest => Button' }),
+			],
 		});
 	}
 }

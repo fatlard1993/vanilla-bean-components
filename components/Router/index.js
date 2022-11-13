@@ -1,9 +1,13 @@
+import './index.css';
+
 import DomElem from '../DomElem';
 
 import { dom } from '../../utils';
 
 export class Router extends DomElem {
 	constructor(options) {
+		if (!options.defaultPath) options.defaultPath = Object.keys(options.views)[0];
+
 		super(options);
 
 		window.addEventListener('popstate', () => this.renderView());
@@ -14,8 +18,6 @@ export class Router extends DomElem {
 	}
 
 	set path(path) {
-		if (!this.views[this.pathToRoute(path)]) path = this.defaultPath;
-
 		window.location.hash = path;
 
 		this.renderView();
@@ -26,7 +28,7 @@ export class Router extends DomElem {
 	}
 
 	pathToRoute(path) {
-		return this.views[path] ? path : Object.keys(this.views).find(route => this.routeToRegex(route).test(path));
+		return this.views[path] ? path : Object.keys(this.views).find(route => this.routeToRegex(route).test(path)) || path;
 	}
 
 	routeToPath(route, params) {
@@ -45,12 +47,6 @@ export class Router extends DomElem {
 
 	routeToRegex(route) {
 		return new RegExp(`^${route.replace(/\//g, '\\/').replace(/:[^/]+/g, '([^/]+)')}$`);
-	}
-
-	buildPath(route, params) {
-		if (!this.views[route]) route = this.defaultPath;
-
-		return this.routeToPath(route, params);
 	}
 
 	parseRouteParams(path = this.path) {
@@ -72,20 +68,24 @@ export class Router extends DomElem {
 		return params;
 	}
 
-	render({ views, paths, defaultPath, ...options } = this.options) {
+	render({ views, defaultPath, notFound, ...options } = this.options) {
 		this.views = views;
-		this.paths = paths;
 		this.defaultPath = defaultPath;
+		this.notFound = notFound;
 
 		super.render(options);
 
-		this.renderView(this.route || this.defaultPath);
+		this.renderView();
 	}
 
-	renderView(view = this.route || this.defaultPath) {
+	renderView(route = this.route || this.defaultPath) {
 		dom.empty(this.elem);
 
-		if (this.views[view]) this.view = new this.views[view]({ appendTo: this.elem });
+		if (!this.path) return (this.path = route);
+
+		if (this.views[route]) this.view = new this.views[route]({ appendTo: this.elem });
+		else if (this.notFound) this.view = new this.notFound({ appendTo: this.elem, route });
+		else this.path = this.defaultPath;
 	}
 }
 

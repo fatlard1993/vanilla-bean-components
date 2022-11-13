@@ -1,9 +1,9 @@
-import { ModalDialog, Button, Label, Select } from '../';
+import { DomElem, ModalDialog, Button, Label, Select } from '../';
 import DemoView from '../../demo/DemoView';
 
 export default class Demo extends DemoView {
-	constructor(props) {
-		super(props);
+	constructor(options) {
+		super(options);
 
 		const header = 'header';
 		const content = 'content';
@@ -21,7 +21,7 @@ export default class Demo extends DemoView {
 					content,
 					size,
 					buttons: ['dismiss'],
-					onDismiss: ({ closeDialog }) => closeDialog(),
+					onButtonPress: ({ closeDialog }) => closeDialog(),
 				});
 			},
 		});
@@ -36,6 +36,15 @@ export default class Demo extends DemoView {
 					size = value;
 				},
 			}),
+		});
+
+		new Label({
+			label: 'Props',
+			appendTo: this.demoContent,
+			appendChildren: [
+				new DomElem({ tag: 'pre', textContent: '- appendTo => Modal' }),
+				new DomElem({ tag: 'pre', textContent: '- ...rest => Dialog' }),
+			],
 		});
 	}
 }

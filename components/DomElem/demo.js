@@ -2,8 +2,8 @@ import { DomElem } from '../';
 import DemoView from '../../demo/DemoView';
 
 export default class Demo extends DemoView {
-	constructor(props) {
-		super(props);
+	constructor(options) {
+		super(options);
 
 		new DomElem({
 			tag: 'p',
