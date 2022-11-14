@@ -7,7 +7,7 @@ export default class Demo extends DemoView {
 
 		const label = 'label';
 
-		const colorPicker = new ColorPicker({ label, onChange: console.log, appendTo: this.demoWrapper });
+		const colorPicker = new ColorPicker({ label, value: 'random', onChange: console.log, appendTo: this.demoWrapper });
 
 		const appendTo = this.demoContent;
 

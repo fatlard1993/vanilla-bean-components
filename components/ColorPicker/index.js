@@ -1,4 +1,4 @@
-import TinyColor from '@ctrl/tinycolor';
+import TinyColor, { random as randomColor } from '@ctrl/tinycolor';
 
 import './index.css';
 
@@ -43,7 +43,7 @@ export class ColorPicker extends DomElem {
 	set(userInput, triggerEvent) {
 		if (!userInput) return;
 
-		const color = userInput === 'random' ? new TinyColor.random() : new TinyColor(userInput);
+		const color = userInput === 'random' ? randomColor() : new TinyColor(userInput);
 		const hsv = color.toHsv();
 		const rgbString = color.toRgbString();
 
