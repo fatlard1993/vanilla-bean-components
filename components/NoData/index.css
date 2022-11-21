@@ -1,5 +1,7 @@
 @import '../../styles/colors';
 
 .DomElem.NoData {
-	margin: 12px auto;
+	margin: 6px auto;
+	padding: 6px 12px;
+	text-align: center;
 }

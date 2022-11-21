@@ -16,9 +16,8 @@ export default class Demo extends DemoView {
 			label: 'Props',
 			appendTo: this.demoContent,
 			appendChildren: [
-				new DomElem({ tag: 'pre', textContent: '- value [string] (optional) :: ""' }),
 				new DomElem({ tag: 'pre', textContent: '- options [Array(string)] (optional) :: []' }),
-				new DomElem({ tag: 'pre', textContent: '- ...rest => DomElem' }),
+				new DomElem({ tag: 'pre', textContent: '- ...rest => Input' }),
 			],
 		});
 	}
