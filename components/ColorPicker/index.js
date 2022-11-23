@@ -21,7 +21,12 @@ export class ColorPicker extends DomElem {
 		appendChildren,
 		...options
 	} = {}) {
-		super({ appendTo, appendChild, appendChildren, ...options });
+		const children = [
+			...(appendChildren ? (Array.isArray(appendChildren) ? appendChildren : [appendChildren]) : []),
+			...(appendChild ? [appendChild] : []),
+		];
+
+		super({ appendTo, appendChildren: label ? undefined : children, ...options });
 
 		this.isDirty = () => initialValue !== this.value;
 
@@ -31,11 +36,7 @@ export class ColorPicker extends DomElem {
 			this.label = new Label({
 				label,
 				appendTo,
-				appendChildren: [
-					this.elem,
-					...(appendChildren ? (Array.isArray(appendChildren) ? appendChildren : [appendChildren]) : []),
-					...(appendChild ? [appendChild] : []),
-				],
+				appendChildren: [this.elem, ...children],
 				className: 'colorPickerLabel',
 			});
 		}

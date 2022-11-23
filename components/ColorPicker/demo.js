@@ -1,4 +1,4 @@
-import { DomElem, ColorPicker, Label, TextInput } from '../';
+import { DomElem, ColorPicker, Label, TextInput, Button } from '../';
 import DemoView from '../../demo/DemoView';
 
 export default class Demo extends DemoView {
@@ -7,7 +7,13 @@ export default class Demo extends DemoView {
 
 		const label = 'label';
 
-		const colorPicker = new ColorPicker({ label, value: 'random', onChange: console.log, appendTo: this.demoWrapper });
+		const colorPicker = new ColorPicker({
+			label,
+			value: 'random',
+			onChange: console.log,
+			appendTo: this.demoWrapper,
+			appendChildren: [new Button({ textContent: 'Random', onPointerPress: () => colorPicker.set('random') })],
+		});
 
 		const appendTo = this.demoContent;
 

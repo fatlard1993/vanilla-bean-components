@@ -10,6 +10,7 @@ div.label.colorPickerLabel {
 	background-color: $grey-light;
 	padding: 14px;
 	border-radius: 5px;
+	margin-bottom: 6px;
 
 	div.pickerArea {
 		position: relative;
