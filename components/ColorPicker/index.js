@@ -12,14 +12,33 @@ import Label from '../Label';
 import { saturation, hue } from './svg';
 
 export class ColorPicker extends DomElem {
-	constructor({ value: initialValue = '#666', onChange = () => {}, label, appendTo, ...options } = {}) {
-		super({ appendTo, ...options });
+	constructor({
+		value: initialValue = '#666',
+		onChange = () => {},
+		label,
+		appendTo,
+		appendChild,
+		appendChildren,
+		...options
+	} = {}) {
+		super({ appendTo, appendChild, appendChildren, ...options });
 
 		this.isDirty = () => initialValue !== this.value;
 
 		this.onChange = onChange;
 
-		if (label) this.label = new Label({ label, appendTo, appendChild: this.elem, className: 'colorPickerLabel' });
+		if (label) {
+			this.label = new Label({
+				label,
+				appendTo,
+				appendChildren: [
+					this.elem,
+					...(appendChildren ? (Array.isArray(appendChildren) ? appendChildren : [appendChildren]) : []),
+					...(appendChild ? [appendChild] : []),
+				],
+				className: 'colorPickerLabel',
+			});
+		}
 
 		this.pickerArea = new DomElem({ className: 'pickerArea', innerHTML: saturation, appendTo: this.elem });
 		this.pickerIndicator = new DomElem({ className: 'indicator', appendTo: this.pickerArea });
