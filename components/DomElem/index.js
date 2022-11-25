@@ -159,9 +159,9 @@ export class DomElem {
 	onContextMenu(cb) {
 		cb = this.wrapPointerCallback(cb);
 
-		this.elem.addEventListener('contextmenu', cb, true);
+		this.elem.oncontextmenu = cb;
 
-		return () => this.elem.removeEventListener('contextmenu', cb, true);
+		return () => (this.elem.oncontextmenu = undefined);
 	}
 
 	onHover(cb) {
