@@ -156,6 +156,14 @@ export class DomElem {
 		};
 	}
 
+	onContextMenu(cb) {
+		cb = this.wrapPointerCallback(cb);
+
+		this.elem.addEventListener('contextmenu', cb, true);
+
+		return () => this.elem.removeEventListener('contextmenu', cb, true);
+	}
+
 	onHover(cb) {
 		cb = this.wrapPointerCallback(cb);
 
@@ -171,10 +179,20 @@ export class DomElem {
 
 		this.elem.addEventListener('mouseenter', mouseEnter, true);
 		this.elem.addEventListener('mouseleave', mouseLeave, true);
+
+		return () => {
+			this.elem.removeEventListener('mouseenter', mouseEnter, true);
+			this.elem.removeEventListener('mouseleave', mouseLeave, true);
+			this.elem.removeEventListener('mousemove', cb, true);
+		};
 	}
 
 	onMouseLeave(cb) {
+		cb = this.wrapPointerCallback(cb);
+
 		this.elem.addEventListener('mouseleave', cb, true);
+
+		return () => this.elem.removeEventListener('mouseleave', cb, true);
 	}
 
 	onPointerDown(cb) {
@@ -183,11 +201,9 @@ export class DomElem {
 		this.elem.addEventListener('touchstart', cb);
 		this.elem.addEventListener('mousedown', cb);
 
-		this.pointerDownOff = () => {
+		return () => {
 			this.elem.removeEventListener('touchstart', cb);
 			this.elem.removeEventListener('mousedown', cb);
-
-			this.pointerDownOff = undefined;
 		};
 	}
 
@@ -198,12 +214,10 @@ export class DomElem {
 		this.elem.addEventListener('touchcancel', cb);
 		this.elem.addEventListener('mouseup', cb, true);
 
-		this.pointerUpOff = () => {
+		return () => {
 			this.elem.removeEventListener('touchend', cb);
 			this.elem.removeEventListener('touchcancel', cb);
 			this.elem.removeEventListener('mouseup', cb, true);
-
-			this.pointerUpOff = undefined;
 		};
 	}
 
@@ -216,13 +230,6 @@ export class DomElem {
 			if (evt.target !== this.elem || (dom.isMobile && evt.pointerType !== 'touch')) return;
 
 			cb.call(this, evt);
-		};
-
-		this.pointerDownOff = () => {
-			this.elem.removeEventListener('touchstart', pointerDown);
-			this.elem.removeEventListener('mousedown', pointerDown);
-
-			this.pointerDownOff = undefined;
 		};
 
 		const pointerDown = evt => {
@@ -245,17 +252,19 @@ export class DomElem {
 
 		this.elem.addEventListener('touchstart', pointerDown);
 		this.elem.addEventListener('mousedown', pointerDown);
+
+		return () => {
+			this.elem.removeEventListener('touchstart', pointerDown);
+			this.elem.removeEventListener('mousedown', pointerDown);
+
+			document.removeEventListener('touchend', wrappedCb);
+			document.removeEventListener('touchcancel', wrappedCb);
+			document.removeEventListener('mouseup', wrappedCb, true);
+		};
 	}
 
 	onPointerPressAndHold(cb) {
 		this.elem.dataset.pressAndHoldTime = this.elem.dataset.pressAndHoldTime || 900;
-
-		this.pointerDownOff = () => {
-			this.elem.removeEventListener('touchstart', pointerDown);
-			this.elem.removeEventListener('mousedown', pointerDown);
-
-			this.pointerDownOff = undefined;
-		};
 
 		const pointerUp = () => {
 			this.pointerUpOff();
@@ -293,34 +302,39 @@ export class DomElem {
 
 		this.elem.addEventListener('touchstart', pointerDown);
 		this.elem.addEventListener('mousedown', pointerDown);
+
+		return () => {
+			this.elem.removeEventListener('touchstart', pointerDown);
+			this.elem.removeEventListener('mousedown', pointerDown);
+
+			document.removeEventListener('touchend', cb);
+			document.removeEventListener('touchcancel', cb);
+			document.removeEventListener('mouseup', cb, true);
+		};
 	}
 
 	onKeyDown(cb) {
 		this.elem.addEventListener('keydown', cb);
 
-		this.keyDownOff = () => {
-			this.elem.removeEventListener('keydown', cb);
-
-			this.keyDownOff = undefined;
-		};
+		return () => this.elem.removeEventListener('keydown', cb);
 	}
 
 	onKeyUp(cb) {
 		this.elem.addEventListener('keyup', cb);
 
-		this.keyUpOff = () => {
-			this.elem.removeEventListener('keyup', cb);
-
-			this.keyUpOff = undefined;
-		};
+		return () => this.elem.removeEventListener('keyup', cb);
 	}
 
 	onChange(cb) {
-		this.elem.addEventListener('change', evt => {
+		const wrappedCb = evt => {
 			evt.value = evt.target.value || this.elem.value;
 
 			cb(evt);
-		});
+		};
+
+		this.elem.addEventListener('change', wrappedCb);
+
+		return () => this.elem.removeEventListener('change', wrappedCb);
 	}
 }
 
