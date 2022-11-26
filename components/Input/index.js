@@ -17,7 +17,7 @@ export class Input extends DomElem {
 
 		if (label) {
 			this.label = new Label({
-				label,
+				...(typeof label === 'object' ? label : { label }),
 				appendTo,
 				appendChildren: [this.elem, ...children],
 			});
