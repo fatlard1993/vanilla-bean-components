@@ -31,6 +31,7 @@ export class DomElem {
 					Object.keys(value).forEach(key => (this.elem.style[key] = value[key]));
 				} else if (domElemFunction) this[name].call(this, value);
 				else if (elemFunction) this.elem[name].call(this.elem, value);
+				else if (this.hasOwnProperty(name)) this[name] = value;
 				else this.elem[name] = value;
 			});
 		}
@@ -313,7 +314,7 @@ export class DomElem {
 
 	onChange(cb) {
 		const wrappedCb = evt => {
-			evt.value = evt.target.value || this.elem.value;
+			evt.value = evt.target.value || this.elem.value || this.value;
 
 			cb(evt);
 		};

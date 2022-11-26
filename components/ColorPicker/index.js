@@ -15,8 +15,6 @@ export class ColorPicker extends Input {
 	constructor({ value: initialValue = '#666', onChange = () => {}, ...options } = {}) {
 		super({ tag: 'div', ...options });
 
-		this.isDirty = () => initialValue !== this.value;
-
 		this.onChange = onChange;
 
 		this.pickerArea = new DomElem({ className: 'pickerArea', innerHTML: saturation, appendTo: this.elem });

@@ -13,7 +13,7 @@ export class Input extends DomElem {
 
 		super({ tag: 'input', value, appendTo, appendChildren: label ? undefined : children, ...options });
 
-		this.isDirty = () => initialValue !== this.elem.value;
+		this.isDirty = () => initialValue !== this.value;
 
 		if (label) {
 			this.label = new Label({
@@ -22,6 +22,14 @@ export class Input extends DomElem {
 				appendChildren: [this.elem, ...children],
 			});
 		}
+	}
+
+	get value() {
+		return this.elem.value;
+	}
+
+	set value(value) {
+		this.elem.value = value;
 	}
 
 	validate() {

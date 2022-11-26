@@ -7,7 +7,8 @@ export default class Demo extends DemoView {
 
 		new Select({
 			label: 'myCustomLabel',
-			options: ['one', '2', 'three'],
+			options: ['one', '2', { label: 'Three', value: 3 }],
+			value: 3,
 			onChange: console.log,
 			appendTo: this.demoWrapper,
 		});
