@@ -1,5 +1,3 @@
-import './index.css';
-
 import Input from '../Input';
 
 export class NumberInput extends Input {

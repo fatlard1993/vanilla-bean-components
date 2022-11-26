@@ -1,5 +1,0 @@
-@import '../../styles/input';
-
-.DomElem.NumberInput {
-	@mixin Input;
-}

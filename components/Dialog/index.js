@@ -39,6 +39,7 @@ export class Dialog extends DomElem {
 						),
 				}),
 			],
+			closeDialog: closeDialog || (() => super.cleanup()),
 			...options,
 		});
 	}

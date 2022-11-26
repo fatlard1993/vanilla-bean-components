@@ -5,16 +5,15 @@
 
 	li {
 		cursor: pointer;
-		padding: 6px;
+		padding: 6px 6px 9px 6px;
 
 		&:not(:last-of-type) {
-			border-bottom: 1px solid $grey-lightest;
+			border-bottom: 1px solid $grey-light;
 		}
 
 		&:hover {
 			color: $blue-light;
-			padding-top: 4px;
-			padding-bottom: 8px;
+			border-color: $blue-light;
 		}
 	}
 }

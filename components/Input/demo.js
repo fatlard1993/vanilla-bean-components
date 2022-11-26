@@ -13,7 +13,11 @@ export default class Demo extends DemoView {
 				console.log(evt);
 				dirtyLabel.elem.children[0].textContent = `isDirty: ${input.isDirty()}`;
 			},
-			onChange: console.log,
+			onChange: () => input.validate(),
+			validations: [
+				[/.+/, 'This input is required'],
+				[/^.{3,5}$/, 'Must be between 5 and 7 characters long'],
+			],
 			value: 'value',
 		});
 
@@ -23,7 +27,7 @@ export default class Demo extends DemoView {
 		});
 
 		new Label({
-			label: 'onChange: console.log',
+			label: 'onChange: validate()',
 			appendTo,
 		});
 

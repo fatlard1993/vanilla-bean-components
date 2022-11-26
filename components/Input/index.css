@@ -14,6 +14,13 @@
 	}
 }
 
-.DomElem.Textarea {
+.DomElem.Input {
 	@mixin Input;
+}
+
+.DomElem.validationError {
+	background-color: $red;
+	padding: 6px;
+	margin: 3px;
+	border-radius: 3px;
 }

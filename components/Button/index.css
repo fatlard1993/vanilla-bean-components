@@ -3,7 +3,7 @@
 
 @define-mixin Button {
 	display: inline-block;
-	padding: 3px 12px 9px 12px;
+	padding: 3px 12px 8px 12px;
 	margin: 0 6px 3px 0;
 	box-sizing: border-box;
 	text-decoration: none;
