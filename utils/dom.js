@@ -100,39 +100,6 @@ export const dom = {
 	checkValid: (string, regex) => {
 		return new RegExp(regex).test(string) ? 'validated' : 'invalid';
 	},
-	showValidationWarnings: parentElement => {
-		if (!parentElement) return;
-
-		const invalidElements = parentElement.getElementsByClassName('invalid');
-
-		dom.remove(parentElement.getElementsByClassName('validationWarning'));
-
-		if (!invalidElements || !invalidElements.length) return;
-
-		let showingWarnings = false;
-
-		for (let x = 0; x < invalidElements.length; ++x) {
-			const validationWarning = dom.validate(invalidElements[x]);
-
-			if (validationWarning) {
-				showingWarnings = true;
-
-				invalidElements[x].parentElement.insertBefore(
-					dom.createElem('p', { className: 'validationWarning', textContent: validationWarning }),
-					invalidElements[x],
-				);
-			}
-		}
-
-		if (!showingWarnings)
-			dom.createElem('p', {
-				className: 'validationWarning',
-				textContent: 'There are fields which require your attention!',
-				prependTo: parentElement,
-			});
-
-		return showingWarnings;
-	},
 	getScreenOrientation: () => {
 		let orientation = 'primary';
 

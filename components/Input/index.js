@@ -16,21 +16,26 @@ export class Input extends DomElem {
 
 		this.validationErrors = this.validationErrors || {};
 
+		const errors = [];
+
 		this.options.validations.forEach(([validation, message]) => {
 			const isValid = validation.test(this.elem.value);
 
-			console.log({ validation, message, isValid, value: this.elem.value, elem: this.validationErrors[message] });
+			if (!isValid) errors.push(message);
 
 			if (this.validationErrors[message]) {
 				this.validationErrors[message].elem.style.display = isValid ? 'none' : 'block';
 			} else if (!isValid) {
 				this.validationErrors[message] = new DomElem({
 					textContent: message,
-					prependTo: this.elem.parentElement,
 					className: 'validationError',
 				});
+
+				this.elem.parentElement.insertBefore(this.validationErrors[message].elem, this.elem);
 			}
 		});
+
+		return errors;
 	}
 }
 
