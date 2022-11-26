@@ -25,6 +25,8 @@ export class DomElem {
 				const domElemFunction = typeof this[name] === 'function';
 				const elemFunction = typeof this.elem[name] === 'function';
 
+				if (name === 'options') return;
+
 				if (name === 'style') {
 					Object.keys(value).forEach(key => (this.elem.style[key] = value[key]));
 				} else if (domElemFunction) this[name].call(this, value);

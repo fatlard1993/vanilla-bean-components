@@ -5,7 +5,12 @@ export default class Demo extends DemoView {
 	constructor(options) {
 		super(options);
 
-		new Select({ options: ['one', '2', 'three'], onChange: console.log, appendTo: this.demoWrapper });
+		new Select({
+			label: 'myCustomLabel',
+			options: ['one', '2', 'three'],
+			onChange: console.log,
+			appendTo: this.demoWrapper,
+		});
 
 		new Label({
 			label: 'onChange: console.log',
