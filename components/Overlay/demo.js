@@ -3,38 +3,31 @@ import DemoView from '../../demo/DemoView';
 
 export default class Demo extends DemoView {
 	constructor(options) {
-		super(options);
+		super({
+			...options,
+			onContextMenu: evt => {
+				console.log('contextmenu', evt);
 
-		const overlay = new Overlay({
-			appendTo: this.demoContent,
-			appendChild: new DomElem({ tag: 'p', textContent: 'Some content for our overlay' }),
-			style: { display: 'none' },
+				evt.stop();
+
+				this.openOverlay({ x: evt.clientX, y: evt.clientY });
+			},
 		});
+
+		this.onPointerUp(this.closeOverlay);
 
 		new Label({
 			appendTo: this.demoWrapper,
 			textContent: 'Hover Me',
-			onHover: evt => {
-				overlay.elem.style.display = 'block';
-				overlay.elem.style.top = `${evt.clientY + 10}px`;
-				overlay.elem.style.left = `${evt.clientX + 10}px`;
-			},
-			onMouseLeave: () => {
-				overlay.elem.style.display = 'none';
-			},
+			onHover: evt => this.openOverlay({ x: evt.clientX + 10, y: evt.clientY + 10 }),
+			onMouseLeave: () => this.closeOverlay(),
 		});
 
 		new Button({
 			appendTo: this.demoWrapper,
 			textContent: 'Open Overlay',
-			onPointerPress: evt => {
-				overlay.elem.style.display = 'block';
-				overlay.elem.style.top = `${evt.clientY + 10}px`;
-				overlay.elem.style.left = `${evt.clientX + 10}px`;
-			},
-			onMouseLeave: () => {
-				overlay.elem.style.display = 'none';
-			},
+			onPointerPress: evt => this.openOverlay({ x: evt.clientX + 10, y: evt.clientY + 10 }),
+			onMouseLeave: () => this.closeOverlay(),
 		});
 
 		new Label({
@@ -42,5 +35,34 @@ export default class Demo extends DemoView {
 			appendTo: this.demoContent,
 			appendChildren: [new DomElem({ tag: 'pre', textContent: '- ...rest => DomElem' })],
 		});
+	}
+
+	openOverlay({ x, y }) {
+		if (this.overlay) {
+			this.overlay.elem.style.top = `${y}px`;
+			this.overlay.elem.style.left = `${x}px`;
+			return;
+		}
+
+		this.closeOverlay();
+
+		this.openingOverlay = true;
+		this.overlay = new Overlay({
+			appendTo: this.demoContent,
+			appendChild: new DomElem({ tag: 'p', textContent: 'Some content for our overlay' }),
+			style: { top: `${y}px`, left: `${x}px` },
+		});
+
+		setTimeout(() => (this.openingOverlay = false), 100);
+	}
+
+	closeOverlay() {
+		if (this.openingOverlay) {
+			this.openingOverlay = false;
+			return;
+		}
+
+		this.overlay?.cleanup();
+		this.overlay = undefined;
 	}
 }

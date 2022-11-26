@@ -130,9 +130,7 @@ export class DomElem {
 		Object.keys(attrObj).forEach(attr => this.elem.setAttribute(attr, attrObj[attr]));
 	}
 
-	pointerEventPolyfill(evt) {
-		if (typeof evt === 'undefined') evt = window.event;
-
+	pointerEventPolyfill(evt = window.event) {
 		evt.stop = () => {
 			if (evt.cancelable) evt.preventDefault();
 
@@ -141,7 +139,11 @@ export class DomElem {
 			if (evt.stopPropagation) evt.stopPropagation();
 		};
 
-		evt.pointerType = evt.type.startsWith('mouse') ? 'mouse' : 'touch';
+		if (!evt.pointerType) {
+			if (evt.type.startsWith('touch')) evt.pointerType = 'touch';
+			else if (evt.type.startsWith('mouse')) evt.pointerType = 'mouse';
+			else evt.pointerType = dom.isMobile ? 'touch' : 'mouse';
+		}
 
 		return evt;
 	}
@@ -159,9 +161,9 @@ export class DomElem {
 	onContextMenu(cb) {
 		cb = this.wrapPointerCallback(cb);
 
-		this.elem.oncontextmenu = cb;
+		this.elem.addEventListener('contextmenu', cb);
 
-		return () => (this.elem.oncontextmenu = undefined);
+		return () => this.elem.removeEventListener('contextmenu');
 	}
 
 	onHover(cb) {
