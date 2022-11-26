@@ -9,6 +9,7 @@ export default class Demo extends DemoView {
 
 		const input = new Input({
 			appendTo: this.demoWrapper,
+			label: 'myCustomLabel',
 			onKeyUp: evt => {
 				console.log(evt);
 				dirtyLabel.elem.children[0].textContent = `isDirty: ${input.isDirty()}`;

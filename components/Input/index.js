@@ -1,14 +1,27 @@
 import './index.css';
 
 import DomElem from '../DomElem';
+import Label from '../Label';
 
 export class Input extends DomElem {
-	constructor({ value = '', ...options }) {
+	constructor({ value = '', label, appendTo, appendChild, appendChildren, ...options }) {
 		const initialValue = value;
+		const children = [
+			...(appendChildren ? (Array.isArray(appendChildren) ? appendChildren : [appendChildren]) : []),
+			...(appendChild ? [appendChild] : []),
+		];
 
-		super({ tag: 'input', value, ...options });
+		super({ tag: 'input', value, appendTo, appendChildren: label ? undefined : children, ...options });
 
 		this.isDirty = () => initialValue !== this.elem.value;
+
+		if (label) {
+			this.label = new Label({
+				label,
+				appendTo,
+				appendChildren: [this.elem, ...children],
+			});
+		}
 	}
 
 	validate() {

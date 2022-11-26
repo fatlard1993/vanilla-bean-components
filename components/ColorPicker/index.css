@@ -1,16 +1,11 @@
 @import '../../styles/colors';
 
-div.label.colorPickerLabel {
-	input.textInput {
-		margin: 6px 0;
-	}
-}
-
-.DomElem.ColorPicker {
+.DomElem.Input.ColorPicker {
 	background-color: $grey-light;
 	padding: 14px;
 	border-radius: 5px;
 	margin-bottom: 6px;
+	text-indent: 0;
 
 	div.pickerArea {
 		position: relative;

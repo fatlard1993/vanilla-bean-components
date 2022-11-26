@@ -6,40 +6,18 @@ import dom from '../../utils/dom';
 import { debounceCb } from '../../utils';
 
 import DomElem from '../DomElem';
+import Input from '../Input';
 import TextInput from '../TextInput';
-import Label from '../Label';
 
 import { saturation, hue } from './svg';
 
-export class ColorPicker extends DomElem {
-	constructor({
-		value: initialValue = '#666',
-		onChange = () => {},
-		label,
-		appendTo,
-		appendChild,
-		appendChildren,
-		...options
-	} = {}) {
-		const children = [
-			...(appendChildren ? (Array.isArray(appendChildren) ? appendChildren : [appendChildren]) : []),
-			...(appendChild ? [appendChild] : []),
-		];
-
-		super({ appendTo, appendChildren: label ? undefined : children, ...options });
+export class ColorPicker extends Input {
+	constructor({ value: initialValue = '#666', onChange = () => {}, ...options } = {}) {
+		super({ tag: 'div', ...options });
 
 		this.isDirty = () => initialValue !== this.value;
 
 		this.onChange = onChange;
-
-		if (label) {
-			this.label = new Label({
-				label,
-				appendTo,
-				appendChildren: [this.elem, ...children],
-				className: 'colorPickerLabel',
-			});
-		}
 
 		this.pickerArea = new DomElem({ className: 'pickerArea', innerHTML: saturation, appendTo: this.elem });
 		this.pickerIndicator = new DomElem({ className: 'indicator', appendTo: this.pickerArea });
