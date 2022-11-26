@@ -1,7 +1,5 @@
 import dom from '../../utils/dom';
 
-// import state from '../state';
-
 import { buildClassName } from '../../utils/class';
 
 export class DomElem {
@@ -44,6 +42,10 @@ export class DomElem {
 
 	remove() {
 		dom.remove(this.elem);
+	}
+
+	empty() {
+		dom.empty(this.elem);
 	}
 
 	cleanup() {
