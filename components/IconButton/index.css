@@ -5,8 +5,9 @@
 .DomElem.Button.IconButton {
 	@mixin Button;
 
-	width: 2.4rem;
-	height: 2.4rem;
+	width: 30px;
+	height: 30px;
+	padding: 3px 0 8px 0;
 
 	&:before {
 		padding: 0;
