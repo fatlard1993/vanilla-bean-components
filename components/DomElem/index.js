@@ -6,8 +6,6 @@ import { buildClassName } from '../../utils/class';
 
 export class DomElem {
 	constructor({ tag = 'div', autoRender, ...options }) {
-		// console.log('new DomElem', this.constructor.name, { tag, autoRender, ...options });
-
 		this.elem = document.createElement(tag);
 
 		this.elem._domElem = this;
@@ -17,10 +15,6 @@ export class DomElem {
 	}
 
 	render(options = this.options) {
-		// console.log('DomElem render', this.constructor.name, options);
-
-		// this.cleanup();
-
 		if (options) {
 			Object.keys(options).forEach(name => {
 				let value = options[name];
@@ -32,8 +26,6 @@ export class DomElem {
 
 				const domElemFunction = typeof this[name] === 'function';
 				const elemFunction = typeof this.elem[name] === 'function';
-
-				// console.log({ name, value, domElemFunction, elemFunction });
 
 				if (name === 'style') {
 					Object.keys(value).forEach(key => (this.elem.style[key] = value[key]));
@@ -48,19 +40,6 @@ export class DomElem {
 		].join(' ')}`;
 
 		if (this.options.onRender) this.options.onRender(options);
-
-		// dom.createElem(tagName, {
-		// 	onPointerPress: evt => {
-		// 		if (state.disablePointerPress) {
-		// 			state.disablePointerPress = false;
-
-		// 			return;
-		// 		}
-
-		// 		if (typeof onPointerPress === 'function') onPointerPress(evt);
-		// 	},
-		// 	...options,
-		// });
 	}
 
 	remove() {
@@ -179,12 +158,12 @@ export class DomElem {
 			this.elem.removeEventListener('mousemove', cb, true);
 		};
 
-		this.elem.addEventListener('mouseenter', mouseEnter, true);
-		this.elem.addEventListener('mouseleave', mouseLeave, true);
+		this.elem.addEventListener('mouseenter', mouseEnter);
+		this.elem.addEventListener('mouseleave', mouseLeave);
 
 		return () => {
-			this.elem.removeEventListener('mouseenter', mouseEnter, true);
-			this.elem.removeEventListener('mouseleave', mouseLeave, true);
+			this.elem.removeEventListener('mouseenter', mouseEnter);
+			this.elem.removeEventListener('mouseleave', mouseLeave);
 			this.elem.removeEventListener('mousemove', cb, true);
 		};
 	}
@@ -192,9 +171,9 @@ export class DomElem {
 	onMouseLeave(cb) {
 		cb = this.wrapPointerCallback(cb);
 
-		this.elem.addEventListener('mouseleave', cb, true);
+		this.elem.addEventListener('mouseleave', cb);
 
-		return () => this.elem.removeEventListener('mouseleave', cb, true);
+		return () => this.elem.removeEventListener('mouseleave', cb);
 	}
 
 	onPointerDown(cb) {
@@ -214,12 +193,12 @@ export class DomElem {
 
 		this.elem.addEventListener('touchend', cb);
 		this.elem.addEventListener('touchcancel', cb);
-		this.elem.addEventListener('mouseup', cb, true);
+		this.elem.addEventListener('mouseup', cb);
 
 		return () => {
 			this.elem.removeEventListener('touchend', cb);
 			this.elem.removeEventListener('touchcancel', cb);
-			this.elem.removeEventListener('mouseup', cb, true);
+			this.elem.removeEventListener('mouseup', cb);
 		};
 	}
 
@@ -239,13 +218,13 @@ export class DomElem {
 
 			if (evt.target !== this.elem || (dom.isMobile && evt.pointerType !== 'touch')) return;
 
-			document.addEventListener('touchend', wrappedCb);
-			document.addEventListener('touchcancel', wrappedCb);
+			document.addEventListener('touchend', wrappedCb, true);
+			document.addEventListener('touchcancel', wrappedCb, true);
 			document.addEventListener('mouseup', wrappedCb, true);
 
 			this.pointerUpOff = () => {
-				document.removeEventListener('touchend', wrappedCb);
-				document.removeEventListener('touchcancel', wrappedCb);
+				document.removeEventListener('touchend', wrappedCb, true);
+				document.removeEventListener('touchcancel', wrappedCb, true);
 				document.removeEventListener('mouseup', wrappedCb, true);
 
 				this.pointerUpOff = undefined;
@@ -261,7 +240,7 @@ export class DomElem {
 
 			document.removeEventListener('touchend', wrappedCb);
 			document.removeEventListener('touchcancel', wrappedCb);
-			document.removeEventListener('mouseup', wrappedCb, true);
+			document.removeEventListener('mouseup', wrappedCb);
 		};
 	}
 
@@ -283,20 +262,20 @@ export class DomElem {
 				cb.call(this, evt);
 			}, parseInt(this.elem.dataset.pressAndHoldTime));
 
-			document.addEventListener('touchend', pointerUp);
-			document.addEventListener('touchcancel', pointerUp);
-			this.elem.addEventListener('mouseleave', pointerUp);
+			document.addEventListener('touchend', pointerUp, true);
+			document.addEventListener('touchcancel', pointerUp, true);
 			document.addEventListener('mouseup', pointerUp, true);
+			this.elem.addEventListener('mouseleave', pointerUp, true);
 
 			this.pointerUpOff = () => {
 				clearTimeout(this.holdTimeout);
 
 				this.elem.classList.remove('pointerHold');
 
-				document.removeEventListener('touchend', pointerUp);
-				document.removeEventListener('touchcancel', pointerUp);
-				this.elem.removeEventListener('mouseleave', pointerUp);
+				document.removeEventListener('touchend', pointerUp, true);
+				document.removeEventListener('touchcancel', pointerUp, true);
 				document.removeEventListener('mouseup', pointerUp, true);
+				this.elem.removeEventListener('mouseleave', pointerUp, true);
 
 				this.pointerUpOff = undefined;
 			};
@@ -309,9 +288,10 @@ export class DomElem {
 			this.elem.removeEventListener('touchstart', pointerDown);
 			this.elem.removeEventListener('mousedown', pointerDown);
 
-			document.removeEventListener('touchend', cb);
-			document.removeEventListener('touchcancel', cb);
-			document.removeEventListener('mouseup', cb, true);
+			document.removeEventListener('touchend', pointerUp, true);
+			document.removeEventListener('touchcancel', pointerUp, true);
+			document.removeEventListener('mouseup', pointerUp, true);
+			this.elem.removeEventListener('mouseleave', pointerUp, true);
 		};
 	}
 
