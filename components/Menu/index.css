@@ -1,6 +1,8 @@
 @import '../../styles/colors';
 
 .DomElem.Menu {
+	margin: 0;
+
 	li {
 		cursor: pointer;
 		padding: 6px;
