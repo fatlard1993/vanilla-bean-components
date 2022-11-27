@@ -36,6 +36,14 @@ export class ColorPicker extends Input {
 		document.addEventListener('touchstart', this.onPointerDown.bind(this));
 	}
 
+	get value() {
+		return this._value;
+	}
+
+	set value(value) {
+		this._value = value;
+	}
+
 	set(userInput, triggerEvent) {
 		if (!userInput) return;
 
