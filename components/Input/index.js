@@ -13,6 +13,7 @@ export class Input extends DomElem {
 
 		super({ tag: 'input', value, appendTo, appendChildren: label ? undefined : children, ...options });
 
+		this.initialValue = initialValue;
 		this.isDirty = () => initialValue !== this.value;
 
 		if (label) {
@@ -40,7 +41,7 @@ export class Input extends DomElem {
 		const errors = [];
 
 		this.options.validations.forEach(([validation, message]) => {
-			const isValid = validation.test(this.elem.value);
+			const isValid = validation instanceof RegExp ? validation.test(this.elem.value) : validation(this.elem.value);
 
 			if (!isValid) errors.push(message);
 
