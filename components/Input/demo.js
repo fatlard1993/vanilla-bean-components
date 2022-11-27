@@ -20,7 +20,7 @@ export default class Demo extends DemoView {
 				[/^.{3,5}$/, 'Must be between 5 and 7 characters long'],
 				[
 					value => value !== input.initialValue.split('').reverse().join(''),
-					'Must not be the inverse of the initial value',
+					value => `Must not be the inverse of the initial value: ${value}`,
 				],
 			],
 			value: 'value',

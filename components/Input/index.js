@@ -43,13 +43,15 @@ export class Input extends DomElem {
 		this.options.validations.forEach(([validation, message]) => {
 			const isValid = validation instanceof RegExp ? validation.test(this.elem.value) : validation(this.elem.value);
 
-			if (!isValid) errors.push(message);
+			const resolvedMessage = typeof message == 'function' ? message(this.elem.value) : message;
+
+			if (!isValid) errors.push(resolvedMessage);
 
 			if (this.validationErrors[message]) {
 				this.validationErrors[message].elem.style.display = isValid ? 'none' : 'block';
 			} else if (!isValid) {
 				this.validationErrors[message] = new DomElem({
-					textContent: message,
+					textContent: resolvedMessage,
 					className: 'validationError',
 				});
 
