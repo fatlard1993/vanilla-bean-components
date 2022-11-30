@@ -1,11 +1,10 @@
-import TinyColor, { random, readability, isReadable, mostReadable, equals } from '@ctrl/tinycolor';
+import TinyColor, { random, readability, isReadable, mostReadable } from '@ctrl/tinycolor';
 
 export const colors = {
 	random,
 	readability,
 	isReadable,
 	mostReadable,
-	equals,
 	get orange() {
 		return new TinyColor('hsl(29, 55%, 45%)');
 	},
