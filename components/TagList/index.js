@@ -1,5 +1,3 @@
-import './index.css';
-
 import DomElem from '../DomElem';
 
 import TextInput from '../TextInput';
@@ -9,7 +7,7 @@ import Tag from './Tag';
 export { Tag };
 
 export class TagList extends DomElem {
-	constructor({ tags = [], readOnly = false, ...options }) {
+	constructor({ styles = () => '', tags = [], readOnly = false, ...options }) {
 		let tagInput, addTag, addButton;
 
 		if (!readOnly) {
@@ -46,6 +44,30 @@ export class TagList extends DomElem {
 		}
 
 		super({
+			styles: ({ colors, ...theme }) => `
+				background-color: ${colors.darkest(colors.grey)};
+				margin: 1% auto;
+				border-radius: 3px;
+				box-sizing: border-box;
+				border: inset 2px ${colors.light(colors.grey)};
+				min-height: 1em;
+
+				&:after {
+					content: '';
+					clear: both;
+					display: table;
+				}
+
+				&.readOnly {
+					pointer-events: none;
+					border: none;
+					background: none;
+					width: 100%;
+					margin: 0;
+				}
+
+				${styles({ colors, ...theme })}
+			`,
 			tag: 'ul',
 			appendChildren: [...tags.map(textContent => new Tag({ readOnly, textContent })), ...(addTag ? [addTag] : [])],
 			...options,

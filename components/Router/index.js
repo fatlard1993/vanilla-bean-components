@@ -1,14 +1,19 @@
-import './index.css';
-
 import DomElem from '../DomElem';
 
 import { dom } from '../../utils';
 
 export class Router extends DomElem {
-	constructor(options) {
+	constructor({ styles = () => '', ...options }) {
 		if (!options.defaultPath) options.defaultPath = Object.keys(options.views)[0];
 
-		super(options);
+		super({
+			styles: theme => `
+				height: 100%;
+
+				${styles(theme)}
+			`,
+			...options,
+		});
 
 		window.addEventListener('popstate', () => this.renderView());
 	}

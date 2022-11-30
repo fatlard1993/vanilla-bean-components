@@ -1,8 +1,6 @@
-import './index.css';
+import Button from '../Button';
 
-import DomElem from '../DomElem';
-
-export class Link extends DomElem {
+export class Link extends Button {
 	constructor(options) {
 		super({ tag: 'a', ...options });
 	}

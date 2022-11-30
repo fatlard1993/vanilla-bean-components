@@ -13,6 +13,13 @@ export const dom = {
 			(nodeCount === 0 || (typeof nodes[0] === 'object' && nodes[0].nodeType > 0))
 		);
 	},
+	appendStyles: css => {
+		const style = document.createElement('style');
+
+		style.innerHTML = css;
+
+		document.head.appendChild(style);
+	},
 	findAncestor: (elem, class_id) => {
 		while (
 			(elem = elem.parentElement) &&

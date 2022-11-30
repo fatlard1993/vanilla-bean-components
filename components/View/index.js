@@ -1,10 +1,17 @@
-import './index.css';
-
 import DomElem from '../DomElem';
 
 export class View extends DomElem {
-	constructor(options) {
-		super(options);
+	constructor({ styles = () => '', ...options }) {
+		super({
+			styles: theme => `
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+
+				${styles(theme)}
+			`,
+			...options,
+		});
 	}
 }
 

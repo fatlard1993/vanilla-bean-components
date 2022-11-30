@@ -1,6 +1,16 @@
+import { customAlphabet } from 'nanoid';
+import postcss from 'postcss';
+import plugin_simpleVars from 'postcss-simple-vars';
+import plugin_nested from 'postcss-nested';
+import plugin_autoprefixer from 'autoprefixer';
+
 import dom from '../../utils/dom';
 
+import theme from '../../theme';
+
 import { buildClassName } from '../../utils/class';
+
+const classId = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-', 10);
 
 export class DomElem {
 	constructor({ tag = 'div', autoRender, ...options }) {
@@ -112,6 +122,36 @@ export class DomElem {
 
 	attr(attrObj) {
 		Object.keys(attrObj).forEach(attr => this.elem.setAttribute(attr, attrObj[attr]));
+	}
+
+	styles(styles) {
+		const className = classId();
+
+		postcss([plugin_simpleVars, plugin_nested, plugin_autoprefixer])
+			.process(
+				`
+				.${className} {
+					${styles(theme)}
+				}
+			`
+					.replace(/\t*/g, '')
+					.replace(/(^(\r\n|\n|\r)$)|^\s*$/gm, ''),
+			)
+			.then(({ css }) => {
+				dom.appendStyles(css);
+
+				this.elem.classList.add(className);
+			});
+	}
+
+	globalStyles(styles) {
+		postcss([plugin_simpleVars, plugin_nested, plugin_autoprefixer])
+			.process(
+				styles(theme)
+					.replace(/\t*/g, '')
+					.replace(/(^(\r\n|\n|\r)$)|^\s*$/gm, ''),
+			)
+			.then(({ css }) => dom.appendStyles(css));
 	}
 
 	pointerEventPolyfill(evt = window.event) {

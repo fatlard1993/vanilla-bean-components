@@ -1,5 +1,3 @@
-import './index.css';
-
 import { Page } from '../';
 
 import DemoRouter from './DemoRouter';

@@ -1,7 +1,5 @@
 import TinyColor, { random as randomColor } from '@ctrl/tinycolor';
 
-import './index.css';
-
 import dom from '../../utils/dom';
 import { debounceCb } from '../../utils';
 
@@ -12,16 +10,88 @@ import TextInput from '../TextInput';
 import { saturation, hue } from './svg';
 
 export class ColorPicker extends Input {
-	constructor({ value: initialValue = '#666', onChange = () => {}, ...options } = {}) {
-		super({ tag: 'div', ...options });
+	constructor({ styles = () => '', value: initialValue = '#666', onChange = () => {}, ...options } = {}) {
+		super({
+			styles: ({ colors, ...theme }) => `
+				background-color: ${colors.light(colors.grey)};
+				padding: 14px;
+				border-radius: 5px;
+				margin-bottom: 6px;
+				text-indent: 0;
+
+				${styles({ colors, ...theme })}
+			`,
+			tag: 'div',
+			...options,
+		});
 
 		this.onChange = onChange;
 
-		this.pickerArea = new DomElem({ className: 'pickerArea', innerHTML: saturation, appendTo: this.elem });
-		this.pickerIndicator = new DomElem({ className: 'indicator', appendTo: this.pickerArea });
+		this.pickerArea = new DomElem({
+			styles: ({ colors }) => `
+				position: relative;
+				width: 150px;
+				height: 150px;
+				margin: 0 auto;
+				box-shadow: 0px 0px 0px 2px ${colors.darker(colors.grey)};
 
-		this.hueArea = new DomElem({ className: 'hueArea', innerHTML: hue, appendTo: this.elem });
-		this.hueIndicator = new DomElem({ className: 'indicator', appendTo: this.hueArea });
+				* {
+					pointer-events: none;
+				}
+			`,
+			className: 'pickerArea',
+			innerHTML: saturation,
+			appendTo: this.elem,
+		});
+		this.pickerIndicator = new DomElem({
+			styles: ({ colors }) => `
+				position: absolute;
+				top: -6px;
+				left: -4px;
+				transform: translate3d(-4px, -4px, 0px);
+				width: 5px;
+				height: 5px;
+				border: 2px solid ${colors.grey};
+				border-radius: 4px;
+				opacity: 0.5;
+				background-color: ${colors.white};
+			`,
+			className: 'indicator',
+			appendTo: this.pickerArea,
+		});
+
+		this.hueArea = new DomElem({
+			styles: ({ colors }) => `
+				position: relative;
+				width: 150px;
+				height: 30px;
+				margin: 10px auto 0;
+				box-shadow: 0px 0px 0px 2px ${colors.darker(colors.grey)};
+
+				* {
+					pointer-events: none;
+				}
+			`,
+			className: 'hueArea',
+			innerHTML: hue,
+			appendTo: this.elem,
+		});
+		this.hueIndicator = new DomElem({
+			styles: ({ colors }) => `
+				position: absolute;
+				width: 10px;
+				height: 100%;
+				top: -4px;
+				left: -4px;
+				transform: translate3d(-8px, 0px, 0px);
+				opacity: 0.6;
+				border: 4px solid ${colors.grey};
+				border-radius: 4px;
+				background-color: ${colors.white};
+			`,
+			className: 'indicator',
+			appendTo: this.hueArea,
+		});
 
 		this.textInput = new TextInput({
 			appendTo: this.label,

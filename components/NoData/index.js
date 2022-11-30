@@ -1,10 +1,17 @@
-import './index.css';
-
 import DomElem from '../DomElem';
 
 export class NoData extends DomElem {
-	constructor(options) {
-		super(options);
+	constructor({ styles = () => '', ...options }) {
+		super({
+			styles: ({ colors, ...theme }) => `
+				margin: 6px auto;
+				padding: 6px 12px;
+				text-align: center;
+
+				${styles({ colors, ...theme })}
+			`,
+			...options,
+		});
 	}
 }
 

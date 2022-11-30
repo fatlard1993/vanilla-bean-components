@@ -1,14 +1,14 @@
-@import '../../styles/colors';
-@import '../../styles/fonts';
+import colors from './colors';
+import fonts from './fonts';
 
-@define-mixin Button {
+export const button = `
 	display: inline-block;
 	padding: 3px 12px 8px 12px;
 	margin: 0 6px 3px 0;
 	box-sizing: border-box;
 	text-decoration: none;
-	color: $white;
-	background-color: $blue;
+	color: ${colors.white};
+	background-color: ${colors.blue};
 	text-align: center;
 	position: relative;
 	white-space: nowrap;
@@ -18,7 +18,7 @@
 	cursor: pointer;
 
 	&:before {
-		@mixin fontAwesomeSolid;
+		${fonts.fontAwesomeSolid};
 
 		position: relative;
 		pointer-events: none;
@@ -86,10 +86,8 @@
 		box-shadow: 0 0 7px 3px rgba(0, 0, 0, 40%), inset 0 0 7px 3px rgba(0, 0, 0, 40%);
 	}
 	&.selected {
-		outline: 2px dashed red;
+		outline: 2px dashed ${colors.red};
 	}
-}
+`;
 
-.DomElem.Button {
-	@mixin Button;
-}
+export default button;
