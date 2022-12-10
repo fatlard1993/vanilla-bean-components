@@ -9,6 +9,10 @@ export class Page extends DomElem {
 	constructor({ styles = () => '', globalStyles = () => '', ...options }) {
 		super({
 			globalStyles: ({ colors, ...theme }) => `
+				html {
+					height: 100%;
+				}
+
 				body {
 					position: relative;
 					width: 100%;
@@ -28,6 +32,10 @@ export class Page extends DomElem {
 						font-family: 'Source Code Pro', monospace;
 						line-height: 1;
 					}
+				}
+
+				div#app {
+					height: 100%;
 				}
 
 				@viewport {
