@@ -133,9 +133,10 @@ export class DomElem {
 				.${className} {
 					${styles(theme)}
 				}
-			`
-					.replace(/\t*/g, '')
-					.replace(/(^(\r\n|\n|\r)$)|^\s*$/gm, ''),
+			`,
+				// debug "clean output"
+				// .replace(/\t*/g, '')
+				// .replace(/(^(\r\n|\n|\r)$)|^\s*$/gm, ''),
 			)
 			.then(({ css }) => {
 				dom.appendStyles(css);

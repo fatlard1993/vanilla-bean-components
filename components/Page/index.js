@@ -1,3 +1,6 @@
+import '@fortawesome/fontawesome-free/css/all.css';
+import 'source-code-pro/source-code-pro.css';
+
 import dom from '../../utils/dom';
 
 import DomElem from '../DomElem';
