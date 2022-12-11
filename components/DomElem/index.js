@@ -174,7 +174,7 @@ export class DomElem {
 		return evt;
 	}
 
-	wrapPointerCallback(cb) {
+	wrapPointerCallback(cb = () => {}) {
 		return evt => {
 			evt = this.pointerEventPolyfill(evt);
 
