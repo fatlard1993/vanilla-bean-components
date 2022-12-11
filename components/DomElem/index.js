@@ -1,8 +1,7 @@
 import { customAlphabet } from 'nanoid';
 import postcss from 'postcss';
-import plugin_simpleVars from 'postcss-simple-vars';
-import plugin_nested from 'postcss-nested';
 import plugin_autoprefixer from 'autoprefixer';
+import plugin_nested from 'postcss-nested';
 
 import dom from '../../utils/dom';
 
@@ -127,13 +126,14 @@ export class DomElem {
 	styles(styles) {
 		const className = classId();
 
-		postcss([plugin_simpleVars, plugin_nested, plugin_autoprefixer])
+		postcss([plugin_nested, plugin_autoprefixer])
 			.process(
 				`
 				.${className} {
 					${styles(theme)}
 				}
 			`,
+				{ from: undefined },
 				// debug "clean output"
 				// .replace(/\t*/g, '')
 				// .replace(/(^(\r\n|\n|\r)$)|^\s*$/gm, ''),
@@ -146,11 +146,12 @@ export class DomElem {
 	}
 
 	globalStyles(styles) {
-		postcss([plugin_simpleVars, plugin_nested, plugin_autoprefixer])
+		postcss([plugin_nested, plugin_autoprefixer])
 			.process(
 				styles(theme)
 					.replace(/\t*/g, '')
 					.replace(/(^(\r\n|\n|\r)$)|^\s*$/gm, ''),
+				{ from: undefined },
 			)
 			.then(({ css }) => dom.appendStyles(css));
 	}

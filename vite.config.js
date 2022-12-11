@@ -15,4 +15,12 @@ export default defineConfig({
 		environment: 'jsdom',
 		globals: true,
 	},
+	resolve: {
+		alias: {
+			path: 'node_modules/@jspm/core/nodelibs/browser/path.js',
+			url: 'node_modules/@jspm/core/nodelibs/browser/url.js',
+			fs: 'node_modules/@jspm/core/nodelibs/browser/fs.js',
+			'source-map-js': 'node_modules/source-map-js/source-map.js',
+		},
+	},
 });

@@ -42,20 +42,15 @@
 		"url": "https://github.com/fatlard1993/vanilla-bean-components/issues"
 	},
 	"homepage": "https://github.com/fatlard1993/vanilla-bean-components#readme",
-	"browserslist": [
-		"last 1 version",
-		"> 1%",
-		"not dead"
-	],
 	"dependencies": {
 		"@ctrl/tinycolor": "^3.4.1",
 		"@fortawesome/fontawesome-free": "^6.2.1",
+		"@jspm/core": "github:jspm/core",
 		"autoprefixer": "^10.4.13",
-		"browserslist": "^4.21.4",
 		"postcss": "^8.4.19",
 		"postcss-nested": "^6.0.0",
-		"postcss-simple-vars": "^7.0.1",
-		"source-code-pro": "^2.38.0"
+		"source-code-pro": "^2.38.0",
+		"source-map-js": "^1.0.2"
 	},
 	"devDependencies": {
 		"@testing-library/dom": "^8.19.0",
