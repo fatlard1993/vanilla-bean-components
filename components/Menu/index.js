@@ -5,6 +5,7 @@ export class Menu extends DomElem {
 		super({
 			styles: ({ colors, ...theme }) => `
 				margin: 0;
+				padding: 0;
 				list-style: none;
 
 				li {
