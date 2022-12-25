@@ -2,7 +2,16 @@ import DomElem from '../DomElem';
 import Label from '../Label';
 
 export class Input extends DomElem {
-	constructor({ styles = () => '', value = '', label, appendTo, appendChild, appendChildren, ...options }) {
+	constructor({
+		styles = () => '',
+		value = '',
+		label,
+		id = `input-${label?.label || label}`,
+		appendTo,
+		appendChild,
+		appendChildren,
+		...options
+	}) {
 		const initialValue = value;
 		const children = [
 			...(appendChildren ? (Array.isArray(appendChildren) ? appendChildren : [appendChildren]) : []),
@@ -16,6 +25,7 @@ export class Input extends DomElem {
 				${styles(theme)}
 			`,
 			tag: 'input',
+			id,
 			value,
 			appendTo,
 			appendChildren: label ? undefined : children,
@@ -28,6 +38,7 @@ export class Input extends DomElem {
 		if (label) {
 			this.label = new Label({
 				...(typeof label === 'object' ? label : { label }),
+				attr: { for: id },
 				appendTo,
 				appendChildren: [this.elem, ...children],
 			});

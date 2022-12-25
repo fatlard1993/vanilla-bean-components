@@ -1,4 +1,4 @@
-import { findByDisplayValue } from '@testing-library/dom';
+import { findByDisplayValue, findByRole } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 import { expect } from 'vitest';
 
@@ -13,6 +13,14 @@ describe('Input', () => {
 		new Input({ value, appendTo: container });
 
 		await findByDisplayValue(container, value);
+	});
+
+	test('must be able to render with a label', async () => {
+		const label = 'textLabel';
+
+		new Input({ type: 'text', label, appendTo: container });
+
+		await findByRole(container, 'textbox', { name: label });
 	});
 
 	test('must provide dirty state tracking', async () => {
