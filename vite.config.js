@@ -3,9 +3,6 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-	define: {
-		'process.env': {},
-	},
 	server: {
 		open: '/demo/index.html',
 		port: 9999,
@@ -17,6 +14,7 @@ export default defineConfig({
 	},
 	resolve: {
 		alias: {
+			process: 'process/browser',
 			path: 'node_modules/@jspm/core/nodelibs/browser/path.js',
 			url: 'node_modules/@jspm/core/nodelibs/browser/url.js',
 			fs: 'node_modules/@jspm/core/nodelibs/browser/fs.js',

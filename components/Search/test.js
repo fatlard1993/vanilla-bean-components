@@ -1,4 +1,4 @@
-import { findByDisplayValue } from '@testing-library/dom';
+import { findByRole, findByDisplayValue } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 
 import Search from '.';
@@ -11,6 +11,7 @@ describe('Search', () => {
 
 		new Search({ value, appendTo: container });
 
+		await findByRole(container, 'searchbox');
 		await findByDisplayValue(container, value);
 	});
 });
