@@ -12,7 +12,7 @@ export default class Demo extends DemoView {
 			label: 'myCustomLabel',
 			onKeyUp: evt => {
 				console.log(evt);
-				dirtyLabel.elem.children[0].textContent = `isDirty: ${input.isDirty()}`;
+				dirtyLabel.elem.children[0].textContent = `isDirty: ${input.isDirty}`;
 			},
 			onChange: () => input.validate(),
 			validations: [

@@ -30,14 +30,14 @@ describe('Input', () => {
 
 		await findByDisplayValue(container, value);
 
-		expect(input.isDirty(), false);
+		expect(input.isDirty, false);
 
 		input.elem.value = 'tempValue';
 
-		expect(input.isDirty(), true);
+		expect(input.isDirty, true);
 
 		input.elem.value = value;
 
-		expect(input.isDirty(), false);
+		expect(input.isDirty, false);
 	});
 });

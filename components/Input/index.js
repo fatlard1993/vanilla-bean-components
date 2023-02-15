@@ -33,7 +33,6 @@ export class Input extends DomElem {
 		});
 
 		this.initialValue = initialValue;
-		this.isDirty = () => initialValue !== this.value;
 
 		if (label) {
 			this.label = new Label({
@@ -51,6 +50,10 @@ export class Input extends DomElem {
 
 	set value(value) {
 		this.elem.value = value;
+	}
+
+	get isDirty() {
+		return this.initialValue !== this.value;
 	}
 
 	validate() {
