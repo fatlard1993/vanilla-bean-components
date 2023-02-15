@@ -3,6 +3,7 @@ import DomElem from '../DomElem';
 export class Label extends DomElem {
 	constructor({ label, styles = () => '', appendChild, appendChildren, ...options }) {
 		super({
+			tag: 'label',
 			styles: ({ colors, ...theme }) => `
 				position: relative;
 				display: block;
