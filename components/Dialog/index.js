@@ -1,5 +1,8 @@
+import { customAlphabet } from 'nanoid';
 import DomElem from '../DomElem';
 import Button from '../Button';
+
+const id = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-', 16);
 
 export class Dialog extends DomElem {
 	constructor({
@@ -14,7 +17,13 @@ export class Dialog extends DomElem {
 		size = 'small',
 		...options
 	}) {
+		const headerId = id();
+
 		super({
+			attr: {
+				role: 'dialog',
+				'aria-labelledby': headerId,
+			},
 			styles: ({ colors, ...theme }) => `
 				background-color: ${colors.darker(colors.grey)};
 				border-radius: 3px;
@@ -53,6 +62,8 @@ export class Dialog extends DomElem {
 			className: [className, size],
 			appendChildren: [
 				new DomElem({
+					tag: 'h2',
+					id: headerId,
 					styles: theme => `
 						text-align: center;
 						font-size: 1.2em;
