@@ -20,10 +20,8 @@ export class Dialog extends DomElem {
 		const headerId = id();
 
 		super({
-			attr: {
-				role: 'dialog',
-				'aria-labelledby': headerId,
-			},
+			role: 'dialog',
+			'aria-labelledby': headerId,
 			styles: ({ colors, ...theme }) => `
 				background-color: ${colors.darker(colors.grey)};
 				border-radius: 3px;

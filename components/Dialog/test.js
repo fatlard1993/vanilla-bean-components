@@ -1,12 +1,16 @@
-import { findByText, findByRole } from '@testing-library/dom';
+import { afterEach } from 'vitest';
+import { findByText, findByRole, fireEvent, waitForElementToBeRemoved, queryByRole } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 
 import { DomElem } from '..';
 import Dialog from '.';
+import { dom } from '../../utils';
 
 const container = new JSDOM().window.document.body;
 
 describe('Dialog', () => {
+	afterEach(() => dom.empty(container));
+
 	test('must display a dialog', async () => {
 		const header = 'header';
 
@@ -60,5 +64,17 @@ describe('Dialog', () => {
 
 		await findByRole(container, 'button', { name: 'button1' });
 		await findByRole(container, 'button', { name: 'button2' });
+	});
+
+	test('must provide a way to close the dialog', async () => {
+		new Dialog({
+			buttons: ['Close'],
+			onButtonPress: ({ closeDialog }) => closeDialog(),
+			appendTo: container,
+		});
+
+		fireEvent.click(await findByRole(container, 'button', { name: 'Close' }), {});
+
+		await waitForElementToBeRemoved(() => queryByRole(container, 'dialog'));
 	});
 });

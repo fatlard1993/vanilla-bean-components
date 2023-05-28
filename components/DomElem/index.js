@@ -12,10 +12,11 @@ import { buildClassName } from '../../utils/class';
 const classId = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-', 10);
 
 export class DomElem {
-	constructor({ tag = 'div', autoRender, ...options }) {
+	constructor({ tag = 'div', autoRender, knownAttributes = new Set(['role']), ...options }) {
 		this.elem = document.createElement(tag);
 
 		this.elem._domElem = this;
+		this.knownAttributes = knownAttributes;
 		this.options = options || {};
 
 		if (autoRender !== false) this.addAnimation(() => this.render(options));
@@ -41,6 +42,7 @@ export class DomElem {
 				} else if (domElemFunction) this[name].call(this, value);
 				else if (elemFunction) this.elem[name].call(this.elem, value);
 				else if (this.hasOwnProperty(name)) this[name] = value;
+				else if (this.knownAttributes.has(name) || name.startsWith('aria-')) this.elem.setAttribute(name, value);
 				else this.elem[name] = value;
 			});
 		}
