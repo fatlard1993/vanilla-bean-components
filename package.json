@@ -43,26 +43,26 @@
 	},
 	"homepage": "https://github.com/fatlard1993/vanilla-bean-components#readme",
 	"dependencies": {
-		"@ctrl/tinycolor": "^3.5.0",
-		"@fortawesome/fontawesome-free": "^6.2.1",
+		"@ctrl/tinycolor": "^3.6.0",
+		"@fortawesome/fontawesome-free": "^6.4.0",
 		"@jspm/core": "github:jspm/core",
-		"autoprefixer": "^10.4.13",
-		"postcss": "^8.4.20",
-		"postcss-nested": "^6.0.0",
+		"autoprefixer": "^10.4.14",
+		"postcss": "^8.4.24",
+		"postcss-nested": "^6.0.1",
 		"process": "^0.11.10",
 		"source-code-pro": "^2.38.0",
 		"source-map-js": "^1.0.2"
 	},
 	"devDependencies": {
-		"@testing-library/dom": "^8.19.1",
-		"eslint": "^8.30.0",
-		"eslint-config-prettier": "^8.5.0",
+		"@testing-library/dom": "^9.3.0",
+		"eslint": "^8.41.0",
+		"eslint-config-prettier": "^8.8.0",
 		"eslint-plugin-prettier": "^4.2.1",
-		"eslint-plugin-vitest": "0.0.21",
-		"eslint-plugin-vitest-globals": "^1.2.0",
-		"jsdom": "^20.0.3",
-		"prettier": "2.8.1",
-		"vite": "^4.0.3",
-		"vitest": "^0.25.2"
+		"eslint-plugin-vitest": "0.2.5",
+		"eslint-plugin-vitest-globals": "^1.3.1",
+		"jsdom": "^21.1.2",
+		"prettier": "2.8.8",
+		"vite": "^4.3.9",
+		"vitest": "^0.31.1"
 	}
 }
