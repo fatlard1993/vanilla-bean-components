@@ -1,9 +1,5 @@
-import Button from '../Button';
+import Link from './Link';
 
-export class Link extends Button {
-	constructor(options) {
-		super({ tag: 'a', ...options });
-	}
-}
+export { Link };
 
 export default Link;

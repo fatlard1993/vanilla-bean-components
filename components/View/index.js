@@ -1,18 +1,5 @@
-import DomElem from '../DomElem';
+import View from './View';
 
-export class View extends DomElem {
-	constructor({ styles = () => '', ...options }) {
-		super({
-			styles: theme => `
-				height: 100%;
-				display: flex;
-				flex-direction: column;
-
-				${styles(theme)}
-			`,
-			...options,
-		});
-	}
-}
+export { View };
 
 export default View;

@@ -1,13 +1,5 @@
-import Input from '../Input';
+import Search from './Search';
 
-export class Search extends Input {
-	constructor(options) {
-		super({
-			type: 'search',
-			placeholder: 'Search',
-			...options,
-		});
-	}
-}
+export { Search };
 
 export default Search;

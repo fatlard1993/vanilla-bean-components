@@ -1,15 +1,5 @@
-import Input from '../Input';
+import TextInput from './TextInput';
 
-export class TextInput extends Input {
-	constructor({ autocomplete = 'off', autocapitalize = 'off', autocorrect = 'off', ...options }) {
-		super({
-			type: 'text',
-			autocomplete,
-			autocapitalize,
-			autocorrect,
-			...options,
-		});
-	}
-}
+export { TextInput };
 
 export default TextInput;

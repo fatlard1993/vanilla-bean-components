@@ -1,9 +1,5 @@
-import Input from '../Input';
+import NumberInput from './NumberInput';
 
-export class NumberInput extends Input {
-	constructor({ value, ...options }) {
-		super({ type: 'number', value, ...options });
-	}
-}
+export { NumberInput };
 
 export default NumberInput;
