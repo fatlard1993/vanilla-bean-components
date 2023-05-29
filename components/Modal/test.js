@@ -1,8 +1,9 @@
 import { findByText } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 
+import { DomElem } from '../';
+
 import Modal from '.';
-import DomElem from '../DomElem';
 
 const container = new JSDOM().window.document.body;
 

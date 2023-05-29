@@ -1,4 +1,4 @@
-import Input from '../Input/Input';
+import Input from '../Input';
 
 export class TextInput extends Input {
 	constructor({ autocomplete = 'off', autocapitalize = 'off', autocorrect = 'off', ...options }) {

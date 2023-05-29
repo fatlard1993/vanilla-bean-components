@@ -1,5 +1,4 @@
 import { DomElem, Button, Label, TextInput } from '../';
-
 import DemoView from '../../demo/DemoView';
 
 export default class Demo extends DemoView {

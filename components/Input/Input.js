@@ -1,5 +1,16 @@
-import DomElem from '../DomElem/DomElem';
-import Label from '../Label/Label';
+import { styled } from '../../utils';
+import DomElem from '../DomElem';
+import Label from '../Label';
+
+const InputValidationError = styled(
+	DomElem,
+	({ colors }) => `
+		background-color: ${colors.red};
+		padding: 6px;
+		margin: 3px;
+		border-radius: 3px;
+	`,
+);
 
 export class Input extends DomElem {
 	constructor({
@@ -73,15 +84,8 @@ export class Input extends DomElem {
 			if (this.validationErrors[message]) {
 				this.validationErrors[message].elem.style.display = isValid ? 'none' : 'block';
 			} else if (!isValid) {
-				this.validationErrors[message] = new DomElem({
-					styles: ({ colors }) => `
-						background-color: ${colors.red};
-						padding: 6px;
-						margin: 3px;
-						border-radius: 3px;
-					`,
+				this.validationErrors[message] = new InputValidationError({
 					textContent: resolvedMessage,
-					className: 'validationError',
 				});
 
 				this.elem.parentElement.insertBefore(this.validationErrors[message].elem, this.elem);

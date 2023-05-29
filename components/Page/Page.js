@@ -1,8 +1,7 @@
 import '@fortawesome/fontawesome-free/css/all.css';
 import 'source-code-pro/source-code-pro.css';
 
-import dom from '../../utils/dom';
-
+import { dom } from '../../utils';
 import DomElem from '../DomElem';
 
 export class Page extends DomElem {

@@ -1,4 +1,4 @@
-import DomElem from '../DomElem/DomElem';
+import DomElem from '../DomElem';
 
 export class View extends DomElem {
 	constructor({ styles = () => '', ...options }) {

@@ -1,4 +1,13 @@
-import DomElem from '../DomElem/DomElem';
+import { styled } from '../../utils';
+import DomElem from '../DomElem';
+
+const LabelText = styled(
+	DomElem,
+	theme => `
+		margin: 12px 0;
+		color: ${theme.white};
+	`,
+);
 
 export class Label extends DomElem {
 	constructor({ label, styles = () => '', appendChild, appendChildren, ...options }) {
@@ -17,13 +26,7 @@ export class Label extends DomElem {
 				${styles({ colors, ...theme })}
 			`,
 			appendChildren: [
-				new DomElem({
-					styles: theme => `
-						margin: 12px 0;
-						color: ${theme.white};
-					`,
-					textContent: label,
-				}),
+				new LabelText({ textContent: label }),
 				...(appendChildren ? (Array.isArray(appendChildren) ? appendChildren : [appendChildren]) : []),
 				...(appendChild ? [appendChild] : []),
 			],

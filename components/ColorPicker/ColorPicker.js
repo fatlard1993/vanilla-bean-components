@@ -1,13 +1,73 @@
 import TinyColor, { random as randomColor } from '@ctrl/tinycolor';
 
-import dom from '../../utils/dom';
-import { debounceCb } from '../../utils';
-
+import { debounceCb, dom, styled } from '../../utils';
 import DomElem from '../DomElem';
 import Input from '../Input';
 import TextInput from '../TextInput';
 
 import { saturation, hue } from './svg';
+
+const PickerArea = styled(
+	DomElem,
+	({ colors }) => `
+		position: relative;
+		width: 150px;
+		height: 150px;
+		margin: 0 auto;
+		box-shadow: 0px 0px 0px 2px ${colors.darker(colors.grey)};
+
+		* {
+			pointer-events: none;
+		}
+	`,
+);
+
+const PickerIndicator = styled(
+	DomElem,
+	({ colors }) => `
+		position: absolute;
+		top: -6px;
+		left: -4px;
+		transform: translate3d(-4px, -4px, 0px);
+		width: 5px;
+		height: 5px;
+		border: 2px solid ${colors.grey};
+		border-radius: 4px;
+		opacity: 0.5;
+		background-color: ${colors.white};
+	`,
+);
+
+const HueArea = styled(
+	DomElem,
+	({ colors }) => `
+		position: relative;
+		width: 150px;
+		height: 30px;
+		margin: 10px auto 0;
+		box-shadow: 0px 0px 0px 2px ${colors.darker(colors.grey)};
+
+		* {
+			pointer-events: none;
+		}
+	`,
+);
+
+const HueIndicator = styled(
+	DomElem,
+	({ colors }) => `
+		position: absolute;
+		width: 10px;
+		height: 100%;
+		top: -4px;
+		left: -4px;
+		transform: translate3d(-8px, 0px, 0px);
+		opacity: 0.6;
+		border: 4px solid ${colors.grey};
+		border-radius: 4px;
+		background-color: ${colors.white};
+	`,
+);
 
 export class ColorPicker extends Input {
 	constructor({ styles = () => '', value: initialValue = '#666', onChange = () => {}, ...options } = {}) {
@@ -27,69 +87,19 @@ export class ColorPicker extends Input {
 
 		this.onChange = onChange;
 
-		this.pickerArea = new DomElem({
-			styles: ({ colors }) => `
-				position: relative;
-				width: 150px;
-				height: 150px;
-				margin: 0 auto;
-				box-shadow: 0px 0px 0px 2px ${colors.darker(colors.grey)};
-
-				* {
-					pointer-events: none;
-				}
-			`,
-			className: 'pickerArea',
+		this.pickerArea = new PickerArea({
 			innerHTML: saturation,
 			appendTo: this.elem,
 		});
-		this.pickerIndicator = new DomElem({
-			styles: ({ colors }) => `
-				position: absolute;
-				top: -6px;
-				left: -4px;
-				transform: translate3d(-4px, -4px, 0px);
-				width: 5px;
-				height: 5px;
-				border: 2px solid ${colors.grey};
-				border-radius: 4px;
-				opacity: 0.5;
-				background-color: ${colors.white};
-			`,
-			className: 'indicator',
+		this.pickerIndicator = new PickerIndicator({
 			appendTo: this.pickerArea,
 		});
 
-		this.hueArea = new DomElem({
-			styles: ({ colors }) => `
-				position: relative;
-				width: 150px;
-				height: 30px;
-				margin: 10px auto 0;
-				box-shadow: 0px 0px 0px 2px ${colors.darker(colors.grey)};
-
-				* {
-					pointer-events: none;
-				}
-			`,
-			className: 'hueArea',
+		this.hueArea = new HueArea({
 			innerHTML: hue,
 			appendTo: this.elem,
 		});
-		this.hueIndicator = new DomElem({
-			styles: ({ colors }) => `
-				position: absolute;
-				width: 10px;
-				height: 100%;
-				top: -4px;
-				left: -4px;
-				transform: translate3d(-8px, 0px, 0px);
-				opacity: 0.6;
-				border: 4px solid ${colors.grey};
-				border-radius: 4px;
-				background-color: ${colors.white};
-			`,
-			className: 'indicator',
+		this.hueIndicator = new HueIndicator({
 			appendTo: this.hueArea,
 		});
 

@@ -1,7 +1,6 @@
 import { customAlphabet } from 'nanoid';
 
-import { styled } from '../../utils/styled';
-
+import { styled } from '../../utils';
 import DomElem from '../DomElem';
 import Button from '../Button';
 

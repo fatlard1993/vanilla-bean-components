@@ -2,9 +2,9 @@ import { afterEach } from 'vitest';
 import { findByText, findByRole, fireEvent, waitForElementToBeRemoved, queryByRole } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 
-import { DomElem } from '..';
+import { dom, DomElem } from '../../';
+
 import Dialog from '.';
-import { dom } from '../../utils';
 
 const container = new JSDOM().window.document.body;
 

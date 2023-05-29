@@ -1,6 +1,5 @@
-import DomElem from '../DomElem';
-
 import { dom } from '../../utils';
+import DomElem from '../DomElem';
 
 export class Router extends DomElem {
 	constructor({ styles = () => '', ...options }) {

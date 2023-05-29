@@ -1,5 +1,5 @@
-import DomElem from '../DomElem/DomElem';
-import Input from '../Input/Input';
+import DomElem from '../DomElem';
+import Input from '../Input';
 
 export class Select extends Input {
 	constructor(options) {

@@ -3,11 +3,8 @@ import postcss from 'postcss';
 import plugin_autoprefixer from 'autoprefixer';
 import plugin_nested from 'postcss-nested';
 
-import dom from '../../utils/dom';
-
+import { dom, buildClassName } from '../../utils';
 import theme from '../../theme';
-
-import { buildClassName } from '../../utils/class';
 
 const classId = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-', 10);
 

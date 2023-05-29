@@ -1,5 +1,4 @@
-import { styled } from '../../utils/styled';
-
+import { styled } from '../../utils';
 import DomElem from '../DomElem';
 import TextInput from '../TextInput';
 import IconButton from '../IconButton';
