@@ -3,9 +3,6 @@ export const styled = (domElem, styles = () => '') => {
 		constructor({ styles: overlayStyles = () => '', ...options }) {
 			super({
 				styles: theme => `
-					margin: 6px;
-					flex: 1;
-
 					${styles(theme)}
 
 					${overlayStyles(theme)}
