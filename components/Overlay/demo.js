@@ -64,7 +64,7 @@ export default class Demo extends DemoView {
 			return;
 		}
 
-		this.overlay?.cleanup();
+		this.overlay?.remove();
 		this.overlay = undefined;
 	}
 }

@@ -2,10 +2,6 @@ import {
 	isMac,
 	isNodeList,
 	appendStyles,
-	// empty,
-	// remove,
-	// getElemIndex,
-	// isDescendantOf,
 	// getPixelDensity,
 	// getScreenOrientation,
 } from './dom';
@@ -45,14 +41,6 @@ test('appendStyles', () => {
 
 	expect(result.innerHTML).toContain(styles);
 });
-
-test.skip('empty', () => {});
-
-test.skip('remove', () => {});
-
-test.skip('getElemIndex', () => {});
-
-test.skip('isDescendantOf', () => {});
 
 test.skip('getPixelDensity', () => {});
 

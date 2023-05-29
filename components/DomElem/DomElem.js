@@ -3,7 +3,7 @@ import postcss from 'postcss';
 import plugin_autoprefixer from 'autoprefixer';
 import plugin_nested from 'postcss-nested';
 
-import { remove, empty, appendStyles, buildClassName } from '../../utils';
+import { remove, empty, appendStyles, buildClassName, getElemIndex, isDescendantOf } from '../../utils';
 import theme from '../../theme';
 import state from '../state';
 
@@ -52,16 +52,20 @@ export class DomElem {
 		if (this.options.onRender) this.options.onRender(options);
 	}
 
+	get elemIndex() {
+		return getElemIndex(this.elem);
+	}
+
+	isDescendantOf(parent) {
+		return isDescendantOf(this.elem, parent);
+	}
+
 	remove() {
 		remove(this.elem);
 	}
 
 	empty() {
 		empty(this.elem);
-	}
-
-	cleanup() {
-		this.remove();
 	}
 
 	ancestry(targetClass = this) {

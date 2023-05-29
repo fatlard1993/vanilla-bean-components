@@ -24,7 +24,7 @@ export class ModalDialog {
 			content,
 			footer,
 			buttons,
-			closeDialog: () => this.modal.cleanup(),
+			closeDialog: () => this.modal.remove(),
 			...options,
 		});
 

@@ -102,12 +102,12 @@ export class Dialog extends DomElem {
 							button =>
 								new DialogButton({
 									textContent: button,
-									onPointerPress: () => onButtonPress({ button, closeDialog: closeDialog || (() => super.cleanup()) }),
+									onPointerPress: () => onButtonPress({ button, closeDialog: closeDialog || (() => super.remove()) }),
 								}),
 						),
 				}),
 			],
-			closeDialog: closeDialog || (() => super.cleanup()),
+			closeDialog: closeDialog || (() => super.remove()),
 			...options,
 		});
 	}
