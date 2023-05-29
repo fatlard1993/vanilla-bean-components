@@ -6,7 +6,7 @@ test('debounceCb', () => {
 	vi.useFakeTimers();
 
 	let count = 0;
-	const bumpCount = () => count++;
+	const bumpCount = (mod = 1) => (count += mod);
 
 	debounceCb(bumpCount, 100);
 	debounceCb(bumpCount, 100);
@@ -29,6 +29,12 @@ test('debounceCb', () => {
 	vi.advanceTimersByTime(100);
 
 	expect(count).toStrictEqual(3);
+
+	debounceCb(bumpCount, 100, 3);
+
+	vi.advanceTimersByTime(100);
+
+	expect(count).toStrictEqual(6);
 });
 
 test('run', () => {

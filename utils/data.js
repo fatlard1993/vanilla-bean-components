@@ -1,9 +1,11 @@
 import state from '../components/state';
 
-export const debounceCb = (cb, delay = 400) => {
-	if (state[cb]) clearTimeout(state[cb]);
+export const debounceCb = (cb, delay = 400, ...args) => {
+	if (state?.debounceCb?.[cb]) clearTimeout(state.debounceCb[cb]);
 
-	state[cb] = setTimeout(cb, delay);
+	state.debounceCb = state.debounceCb || {};
+
+	state.debounceCb[cb] = setTimeout(() => cb(...args), delay);
 };
 
 export const run = (arr, destructive) => {
