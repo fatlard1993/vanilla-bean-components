@@ -19,6 +19,7 @@ export * from './Select';
 export * from './TagList';
 export * from './Textarea';
 export * from './TextInput';
+export * from './Tooltip';
 export * from './View';
 
 export * from './state';

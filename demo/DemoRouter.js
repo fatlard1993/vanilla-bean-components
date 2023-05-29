@@ -19,6 +19,7 @@ import SelectDemo from '../components/Select/demo';
 import TagListDemo from '../components/TagList/demo';
 import TextareaDemo from '../components/Textarea/demo';
 import TextInputDemo from '../components/TextInput/demo';
+import TooltipDemo from '../components/Tooltip/demo';
 import ViewDemo from '../components/View/demo';
 
 import { NoData, Router } from '../components';
@@ -54,6 +55,7 @@ export const paths = {
 	tagList: '/TagList',
 	textarea: '/Textarea',
 	textInput: '/TextInput',
+	tooltip: '/Tooltip',
 	view: '/View',
 };
 
@@ -79,6 +81,7 @@ export const views = {
 	[paths.tagList]: TagListDemo,
 	[paths.textarea]: TextareaDemo,
 	[paths.textInput]: TextInputDemo,
+	[paths.tooltip]: TooltipDemo,
 	[paths.view]: ViewDemo,
 };
 

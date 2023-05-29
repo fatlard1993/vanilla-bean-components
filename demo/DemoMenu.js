@@ -16,10 +16,12 @@ export default class DemoMenu extends DomElem {
 	constructor({ styles = () => '', ...options }) {
 		super({
 			styles: theme => `
-				padding: 6px;
+				padding: 12px 24px;
+				margin-bottom: 6px;
 				display: flex;
 				flex-wrap: wrap;
 				gap: 6px;
+				background-color: ${theme.colors.darkest(theme.colors.grey)}
 
 				${styles(theme)}
 			`,

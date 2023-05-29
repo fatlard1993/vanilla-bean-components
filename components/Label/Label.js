@@ -1,4 +1,5 @@
 import { styled } from '../../utils';
+import { TooltipSupport } from '../Tooltip';
 import DomElem from '../DomElem';
 
 const LabelText = styled(
@@ -9,7 +10,7 @@ const LabelText = styled(
 	`,
 );
 
-export class Label extends DomElem {
+export class Label extends TooltipSupport {
 	constructor({ label, styles = () => '', appendChild, appendChildren, ...options }) {
 		super({
 			tag: 'label',

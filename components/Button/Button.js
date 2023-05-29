@@ -1,6 +1,6 @@
-import DomElem from '../DomElem';
+import { TooltipSupport } from '../Tooltip';
 
-export class Button extends DomElem {
+export class Button extends TooltipSupport {
 	constructor({ styles = () => '', icon, className, ...options }) {
 		super({
 			styles: theme => `

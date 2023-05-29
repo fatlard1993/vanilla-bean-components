@@ -1,5 +1,6 @@
 import { styled } from '../../utils';
 import DomElem from '../DomElem';
+import { TooltipSupport } from '../Tooltip';
 import Label from '../Label';
 
 const InputValidationError = styled(
@@ -12,7 +13,7 @@ const InputValidationError = styled(
 	`,
 );
 
-export class Input extends DomElem {
+export class Input extends TooltipSupport {
 	constructor({
 		styles = () => '',
 		value = '',
