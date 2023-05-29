@@ -1,9 +1,8 @@
-import { DomElem, Link } from '../components';
+import { DomElem, Link, Search } from '../components';
 
-import { styled } from '../utils/styled';
+import { debounceCb, capitalize, styled } from '../utils';
 
 import { paths } from './DemoRouter';
-import { capitalize } from '../utils/string';
 
 const MenuLink = styled(
 	Link,
@@ -27,17 +26,33 @@ export default class DemoMenu extends DomElem {
 			...options,
 		});
 
+		this.links = [];
+
+		this.filterLinks = filter => {
+			this.links.forEach(link => {
+				link.elem.style.display = link.elem.textContent.toLowerCase().includes(filter.toLowerCase()) ? '' : 'none';
+			});
+		};
+
 		const appendTo = this;
+
+		new Search({
+			appendTo,
+			onKeyUp: ({ value }) => debounceCb(() => this.filterLinks(value)),
+			onSearch: ({ value }) => this.filterLinks(value),
+		});
 
 		Object.keys(paths).forEach(name => {
 			const href = `#${paths[name]}`;
 
-			new MenuLink({
-				appendTo,
-				textContent: capitalize(name),
-				href,
-				className: href === window.location.hash ? 'disabled' : '',
-			});
+			this.links.push(
+				new MenuLink({
+					appendTo,
+					textContent: capitalize(name),
+					href,
+					className: href === window.location.hash ? 'disabled' : '',
+				}),
+			);
 		});
 	}
 }
