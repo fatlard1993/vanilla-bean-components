@@ -363,15 +363,27 @@ export class DomElem {
 	}
 
 	onKeyDown(cb) {
-		this.elem.addEventListener('keydown', cb);
+		const wrappedCb = evt => {
+			evt.value = evt.target.value || this.elem.value || this.value;
 
-		return () => this.elem.removeEventListener('keydown', cb);
+			cb(evt);
+		};
+
+		this.elem.addEventListener('keydown', wrappedCb);
+
+		return () => this.elem.removeEventListener('keydown', wrappedCb);
 	}
 
 	onKeyUp(cb) {
-		this.elem.addEventListener('keyup', cb);
+		const wrappedCb = evt => {
+			evt.value = evt.target.value || this.elem.value || this.value;
 
-		return () => this.elem.removeEventListener('keyup', cb);
+			cb(evt);
+		};
+
+		this.elem.addEventListener('keyup', wrappedCb);
+
+		return () => this.elem.removeEventListener('keyup', wrappedCb);
 	}
 
 	onChange(cb) {
@@ -384,6 +396,18 @@ export class DomElem {
 		this.elem.addEventListener('change', wrappedCb);
 
 		return () => this.elem.removeEventListener('change', wrappedCb);
+	}
+
+	onBlur(cb) {
+		const wrappedCb = evt => {
+			evt.value = evt.target.value || this.elem.value || this.value;
+
+			cb(evt);
+		};
+
+		this.elem.addEventListener('blur', wrappedCb);
+
+		return () => this.elem.removeEventListener('blur', wrappedCb);
 	}
 }
 
