@@ -101,8 +101,8 @@ export class Dialog extends DomElem {
 						buttons.map(
 							button =>
 								new DialogButton({
-									textContent: button,
 									onPointerPress: () => onButtonPress({ button, closeDialog: closeDialog || (() => super.remove()) }),
+									...(typeof button === 'object' ? button : { textContent: button }),
 								}),
 						),
 				}),
