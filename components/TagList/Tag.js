@@ -29,18 +29,6 @@ export class Tag extends DomElem {
 					padding: 0 3px;
 					border: 1px solid;
 					min-width: 260px;
-
-					.DomElem.TextInput {
-						display: inline-block;
-						flex: 1;
-						margin: 3px;
-					}
-				}
-
-				.DomElem.IconButton {
-					width: 30px;
-					height: 30px;
-					margin: 3px 0 3px 3px;
 				}
 
 				${styles({ colors, ...theme })}

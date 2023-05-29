@@ -1,15 +1,35 @@
-import DomElem from '../DomElem';
+import { styled } from '../../utils/styled';
 
+import DomElem from '../DomElem';
 import TextInput from '../TextInput';
 import IconButton from '../IconButton';
+
 import Tag from './Tag';
+
+const TagListTextInput = styled(
+	TextInput,
+	() => `
+		display: inline-block;
+		flex: 1;
+		margin: 3px;
+	`,
+);
+
+const TagListIconButton = styled(
+	IconButton,
+	() => `
+		width: 30px;
+		height: 30px;
+		margin: 3px 0 3px 3px;
+	`,
+);
 
 export class TagList extends DomElem {
 	constructor({ styles = () => '', tags = [], readOnly = false, ...options }) {
 		let tagInput, addTag, addButton;
 
 		if (!readOnly) {
-			tagInput = new TextInput({
+			tagInput = new TagListTextInput({
 				placeholder: 'New Tag',
 				onKeyUp: () => {
 					addTag.elem.style.width = `${Math.max(
@@ -18,7 +38,7 @@ export class TagList extends DomElem {
 					)}px`;
 				},
 			});
-			addButton = new IconButton({
+			addButton = new TagListIconButton({
 				icon: 'plus',
 				onPointerPress: () => {
 					const tags = Array.from(this.elem.children).map(elem => elem.textContent);

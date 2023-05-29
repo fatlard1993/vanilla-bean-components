@@ -1,7 +1,17 @@
 import { DomElem, Link } from '../components';
 
+import { styled } from '../utils/styled';
+
 import { paths } from './DemoRouter';
 import { capitalize } from '../utils/string';
+
+const MenuLink = styled(
+	Link,
+	() => `
+		margin: 0;
+		flex: 1 0 auto;
+	`,
+);
 
 export default class DemoMenu extends DomElem {
 	constructor({ styles = () => '', ...options }) {
@@ -11,11 +21,6 @@ export default class DemoMenu extends DomElem {
 				display: flex;
 				flex-wrap: wrap;
 				gap: 6px;
-
-				.DomElem.Link {
-					margin: 0;
-					flex: 1 0 auto;
-				}
 
 				${styles(theme)}
 			`,
@@ -27,7 +32,7 @@ export default class DemoMenu extends DomElem {
 		Object.keys(paths).forEach(name => {
 			const href = `#${paths[name]}`;
 
-			new Link({
+			new MenuLink({
 				appendTo,
 				textContent: capitalize(name),
 				href,

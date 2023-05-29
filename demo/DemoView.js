@@ -32,16 +32,6 @@ export default class DemoView extends View {
 				border: 1px solid;
 				margin: 5%;
 				padding: 5%;
-
-				& > div.dialog,
-				& > select.select,
-				& > button.button {
-					margin: 0 auto;
-				}
-
-				& > button.button {
-					display: block;
-				}
 			`,
 			className: 'demoWrapper',
 			appendTo: this.demoContent,

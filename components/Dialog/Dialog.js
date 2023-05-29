@@ -1,8 +1,19 @@
 import { customAlphabet } from 'nanoid';
+
+import { styled } from '../../utils/styled';
+
 import DomElem from '../DomElem';
 import Button from '../Button';
 
 const id = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-', 16);
+
+const DialogButton = styled(
+	Button,
+	() => `
+		margin: 6px;
+		flex: 1;
+	`,
+);
 
 export class Dialog extends DomElem {
 	constructor({
@@ -48,11 +59,6 @@ export class Dialog extends DomElem {
 					border-top: 1px solid ${colors.dark(colors.grey)};
 					display: flex;
 					flex-direction: row;
-
-					.DomElem.Button {
-						margin: 6px;
-						flex: 1;
-					}
 				}
 
 				${styles({ colors, ...theme })}
@@ -84,7 +90,7 @@ export class Dialog extends DomElem {
 						footer ||
 						buttons.map(
 							button =>
-								new Button({
+								new DialogButton({
 									textContent: button,
 									onPointerPress: () => onButtonPress({ button, closeDialog: closeDialog || (() => super.cleanup()) }),
 								}),
