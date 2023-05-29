@@ -1,7 +1,7 @@
 import '@fortawesome/fontawesome-free/css/all.css';
 import 'source-code-pro/source-code-pro.css';
 
-import { dom } from '../../utils';
+import state from '../state';
 import DomElem from '../DomElem';
 
 export class Page extends DomElem {
@@ -66,9 +66,30 @@ export class Page extends DomElem {
 	}
 
 	onLoad() {
-		if (this.options.mobileSupport !== false) dom.mobile.detect();
+		if (this.options.touchSupport !== false) this.detectTouch();
 
 		this.render();
+	}
+
+	detectTouch() {
+		if (state.touchDetectionEnabled) return;
+
+		state.touchDetectionEnabled = true;
+
+		document.addEventListener('touchstart', this.onPointerEvt);
+		document.addEventListener('touchend', this.onPointerEvt);
+		document.addEventListener('touchcancel', this.onPointerEvt);
+		document.addEventListener('mousedown', this.onPointerEvt);
+		document.addEventListener('mouseup', this.onPointerEvt);
+	}
+
+	onPointerEvt(evt) {
+		const isTouchEvt = evt.type.startsWith('touch');
+
+		if (!isTouchEvt && state.lastTouchTime && performance.now() - state.lastTouchTime < 350) return;
+		else if (isTouchEvt) state.lastTouchTime = performance.now();
+
+		state.isTouchDevice = true;
 	}
 }
 

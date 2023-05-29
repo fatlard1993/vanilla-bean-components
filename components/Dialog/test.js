@@ -2,14 +2,14 @@ import { afterEach } from 'vitest';
 import { findByText, findByRole, fireEvent, waitForElementToBeRemoved, queryByRole } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 
-import { dom, DomElem } from '../../';
+import { empty, DomElem } from '../../';
 
 import Dialog from '.';
 
 const container = new JSDOM().window.document.body;
 
 describe('Dialog', () => {
-	afterEach(() => dom.empty(container));
+	afterEach(() => empty(container));
 
 	test('must display a dialog', async () => {
 		const header = 'header';

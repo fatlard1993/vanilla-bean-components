@@ -3,13 +3,14 @@ import postcss from 'postcss';
 import plugin_autoprefixer from 'autoprefixer';
 import plugin_nested from 'postcss-nested';
 
-import { dom, buildClassName } from '../../utils';
+import { remove, empty, appendStyles, buildClassName } from '../../utils';
 import theme from '../../theme';
+import state from '../state';
 
 const classId = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-', 10);
 
 export class DomElem {
-	constructor({ tag = 'div', autoRender, knownAttributes = new Set(['role']), ...options }) {
+	constructor({ tag = 'div', autoRender, knownAttributes = new Set(['role']), ...options } = {}) {
 		this.elem = document.createElement(tag);
 
 		this.elem._domElem = this;
@@ -52,11 +53,11 @@ export class DomElem {
 	}
 
 	remove() {
-		dom.remove(this.elem);
+		remove(this.elem);
 	}
 
 	empty() {
-		dom.empty(this.elem);
+		empty(this.elem);
 	}
 
 	cleanup() {
@@ -95,6 +96,17 @@ export class DomElem {
 
 		if (this.elem.firstChild) this.elem.insertBefore(child, this.elem.firstChild);
 		else this.elem.appendChild(child);
+	}
+
+	findAncestor(selector) {
+		let elem = this.elem;
+
+		while (
+			(elem = elem.parentElement) &&
+			(selector[0] === '#' ? '#' + elem.id !== selector : !elem.className.includes(selector))
+		);
+
+		return elem;
 	}
 
 	setTransform(value) {
@@ -138,7 +150,7 @@ export class DomElem {
 				// .replace(/(^(\r\n|\n|\r)$)|^\s*$/gm, ''),
 			)
 			.then(({ css }) => {
-				dom.appendStyles(css);
+				appendStyles(css);
 
 				this.elem.classList.add(className);
 			});
@@ -152,7 +164,7 @@ export class DomElem {
 					.replace(/(^(\r\n|\n|\r)$)|^\s*$/gm, ''),
 				{ from: undefined },
 			)
-			.then(({ css }) => dom.appendStyles(css));
+			.then(({ css }) => appendStyles(css));
 	}
 
 	pointerEventPolyfill(evt = window.event) {
@@ -167,7 +179,7 @@ export class DomElem {
 		if (!evt.pointerType) {
 			if (evt.type.startsWith('touch')) evt.pointerType = 'touch';
 			else if (evt.type.startsWith('mouse')) evt.pointerType = 'mouse';
-			else evt.pointerType = dom.isMobile ? 'touch' : 'mouse';
+			else evt.pointerType = state.isTouchDevice ? 'touch' : 'mouse';
 		}
 
 		return evt;
@@ -177,7 +189,7 @@ export class DomElem {
 		return evt => {
 			evt = this.pointerEventPolyfill(evt);
 
-			if (dom.isMobile && evt.pointerType !== 'touch') return;
+			if (state.isTouchDevice && evt.pointerType !== 'touch') return;
 
 			cb.call(this, evt);
 		};
@@ -254,7 +266,7 @@ export class DomElem {
 
 			if (this.pointerUpOff) this.pointerUpOff();
 
-			if (evt.target !== this.elem || (dom.isMobile && evt.pointerType !== 'touch')) return;
+			if (evt.target !== this.elem || (state.isTouchDevice && evt.pointerType !== 'touch')) return;
 
 			cb.call(this, evt);
 		};
@@ -262,7 +274,7 @@ export class DomElem {
 		const pointerDown = evt => {
 			evt = this.pointerEventPolyfill(evt);
 
-			if (evt.target !== this.elem || (dom.isMobile && evt.pointerType !== 'touch')) return;
+			if (evt.target !== this.elem || (state.isTouchDevice && evt.pointerType !== 'touch')) return;
 
 			document.addEventListener('touchend', wrappedCb, true);
 			document.addEventListener('touchcancel', wrappedCb, true);
@@ -300,7 +312,7 @@ export class DomElem {
 		const pointerDown = evt => {
 			evt = this.pointerEventPolyfill(evt);
 
-			if (evt.target !== this.elem || (dom.isMobile && evt.pointerType !== 'touch')) return;
+			if (evt.target !== this.elem || (state.isTouchDevice && evt.pointerType !== 'touch')) return;
 
 			this.elem.classList.add('pointerHold');
 

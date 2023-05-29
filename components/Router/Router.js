@@ -1,4 +1,4 @@
-import { dom } from '../../utils';
+import { empty } from '../../utils';
 import DomElem from '../DomElem';
 
 export class Router extends DomElem {
@@ -83,7 +83,7 @@ export class Router extends DomElem {
 	}
 
 	renderView(route = this.route || this.defaultPath) {
-		dom.empty(this.elem);
+		empty(this.elem);
 
 		if (!this.path) return (this.path = route);
 
