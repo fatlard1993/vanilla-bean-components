@@ -68,11 +68,12 @@ export class Dialog extends DomElem {
 				new DomElem({
 					tag: 'h2',
 					id: headerId,
-					styles: theme => `
+					styles: ({ colors }) => `
 						text-align: center;
 						font-size: 1.2em;
 						line-height: 30px;
-						border-bottom: 1px solid ${theme.greyDark};
+						margin: 0;
+						border-bottom: 1px solid ${colors.dark(colors.grey)};
 					`,
 					[typeof header === 'string' ? 'textContent' : 'appendChildren']: header,
 				}),
