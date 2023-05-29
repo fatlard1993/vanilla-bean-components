@@ -19,7 +19,7 @@ export default class Demo extends DemoView {
 		new Label({
 			appendTo: this.demoWrapper,
 			textContent: 'Hover Me',
-			onHover: evt => this.openOverlay({ x: evt.clientX + 10, y: evt.clientY + 10 }),
+			onHover: evt => this.openOverlay({ x: evt.clientX + 10, y: evt.clientY + 10, closeOnMouseLeave: true }),
 			onMouseLeave: () => this.closeOverlay(),
 		});
 
@@ -37,7 +37,7 @@ export default class Demo extends DemoView {
 		});
 	}
 
-	openOverlay({ x, y }) {
+	openOverlay({ x, y, closeOnMouseLeave }) {
 		if (this.overlay) {
 			this.overlay.elem.style.top = `${y}px`;
 			this.overlay.elem.style.left = `${x}px`;
@@ -51,9 +51,11 @@ export default class Demo extends DemoView {
 			appendTo: this.demoContent,
 			appendChild: new DomElem({ tag: 'p', textContent: 'Some content for our overlay' }),
 			style: { top: `${y}px`, left: `${x}px` },
+			onMouseLeave: closeOnMouseLeave ? () => this.closeOverlay() : () => {},
 		});
 
-		setTimeout(() => (this.openingOverlay = false), 100);
+		if (closeOnMouseLeave) this.openingOverlay = false;
+		else setTimeout(() => (this.openingOverlay = false), 100);
 	}
 
 	closeOverlay() {
