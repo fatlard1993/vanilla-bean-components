@@ -68,6 +68,11 @@ export class DomElem {
 		empty(this.elem);
 	}
 
+	content(content) {
+		if (typeof content === 'string') this.elem.textContent = content;
+		else this.appendChildren(content);
+	}
+
 	ancestry(targetClass = this) {
 		if (!targetClass || targetClass?.constructor?.name === 'Object') return [];
 

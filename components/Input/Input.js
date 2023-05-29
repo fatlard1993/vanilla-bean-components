@@ -85,7 +85,7 @@ export class Input extends DomElem {
 				this.validationErrors[message].elem.style.display = isValid ? 'none' : 'block';
 			} else if (!isValid) {
 				this.validationErrors[message] = new InputValidationError({
-					textContent: resolvedMessage,
+					content: resolvedMessage,
 				});
 
 				this.elem.parentElement.insertBefore(this.validationErrors[message].elem, this.elem);

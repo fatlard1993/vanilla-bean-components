@@ -26,7 +26,7 @@ export class Label extends DomElem {
 				${styles({ colors, ...theme })}
 			`,
 			appendChildren: [
-				new LabelText({ textContent: label }),
+				new LabelText({ content: label }),
 				...(appendChildren ? (Array.isArray(appendChildren) ? appendChildren : [appendChildren]) : []),
 				...(appendChild ? [appendChild] : []),
 			],

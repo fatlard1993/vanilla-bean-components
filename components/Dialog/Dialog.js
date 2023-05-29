@@ -90,13 +90,13 @@ export class Dialog extends DomElem {
 				new DialogHeader({
 					tag: 'h2',
 					id: headerId,
-					[typeof header === 'string' ? 'textContent' : 'appendChildren']: header,
+					content: header,
 				}),
 				new DialogContent({
-					[typeof content === 'string' ? 'textContent' : 'appendChildren']: content,
+					content,
 				}),
 				new DialogFooter({
-					appendChildren:
+					content:
 						footer ||
 						buttons.map(
 							button =>
