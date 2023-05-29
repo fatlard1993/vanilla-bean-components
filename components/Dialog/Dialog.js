@@ -7,6 +7,36 @@ import Button from '../Button';
 
 const id = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-', 16);
 
+const DialogHeader = styled(
+	DomElem,
+	({ colors }) => `
+		text-align: center;
+		font-size: 1.2em;
+		line-height: 30px;
+		margin: 0;
+		border-bottom: 1px solid ${colors.dark(colors.grey)};
+	`,
+);
+
+const DialogContent = styled(
+	DomElem,
+	() => `
+		flex: 1;
+		padding: 6px;
+		overflow: auto;
+	`,
+);
+
+const DialogFooter = styled(
+	DomElem,
+	({ colors }) => `
+		height: 40px;
+		border-top: 1px solid ${colors.dark(colors.grey)};
+		display: flex;
+		flex-direction: row;
+	`,
+);
+
 const DialogButton = styled(
 	Button,
 	() => `
@@ -54,39 +84,19 @@ export class Dialog extends DomElem {
 					height: 90vh;
 				}
 
-				div.footer {
-					height: 40px;
-					border-top: 1px solid ${colors.dark(colors.grey)};
-					display: flex;
-					flex-direction: row;
-				}
-
 				${styles({ colors, ...theme })}
 			`,
 			className: [className, size],
 			appendChildren: [
-				new DomElem({
+				new DialogHeader({
 					tag: 'h2',
 					id: headerId,
-					styles: ({ colors }) => `
-						text-align: center;
-						font-size: 1.2em;
-						line-height: 30px;
-						margin: 0;
-						border-bottom: 1px solid ${colors.dark(colors.grey)};
-					`,
 					[typeof header === 'string' ? 'textContent' : 'appendChildren']: header,
 				}),
-				new DomElem({
-					styles: () => `
-						flex: 1;
-						padding: 6px;
-						overflow: auto;
-					`,
+				new DialogContent({
 					[typeof content === 'string' ? 'textContent' : 'appendChildren']: content,
 				}),
-				new DomElem({
-					className: 'footer',
+				new DialogFooter({
 					appendChildren:
 						footer ||
 						buttons.map(

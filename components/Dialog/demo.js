@@ -60,7 +60,7 @@ export default class Demo extends DemoView {
 			label: 'Props',
 			appendTo,
 			appendChildren: [
-				new DomElem({ tag: 'pre', textContent: '- size ["small"|"standard"|"large"] (optional) :: "small' }),
+				new DomElem({ tag: 'pre', textContent: '- size ["small"|"standard"|"large"] (optional) :: "small"' }),
 				new DomElem({ tag: 'pre', textContent: '- header [string|DomElem|Array(DomElem)] (optional)' }),
 				new DomElem({ tag: 'pre', textContent: '- content [string|DomElem|Array(DomElem)] (optional)' }),
 				new DomElem({ tag: 'pre', textContent: '- footer((!buttons)) [DomElem|Array(DomElem)] (optional)' }),
