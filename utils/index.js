@@ -5,3 +5,4 @@ export * from './dom';
 export * from './query';
 export * from './storage';
 export * from './string';
+export * from './styled';
