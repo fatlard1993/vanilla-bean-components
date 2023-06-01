@@ -16,6 +16,7 @@ export class DomElem {
 		this.elem._domElem = this;
 		this.knownAttributes = knownAttributes;
 		this.options = options || {};
+		this.classId = classId();
 
 		if (autoRender !== false) this.addAnimation(() => this.render(options));
 	}
@@ -39,6 +40,7 @@ export class DomElem {
 					Object.keys(value).forEach(key => (this.elem.style[key] = value[key]));
 				} else if (domElemFunction) this[name].call(this, value);
 				else if (elemFunction) this.elem[name].call(this.elem, value);
+				else if (name === 'checked') this.elem.checked = value;
 				else if (this.hasOwnProperty(name)) this[name] = value;
 				else if (this.knownAttributes.has(name) || name.startsWith('aria-')) this.elem.setAttribute(name, value);
 				else this.elem[name] = value;
@@ -144,12 +146,10 @@ export class DomElem {
 	}
 
 	styles(styles) {
-		const className = classId();
-
 		postcss([plugin_nested, plugin_autoprefixer])
 			.process(
 				`
-				.${className} {
+				.${this.classId} {
 					${styles(theme)}
 				}
 			`,
@@ -161,7 +161,7 @@ export class DomElem {
 			.then(({ css }) => {
 				appendStyles(css);
 
-				this.elem.classList.add(className);
+				this.elem.classList.add(this.classId);
 			});
 	}
 

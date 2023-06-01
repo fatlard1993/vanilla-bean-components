@@ -12,6 +12,7 @@ import ModalDialogDemo from '../components/ModalDialog/demo';
 import NoDataDemo from '../components/NoData/demo';
 import NumberInputDemo from '../components/NumberInput/demo';
 import PageDemo from '../components/Page/demo';
+import RadioButtonDemo from '../components/RadioButton/demo';
 import OverlayDemo from '../components/Overlay/demo';
 import RouterDemo from '../components/Router/demo';
 import SearchDemo from '../components/Search/demo';
@@ -49,6 +50,7 @@ export const paths = {
 	numberInput: '/NumberInput',
 	overlay: '/Overlay',
 	page: '/Page',
+	radioButton: '/RadioButton',
 	router: '/Router',
 	search: '/Search',
 	select: '/Select',
@@ -75,6 +77,7 @@ export const views = {
 	[paths.numberInput]: NumberInputDemo,
 	[paths.overlay]: OverlayDemo,
 	[paths.page]: PageDemo,
+	[paths.radioButton]: RadioButtonDemo,
 	[paths.router]: RouterDemo,
 	[paths.search]: SearchDemo,
 	[paths.select]: SelectDemo,
