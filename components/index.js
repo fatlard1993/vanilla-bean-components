@@ -1,5 +1,6 @@
 export * from './Button';
 export * from './ColorPicker';
+export * from './Checkbox';
 export * from './Dialog';
 export * from './DomElem';
 export * from './IconButton';

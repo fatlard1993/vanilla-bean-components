@@ -1,7 +1,7 @@
 import { styled } from '../../utils';
 import DomElem from '../DomElem';
 
-const RadioButtonLabel = styled(
+const CheckboxLabel = styled(
 	DomElem,
 	({ colors }) => `
 		line-height: 1.1;
@@ -14,28 +14,25 @@ const RadioButtonLabel = styled(
 		&:focus-within {
 			color: ${colors.blue};
 		}
-
-		& + label {
-			margin-top: 1em;
-		}
 	`,
 );
 
-const RadioButtonInput = styled(
+const CheckboxInput = styled(
 	DomElem,
 	({ colors }) => `
 		/* Remove most all native input styles */
 		appearance: none;
 
 		margin: 0;
+		margin-right: 6px;
 		font: inherit;
 		color: currentColor;
 		width: 1.15em;
 		height: 1.15em;
 		border: 0.15em solid currentColor;
-		border-radius: 50%;
+		border-radius: 3px;
 		transform: translateY(-0.075em);
-		display: grid;
+		display: inline-grid;
 		place-content: center;
 		cursor: pointer;
 
@@ -43,7 +40,7 @@ const RadioButtonInput = styled(
 			content: "";
 			width: 0.65em;
 			height: 0.65em;
-			border-radius: 50%;
+			border-radius: 2px;
 		}
 
 		&:checked:before {
@@ -51,36 +48,42 @@ const RadioButtonInput = styled(
 		}
 
 		&:focus {
-			box-shadow: inset 1em 1em ${colors.blue};
+			border: 0.15em solid currentColor;
 		}
 	`,
 );
 
-export class RadioButton extends DomElem {
-	constructor({ options = [], value, ...rest }) {
+export class Checkbox extends DomElem {
+	constructor({ label, value, ...rest }) {
 		super({
 			value,
 			...rest,
 		});
 
-		this.options = options.map(
-			option =>
-				new RadioButtonLabel({
-					tag: 'label',
-					appendTo: this.elem,
-					appendChildren: [
-						new RadioButtonInput({
-							tag: 'input',
-							type: 'radio',
-							value: option?.value || option,
-							name: this.classId,
-							checked: value === (option?.value || option),
-						}),
-						document.createTextNode(option?.label || option),
-					],
-				}),
-		);
+		this.inputElem = new CheckboxInput({
+			tag: 'input',
+			type: 'checkbox',
+			id: this.classId,
+			checked: value,
+		});
+
+		this.nameElem = new CheckboxLabel({
+			tag: 'label',
+			for: this.classId,
+			appendTo: this.elem,
+			appendChildren: [this.inputElem, document.createTextNode(label)],
+		});
+	}
+
+	get name() {
+		return this.nameElem.elem.childNodes[1].textContent;
+	}
+
+	set name(name) {
+		this.nameElem.elem.childNodes[1].textContent = name;
+
+		console.log({ elem: this.nameElem.elem }, name);
 	}
 }
 
-export default RadioButton;
+export default Checkbox;

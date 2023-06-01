@@ -1,5 +1,6 @@
 import ButtonDemo from '../components/Button/demo';
 import ColorPickerDemo from '../components/ColorPicker/demo';
+import CheckboxDemo from '../components/Checkbox/demo';
 import DialogDemo from '../components/Dialog/demo';
 import DomElemDemo from '../components/DomElem/demo';
 import IconButtonDemo from '../components/IconButton/demo';
@@ -37,6 +38,7 @@ class NotFound extends DemoView {
 export const paths = {
 	button: '/Button',
 	colorPicker: '/ColorPicker',
+	checkbox: '/Checkbox',
 	dialog: '/Dialog',
 	domElem: '/DomElem',
 	iconButton: '/IconButton',
@@ -64,6 +66,7 @@ export const paths = {
 export const views = {
 	[paths.button]: ButtonDemo,
 	[paths.colorPicker]: ColorPickerDemo,
+	[paths.checkbox]: CheckboxDemo,
 	[paths.dialog]: DialogDemo,
 	[paths.domElem]: DomElemDemo,
 	[paths.iconButton]: IconButtonDemo,
