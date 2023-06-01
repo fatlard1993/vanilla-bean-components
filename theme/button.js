@@ -39,7 +39,7 @@ export const button = `
 		pointer-events: none;
 	}
 
-	&:hover {
+	&:hover, &:focus {
 		top: -1px;
 
 		&:before {
@@ -57,9 +57,6 @@ export const button = `
 				linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1) 0.05em, rgba(0, 0, 0, 0) 0.08em),
 				linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.2) 0.24em, rgba(0, 0, 0, 0) 0.28em);
 		}
-	}
-	&:focus {
-		outline: none;
 	}
 	&:active,
 	&.active,
