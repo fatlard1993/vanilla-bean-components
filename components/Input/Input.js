@@ -1,7 +1,6 @@
 import { styled } from '../../utils';
 import DomElem from '../DomElem';
-import { TooltipSupport } from '../Tooltip';
-import Label from '../Label';
+import { LabelSupport } from '../Label';
 
 const InputValidationError = styled(
 	DomElem,
@@ -13,22 +12,9 @@ const InputValidationError = styled(
 	`,
 );
 
-export class Input extends TooltipSupport {
-	constructor({
-		styles = () => '',
-		value = '',
-		label,
-		id = `input-${label?.label || label}`,
-		appendTo,
-		appendChild,
-		appendChildren,
-		...options
-	}) {
+export class Input extends LabelSupport {
+	constructor({ styles = () => '', value = '', ...options }) {
 		const initialValue = value;
-		const children = [
-			...(appendChildren ? (Array.isArray(appendChildren) ? appendChildren : [appendChildren]) : []),
-			...(appendChild ? [appendChild] : []),
-		];
 
 		super({
 			styles: theme => `
@@ -37,23 +23,11 @@ export class Input extends TooltipSupport {
 				${styles(theme)}
 			`,
 			tag: 'input',
-			id,
 			value,
-			appendTo,
-			appendChildren: label ? undefined : children,
 			...options,
 		});
 
 		this.initialValue = initialValue;
-
-		if (label) {
-			this.label = new Label({
-				...(typeof label === 'object' ? label : { label }),
-				attr: { for: id },
-				appendTo,
-				appendChildren: [this.elem, ...children],
-			});
-		}
 	}
 
 	get value() {
