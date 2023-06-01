@@ -8,7 +8,13 @@ export default class Demo extends DemoView {
 		const textContent = 'textContent';
 		const icon = 'refresh';
 
-		const button = new Button({ icon, appendTo: this.demoWrapper, onPointerPress: console.log, textContent });
+		const button = new Button({
+			icon,
+			tooltip: { textContent: 'tooltip', position: 'bottom' },
+			appendTo: this.demoWrapper,
+			onPointerPress: console.log,
+			textContent,
+		});
 
 		const appendTo = this.demoContent;
 
