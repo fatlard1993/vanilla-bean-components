@@ -1,7 +1,7 @@
 import { findByRole } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 
-import Link from '.';
+import { Link } from '.';
 
 const container = new JSDOM().window.document.body;
 
@@ -12,6 +12,8 @@ describe('Link', () => {
 
 		new Link({ textContent, href, appendTo: container });
 
-		expect(await findByRole(container, 'link', { name: textContent }).href, href);
+		const link = await findByRole(container, 'link', { name: textContent });
+
+		expect(link.href, href);
 	});
 });

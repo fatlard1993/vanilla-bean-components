@@ -1,7 +1,7 @@
 import { findAllByRole } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 
-import Menu from '.';
+import { Menu } from '.';
 
 const container = new JSDOM().window.document.body;
 
@@ -11,8 +11,8 @@ describe('Menu', () => {
 
 		new Menu({ items, appendTo: container });
 
-		await (
-			await findAllByRole(container, 'listitem')
-		).forEach((item, index) => expect(item.textContent, items[index].textContent));
+		const listItems = await findAllByRole(container, 'listitem');
+
+		listItems.forEach((item, index) => expect(item.textContent, items[index].textContent));
 	});
 });

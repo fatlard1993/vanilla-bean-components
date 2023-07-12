@@ -1,8 +1,15 @@
-import Input from '../Input';
+import { Input } from '../Input';
 
-export class Textarea extends Input {
-	constructor({ value = '', ...options }) {
-		super({ tag: 'textarea', value, ...options });
+const defaultOptions = { tag: 'textarea' };
+
+class Textarea extends Input {
+	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
+
+	constructor(options = {}) {
+		super({
+			...defaultOptions,
+			...options,
+		});
 	}
 }
 

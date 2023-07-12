@@ -1,10 +1,10 @@
-import TinyColor, { random as randomColor } from '@ctrl/tinycolor';
+import { TinyColor, random as randomColor } from '@ctrl/tinycolor';
 
-import { debounceCb, styled } from '../../utils';
-import state from '../state';
-import DomElem from '../DomElem';
-import Input from '../Input';
-import TextInput from '../TextInput';
+import { debounceCallback, styled } from '../../utils';
+import { state } from '../state';
+import { DomElem } from '../DomElem';
+import { Input } from '../Input';
+import { TextInput } from '../TextInput';
 
 import { saturation, hue } from './svg';
 
@@ -15,7 +15,7 @@ const PickerArea = styled(
 		width: 150px;
 		height: 150px;
 		margin: 0 auto;
-		box-shadow: 0px 0px 0px 2px ${colors.darker(colors.grey)};
+		box-shadow: 0px 0px 0px 2px ${colors.darker(colors.gray)};
 
 		* {
 			pointer-events: none;
@@ -32,7 +32,7 @@ const PickerIndicator = styled(
 		transform: translate3d(-4px, -4px, 0px);
 		width: 5px;
 		height: 5px;
-		border: 2px solid ${colors.grey};
+		border: 2px solid ${colors.gray};
 		border-radius: 4px;
 		opacity: 0.5;
 		background-color: ${colors.white};
@@ -46,7 +46,7 @@ const HueArea = styled(
 		width: 150px;
 		height: 30px;
 		margin: 10px auto 0;
-		box-shadow: 0px 0px 0px 2px ${colors.darker(colors.grey)};
+		box-shadow: 0px 0px 0px 2px ${colors.darker(colors.gray)};
 
 		* {
 			pointer-events: none;
@@ -64,29 +64,41 @@ const HueIndicator = styled(
 		left: -4px;
 		transform: translate3d(-8px, 0px, 0px);
 		opacity: 0.6;
-		border: 4px solid ${colors.grey};
+		border: 4px solid ${colors.gray};
 		border-radius: 4px;
 		background-color: ${colors.white};
 	`,
 );
 
-export class ColorPicker extends Input {
-	constructor({ styles = () => '', value: initialValue = '#666', onChange = () => {}, ...options } = {}) {
+const defaultOptions = { tag: 'div', value: '#666', onChange: () => {} };
+
+class ColorPicker extends Input {
+	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
+
+	constructor(options = {}) {
+		options = { ...defaultOptions, ...options };
+
+		const textInput = new TextInput({
+			value: options.value,
+			onChange: ({ value }) => this.set(value),
+			onKeyUp: ({ target: { value } }) => debounceCallback(() => this.set(value), 700),
+		});
+
 		super({
-			styles: ({ colors, ...theme }) => `
-				background-color: ${colors.light(colors.grey)};
+			...options,
+			appendToLabel: [textInput, ...(options.appendToLabel ? [options.appendToLabel] : [])],
+			styles: theme => `
+				background-color: ${theme.colors.light(theme.colors.gray)};
 				padding: 14px;
 				border-radius: 5px;
 				margin-bottom: 6px;
 				text-indent: 0;
 
-				${styles({ colors, ...theme })}
+				${options.styles ? options.styles(theme) : ''}
 			`,
-			tag: 'div',
-			...options,
 		});
 
-		this.onChange = onChange;
+		this.onChange = options.onChange;
 
 		this.pickerArea = new PickerArea({
 			innerHTML: saturation,
@@ -104,14 +116,9 @@ export class ColorPicker extends Input {
 			appendTo: this.hueArea,
 		});
 
-		this.textInput = new TextInput({
-			appendTo: this.label,
-			value: initialValue,
-			onChange: ({ value }) => this.set(value),
-			onKeyUp: ({ target: { value } }) => debounceCb(() => this.set(value), 700),
-		});
+		this.textInput = textInput;
 
-		this.set(initialValue, true);
+		this.set(options.value, true);
 
 		document.addEventListener('mousedown', this.onPointerDown.bind(this));
 		document.addEventListener('touchstart', this.onPointerDown.bind(this));
@@ -143,10 +150,10 @@ export class ColorPicker extends Input {
 		if (triggerEvent) this.onChange(this);
 	}
 
-	normalizePosition(evt, parent, offsetX, offsetY) {
+	normalizePosition(event, parent, offsetX, offsetY) {
 		const position = {
-			x: evt.targetTouches ? evt.targetTouches[0].pageX : evt.clientX,
-			y: evt.targetTouches ? evt.targetTouches[0].pageY : evt.clientY,
+			x: event.targetTouches ? event.targetTouches[0].pageX : event.clientX,
+			y: event.targetTouches ? event.targetTouches[0].pageY : event.clientY,
 		};
 		const boundingRect = parent.getBoundingClientRect();
 
@@ -165,15 +172,15 @@ export class ColorPicker extends Input {
 		return position;
 	}
 
-	pickerMove(evt) {
-		evt.preventDefault();
+	pickerMove(event) {
+		event.preventDefault();
 
-		if (this.runningAnim) return;
-		this.runningAnim = true;
+		if (this.runningAnimation) return;
+		this.runningAnimation = true;
 
 		const indicatorOffsetX = this.pickerIndicator.elem.clientWidth / 2;
 		const indicatorOffsetY = this.pickerIndicator.elem.clientHeight / 2;
-		const position = this.normalizePosition(evt, this.pickerArea.elem, indicatorOffsetX, indicatorOffsetY);
+		const position = this.normalizePosition(event, this.pickerArea.elem, indicatorOffsetX, indicatorOffsetY);
 		const pickerAreaWidth = this.pickerArea.elem.clientWidth;
 		const pickerAreaHeight = this.pickerArea.elem.clientHeight;
 
@@ -190,18 +197,18 @@ export class ColorPicker extends Input {
 
 			this.set({ h, s: newS, v: newV }, true);
 
-			this.runningAnim = false;
+			this.runningAnimation = false;
 		});
 	}
 
-	hueMove(evt) {
-		evt.preventDefault();
+	hueMove(event) {
+		event.preventDefault();
 
-		if (this.runningAnim) return;
-		this.runningAnim = true;
+		if (this.runningAnimation) return;
+		this.runningAnimation = true;
 
 		const indicatorOffset = this.hueIndicator.elem.clientWidth / 2;
-		const position = this.normalizePosition(evt, this.hueArea.elem, indicatorOffset, indicatorOffset);
+		const position = this.normalizePosition(event, this.hueArea.elem, indicatorOffset, indicatorOffset);
 		const hueAreaWidth = this.hueArea.elem.clientWidth;
 
 		position.x -= indicatorOffset;
@@ -217,31 +224,31 @@ export class ColorPicker extends Input {
 
 			this.pickerArea.elem.style.backgroundColor = `hsl(${newHue}, 100%, 50%)`;
 
-			this.runningAnim = false;
+			this.runningAnimation = false;
 		});
 	}
 
-	onPointerDown(evt) {
-		if (state.isTouchDevice && !evt.targetTouches) return;
+	onPointerDown(event) {
+		if (state.isTouchDevice && !event.targetTouches) return;
 
-		if (evt.target === this.pickerArea.elem || evt.target === this.hueArea.elem) {
-			const moveFunc = this[`${evt.target === this.hueArea.elem ? 'hue' : 'picker'}Move`].bind(this);
+		if (event.target === this.pickerArea.elem || event.target === this.hueArea.elem) {
+			const onMove = this[`${event.target === this.hueArea.elem ? 'hue' : 'picker'}Move`].bind(this);
 
-			const dropFunc = () => {
-				document.removeEventListener('mouseup', dropFunc);
-				document.removeEventListener('mousemove', moveFunc);
-				document.removeEventListener('touchend', dropFunc);
-				document.removeEventListener('touchcancel', dropFunc);
-				document.removeEventListener('touchmove', moveFunc);
+			const onDrop = () => {
+				document.removeEventListener('mouseup', onDrop);
+				document.removeEventListener('mousemove', onMove);
+				document.removeEventListener('touchend', onDrop);
+				document.removeEventListener('touchcancel', onDrop);
+				document.removeEventListener('touchmove', onMove);
 			};
 
-			document.addEventListener('mouseup', dropFunc);
-			document.addEventListener('mousemove', moveFunc);
-			document.addEventListener('touchend', dropFunc);
-			document.addEventListener('touchcancel', dropFunc);
-			document.addEventListener('touchmove', moveFunc);
+			document.addEventListener('mouseup', onDrop);
+			document.addEventListener('mousemove', onMove);
+			document.addEventListener('touchend', onDrop);
+			document.addEventListener('touchcancel', onDrop);
+			document.addEventListener('touchmove', onMove);
 
-			moveFunc(evt);
+			onMove(event);
 		}
 	}
 }

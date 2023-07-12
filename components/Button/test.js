@@ -1,7 +1,7 @@
 import { findByRole } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 
-import Button from '.';
+import { Button } from '.';
 
 const container = new JSDOM().window.document.body;
 

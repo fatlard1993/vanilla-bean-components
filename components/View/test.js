@@ -1,9 +1,9 @@
 import { findByText } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 
-import { DomElem } from '../';
+import { DomElem } from '..';
 
-import View from '.';
+import { View } from '.';
 
 const container = new JSDOM().window.document.body;
 

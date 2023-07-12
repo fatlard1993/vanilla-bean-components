@@ -1,7 +1,7 @@
 import { findByText } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 
-import RadioButton from '.';
+import { RadioButton } from '.';
 
 const container = new JSDOM().window.document.body;
 

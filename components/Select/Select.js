@@ -1,10 +1,14 @@
-import DomElem from '../DomElem';
-import Input from '../Input';
+import { DomElem } from '../DomElem';
+import { Input } from '../Input';
 
-export class Select extends Input {
+const defaultOptions = { tag: 'select' };
+
+class Select extends Input {
+	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
+
 	constructor(options) {
 		super({
-			tag: 'select',
+			...defaultOptions,
 			...options,
 		});
 	}

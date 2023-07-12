@@ -1,24 +1,25 @@
-import Input from '../Input';
+import { Input } from '../Input';
 
-export class Search extends Input {
+const defaultOptions = { type: 'search', placeholder: 'Search' };
+
+class Search extends Input {
 	constructor(options) {
 		super({
-			type: 'search',
-			placeholder: 'Search',
+			...defaultOptions,
 			...options,
 		});
 	}
 
-	onSearch(cb) {
-		const wrappedCb = evt => {
-			evt.value = evt.target.value || this.elem.value || this.value;
+	onSearch(callback) {
+		const wrappedCallback = event => {
+			event.value = event.target.value || this.elem.value || this.value;
 
-			cb(evt);
+			callback(event);
 		};
 
-		this.elem.addEventListener('search', wrappedCb);
+		this.elem.addEventListener('search', wrappedCallback);
 
-		return () => this.elem.removeEventListener('search', wrappedCb);
+		return () => this.elem.removeEventListener('search', wrappedCallback);
 	}
 }
 

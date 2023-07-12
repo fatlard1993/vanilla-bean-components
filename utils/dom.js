@@ -1,12 +1,20 @@
-import state from '../components/state';
-
+/**
+ * Check if the current device is a mac
+ * @return {Boolean} isMac
+ */
 export const isMac = () =>
+	// eslint-disable-next-line compat/compat
 	(window.navigator?.userAgentData?.platform || navigator.platform).toLowerCase().startsWith('mac');
 
+/**
+ * Check if the passed parameter is an HTML NodeList
+ * @param {Object} nodes - The potential HTML NodeList
+ * @return {Boolean} isNodeList
+ */
 export const isNodeList = nodes => {
 	const nodeCount = nodes?.length;
 	const nodesString = Object.prototype.toString.call(nodes);
-	const stringRegex = /^\[object (HTMLCollection|NodeList|Object)\]$/;
+	const stringRegex = /^\[object (HTMLCollection|NodeList|Object)]$/;
 
 	return (
 		typeof nodes === 'object' &&
@@ -16,32 +24,30 @@ export const isNodeList = nodes => {
 	);
 };
 
+/**
+ * Append a style tag with custom css onto the page at runtime
+ * @param {String} css - The css string to inject into the page
+ */
 export const appendStyles = css => {
 	const style = document.createElement('style');
 
 	style.innerHTML = css;
 
+	// document.head doesn't have an appendChild function
+	// eslint-disable-next-line unicorn/prefer-dom-node-append
 	document.head.appendChild(style);
 };
 
-export const getPixelDensity = () => {
-	const reqTime = performance.now();
-
-	if (state.pixelDensity && state.lastPixelDensityRefresh && reqTime - state.lastPixelDensityRefresh < 5e3) {
-		return state.pixelDensity;
-	}
-
-	state.lastPixelDensityRefresh = reqTime;
-
-	return (state.pixelDensity = window.devicePixelRatio || 1);
-};
-
+/**
+ * Retrieve the current devices orientation
+ * @return {'landscape'|'portrait'} The current device's screen orientation
+ */
 export const getScreenOrientation = () => {
 	let orientation = 'primary';
 
 	if (window.screen && window.screen.orientation && window.screen.orientation.type)
 		orientation = window.screen.orientation.type;
-	else if (typeof window.orientation !== 'undefined')
+	else if (window.orientation !== undefined)
 		orientation = Math.abs(window.orientation) === 90 ? 'landscape' : 'portrait';
 
 	return orientation;

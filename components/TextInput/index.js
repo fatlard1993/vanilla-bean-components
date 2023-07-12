@@ -1,5 +1,1 @@
-import TextInput from './TextInput';
-
-export { TextInput };
-
-export default TextInput;
+export { default as TextInput } from './TextInput';

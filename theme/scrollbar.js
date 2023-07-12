@@ -1,6 +1,6 @@
 import colors from './colors';
 
-export const scrollbar = `
+export default `
 	::-webkit-scrollbar {
 		width: 24px;
 		height: 24px;
@@ -10,7 +10,7 @@ export const scrollbar = `
 		height: 6px;
 	}
 	::-webkit-scrollbar-thumb {
-		background: ${colors.darkest(colors.grey)};
+		background: ${colors.darkest(colors.gray)};
 		-webkit-box-shadow: inset 0 0 2px 1px ${colors.blue};
 		border-radius: 12px;
 	}
@@ -21,5 +21,3 @@ export const scrollbar = `
 		-webkit-box-shadow: inset 0 0 4px 2px ${colors.blue};
 	}
 `;
-
-export default scrollbar;

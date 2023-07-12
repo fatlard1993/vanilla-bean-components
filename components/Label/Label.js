@@ -1,38 +1,41 @@
 import { styled } from '../../utils';
-import { TooltipSupport } from '../Tooltip';
-import DomElem from '../DomElem';
+import { TooltipSupport } from '../TooltipSupport';
+import { DomElem } from '../DomElem';
 
 const LabelText = styled(
 	DomElem,
 	theme => `
+		display: block;
 		margin: 12px 0;
-		color: ${theme.white};
+		color: ${theme.colors.white};
 	`,
 );
 
-export class Label extends TooltipSupport {
-	constructor({ label, styles = () => '', appendChild, appendChildren, ...options }) {
+class Label extends TooltipSupport {
+	constructor(options = {}) {
 		super({
-			tag: 'label',
-			styles: ({ colors, ...theme }) => `
+			...options,
+			styles: theme => `
 				position: relative;
 				display: block;
 				font-size: 1em;
 				width: 95%;
 				margin: 0 auto 12px;
-				border-left: 3px solid ${colors.lightest(colors.grey)};
 				padding: 3px 12px 12px;
-				background-color: ${colors.darkest(colors.grey)};
+				border-left: 3px solid ${theme.colors.lightest(theme.colors.gray)};
+				background-color: ${theme.colors.darkest(theme.colors.gray)};
 
-				${styles({ colors, ...theme })}
+				${options.styles ? options.styles(theme) : ''}
 			`,
-			appendChildren: [
-				new LabelText({ content: label }),
-				...(appendChildren ? (Array.isArray(appendChildren) ? appendChildren : [appendChildren]) : []),
-				...(appendChild ? [appendChild] : []),
-			],
-			...options,
 		});
+
+		this._labelText = new LabelText({ tag: 'label', prependTo: this.elem });
+	}
+
+	setOption(name, value) {
+		if (name === 'label') this._labelText.setOption('content', value);
+		else if (name === 'for') this._labelText.setOption(name, value);
+		else super.setOption(name, value);
 	}
 }
 

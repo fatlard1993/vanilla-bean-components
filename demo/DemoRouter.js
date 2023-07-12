@@ -1,15 +1,18 @@
 import ButtonDemo from '../components/Button/demo';
 import ColorPickerDemo from '../components/ColorPicker/demo';
 import CheckboxDemo from '../components/Checkbox/demo';
+import CodeDemo from '../components/Code/demo';
+import CodeEditorDemo from '../components/CodeEditor/demo';
 import DialogDemo from '../components/Dialog/demo';
 import DomElemDemo from '../components/DomElem/demo';
 import IconButtonDemo from '../components/IconButton/demo';
+import IconDemo from '../components/Icon/demo';
 import InputDemo from '../components/Input/demo';
 import LabelDemo from '../components/Label/demo';
+import LabelSupportDemo from '../components/LabelSupport/demo';
 import LinkDemo from '../components/Link/demo';
+import ListDemo from '../components/List/demo';
 import MenuDemo from '../components/Menu/demo';
-import ModalDemo from '../components/Modal/demo';
-import ModalDialogDemo from '../components/ModalDialog/demo';
 import NoDataDemo from '../components/NoData/demo';
 import NumberInputDemo from '../components/NumberInput/demo';
 import PageDemo from '../components/Page/demo';
@@ -22,6 +25,7 @@ import TagListDemo from '../components/TagList/demo';
 import TextareaDemo from '../components/Textarea/demo';
 import TextInputDemo from '../components/TextInput/demo';
 import TooltipDemo from '../components/Tooltip/demo';
+import TooltipSupportDemo from '../components/TooltipSupport/demo';
 import ViewDemo from '../components/View/demo';
 
 import { NoData, Router } from '../components';
@@ -39,15 +43,18 @@ export const paths = {
 	button: '/Button',
 	colorPicker: '/ColorPicker',
 	checkbox: '/Checkbox',
+	code: '/Code',
+	codeEditor: '/CodeEditor',
 	dialog: '/Dialog',
 	domElem: '/DomElem',
 	iconButton: '/IconButton',
+	Icon: '/Icon',
 	input: '/Input',
 	label: '/Label',
+	labelSupport: '/LabelSupport',
 	link: '/Link',
+	list: '/List',
 	menu: '/Menu',
-	modal: '/Modal',
-	modalDialog: '/ModalDialog',
 	noData: '/NoData',
 	numberInput: '/NumberInput',
 	overlay: '/Overlay',
@@ -60,22 +67,26 @@ export const paths = {
 	textarea: '/Textarea',
 	textInput: '/TextInput',
 	tooltip: '/Tooltip',
+	tooltipSupport: '/TooltipSupport',
 	view: '/View',
 };
 
-export const views = {
+const views = {
 	[paths.button]: ButtonDemo,
 	[paths.colorPicker]: ColorPickerDemo,
 	[paths.checkbox]: CheckboxDemo,
+	[paths.code]: CodeDemo,
+	[paths.codeEditor]: CodeEditorDemo,
 	[paths.dialog]: DialogDemo,
 	[paths.domElem]: DomElemDemo,
 	[paths.iconButton]: IconButtonDemo,
+	[paths.Icon]: IconDemo,
 	[paths.input]: InputDemo,
 	[paths.label]: LabelDemo,
+	[paths.labelSupport]: LabelSupportDemo,
 	[paths.link]: LinkDemo,
+	[paths.list]: ListDemo,
 	[paths.menu]: MenuDemo,
-	[paths.modal]: ModalDemo,
-	[paths.modalDialog]: ModalDialogDemo,
 	[paths.noData]: NoDataDemo,
 	[paths.numberInput]: NumberInputDemo,
 	[paths.overlay]: OverlayDemo,
@@ -88,11 +99,12 @@ export const views = {
 	[paths.textarea]: TextareaDemo,
 	[paths.textInput]: TextInputDemo,
 	[paths.tooltip]: TooltipDemo,
+	[paths.tooltipSupport]: TooltipSupportDemo,
 	[paths.view]: ViewDemo,
 };
 
 export default class DemoRouter extends Router {
-	constructor(options) {
-		super({ views, notFound: NotFound, ...options });
+	constructor() {
+		super({ views, notFound: NotFound });
 	}
 }

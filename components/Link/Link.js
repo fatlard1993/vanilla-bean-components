@@ -1,11 +1,25 @@
-import Button from '../Button';
+import { Button } from '../Button';
 
-export class Link extends Button {
-	constructor({ tooltip = { icon: 'link' }, ...options }) {
+const defaultOptions = { tag: 'a', tooltip: { icon: 'link' } };
+
+class Link extends Button {
+	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
+
+	constructor(options = {}) {
 		super({
-			tag: 'a',
-			tooltip,
+			...defaultOptions,
 			...options,
+			styles: theme => `
+				&.disabled {
+					pointer-events: none;
+
+					&:hover .tooltip {
+						display: none;
+					}
+				}
+
+				${options.styles ? options.styles(theme) : ''}
+			`,
 		});
 	}
 }

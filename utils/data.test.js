@@ -1,26 +1,26 @@
 import { vi } from 'vitest';
 
-import { debounceCb, run } from './data';
+import { debounceCallback, getCustomProperties } from './data';
 
-test('debounceCb', () => {
+test('debounceCallback', () => {
 	vi.useFakeTimers();
 
 	let count = 0;
-	const bumpCount = (mod = 1) => (count += mod);
+	const bumpCount = (modifier = 1) => (count += modifier);
 
-	debounceCb(bumpCount, 100);
-	debounceCb(bumpCount, 100);
-	debounceCb(bumpCount, 100);
+	debounceCallback(bumpCount, 100);
+	debounceCallback(bumpCount, 100);
+	debounceCallback(bumpCount, 100);
 
 	vi.advanceTimersByTime(100);
 
 	expect(count).toStrictEqual(1);
 
-	debounceCb(bumpCount, 100);
+	debounceCallback(bumpCount, 100);
 
 	vi.advanceTimersByTime(100);
 
-	debounceCb(bumpCount, 200);
+	debounceCallback(bumpCount, 200);
 
 	vi.advanceTimersByTime(100);
 
@@ -30,24 +30,27 @@ test('debounceCb', () => {
 
 	expect(count).toStrictEqual(3);
 
-	debounceCb(bumpCount, 100, 3);
+	debounceCallback(bumpCount, 100, 3);
 
 	vi.advanceTimersByTime(100);
 
 	expect(count).toStrictEqual(6);
 });
 
-test('run', () => {
-	let count = 0;
-	const bumpCount = () => count++;
-	const actionArr = new Array(3).fill(bumpCount);
+test('getCustomProperties', () => {
+	class TestClass {
+		constructor() {}
 
-	run(actionArr);
+		testFunction() {}
+	}
 
-	expect(count).toStrictEqual(3);
+	TestClass.prototype.testProto = 'test';
 
-	run(actionArr, true);
+	const testObject = {
+		testProp: 'test',
+	};
 
-	expect(count).toStrictEqual(6);
-	expect(actionArr).toStrictEqual([]);
+	expect(getCustomProperties(new TestClass())).toStrictEqual(['testFunction', 'testProto']);
+
+	expect(getCustomProperties(testObject)).toStrictEqual(['testProp']);
 });

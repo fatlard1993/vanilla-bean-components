@@ -1,5 +1,1 @@
-import DomElem from './DomElem';
-
-export { DomElem };
-
-export default DomElem;
+export { default as DomElem } from './DomElem';

@@ -2,11 +2,23 @@ import { afterEach } from 'vitest';
 import { findByText, findByRole, fireEvent, waitForElementToBeRemoved, queryByRole } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 
-import { empty, DomElem } from '../../';
+import { empty, DomElem } from '../..';
 
-import Dialog from '.';
+import { Dialog } from '.';
 
 const container = new JSDOM().window.document.body;
+
+HTMLDialogElement.prototype.show = () => {
+	this.open = true;
+};
+
+HTMLDialogElement.prototype.showModal = () => {
+	this.open = true;
+};
+
+HTMLDialogElement.prototype.close = () => {
+	this.open = false;
+};
 
 describe('Dialog', () => {
 	afterEach(() => empty(container));

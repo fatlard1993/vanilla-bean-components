@@ -10,7 +10,7 @@ const fontAwesome = `
 	font-weight: 400;
 `;
 
-export const fonts = {
+export default {
 	fontAwesome,
 	fontAwesomeBrands: `
 		${fontAwesome}
@@ -23,6 +23,10 @@ export const fonts = {
 
 		font-weight: 600;
 	`,
+	sourceCodePro: `
+		font-family: 'Source Code Pro', monospace;
+		font-size: 1em;
+		line-height: 1.5em;
+		tab-size: 2;
+	`,
 };
-
-export default fonts;

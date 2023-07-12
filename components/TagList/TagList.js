@@ -1,7 +1,7 @@
 import { styled } from '../../utils';
-import DomElem from '../DomElem';
-import TextInput from '../TextInput';
-import IconButton from '../IconButton';
+import { DomElem } from '../DomElem';
+import { TextInput } from '../TextInput';
+import { IconButton } from '../IconButton';
 
 import Tag from './Tag';
 
@@ -23,17 +23,22 @@ const TagListIconButton = styled(
 	`,
 );
 
-export class TagList extends DomElem {
-	constructor({ styles = () => '', tags = [], readOnly = false, ...options }) {
+const defaultOptions = { readOnly: false };
+
+class TagList extends DomElem {
+	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
+
+	constructor(options = {}) {
 		let tagInput, addTag, addButton;
 
-		if (!readOnly) {
+		if (!options.readOnly) {
 			tagInput = new TagListTextInput({
 				placeholder: 'New Tag',
 				onKeyUp: () => {
 					addTag.elem.style.width = `${Math.max(
 						260,
-						tagInput.elem.value.length * Math.round(parseInt(window.getComputedStyle(tagInput.elem).fontSize) * 0.75),
+						tagInput.elem.value.length *
+							Math.round(Number.parseInt(window.getComputedStyle(tagInput.elem).fontSize) * 0.75),
 					)}px`;
 				},
 			});
@@ -55,18 +60,19 @@ export class TagList extends DomElem {
 			});
 			addTag = new Tag({
 				readOnly: true,
-				className: 'addTag',
+				addClass: 'addTag',
 				appendChildren: [tagInput, addButton],
 			});
 		}
 
 		super({
-			styles: ({ colors, ...theme }) => `
-				background-color: ${colors.darkest(colors.grey)};
+			...options,
+			styles: theme => `
+				background-color: ${theme.colors.darkest(theme.colors.gray)};
 				margin: 1% auto;
 				border-radius: 3px;
 				box-sizing: border-box;
-				border: inset 2px ${colors.light(colors.grey)};
+				border: inset 2px ${theme.colors.light(theme.colors.gray)};
 				min-height: 1em;
 
 				&:after {
@@ -83,11 +89,13 @@ export class TagList extends DomElem {
 					margin: 0;
 				}
 
-				${styles({ colors, ...theme })}
+				${options.styles ? options.styles(theme) : ''}
 			`,
 			tag: 'ul',
-			appendChildren: [...tags.map(textContent => new Tag({ readOnly, textContent })), ...(addTag ? [addTag] : [])],
-			...options,
+			appendChildren: [
+				...(options.tags || []).map(textContent => new Tag({ readOnly: options.readOnly, textContent })),
+				...(addTag ? [addTag] : []),
+			],
 		});
 
 		this.tagInput = tagInput;

@@ -1,10 +1,4 @@
-import {
-	isMac,
-	isNodeList,
-	appendStyles,
-	// getPixelDensity,
-	// getScreenOrientation,
-} from './dom';
+import { isMac, isNodeList, appendStyles, getScreenOrientation } from './dom';
 
 test('isMac', () => {
 	global.navigator = { platform: 'Linux' };
@@ -42,6 +36,8 @@ test('appendStyles', () => {
 	expect(result.innerHTML).toContain(styles);
 });
 
-test.skip('getPixelDensity', () => {});
+test('getScreenOrientation', () => {
+	global.screen = { orientation: { type: 'landscape' } };
 
-test.skip('getScreenOrientation', () => {});
+	expect(getScreenOrientation(), 'landscape');
+});

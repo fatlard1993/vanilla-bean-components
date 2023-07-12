@@ -1,5 +1,5 @@
 import { styled } from '../../utils';
-import DomElem from '../DomElem';
+import { DomElem } from '../DomElem';
 
 const RadioButtonLabel = styled(
 	DomElem,
@@ -56,14 +56,11 @@ const RadioButtonInput = styled(
 	`,
 );
 
-export class RadioButton extends DomElem {
-	constructor({ options = [], value, ...rest }) {
-		super({
-			value,
-			...rest,
-		});
+class RadioButton extends DomElem {
+	constructor(options) {
+		super(options);
 
-		this.options = options.map(
+		this._options = options.options.map(
 			option =>
 				new RadioButtonLabel({
 					tag: 'label',
@@ -74,7 +71,7 @@ export class RadioButton extends DomElem {
 							type: 'radio',
 							value: option?.value || option,
 							name: this.classId,
-							checked: value === (option?.value || option),
+							checked: options.value === (option?.value || option),
 						}),
 						document.createTextNode(option?.label || option),
 					],

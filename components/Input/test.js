@@ -1,8 +1,7 @@
 import { findByDisplayValue, findByRole } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
-import { expect } from 'vitest';
 
-import Input from '.';
+import { Input } from '.';
 
 const container = new JSDOM().window.document.body;
 

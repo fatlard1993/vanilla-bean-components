@@ -1,22 +1,10 @@
-import { DomElem, Label, TagList } from '../';
 import DemoView from '../../demo/DemoView';
+import { TagList } from '.';
 
 export default class Demo extends DemoView {
 	constructor(options) {
-		super(options);
+		const component = new TagList({ tags: ['one', '2', 'three'] });
 
-		const tags = ['one', '2', 'three'];
-
-		new TagList({ tags, appendTo: this.demoWrapper });
-
-		new Label({
-			label: 'Props',
-			appendTo: this.demoContent,
-			appendChildren: [
-				new DomElem({ tag: 'pre', textContent: '- tags [Array(string)] (optional) :: []' }),
-				new DomElem({ tag: 'pre', textContent: '- readOnly [boolean] (optional) :: false' }),
-				new DomElem({ tag: 'pre', textContent: '- ...rest => DomElem' }),
-			],
-		});
+		super({ component, ...options });
 	}
 }

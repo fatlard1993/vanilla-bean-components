@@ -1,16 +1,19 @@
-import { TooltipSupport } from '../Tooltip';
+import { TooltipSupport } from '../TooltipSupport';
 
-export class Button extends TooltipSupport {
-	constructor({ styles = () => '', icon, className, ...options }) {
+const defaultOptions = { tag: 'button' };
+
+class Button extends TooltipSupport {
+	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
+
+	constructor(options = {}) {
 		super({
+			...defaultOptions,
+			...options,
 			styles: theme => `
 				${theme.button}
 
-				${styles(theme)}
+				${options.styles ? options.styles(theme) : ''}
 			`,
-			tag: 'button',
-			className: [...(icon ? [`fa-${icon}`] : []), className],
-			...options,
 		});
 	}
 }

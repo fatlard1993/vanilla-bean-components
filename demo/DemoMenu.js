@@ -1,6 +1,6 @@
 import { DomElem, Link, Search } from '../components';
 
-import { debounceCb, capitalize, styled } from '../utils';
+import { debounceCallback, capitalize, styled } from '../utils';
 
 import { paths } from './DemoRouter';
 
@@ -9,23 +9,24 @@ const MenuLink = styled(
 	() => `
 		margin: 0;
 		flex: 1 0 auto;
+		min-width: 78px;
 	`,
 );
 
 export default class DemoMenu extends DomElem {
-	constructor({ styles = () => '', ...options }) {
+	constructor(options) {
 		super({
+			...options,
 			styles: theme => `
 				padding: 12px 24px;
 				margin-bottom: 6px;
 				display: flex;
 				flex-wrap: wrap;
 				gap: 6px;
-				background-color: ${theme.colors.darkest(theme.colors.grey)}
+				background-color: ${theme.colors.darkest(theme.colors.gray)}
 
-				${styles(theme)}
+				${options.styles ? options.styles(theme) : ''}
 			`,
-			...options,
 		});
 
 		this.links = [];
@@ -40,7 +41,7 @@ export default class DemoMenu extends DomElem {
 
 		new Search({
 			appendTo,
-			onKeyUp: ({ value }) => debounceCb(() => this.filterLinks(value)),
+			onKeyUp: ({ value }) => debounceCallback(() => this.filterLinks(value)),
 			onSearch: ({ value }) => this.filterLinks(value),
 		});
 
@@ -52,7 +53,7 @@ export default class DemoMenu extends DomElem {
 					appendTo,
 					textContent: capitalize(name),
 					href,
-					className: href === window.location.hash ? 'disabled' : '',
+					addClass: href === window.location.hash ? 'disabled' : '',
 				}),
 			);
 		});

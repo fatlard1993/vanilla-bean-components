@@ -1,5 +1,1 @@
-import NoData from './NoData';
-
-export { NoData };
-
-export default NoData;
+export { default as NoData } from './NoData';

@@ -1,5 +1,5 @@
 import { styled } from '../../utils';
-import DomElem from '../DomElem';
+import { DomElem } from '../DomElem';
 
 const CheckboxLabel = styled(
 	DomElem,
@@ -53,25 +53,22 @@ const CheckboxInput = styled(
 	`,
 );
 
-export class Checkbox extends DomElem {
-	constructor({ label, value, ...rest }) {
-		super({
-			value,
-			...rest,
-		});
+class Checkbox extends DomElem {
+	constructor(options = {}) {
+		super(options);
 
 		this.inputElem = new CheckboxInput({
 			tag: 'input',
 			type: 'checkbox',
 			id: this.classId,
-			checked: value,
+			checked: options.value,
 		});
 
 		this.nameElem = new CheckboxLabel({
 			tag: 'label',
 			for: this.classId,
 			appendTo: this.elem,
-			appendChildren: [this.inputElem, document.createTextNode(label)],
+			appendChildren: [this.inputElem, document.createTextNode(options.label)],
 		});
 	}
 
@@ -81,8 +78,6 @@ export class Checkbox extends DomElem {
 
 	set name(name) {
 		this.nameElem.elem.childNodes[1].textContent = name;
-
-		console.log({ elem: this.nameElem.elem }, name);
 	}
 }
 

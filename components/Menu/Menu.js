@@ -1,9 +1,10 @@
-import DomElem from '../DomElem';
+import { List } from '../List';
 
-export class Menu extends DomElem {
-	constructor({ styles = () => '', appendChildren, appendChild, items = [], onSelect = () => {}, ...options } = {}) {
+class Menu extends List {
+	constructor(options = {}) {
 		super({
-			styles: ({ colors, ...theme }) => `
+			...options,
+			styles: theme => `
 				margin: 0;
 				padding: 0;
 				list-style: none;
@@ -13,31 +14,21 @@ export class Menu extends DomElem {
 					padding: 6px 6px 9px 6px;
 
 					&:not(:last-of-type) {
-						border-bottom: 1px solid ${colors.light(colors.grey)};
+						border-bottom: 1px solid ${theme.colors.light(theme.colors.gray)};
 					}
 
 					&:hover {
-						color: ${colors.light(colors.blue)};
-						border-color: ${colors.light(colors.blue)};
+						color: ${theme.colors.light(theme.colors.blue)};
+						border-color: ${theme.colors.light(theme.colors.blue)};
 					}
 				}
 
-				${styles({ colors, ...theme })}
+				${options.styles ? options.styles(theme) : ''}
 		`,
-			tag: 'ul',
-			...options,
-			appendChildren: [
-				...(appendChildren || []),
-				...(appendChild ? [appendChild] : []),
-				...items.map(
-					item =>
-						new DomElem({
-							tag: 'li',
-							onPointerPress: onSelect,
-							...item,
-						}),
-				),
-			],
+			items: (options.items || []).map(item => ({
+				onPointerPress: options.onSelect,
+				...item,
+			})),
 		});
 	}
 }

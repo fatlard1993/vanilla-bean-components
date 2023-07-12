@@ -1,5 +1,12 @@
-export const capitalize = (str, recursive, split = ' ') => {
-	const words = str.split(split);
+/**
+ * Capitalize the string
+ * @param {String} string - The source string
+ * @param {Boolean} recursive - Weather or not to recurse over every word in the string
+ * @param {String} split - The string used to split apart the source string (if using recursive)
+ * @return {String} The capitalized string
+ */
+export const capitalize = (string, recursive, split = ' ') => {
+	const words = string.split(split);
 	const wordCount = words.length;
 
 	for (let x = 0, word; x < (recursive ? wordCount : 1); ++x) {
@@ -11,15 +18,52 @@ export const capitalize = (str, recursive, split = ' ') => {
 	return words.join(split);
 };
 
+// const capitalize2 = (string = '') => {
+// 	return string.length ? `${string[0].toUpperCase()}${string.slice(1)}` : '';
+// };
+
+// const capitalizeAll = (string, wordDelimiter = ' ') => {
+// 	return string.split(wordDelimiter).map(capitalize).join(wordDelimiter);
+// };
+
+/**
+ * Convert a camelCase or PascalCase string with a custom joiner
+ * @param {String} string - The source string
+ * @param {String} joiner - The string used to re-join the words
+ * @return {String} The re-formatted string
+ */
 export const fromCamelCase = (string, joiner = ' ') => {
 	return string.split(/(?=[A-Z][a-z])/).join(joiner);
 };
 
-export const toCamelCase = (string, upperCamelCase = false, splitter = ' ') => {
+/**
+ * Convert a custom split string to a camelCase or PascalCase string with a custom joiner
+ * @param {String} string - The source string
+ * @param {Boolean} pascalCase - Output Pascal case instead of camelCase
+ * @param {String} splitter - The string used to split the source into words
+ * @return {String} The re-formatted string
+ */
+export const toCamelCase = (string, splitter = ' ') => {
 	return string
 		.split(splitter)
-		.map((item, index) => {
-			return (index === 0 && upperCamelCase) || index > 0 ? capitalize(item) : item;
-		})
+		.map((item, index) => (index > 0 ? capitalize(item) : item))
 		.join('');
+};
+
+// const toPascalCase = (string = '') => capitalize(toCamelCase(string));
+
+/**
+ * Strip all excess newline and indentation whitespace from the source string
+ * @param {String} string - The source string
+ * @return {String} The re-formatted string
+ */
+export const removeExcessIndentation = string => {
+	if (!string.includes('\t')) return string;
+	if (!string.includes('\n')) return string.replace(/^\t+/, '');
+
+	const lines = string.split('\n').filter(line => !/^\t*$/.test(line));
+
+	const minIndentation = lines.map(line => line.match(/^\t+/) || []).reduce((a, b) => (a.length <= b.length ? a : b));
+
+	return lines.join('\n').replaceAll(new RegExp(minIndentation, 'g'), '');
 };

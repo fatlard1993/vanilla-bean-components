@@ -1,8 +1,9 @@
-import Button from '../Button';
+import { Button } from '../Button';
 
-export class IconButton extends Button {
-	constructor({ styles = () => '', ...options }) {
+class IconButton extends Button {
+	constructor(options = {}) {
 		super({
+			...options,
 			styles: theme => `
 				width: 30px;
 				height: 30px;
@@ -12,9 +13,8 @@ export class IconButton extends Button {
 					padding: 0;
 				}
 
-				${styles(theme)}
+				${options.styles ? options.styles(theme) : ''}
 			`,
-			...options,
 		});
 	}
 }

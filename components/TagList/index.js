@@ -1,6 +1,2 @@
-import TagList from './TagList';
-import Tag from './Tag';
-
-export { TagList, Tag };
-
-export default TagList;
+export { default as TagList } from './TagList';
+export { default as Tag } from './Tag';

@@ -1,7 +1,7 @@
 import { findByRole, findByDisplayValue } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 
-import Search from '.';
+import { Search } from '.';
 
 const container = new JSDOM().window.document.body;
 

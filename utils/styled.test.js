@@ -1,4 +1,4 @@
-import { DomElem } from '../';
+import { DomElem } from '..';
 
 import { styled } from './styled';
 

@@ -1,5 +1,5 @@
 import process from 'process';
-import { Page } from '../';
+import { Page } from '..';
 
 import DemoRouter from './DemoRouter';
 

@@ -1,18 +1,22 @@
 import { empty } from '../../utils';
-import DomElem from '../DomElem';
+import { DomElem } from '../DomElem';
 
-export class Router extends DomElem {
-	constructor({ styles = () => '', ...options }) {
-		if (!options.defaultPath) options.defaultPath = Object.keys(options.views)[0];
+class Router extends DomElem {
+	constructor(options = {}) {
+		const views = options.views || [];
+
+		if (!options.defaultPath) options.defaultPath = Object.keys(views)[0];
 
 		super({
+			...options,
 			styles: theme => `
 				height: 100%;
 
-				${styles(theme)}
+				${options.styles ? options.styles(theme) : ''}
 			`,
-			...options,
 		});
+
+		this.views = views;
 
 		window.addEventListener('popstate', () => this.renderView());
 	}
@@ -35,41 +39,41 @@ export class Router extends DomElem {
 		return this.views[path] ? path : Object.keys(this.views).find(route => this.routeToRegex(route).test(path)) || path;
 	}
 
-	routeToPath(route, params) {
+	routeToPath(route, parameters) {
 		let path = route;
 
-		if (params) {
-			Object.keys(params).forEach(key => {
-				path = path.replace(new RegExp(`:${key}`), params[key]);
+		if (parameters) {
+			Object.keys(parameters).forEach(key => {
+				path = path.replace(new RegExp(`:${key}`), parameters[key]);
 			});
 		} else {
-			path = path.replace(/\/?:[^/]+/g, '');
+			path = path.replaceAll(/\/?:[^/]+/g, '');
 		}
 
 		return path;
 	}
 
 	routeToRegex(route) {
-		return new RegExp(`^${route.replace(/\//g, '\\/').replace(/:[^/]+/g, '([^/]+)')}$`);
+		return new RegExp(`^${route.replaceAll('\\', '\\/').replaceAll(/:[^/]+/g, '([^/]+)')}$`);
 	}
 
-	parseRouteParams(path = this.path) {
+	parseRouteParameters(path = this.path) {
 		const route = this.pathToRoute(path);
 		const routeRegex = this.routeToRegex(route);
-		let routeParamValues = path.match(routeRegex);
-		let routeParamKeys = route.match(routeRegex);
-		const params = {};
+		let routeParameterValues = path.match(routeRegex);
+		let routeParameterKeys = route.match(routeRegex);
+		const parameters = {};
 
-		routeParamValues = routeParamValues.slice(1, routeParamValues.length);
-		routeParamKeys = routeParamKeys.slice(1, routeParamKeys.length);
+		routeParameterValues = routeParameterValues.slice(1, routeParameterValues.length);
+		routeParameterKeys = routeParameterKeys.slice(1, routeParameterKeys.length);
 
-		routeParamValues.forEach((param, index) => {
-			const name = routeParamKeys[index].slice(1);
+		routeParameterValues.forEach((parameter, index) => {
+			const name = routeParameterKeys[index].slice(1);
 
-			params[name] = param;
+			parameters[name] = parameter;
 		});
 
-		return params;
+		return parameters;
 	}
 
 	render({ views, defaultPath, notFound, ...options } = this.options) {

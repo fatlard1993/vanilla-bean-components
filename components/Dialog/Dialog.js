@@ -1,10 +1,6 @@
-import { customAlphabet } from 'nanoid';
-
 import { styled } from '../../utils';
-import DomElem from '../DomElem';
-import Button from '../Button';
-
-const id = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-', 16);
+import { DomElem } from '../DomElem';
+import { Button } from '../Button';
 
 const DialogHeader = styled(
 	DomElem,
@@ -13,7 +9,7 @@ const DialogHeader = styled(
 		font-size: 1.2em;
 		line-height: 30px;
 		margin: 0;
-		border-bottom: 1px solid ${colors.dark(colors.grey)};
+		border-bottom: 1px solid ${colors.dark(colors.gray)};
 	`,
 );
 
@@ -30,7 +26,7 @@ const DialogFooter = styled(
 	DomElem,
 	({ colors }) => `
 		height: 40px;
-		border-top: 1px solid ${colors.dark(colors.grey)};
+		border-top: 1px solid ${colors.dark(colors.gray)};
 		display: flex;
 		flex-direction: row;
 	`,
@@ -44,30 +40,50 @@ const DialogButton = styled(
 	`,
 );
 
-export class Dialog extends DomElem {
-	constructor({
-		className,
-		styles = () => '',
-		header,
-		content,
-		footer,
-		buttons = [],
-		onButtonPress = () => {},
-		closeDialog,
-		size = 'small',
-		...options
-	}) {
-		const headerId = id();
+const defaultOptions = { tag: 'dialog', open: false };
+
+class Dialog extends DomElem {
+	size_enum = Object.freeze(['small', 'standard', 'large']);
+	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
+
+	constructor(options) {
+		const _header = new DialogHeader({
+			tag: 'h2',
+			content: options.header,
+		});
+		const _content = new DialogContent({
+			content: options.content,
+		});
+		const _footer = new DialogFooter({
+			content:
+				options.footer ||
+				(options.buttons || []).map(
+					button =>
+						new DialogButton({
+							onPointerPress: () =>
+								options.onButtonPress({ button, closeDialog: options.closeDialog || (() => super.remove()) }),
+							...(typeof button === 'object' ? button : { textContent: button }),
+						}),
+				),
+		});
+
+		_header.elem.id = _header.classId;
 
 		super({
-			role: 'dialog',
-			'aria-labelledby': headerId,
-			styles: ({ colors, ...theme }) => `
-				background-color: ${colors.darker(colors.grey)};
+			...defaultOptions,
+			...options,
+			'aria-labelledby': _header.elem.id,
+			styles: theme => `
+				background-color: ${theme.colors.darker(theme.colors.gray)};
+				color: ${theme.colors.white};
 				border-radius: 3px;
 				display: flex;
 				flex-direction: column;
-				border: 2px solid ${colors.dark(colors.blue)};
+				padding: 6px;
+				margin: 0 auto;
+				border: 2px solid ${theme.colors.dark(theme.colors.blue)};
+				top: 50%;
+				transform: translateY(-50%);
 
 				/* Default size: small */
 				width: 420px;
@@ -83,33 +99,45 @@ export class Dialog extends DomElem {
 					height: 90vh;
 				}
 
-				${styles({ colors, ...theme })}
+				&::backdrop {
+					background-color: ${theme.colors.blackish(theme.colors.blue).setAlpha(0.9)};
+				}
+
+				${options.styles ? options.styles(theme) : ''}
 			`,
-			className: [className, size],
-			appendChildren: [
-				new DialogHeader({
-					tag: 'h2',
-					id: headerId,
-					content: header,
-				}),
-				new DialogContent({
-					content,
-				}),
-				new DialogFooter({
-					content:
-						footer ||
-						buttons.map(
-							button =>
-								new DialogButton({
-									onPointerPress: () => onButtonPress({ button, closeDialog: closeDialog || (() => super.remove()) }),
-									...(typeof button === 'object' ? button : { textContent: button }),
-								}),
-						),
-				}),
-			],
-			closeDialog: closeDialog || (() => super.remove()),
-			...options,
+			content: [_header, _content, _footer],
 		});
+
+		this._header = _header;
+		this._content = _content;
+		this._footer = _footer;
+
+		this.elem.addEventListener('close', this.elem.remove);
+	}
+
+	setOption(name, value) {
+		if (name === 'size') {
+			if (!this.size_enum.includes(value)) {
+				throw new Error(
+					`"${value}" is not a valid size. The size must be one of the following values: ${this.size_enum.join(', ')}`,
+				);
+			}
+
+			this.removeClass(...this.size_enum);
+			this.addClass(value);
+		} else super.setOption(name, value);
+	}
+
+	open() {
+		requestAnimationFrame(() => {
+			this.elem.style.display = 'flex';
+			this.elem.showModal();
+		});
+	}
+
+	close() {
+		this.elem.style.display = 'none';
+		this.elem.close();
 	}
 }
 

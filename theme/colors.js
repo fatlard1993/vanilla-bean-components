@@ -1,6 +1,6 @@
-import TinyColor, { random, readability, isReadable, mostReadable } from '@ctrl/tinycolor';
+import { TinyColor, random, readability, isReadable, mostReadable } from '@ctrl/tinycolor';
 
-export const colors = {
+const colors = {
 	random,
 	readability,
 	isReadable,
@@ -8,7 +8,7 @@ export const colors = {
 	get orange() {
 		return new TinyColor('hsl(29, 55%, 45%)');
 	},
-	get grey() {
+	get gray() {
 		return new TinyColor('hsl(0, 0%, 45%)');
 	},
 	get yellow() {
@@ -41,14 +41,14 @@ export const colors = {
 	get black() {
 		return colors.blackish();
 	},
-	whiteish: (color = colors.grey) => color.lighten(45),
+	whiteish: (color = colors.gray) => color.lighten(45),
 	lightest: color => color.lighten(40),
-	lighter: color => color.lighten(30),
-	light: color => color.lighten(20),
+	lighter: color => color.lighten(27),
+	light: color => color.lighten(17),
 	dark: color => color.darken(15),
 	darker: color => color.darken(25),
 	darkest: color => color.darken(30),
-	blackish: (color = colors.grey) => color.darken(35),
+	blackish: (color = colors.gray) => color.darken(35),
 };
 
 export default colors;

@@ -1,7 +1,7 @@
 import colors from './colors';
 import fonts from './fonts';
 
-export const button = `
+export default `
 	display: inline-block;
 	padding: 3px 12px 8px 12px;
 	margin: 0 6px 3px 0;
@@ -16,6 +16,11 @@ export const button = `
 	overflow: hidden;
 	border: none;
 	cursor: pointer;
+
+	&.disabled, &:disabled {
+		background-color: ${colors.gray};
+		cursor: no-drop;
+	}
 
 	&:before {
 		${fonts.fontAwesomeSolid};
@@ -42,10 +47,6 @@ export const button = `
 	&:hover, &:focus {
 		top: -1px;
 
-		&:before {
-			top: -1px;
-		}
-
 		&:after {
 			background-image: linear-gradient(
 					to right,
@@ -60,7 +61,9 @@ export const button = `
 	}
 	&:active,
 	&.active,
-	&.pressed {
+	&.pressed,
+	&.disabled,
+	&:disabled {
 		top: 1px;
 
 		&:before {
@@ -86,5 +89,3 @@ export const button = `
 		outline: 2px dashed ${colors.red};
 	}
 `;
-
-export default button;

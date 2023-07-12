@@ -1,9 +1,9 @@
 import { findAllByText } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 
-import { View } from '../';
+import { View } from '..';
 
-import Router from '.';
+import { Router } from '.';
 
 const container = new JSDOM().window.document.body;
 

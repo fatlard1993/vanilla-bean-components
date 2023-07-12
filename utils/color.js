@@ -1,9 +1,15 @@
 import { TinyColor } from '@ctrl/tinycolor';
 
-export const stringToColor = (str, opts = { hue: [0, 360], sat: [75, 100], lit: [40, 60] }) => {
-	if (!str) return new TinyColor.random().toRgbString();
+/**
+ * Create a hsl color string using a string as the seed
+ * @param {String} string - The string to use as the color seed
+ * @param {Object} options - Min/Max constraints for the color
+ * @return {String} hsl color string
+ */
+export const stringToColor = (string, config = {}) => {
+	const { h, s, l } = { h: [0, 360], s: [75, 100], l: [40, 60], ...config };
 
-	let h, s, l;
+	if (!string) return new TinyColor.random().toRgbString();
 
 	const range = (hash, min, max) => {
 		const diff = max - min;
@@ -14,16 +20,12 @@ export const stringToColor = (str, opts = { hue: [0, 360], sat: [75, 100], lit: 
 
 	let hash = 0;
 
-	if (str.length === 0) return hash;
+	if (string.length === 0) return hash;
 
-	for (let x = 0; x < str.length; ++x) {
-		hash = str.charCodeAt(x) + ((hash << 5) - hash);
+	for (let x = 0; x < string.length; ++x) {
+		hash = string.codePointAt(x) + ((hash << 5) - hash);
 		hash &= hash;
 	}
 
-	h = range(hash, opts.hue[0], opts.hue[1]);
-	s = range(hash, opts.sat[0], opts.sat[1]);
-	l = range(hash, opts.lit[0], opts.lit[1]);
-
-	return `hsl(${h}, ${s}%, ${l}%)`;
+	return `hsl(${range(hash, h[0], h[1])}, ${range(hash, s[0], s[1])}%, ${range(hash, l[0], l[1])}%)`;
 };

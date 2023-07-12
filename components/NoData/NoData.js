@@ -1,16 +1,16 @@
-import DomElem from '../DomElem';
+import { TooltipSupport } from '../TooltipSupport';
 
-export class NoData extends DomElem {
-	constructor({ styles = () => '', ...options }) {
+class NoData extends TooltipSupport {
+	constructor(options = {}) {
 		super({
-			styles: ({ colors, ...theme }) => `
+			...options,
+			styles: theme => `
 				margin: 6px auto;
 				padding: 6px 12px;
 				text-align: center;
 
-				${styles({ colors, ...theme })}
+				${options.styles ? options.styles(theme) : ''}
 			`,
-			...options,
 		});
 	}
 }

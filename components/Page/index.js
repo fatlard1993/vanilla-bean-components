@@ -1,5 +1,1 @@
-import Page from './Page';
-
-export { Page };
-
-export default Page;
+export { default as Page } from './Page';

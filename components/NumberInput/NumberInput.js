@@ -1,8 +1,15 @@
-import Input from '../Input';
+import { Input } from '../Input';
 
-export class NumberInput extends Input {
-	constructor({ value, ...options }) {
-		super({ type: 'number', value, ...options });
+const defaultOptions = { type: 'number' };
+
+class NumberInput extends Input {
+	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
+
+	constructor(options = {}) {
+		super({
+			...defaultOptions,
+			...options,
+		});
 	}
 }
 

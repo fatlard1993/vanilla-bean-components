@@ -1,7 +1,7 @@
 import { findByDisplayValue, findByRole } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 
-import TextInput from '.';
+import { TextInput } from '.';
 
 const container = new JSDOM().window.document.body;
 

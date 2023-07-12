@@ -1,7 +1,7 @@
 import { findByDisplayValue } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 
-import Textarea from '.';
+import { Textarea } from '.';
 
 const container = new JSDOM().window.document.body;
 

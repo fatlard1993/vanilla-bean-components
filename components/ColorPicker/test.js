@@ -1,7 +1,7 @@
 import { findByDisplayValue, findByRole, findByText, fireEvent } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 
-import ColorPicker from '.';
+import { ColorPicker } from '.';
 
 const container = new JSDOM().window.document.body;
 

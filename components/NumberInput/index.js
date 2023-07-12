@@ -1,5 +1,1 @@
-import NumberInput from './NumberInput';
-
-export { NumberInput };
-
-export default NumberInput;
+export { default as NumberInput } from './NumberInput';

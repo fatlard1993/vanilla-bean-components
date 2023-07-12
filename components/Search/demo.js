@@ -1,16 +1,10 @@
-import { DomElem, Label, Search } from '../';
 import DemoView from '../../demo/DemoView';
+import { Search } from '.';
 
 export default class Demo extends DemoView {
 	constructor(options) {
-		super(options);
+		const component = new Search();
 
-		new Search({ appendTo: this.demoWrapper });
-
-		new Label({
-			label: 'Props',
-			appendTo: this.demoContent,
-			appendChildren: [new DomElem({ tag: 'pre', textContent: '- ...rest => Input' })],
-		});
+		super({ component, ...options });
 	}
 }

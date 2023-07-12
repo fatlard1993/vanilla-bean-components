@@ -1,13 +1,14 @@
 import '@fortawesome/fontawesome-free/css/all.css';
 import 'source-code-pro/source-code-pro.css';
 
-import state from '../state';
-import DomElem from '../DomElem';
+import { state } from '../state';
+import { DomElem } from '../DomElem';
 
-export class Page extends DomElem {
-	constructor({ styles = () => '', globalStyles = () => '', ...options }) {
+class Page extends DomElem {
+	constructor(options = {}) {
 		super({
-			globalStyles: ({ colors, ...theme }) => `
+			...options,
+			globalStyles: theme => `
 				html {
 					height: 100%;
 				}
@@ -19,8 +20,9 @@ export class Page extends DomElem {
 					box-sizing: border-box;
 					overflow: hidden;
 					line-height: 1;
-					background: ${colors.black};
-					color: ${colors.white};
+					tab-size: 2;
+					background: ${theme.colors.black};
+					color: ${theme.colors.white};
 					margin: 0;
 
 					* {
@@ -44,9 +46,11 @@ export class Page extends DomElem {
 					max-zoom: 1;
 				}
 
-				${globalStyles({ colors, ...theme })}
+				${theme.code}
+
+				${options.globalStyles ? options.globalStyles(theme) : ''}
 			`,
-			styles: ({ colors, ...theme }) => `
+			styles: theme => `
 				position: relative;
 				width: 100%;
 				height: 100%;
@@ -55,10 +59,9 @@ export class Page extends DomElem {
 
 				${theme.scrollbar}
 
-				${styles({ colors, ...theme })}
-			`,
+				${options.styles ? options.styles(theme) : ''}
+				`,
 			autoRender: false,
-			...options,
 		});
 
 		if (document.readyState !== 'loading') this.onLoad();
@@ -83,13 +86,8 @@ export class Page extends DomElem {
 		document.addEventListener('mouseup', this.onPointerEvt);
 	}
 
-	onPointerEvt(evt) {
-		const isTouchEvt = evt.type.startsWith('touch');
-
-		if (!isTouchEvt && state.lastTouchTime && performance.now() - state.lastTouchTime < 350) return;
-		else if (isTouchEvt) state.lastTouchTime = performance.now();
-
-		state.isTouchDevice = true;
+	onPointerEvt({ type }) {
+		state.isTouchDevice = type.startsWith('touch');
 	}
 }
 

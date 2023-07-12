@@ -1,8 +1,12 @@
-import DomElem from '../DomElem';
-import IconButton from '../IconButton';
+import { DomElem } from '../DomElem';
+import { IconButton } from '../IconButton';
 
-export class Tag extends DomElem {
-	constructor({ styles = () => '', appendTo, readOnly = false, ...options }) {
+const defaultOptions = { readOnly: false };
+
+class Tag extends DomElem {
+	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
+
+	constructor(options = {}) {
 		const onPointerPress = () => {
 			if (this.removeButton) {
 				this.removeButton.remove();
@@ -11,8 +15,9 @@ export class Tag extends DomElem {
 		};
 
 		super({
-			styles: ({ colors, ...theme }) => `
-				border: 1px solid ${colors.white};
+			...options,
+			styles: theme => `
+				border: 1px solid ${theme.colors.white};
 				padding: 6px;
 				margin: 3px;
 				display: inline-block;
@@ -21,7 +26,7 @@ export class Tag extends DomElem {
 				border-radius: 3px;
 				border-top-left-radius: 0;
 				font-size: 18px;
-				background-color: ${colors.black};
+				background-color: ${theme.colors.black};
 
 				&.addTag {
 					display: flex;
@@ -31,12 +36,11 @@ export class Tag extends DomElem {
 					min-width: 260px;
 				}
 
-				${styles({ colors, ...theme })}
+				${options.styles ? options.styles(theme) : ''}
 			`,
 			tag: 'li',
-			appendTo,
-			onPointerPress: readOnly ? () => {} : onPointerPress,
-			...options,
+			appendTo: options.appendTo,
+			onPointerPress: options.readOnly ? () => {} : onPointerPress,
 		});
 	}
 }

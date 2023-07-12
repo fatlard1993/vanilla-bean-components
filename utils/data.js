@@ -1,17 +1,29 @@
-import state from '../components/state';
+import { state } from '../components/state';
 
-export const debounceCb = (cb, delay = 400, ...args) => {
-	if (state?.debounceCb?.[cb]) clearTimeout(state.debounceCb[cb]);
+/**
+ * Debounce a function
+ * @param {Function} callback - The function to debounced
+ */
+export const debounceCallback = (callback, delay = 400, ...args) => {
+	if (state?.debounceCallback?.[callback]) clearTimeout(state.debounceCallback[callback]);
 
-	state.debounceCb = state.debounceCb || {};
+	state.debounceCallback = state.debounceCallback || {};
 
-	state.debounceCb[cb] = setTimeout(() => cb(...args), delay);
+	state.debounceCallback[callback] = setTimeout(() => callback(...args), delay);
 };
 
-export const run = (arr, destructive) => {
-	if (!destructive) arr = arr.slice(0);
-
-	let task;
-
-	while ((task = arr.shift())) task();
-};
+/**
+ * Retrieve a list of non-native properties from a javascript object
+ * @param {Object} object - The target Object
+ * @return {Array} An array of the string property names
+ */
+export const getCustomProperties = object =>
+	[
+		...new Set(object ? [...Reflect.ownKeys(object), ...getCustomProperties(Object.getPrototypeOf(object))] : []),
+	].filter(
+		key =>
+			typeof key !== 'string' ||
+			!/^(?:constructor|prototype|arguments|caller|name|length|toString|toLocaleString|valueOf|apply|bind|call|__proto__| __defineGetter__|__defineSetter__|hasOwnProperty|__lookupGetter__|__lookupSetter__|__defineGetter__|isPrototypeOf|propertyIsEnumerable)$/.test(
+				key,
+			),
+	);

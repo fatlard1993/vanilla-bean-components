@@ -1,18 +1,19 @@
-import DomElem from '../DomElem';
+import { DomElem } from '../DomElem';
 
-export class Overlay extends DomElem {
-	constructor({ styles = () => '', ...options }) {
+class Overlay extends DomElem {
+	constructor(options = {}) {
 		super({
-			styles: ({ colors, ...theme }) => `
-				position: absolute;
-				background-color: ${colors.darkest(colors.grey)};
+			...options,
+			styles: theme => `
+				position: fixed;
+				z-index: 1;
+				background-color: ${theme.colors.darkest(theme.colors.gray)};
 				padding: 6px 12px;
 				border-radius: 3px;
-				border: 1px solid ${colors.lightest(colors.grey)};
+				border: 1px solid ${theme.colors.lightest(theme.colors.gray)};
 
-				${styles({ colors, ...theme })}
+				${options.styles ? options.styles(theme) : ''}
 			`,
-			...options,
 		});
 	}
 }

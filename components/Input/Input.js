@@ -1,6 +1,6 @@
 import { styled } from '../../utils';
-import DomElem from '../DomElem';
-import { LabelSupport } from '../Label';
+import { DomElem } from '../DomElem';
+import { LabelSupport } from '../LabelSupport';
 
 const InputValidationError = styled(
 	DomElem,
@@ -12,22 +12,23 @@ const InputValidationError = styled(
 	`,
 );
 
-export class Input extends LabelSupport {
-	constructor({ styles = () => '', value = '', ...options }) {
-		const initialValue = value;
+const defaultOptions = { tag: 'input', value: '' };
 
+class Input extends LabelSupport {
+	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
+
+	constructor(options = {}) {
 		super({
+			...defaultOptions,
+			...options,
 			styles: theme => `
 				${theme.input}
 
-				${styles(theme)}
+				${options.styles ? options.styles(theme) : ''}
 			`,
-			tag: 'input',
-			value,
-			...options,
 		});
 
-		this.initialValue = initialValue;
+		this.initialValue = this.options.value;
 	}
 
 	get value() {

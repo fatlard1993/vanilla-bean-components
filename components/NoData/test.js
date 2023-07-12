@@ -1,7 +1,7 @@
 import { findByText } from '@testing-library/dom';
 import { JSDOM } from 'jsdom';
 
-import NoData from '.';
+import { NoData } from '.';
 
 const container = new JSDOM().window.document.body;
 

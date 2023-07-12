@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom';
 
-import Checkbox from '.';
+import { Checkbox } from '.';
 
 const container = new JSDOM().window.document.body;
 
