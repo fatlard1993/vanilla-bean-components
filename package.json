@@ -6,6 +6,8 @@
 		"./theme/*": "./theme/*.js",
 		"./utils/*": "./utils/*.js",
 		"./package.json": "./package.json",
+		"./.eslint.cjs": "./.eslint.cjs",
+		"./.prettierrc.cjs": "./.prettierrc.cjs",
 		"./.spellcheck.cjs": "./.spellcheck.cjs",
 		".": "./index.js"
 	},
@@ -14,6 +16,8 @@
 		"/theme/**/*",
 		"/utils/**/*",
 		"index.js",
+		".eslint.cjs",
+		".prettierrc.cjs",
 		".spellcheck.cjs",
 		"!/components/**/demo.js",
 		"!/components/**/*.test.js",
