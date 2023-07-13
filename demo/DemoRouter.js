@@ -2,7 +2,6 @@ import ButtonDemo from '../components/Button/demo';
 import ColorPickerDemo from '../components/ColorPicker/demo';
 import CheckboxDemo from '../components/Checkbox/demo';
 import CodeDemo from '../components/Code/demo';
-import CodeEditorDemo from '../components/CodeEditor/demo';
 import DialogDemo from '../components/Dialog/demo';
 import DomElemDemo from '../components/DomElem/demo';
 import IconButtonDemo from '../components/IconButton/demo';
@@ -44,7 +43,6 @@ export const paths = {
 	colorPicker: '/ColorPicker',
 	checkbox: '/Checkbox',
 	code: '/Code',
-	codeEditor: '/CodeEditor',
 	dialog: '/Dialog',
 	domElem: '/DomElem',
 	iconButton: '/IconButton',
@@ -76,7 +74,6 @@ const views = {
 	[paths.colorPicker]: ColorPickerDemo,
 	[paths.checkbox]: CheckboxDemo,
 	[paths.code]: CodeDemo,
-	[paths.codeEditor]: CodeEditorDemo,
 	[paths.dialog]: DialogDemo,
 	[paths.domElem]: DomElemDemo,
 	[paths.iconButton]: IconButtonDemo,

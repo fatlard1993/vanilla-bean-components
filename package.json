@@ -6,7 +6,7 @@
 		"./theme/*": "./theme/*.js",
 		"./utils/*": "./utils/*.js",
 		"./package.json": "./package.json",
-		"./spellcheck.cjs": "./spellcheck.cjs",
+		"./.spellcheck.cjs": "./.spellcheck.cjs",
 		".": "./index.js"
 	},
 	"files": [
@@ -56,7 +56,6 @@
 		"@jspm/core": "github:jspm/core",
 		"@lezer/highlight": "^1.1.6",
 		"autoprefixer": "^10.4.14",
-		"eslint-plugin-compat": "^4.1.4",
 		"postcss": "^8.4.25",
 		"postcss-nested": "^6.0.1",
 		"prismjs": "^1.29.0",
@@ -69,6 +68,7 @@
 		"@vitejs/plugin-legacy": "^4.1.0",
 		"eslint": "^8.44.0",
 		"eslint-config-prettier": "^8.8.0",
+		"eslint-plugin-compat": "^4.1.4",
 		"eslint-plugin-import": "^2.27.5",
 		"eslint-plugin-prettier": "^5.0.0",
 		"eslint-plugin-spellcheck": "0.0.20",
