@@ -11,7 +11,7 @@ describe('Page', () => {
 	test('must render', async () => {
 		const textContent = 'textContent';
 
-		new Page({ appendTo: container, appendChild: new DomElem({ textContent }) });
+		new Page({ appendTo: container, append: new DomElem({ textContent }) });
 
 		await findByText(container, textContent);
 	});

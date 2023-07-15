@@ -5,4 +5,4 @@ import DemoRouter from './DemoRouter';
 
 window.process = process;
 
-new Page({ appendTo: document.getElementById('app'), appendChild: new DemoRouter() });
+new Page({ appendTo: document.getElementById('app'), append: new DemoRouter() });

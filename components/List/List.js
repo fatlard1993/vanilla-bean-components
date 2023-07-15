@@ -5,6 +5,7 @@ class List extends LabelSupport {
 	constructor(options = {}) {
 		super({
 			...options,
+			tag: 'ul',
 			styles: theme => `
 				margin: 6px 0;
 				padding-left: 32px;
@@ -16,19 +17,17 @@ class List extends LabelSupport {
 
 				${options.styles ? options.styles(theme) : ''}
 			`,
-			tag: 'ul',
-			appendChildren: [
-				...(options.appendChildren || []),
-				...(options.appendChild ? [options.appendChild] : []),
-				...(options.items || []).map(
-					item =>
-						new TooltipSupport({
-							tag: 'li',
-							...item,
-						}),
-				),
-			],
 		});
+
+		this.append(
+			(options.items || []).map(
+				item =>
+					new TooltipSupport({
+						tag: 'li',
+						...item,
+					}),
+			),
+		);
 	}
 }
 

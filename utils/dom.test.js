@@ -25,7 +25,7 @@ test('appendStyles', () => {
 	global.document = {
 		createElement: () => ({}),
 		head: {
-			appendChild: style => {
+			append: style => {
 				result = style;
 			},
 		},

@@ -33,9 +33,7 @@ export const appendStyles = css => {
 
 	style.innerHTML = css;
 
-	// document.head doesn't have an appendChild function
-	// eslint-disable-next-line unicorn/prefer-dom-node-append
-	document.head.appendChild(style);
+	document.head.append(style);
 };
 
 /**

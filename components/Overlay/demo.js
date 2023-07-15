@@ -10,7 +10,7 @@ export default class Demo extends DemoView {
 			styles: () => `
 				display: none;
 			`,
-			appendChild: new DomElem({ tag: 'p', textContent: 'Some content for our overlay' }),
+			append: new DomElem({ tag: 'p', textContent: 'Some content for our overlay' }),
 		});
 
 		super({
@@ -43,12 +43,6 @@ export default class Demo extends DemoView {
 				this.openOverlay({ x: event.clientX + 10, y: event.clientY + 10 });
 			},
 			onMouseLeave: () => this.closeOverlay(),
-		});
-
-		new Label({
-			label: 'Props',
-			appendTo: this.demoContent,
-			appendChildren: [new DomElem({ tag: 'pre', textContent: '- ...rest => DomElem' })],
 		});
 	}
 

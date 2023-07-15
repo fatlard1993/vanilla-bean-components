@@ -86,7 +86,7 @@ class ColorPicker extends Input {
 
 		super({
 			...options,
-			appendToLabel: [textInput, ...(options.appendToLabel ? [options.appendToLabel] : [])],
+			labelOptions: { ...options.labelOptions, append: [textInput, ...(options.labelOptions?.append || [])] },
 			styles: theme => `
 				background-color: ${theme.colors.light(theme.colors.gray)};
 				padding: 14px;

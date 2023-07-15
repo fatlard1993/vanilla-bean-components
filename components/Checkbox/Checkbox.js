@@ -68,7 +68,7 @@ class Checkbox extends DomElem {
 			tag: 'label',
 			for: this.classId,
 			appendTo: this.elem,
-			appendChildren: [this.inputElem, document.createTextNode(options.label)],
+			append: [this.inputElem, document.createTextNode(options.label)],
 		});
 	}
 

@@ -11,7 +11,7 @@ describe('Overlay', () => {
 	test('must render', async () => {
 		const textContent = 'textContent';
 
-		new Overlay({ appendTo: container, appendChild: new DomElem({ textContent }) });
+		new Overlay({ appendTo: container, append: new DomElem({ textContent }) });
 
 		await findByText(container, textContent);
 	});

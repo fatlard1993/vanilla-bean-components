@@ -8,7 +8,15 @@ export default class Demo extends DemoView {
 			label: 'label',
 			value: 'random',
 			onChange: console.log,
-			appendChildren: [new Button({ textContent: 'Random', onPointerPress: () => component.set('random') })],
+			labelOptions: {
+				append: [
+					new Button({
+						textContent: 'Random',
+						onPointerPress: () => component.set('random'),
+						style: { marginTop: '12px' },
+					}),
+				],
+			},
 		});
 
 		super({ component, ...options });

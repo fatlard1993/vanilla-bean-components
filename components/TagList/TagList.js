@@ -61,12 +61,13 @@ class TagList extends DomElem {
 			addTag = new Tag({
 				readOnly: true,
 				addClass: 'addTag',
-				appendChildren: [tagInput, addButton],
+				append: [tagInput, addButton],
 			});
 		}
 
 		super({
 			...options,
+			tag: 'ul',
 			styles: theme => `
 				background-color: ${theme.colors.darkest(theme.colors.gray)};
 				margin: 1% auto;
@@ -91,16 +92,16 @@ class TagList extends DomElem {
 
 				${options.styles ? options.styles(theme) : ''}
 			`,
-			tag: 'ul',
-			appendChildren: [
-				...(options.tags || []).map(textContent => new Tag({ readOnly: options.readOnly, textContent })),
-				...(addTag ? [addTag] : []),
-			],
 		});
 
 		this.tagInput = tagInput;
 		this.addButton = addButton;
 		this.addTag = addTag;
+
+		this.append([
+			...(options.tags || []).map(textContent => new Tag({ readOnly: options.readOnly, textContent })),
+			...(addTag ? [addTag] : []),
+		]);
 	}
 }
 

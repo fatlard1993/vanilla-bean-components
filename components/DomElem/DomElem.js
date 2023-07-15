@@ -114,7 +114,7 @@ class DomElem {
 
 	content(content) {
 		if (typeof content === 'string') this.elem.textContent = content;
-		else this.appendChildren(content);
+		else this.append(content);
 	}
 
 	ancestry(targetClass = this) {
@@ -123,12 +123,8 @@ class DomElem {
 		return [targetClass, ...this.ancestry(Object.getPrototypeOf(targetClass))];
 	}
 
-	appendChildren(children, ...moreChildren) {
-		if (!children) return;
-
-		children = Array.isArray(children) ? children : [children, ...moreChildren];
-
-		children
+	append(...children) {
+		(Array.isArray(children) ? children : [children])
 			.flat(Number.POSITIVE_INFINITY)
 			.filter(child => !!child)
 			.forEach(child => {
@@ -138,14 +134,8 @@ class DomElem {
 			});
 	}
 
-	append(...children) {
-		if (!children) return;
-
-		this.appendChildren(children);
-	}
-
 	appendTo(parentElem) {
-		if (parentElem?.appendChild) parentElem.append(this.elem);
+		if (parentElem?.append) parentElem.append(this.elem);
 	}
 
 	prependTo(parentElem) {
@@ -153,11 +143,16 @@ class DomElem {
 		else parentElem.append(this.elem);
 	}
 
-	prependChild(child) {
-		if (child instanceof DomElem || DomElem.isPrototypeOf(child)) child = child.elem;
+	prepend(...children) {
+		(Array.isArray(children) ? children : [children])
+			.flat(Number.POSITIVE_INFINITY)
+			.filter(child => !!child)
+			.forEach(child => {
+				if (child instanceof DomElem || DomElem.isPrototypeOf(child)) child = child.elem;
 
-		if (this.elem.firstChild) this.elem.insertBefore(child, this.elem.firstChild);
-		else this.elem.append(child);
+				if (this.elem.firstChild) this.elem.insertBefore(child, this.elem.firstChild);
+				else this.elem.append(child);
+			});
 	}
 
 	findAncestor(selector) {

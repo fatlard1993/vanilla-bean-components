@@ -9,22 +9,13 @@ class LabelSupport extends TooltipSupport {
 	 * @param {(String|Array|Object)} options.label - The content used for the label element
 	 */
 	constructor(options = {}) {
-		const appendChildrenArray = Array.isArray(options.appendChildren)
-			? options.appendChildren
-			: [options.appendChildren];
-		const children = [
-			...(options.appendChildren ? appendChildrenArray : []),
-			...(options.appendChild ? [options.appendChild] : []),
-		];
-
 		super({
 			...options,
 			tooltip: options.label ? undefined : options.tooltip,
-			appendChildren: options.label ? undefined : children,
+			append: options.label ? undefined : options.append,
 		});
 
 		this.elem.id = this.classId;
-		this.children = children;
 	}
 
 	setOption(name, value) {
@@ -37,13 +28,7 @@ class LabelSupport extends TooltipSupport {
 						label: this.options.label,
 						tooltip: this.options.tooltip,
 						appendTo: this.elem.parentElement,
-						appendChildren: [
-							this.elem,
-							...this.children,
-							...(Array.isArray(this.options.appendToLabel)
-								? this.options.appendToLabel
-								: [this.options.appendToLabel]),
-						],
+						append: [this.elem, ...(this.options.append || []), ...(this.options.labelOptions?.append || [])],
 						...this.options.labelOptions,
 					});
 				});

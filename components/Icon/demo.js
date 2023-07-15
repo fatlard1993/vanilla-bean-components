@@ -14,7 +14,7 @@ export default class Demo extends DemoView {
 		new Label({
 			label: 'Docs Link',
 			appendTo: this.demoContent,
-			appendChild: new Link({
+			append: new Link({
 				appendTo: this.demoContent,
 				textContent: 'FontAwesome Icon Docs',
 				href: 'https://fontawesome.com/search?m=free&s=solid%2Cregular%2Cbrands',

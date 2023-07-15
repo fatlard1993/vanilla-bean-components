@@ -65,7 +65,7 @@ class RadioButton extends DomElem {
 				new RadioButtonLabel({
 					tag: 'label',
 					appendTo: this.elem,
-					appendChildren: [
+					append: [
 						new RadioButtonInput({
 							tag: 'input',
 							type: 'radio',

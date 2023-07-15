@@ -17,7 +17,7 @@ class Select extends Input {
 		super.render(options);
 
 		if (options.options) {
-			this.appendChildren(
+			this.append(
 				options.options.map(
 					option =>
 						new DomElem({

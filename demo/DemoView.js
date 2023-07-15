@@ -71,7 +71,7 @@ export default class DemoView extends View {
 				padding: 5%;
 			`,
 			appendTo: this.demoContent,
-			appendChild: component,
+			append: component,
 		});
 
 		const componentAncestors = component
