@@ -46,16 +46,14 @@ class Dialog extends DomElem {
 	size_enum = Object.freeze(['small', 'standard', 'large']);
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
-	constructor(options) {
+	constructor({ content, ...options }) {
 		const _header = new DialogHeader({
 			tag: 'h2',
-			content: options.header,
+			append: options.header,
 		});
-		const _content = new DialogContent({
-			content: options.content,
-		});
+		const _content = new DialogContent({ content });
 		const _footer = new DialogFooter({
-			content:
+			append:
 				options.footer ||
 				(options.buttons || []).map(
 					button =>
@@ -105,7 +103,7 @@ class Dialog extends DomElem {
 
 				${options.styles ? options.styles(theme) : ''}
 			`,
-			content: [_header, _content, _footer],
+			append: [_header, _content, _footer],
 		});
 
 		this._header = _header;

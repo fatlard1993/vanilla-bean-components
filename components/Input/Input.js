@@ -61,7 +61,7 @@ class Input extends LabelSupport {
 				this.validationErrors[message].elem.style.display = isValid ? 'none' : 'block';
 			} else if (!isValid) {
 				this.validationErrors[message] = new InputValidationError({
-					content: resolvedMessage,
+					append: resolvedMessage,
 				});
 
 				this.elem.parentElement.insertBefore(this.validationErrors[message].elem, this.elem);

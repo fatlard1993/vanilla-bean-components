@@ -114,7 +114,10 @@ class DomElem {
 
 	content(content) {
 		if (typeof content === 'string') this.elem.textContent = content;
-		else this.append(content);
+		else {
+			this.empty();
+			this.append(content);
+		}
 	}
 
 	ancestry(targetClass = this) {

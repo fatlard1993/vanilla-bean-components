@@ -86,7 +86,7 @@ export default class DemoView extends View {
 			new Label({
 				label: 'Ancestry',
 				appendTo: this.demoContent,
-				content: componentAncestors.map(
+				append: componentAncestors.map(
 					({ constructor: { name } }) => new Link({ textContent: name, href: `#/${name}` }),
 				),
 			});
@@ -98,7 +98,7 @@ export default class DemoView extends View {
 			label: 'Options',
 			appendTo: this.demoContent,
 			items: Object.entries(component.options).map(([key, value]) => ({
-				content: [
+				append: [
 					document.createTextNode(key),
 					new List({
 						items: [
@@ -125,7 +125,7 @@ export default class DemoView extends View {
 							],
 							[document.createTextNode('Default: '), new Code({ code: stringifyValue(component.defaultOptions[key]) })],
 							[document.createTextNode('Current: '), new Code({ code: stringifyValue(value) })],
-						].map(content => ({ content })),
+						].map(append => ({ append })),
 					}),
 				],
 			})),
@@ -137,7 +137,7 @@ export default class DemoView extends View {
 			items: componentProperties
 				.filter(key => typeof component[key] !== 'function' && key !== 'options' && key !== 'defaultOptions')
 				.map(key => ({
-					content: [
+					append: [
 						document.createTextNode(key),
 						new List({
 							items: [
@@ -153,7 +153,7 @@ export default class DemoView extends View {
 								`Type: ${typeof component[key] === 'object' ? component[key].toString() : typeof component[key]}`,
 								[document.createTextNode('Current: '), new Code({ code: stringifyValue(component[key]) })],
 							].map(data => ({
-								content: data,
+								append: data,
 								styles: () => `white-space: pre;`,
 							})),
 						}),
