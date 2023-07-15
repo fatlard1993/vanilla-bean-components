@@ -28,8 +28,8 @@ class LabelSupport extends TooltipSupport {
 						label: this.options.label,
 						tooltip: this.options.tooltip,
 						appendTo: this.elem.parentElement,
-						append: [this.elem, ...(this.options.append || []), ...(this.options.labelOptions?.append || [])],
 						...this.options.labelOptions,
+						append: [this.elem, ...(this.options.append || []), ...(this.options.labelOptions?.append || [])],
 					});
 				});
 			}
