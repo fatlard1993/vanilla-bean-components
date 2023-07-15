@@ -7,6 +7,7 @@ module.exports = {
 	skipWords: [
 		'ecma',
 		'compat',
+		'eslintrc',
 		'multiline',
 		'builtins',
 		'lang',
@@ -80,6 +81,7 @@ module.exports = {
 		'mouseleave',
 		'keydown',
 		'keyup',
+		'utf8',
 	],
 	skipIfMatch: ['\\d+v[wh]'],
 	skipWordIfMatch: [],

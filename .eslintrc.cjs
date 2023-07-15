@@ -43,6 +43,7 @@ module.exports = {
 		'unicorn/prefer-node-protocol': 'off',
 		'unicorn/no-this-assignment': 'off',
 		'unicorn/consistent-function-scoping': 'off',
+		'unicorn/numeric-separators-style': 'off',
 
 		'import/no-unused-modules': [1, { unusedExports: true }],
 		'import/no-useless-path-segments': 'error',

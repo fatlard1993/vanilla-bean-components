@@ -44,10 +44,12 @@ class LabelSupport extends TooltipSupport {
 								? this.options.appendToLabel
 								: [this.options.appendToLabel]),
 						],
+						...this.options.labelOptions,
 					});
 				});
 			}
 		} else if (name === 'tooltip' && this._label) this._label.setOption(name, value);
+		else if (name === 'labelOptions' && this._label) this._label.setOptions(value);
 		else super.setOption(name, value);
 	}
 }
