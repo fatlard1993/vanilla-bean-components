@@ -1,6 +1,6 @@
 import { vi } from 'vitest';
 
-import { debounceCallback, getCustomProperties } from './data';
+import { debounceCallback, getCustomProperties, conditionalList } from './data';
 
 test('debounceCallback', () => {
 	vi.useFakeTimers();
@@ -53,4 +53,18 @@ test('getCustomProperties', () => {
 	expect(getCustomProperties(new TestClass())).toStrictEqual(['testFunction', 'testProto']);
 
 	expect(getCustomProperties(testObject)).toStrictEqual(['testProp']);
+});
+
+test('conditionalList', () => {
+	expect(
+		conditionalList([
+			{ if: false, thenItem: 1, elseItem: 4 },
+			{ if: true, thenItem: 8, elseItem: 4 },
+			{ if: false, thenItems: [11, 9] },
+			{ alwaysItem: 15 },
+			{ if: true, thenItems: [16] },
+			{ if: true, elseItems: [4, 44, 444] },
+			{ alwaysItems: [23, 42] },
+		]),
+	).toStrictEqual([4, 8, 15, 16, 23, 42]);
 });

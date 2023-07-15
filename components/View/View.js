@@ -9,7 +9,7 @@ class View extends DomElem {
 				display: flex;
 				flex-direction: column;
 
-				${options.styles ? options.styles(theme) : ''}
+				${options.styles?.(theme) || ''}
 			`,
 		});
 	}

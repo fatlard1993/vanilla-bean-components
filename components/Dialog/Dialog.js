@@ -101,7 +101,7 @@ class Dialog extends DomElem {
 					background-color: ${theme.colors.blackish(theme.colors.blue).setAlpha(0.9)};
 				}
 
-				${options.styles ? options.styles(theme) : ''}
+				${options.styles?.(theme) || ''}
 			`,
 			append: [_header, _content, _footer],
 		});

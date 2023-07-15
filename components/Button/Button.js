@@ -12,7 +12,7 @@ class Button extends TooltipSupport {
 			styles: theme => `
 				${theme.button}
 
-				${options.styles ? options.styles(theme) : ''}
+				${options.styles?.(theme) || ''}
 			`,
 		});
 	}

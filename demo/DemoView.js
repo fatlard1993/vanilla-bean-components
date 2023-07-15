@@ -7,6 +7,7 @@ import {
 	Select,
 	Textarea,
 	View,
+	conditionalList,
 	getCustomProperties,
 	removeExcessIndentation,
 } from '..';
@@ -46,7 +47,7 @@ export default class DemoView extends View {
 					white-space: pre;
 				}
 
-				${options.styles ? options.styles(theme) : ''}
+				${options.styles?.(theme) || ''}
 			`,
 		});
 
@@ -99,33 +100,38 @@ export default class DemoView extends View {
 			appendTo: this.demoContent,
 			items: Object.entries(component.options).map(([key, value]) => ({
 				append: [
-					document.createTextNode(key),
+					key,
 					new List({
-						items: [
-							...(initializedOnly.has(key) ? ['INITIALIZED ONLY'] : []),
-							...(isMethod(key) ? ['METHOD'] : []),
-							...(initializedOnly.has(key) || isMethod(key)
-								? []
-								: [
-										component[`${key}_enum`]
-											? new Select({
-													value,
-													options: component[`${key}_enum`],
-													onChange: ({ value: newValue }) => component.setOption(key, newValue),
-											  })
-											: new Textarea({
-													label: 'Current',
-													value: stringifyValue(value),
-													onChange: ({ value: newValue }) => component.setOption(key, newValue),
-											  }),
-								  ]),
-							[
-								document.createTextNode('Type: '),
-								new Code({ code: stringifyValue(typeof value === 'object' ? value.toString() : typeof value) }),
-							],
-							[document.createTextNode('Default: '), new Code({ code: stringifyValue(component.defaultOptions[key]) })],
-							[document.createTextNode('Current: '), new Code({ code: stringifyValue(value) })],
-						].map(append => ({ append })),
+						items: conditionalList([
+							{ if: initializedOnly.has(key), thenItem: 'INITIALIZED ONLY' },
+							{ if: isMethod(key), thenItem: 'METHOD' },
+							{
+								if: (initializedOnly.has(key) || isMethod(key)) && component[`${key}_enum`],
+								thenItem: new Select({
+									value,
+									options: component[`${key}_enum`],
+									onChange: ({ value: newValue }) => component.setOption(key, newValue),
+								}),
+							},
+							{
+								if: (initializedOnly.has(key) || isMethod(key)) && !component[`${key}_enum`],
+								thenItem: new Textarea({
+									label: 'Current',
+									value: stringifyValue(value),
+									onChange: ({ value: newValue }) => component.setOption(key, newValue),
+								}),
+							},
+							{
+								alwaysItems: [
+									'Type: ',
+									new Code({ code: stringifyValue(typeof value === 'object' ? value.toString() : typeof value) }),
+									'Default: ',
+									new Code({ code: stringifyValue(component.defaultOptions[key]) }),
+									'Current: ',
+									new Code({ code: stringifyValue(value) }),
+								],
+							},
+						]).map(append => ({ append })),
 					}),
 				],
 			})),
@@ -138,22 +144,27 @@ export default class DemoView extends View {
 				.filter(key => typeof component[key] !== 'function' && key !== 'options' && key !== 'defaultOptions')
 				.map(key => ({
 					append: [
-						document.createTextNode(key),
+						key,
 						new List({
-							items: [
-								...(Object.isFrozen(component[key]) || key === 'elem'
-									? ['READ ONLY']
-									: [
-											new Textarea({
-												label: 'Current',
-												value: stringifyValue(component[key]),
-												onChange: ({ value: newValue }) => component.setOption(key, newValue),
-											}),
-									  ]),
-								`Type: ${typeof component[key] === 'object' ? component[key].toString() : typeof component[key]}`,
-								[document.createTextNode('Current: '), new Code({ code: stringifyValue(component[key]) })],
-							].map(data => ({
-								append: data,
+							items: conditionalList([
+								{
+									if: Object.isFrozen(component[key]) || key === 'elem',
+									thenItem: 'READ ONLY',
+									elseItem: new Textarea({
+										label: 'Current',
+										value: stringifyValue(component[key]),
+										onChange: ({ value: newValue }) => component.setOption(key, newValue),
+									}),
+								},
+								{
+									alwaysItems: [
+										`Type: ${typeof component[key] === 'object' ? component[key].toString() : typeof component[key]}`,
+										'Current: ',
+										new Code({ code: stringifyValue(component[key]) }),
+									],
+								},
+							]).map(append => ({
+								append,
 								styles: () => `white-space: pre;`,
 							})),
 						}),

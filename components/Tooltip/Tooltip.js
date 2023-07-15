@@ -56,7 +56,7 @@ class Tooltip extends Icon {
 					top: calc(100% - 9px);
 				}
 
-				${options.styles ? options.styles(theme) : ''}
+				${options.styles?.(theme) || ''}
 			`,
 		});
 

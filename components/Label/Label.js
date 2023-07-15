@@ -25,7 +25,7 @@ class Label extends TooltipSupport {
 				border-left: 3px solid ${theme.colors.lightest(theme.colors.gray)};
 				background-color: ${theme.colors.darkest(theme.colors.gray)};
 
-				${options.styles ? options.styles(theme) : ''}
+				${options.styles?.(theme) || ''}
 			`,
 		});
 

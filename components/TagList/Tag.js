@@ -36,7 +36,7 @@ class Tag extends DomElem {
 					min-width: 260px;
 				}
 
-				${options.styles ? options.styles(theme) : ''}
+				${options.styles?.(theme) || ''}
 			`,
 			tag: 'li',
 			appendTo: options.appendTo,

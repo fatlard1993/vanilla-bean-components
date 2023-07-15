@@ -12,7 +12,7 @@ class Overlay extends DomElem {
 				border-radius: 3px;
 				border: 1px solid ${theme.colors.lightest(theme.colors.gray)};
 
-				${options.styles ? options.styles(theme) : ''}
+				${options.styles?.(theme) || ''}
 			`,
 		});
 	}

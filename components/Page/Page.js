@@ -48,7 +48,7 @@ class Page extends DomElem {
 
 				${theme.code}
 
-				${options.globalStyles ? options.globalStyles(theme) : ''}
+				${options.globalStyles?.(theme) || ''}
 			`,
 			styles: theme => `
 				position: relative;
@@ -59,8 +59,8 @@ class Page extends DomElem {
 
 				${theme.scrollbar}
 
-				${options.styles ? options.styles(theme) : ''}
-				`,
+				${options.styles?.(theme) || ''}
+			`,
 			autoRender: false,
 		});
 

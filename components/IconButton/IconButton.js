@@ -13,7 +13,7 @@ class IconButton extends Button {
 					padding: 0;
 				}
 
-				${options.styles ? options.styles(theme) : ''}
+				${options.styles?.(theme) || ''}
 			`,
 		});
 	}

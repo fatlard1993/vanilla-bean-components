@@ -73,7 +73,7 @@ class RadioButton extends DomElem {
 							name: this.classId,
 							checked: options.value === (option?.value || option),
 						}),
-						document.createTextNode(option?.label || option),
+						option?.label || option,
 					],
 				}),
 		);

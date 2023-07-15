@@ -9,7 +9,7 @@ class NoData extends TooltipSupport {
 				padding: 6px 12px;
 				text-align: center;
 
-				${options.styles ? options.styles(theme) : ''}
+				${options.styles?.(theme) || ''}
 			`,
 		});
 	}

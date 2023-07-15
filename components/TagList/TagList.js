@@ -90,7 +90,7 @@ class TagList extends DomElem {
 					margin: 0;
 				}
 
-				${options.styles ? options.styles(theme) : ''}
+				${options.styles?.(theme) || ''}
 			`,
 		});
 

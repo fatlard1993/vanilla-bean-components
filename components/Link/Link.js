@@ -18,7 +18,7 @@ class Link extends Button {
 					}
 				}
 
-				${options.styles ? options.styles(theme) : ''}
+				${options.styles?.(theme) || ''}
 			`,
 		});
 	}

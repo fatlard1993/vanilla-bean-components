@@ -24,7 +24,7 @@ class Input extends LabelSupport {
 			styles: theme => `
 				${theme.input}
 
-				${options.styles ? options.styles(theme) : ''}
+				${options.styles?.(theme) || ''}
 			`,
 		});
 

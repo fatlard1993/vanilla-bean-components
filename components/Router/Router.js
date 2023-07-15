@@ -12,7 +12,7 @@ class Router extends DomElem {
 			styles: theme => `
 				height: 100%;
 
-				${options.styles ? options.styles(theme) : ''}
+				${options.styles?.(theme) || ''}
 			`,
 		});
 

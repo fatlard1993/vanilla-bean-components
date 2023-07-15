@@ -30,7 +30,7 @@ class TooltipSupport extends Icon {
 						: ''
 				}
 
-				${options.styles ? options.styles(theme) : ''}
+				${options.styles?.(theme) || ''}
 			`,
 		});
 	}

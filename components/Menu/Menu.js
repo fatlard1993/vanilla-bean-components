@@ -23,7 +23,7 @@ class Menu extends List {
 					}
 				}
 
-				${options.styles ? options.styles(theme) : ''}
+				${options.styles?.(theme) || ''}
 		`,
 			items: (options.items || []).map(item => ({
 				onPointerPress: options.onSelect,

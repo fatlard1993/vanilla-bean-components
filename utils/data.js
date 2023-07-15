@@ -27,3 +27,25 @@ export const getCustomProperties = object =>
 				key,
 			),
 	);
+
+export const conditionalList = conditionalItems =>
+	conditionalItems
+		.filter(
+			item =>
+				item.if ||
+				item.elseItem ||
+				Array.isArray(item.elseItems) ||
+				Array.isArray(item.alwaysItems) ||
+				item.alwaysItem !== undefined,
+		)
+		.flatMap(item => {
+			if (item.alwaysItem !== undefined) return [item.alwaysItem];
+			if (item.if && item.thenItem !== undefined) return [item.thenItem];
+			if (!item.if && item.elseItem !== undefined) return [item.elseItem];
+
+			if (Array.isArray(item.alwaysItems)) return item.alwaysItems;
+			if (item.if && Array.isArray(item.thenItems)) return item.thenItems;
+			if (!item.if && Array.isArray(item.elseItems)) return item.elseItems;
+
+			return [];
+		});

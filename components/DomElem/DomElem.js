@@ -163,7 +163,7 @@ class DomElem {
 
 		while (
 			(elem = elem.parentElement) &&
-			(selector[0] === '#' ? '#' + elem.id !== selector : !elem.className.includes(selector))
+			(selector[0] === '#' ? `#${elem.id}` !== selector : !elem.className.includes(selector))
 		);
 
 		return elem;

@@ -94,7 +94,7 @@ class ColorPicker extends Input {
 				margin-bottom: 6px;
 				text-indent: 0;
 
-				${options.styles ? options.styles(theme) : ''}
+				${options.styles?.(theme) || ''}
 			`,
 		});
 

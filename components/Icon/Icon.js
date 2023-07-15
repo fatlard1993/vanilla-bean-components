@@ -9,7 +9,7 @@ class Icon extends DomElem {
 					${theme.fonts.fontAwesomeSolid}
 				}
 
-				${options.styles ? options.styles(theme) : ''}
+				${options.styles?.(theme) || ''}
 			`,
 		});
 	}

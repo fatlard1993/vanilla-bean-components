@@ -15,7 +15,7 @@ class List extends LabelSupport {
 					text-indent: 6px;
 				}
 
-				${options.styles ? options.styles(theme) : ''}
+				${options.styles?.(theme) || ''}
 			`,
 		});
 

@@ -25,7 +25,7 @@ export default class DemoMenu extends DomElem {
 				gap: 6px;
 				background-color: ${theme.colors.darkest(theme.colors.gray)}
 
-				${options.styles ? options.styles(theme) : ''}
+				${options.styles?.(theme) || ''}
 			`,
 		});
 
