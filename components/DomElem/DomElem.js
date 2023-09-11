@@ -40,6 +40,8 @@ class DomElem {
 
 		this.addClass(this.classId);
 
+		if (import.meta.env.DEV) this.addClass(...this.ancestry().map(({ constructor }) => constructor.name));
+
 		for (const key in this.elem) {
 			if (typeof this.elem[key] === 'function' && !this[key]) this[key] = (...args) => this.elem[key](...args);
 		}
