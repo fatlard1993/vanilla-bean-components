@@ -205,14 +205,16 @@ class DomElem {
 			.then(({ css }) => {
 				appendStyles(css);
 			})
-			.catch(() => {});
+			// eslint-disable-next-line no-console
+			.catch(import.meta.env.DEV ? console.error : () => {});
 	}
 
 	globalStyles(styles) {
 		postcss([plugin_nested, plugin_autoprefixer])
 			.process(removeExcessIndentation(styles(theme)), { from: undefined })
 			.then(({ css }) => appendStyles(css))
-			.catch(() => {});
+			// eslint-disable-next-line no-console
+			.catch(import.meta.env.DEV ? console.error : () => {});
 	}
 
 	pointerEventPolyfill(event) {
