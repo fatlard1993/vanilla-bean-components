@@ -55,6 +55,7 @@ module.exports = {
 
 		'spellcheck/spell-checker': ['warn', require('./.spellcheck.cjs')],
 	},
+	ignorePatterns: ['package-lock.json', 'node_modules', 'dist'],
 	overrides: [
 		{
 			files: ['**/*.cjs'],
