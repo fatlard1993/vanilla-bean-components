@@ -102,28 +102,28 @@ class ColorPicker extends Input {
 
 		this.onChange = options.onChange;
 
-		this.pickerArea = new PickerArea({
-			innerHTML: saturation,
-			appendTo: this.elem,
-		});
-		this.pickerIndicator = new PickerIndicator({
-			appendTo: this.pickerArea,
-		});
-
-		this.hueArea = new HueArea({
-			innerHTML: hue,
-			appendTo: this.elem,
-		});
-		this.hueIndicator = new HueIndicator({
-			appendTo: this.hueArea,
-		});
-
 		this.textInput = new TextInput({
 			type: 'text',
 			value: options.value,
 			onChange: ({ value }) => this.set(value),
 			onKeyUp: ({ target: { value } }) => debounceCallback(() => this.set(value), 700),
-			appendTo: this.elem,
+			prependTo: this.elem,
+		});
+
+		this.hueArea = new HueArea({
+			innerHTML: hue,
+			prependTo: this.elem,
+		});
+		this.hueIndicator = new HueIndicator({
+			appendTo: this.hueArea,
+		});
+
+		this.pickerArea = new PickerArea({
+			innerHTML: saturation,
+			prependTo: this.elem,
+		});
+		this.pickerIndicator = new PickerIndicator({
+			appendTo: this.pickerArea,
 		});
 
 		this.set(options.value, true);
