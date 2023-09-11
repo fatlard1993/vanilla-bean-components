@@ -41,7 +41,7 @@ const DialogButton = styled(
 );
 
 const size_enum = Object.freeze(['small', 'standard', 'large']);
-const defaultOptions = { tag: 'dialog' };
+const defaultOptions = { tag: 'dialog', openOnRender: 16, modal: true, appendTo: document.body };
 
 class Dialog extends DomElem {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
@@ -52,37 +52,38 @@ class Dialog extends DomElem {
 				...defaultOptions,
 				...options,
 				styles: theme => `
-				background-color: ${theme.colors.darker(theme.colors.gray)};
-				color: ${theme.colors.white};
-				border-radius: 3px;
-				display: flex;
-				flex-direction: column;
-				padding: 6px;
-				margin: 0 auto;
-				border: 2px solid ${theme.colors.dark(theme.colors.blue)};
-				top: 50%;
-				transform: translateY(-50%);
+					display: none;
+					background-color: ${theme.colors.darker(theme.colors.gray)};
+					color: ${theme.colors.white};
+					border-radius: 3px;
+					flex-direction: column;
+					padding: 6px;
+					margin: 0 auto;
+					border: 2px solid ${theme.colors.dark(theme.colors.blue)};
+					top: 50%;
+					transform: translateY(-50%);
 
-				/* Default size: small */
-				width: 420px;
-				height: 210px;
+					/* Default size: small */
+					width: 420px;
+					height: 210px;
 
-				&.standard {
-					width: 840px;
-					height: 420px;
-				}
+					&.standard {
+						width: 840px;
+						height: 420px;
+					}
 
-				&.large {
-					width: 90vw;
-					height: 90vh;
-				}
+					&.large {
+						width: 90vw;
+						height: 90vh;
+					}
 
-				&::backdrop {
-					background-color: ${theme.colors.blackish(theme.colors.blue).setAlpha(0.9)};
-				}
+					&::backdrop {
+						background-color: ${theme.colors.blackish(theme.colors.blue).setAlpha(0.9)};
+						backdrop-filter: blur(3px);
+					}
 
-				${options.styles?.(theme) || ''}
-			`,
+					${options.styles?.(theme) || ''}
+				`,
 			},
 			...children,
 		);
@@ -93,31 +94,48 @@ class Dialog extends DomElem {
 	}
 
 	render(options = this.options) {
-		this._header = new DialogHeader({
-			tag: 'h2',
-			id: this.classId,
-			append: options.header,
-			appendTo: this,
-		});
-		this._content = new DialogContent({ content: options.content, appendTo: this });
-		this._footer = new DialogFooter({
-			append:
-				options.footer ||
-				(options.buttons || []).map(
-					button =>
-						new DialogButton({
-							onPointerPress: () =>
-								options.onButtonPress({ button, closeDialog: options.closeDialog || (() => super.remove()) }),
-							...(typeof button === 'object' ? button : { textContent: button }),
-						}),
-				),
-			appendTo: this,
-		});
+		if (!this._header) {
+			this._header = new DialogHeader({
+				tag: 'h2',
+				id: this.classId,
+				append: options.header,
+				appendTo: this,
+			});
+		}
+
+		if (!this._body) {
+			this._body = new DialogContent({ content: options.body, appendTo: this });
+		}
+
+		if (!this._footer) {
+			this._footer = new DialogFooter({
+				append:
+					options.footer ||
+					(options.buttons || []).map(
+						button =>
+							new DialogButton({
+								onPointerPress: () =>
+									options.onButtonPress({ button, closeDialog: options.closeDialog || (() => this.close()) }),
+								...(typeof button === 'object' ? button : { textContent: button }),
+							}),
+					),
+				appendTo: this,
+			});
+		}
 
 		super.render(options);
+
+		if (this.options.openOnRender) {
+			setTimeout(
+				() => this.open(),
+				typeof this.options.openOnRender === 'number' ? this.options.openOnRender : defaultOptions.openOnRender,
+			);
+		}
 	}
 
 	setOption(name, value) {
+		if (name === 'openOnRender' || name === 'modal') return;
+
 		if (name === 'size') {
 			if (!size_enum.includes(value)) {
 				throw new Error(
@@ -127,21 +145,27 @@ class Dialog extends DomElem {
 
 			this.removeClass(...size_enum);
 			this.addClass(value);
-		} else if (name === 'content') {
-			this._content.setOption(name, value);
+		} else if (name === 'body') {
+			this._body.setOption('content', value);
 		} else super.setOption(name, value);
 	}
 
-	open() {
-		requestAnimationFrame(() => {
-			this.elem.style.display = 'flex';
-			this.elem.showModal();
-		});
+	open(modal = this.options.modal) {
+		this.elem.style.display = 'flex';
+
+		try {
+			this.elem[modal ? 'showModal' : 'show']();
+		} catch (error) {
+			// eslint-disable-next-line no-console
+			if (import.meta.env.DEV) console.error(error, 'Retrying...');
+
+			this.render();
+		}
 	}
 
-	close() {
+	close(returnValue) {
 		this.elem.style.display = 'none';
-		this.elem.close();
+		this.elem.close(returnValue);
 	}
 }
 

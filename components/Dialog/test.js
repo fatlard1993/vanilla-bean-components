@@ -33,12 +33,12 @@ describe('Dialog', () => {
 		await findByText(container, header);
 	});
 
-	test('must support a string content', async () => {
-		const content = 'content';
+	test('must support a string body', async () => {
+		const body = 'body';
 
-		new Dialog({ content, appendTo: container });
+		new Dialog({ body, appendTo: container });
 
-		await findByText(container, content);
+		await findByText(container, body);
 	});
 
 	test('must support an element header', async () => {
@@ -49,12 +49,12 @@ describe('Dialog', () => {
 		await findByText(container, 'header');
 	});
 
-	test('must support an element content', async () => {
-		const content = new DomElem({ tag: 'p', textContent: 'content' });
+	test('must support an element body', async () => {
+		const body = new DomElem({ tag: 'p', textContent: 'body' });
 
-		new Dialog({ content, appendTo: container });
+		new Dialog({ body, appendTo: container });
 
-		await findByText(container, 'content');
+		await findByText(container, 'body');
 	});
 
 	test('must support an element footer', async () => {
