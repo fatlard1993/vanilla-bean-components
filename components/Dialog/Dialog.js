@@ -40,10 +40,10 @@ const DialogButton = styled(
 	`,
 );
 
+const size_enum = Object.freeze(['small', 'standard', 'large']);
 const defaultOptions = { tag: 'dialog' };
 
 class Dialog extends DomElem {
-	size_enum = Object.freeze(['small', 'standard', 'large']);
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
 	constructor(options = {}, ...children) {
@@ -119,13 +119,13 @@ class Dialog extends DomElem {
 
 	setOption(name, value) {
 		if (name === 'size') {
-			if (!this.size_enum.includes(value)) {
+			if (!size_enum.includes(value)) {
 				throw new Error(
-					`"${value}" is not a valid size. The size must be one of the following values: ${this.size_enum.join(', ')}`,
+					`"${value}" is not a valid size. The size must be one of the following values: ${size_enum.join(', ')}`,
 				);
 			}
 
-			this.removeClass(...this.size_enum);
+			this.removeClass(...size_enum);
 			this.addClass(value);
 		} else if (name === 'content') {
 			this._content.setOption(name, value);
