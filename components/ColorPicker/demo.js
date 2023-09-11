@@ -1,24 +1,20 @@
-import DemoView from '../../demo/DemoView';
-import { Button } from '../Button';
+import DemoView, { DemoWrapper } from '../../demo/DemoView';
 import { ColorPicker } from '.';
 
 export default class Demo extends DemoView {
 	constructor(options) {
+		super(options);
+	}
+
+	render(options = this.options) {
+		this.demoWrapper = new DemoWrapper({ appendTo: this });
+
 		const component = new ColorPicker({
-			label: 'label',
 			value: 'random',
 			onChange: console.log,
-			labelOptions: {
-				append: [
-					new Button({
-						textContent: 'Random',
-						onPointerPress: () => component.set('random'),
-						style: { marginTop: '12px' },
-					}),
-				],
-			},
+			appendTo: this.demoWrapper,
 		});
 
-		super({ component, ...options });
+		super.render({ ...options, component });
 	}
 }

@@ -40,38 +40,18 @@ const DialogButton = styled(
 	`,
 );
 
-const defaultOptions = { tag: 'dialog', open: false };
+const defaultOptions = { tag: 'dialog' };
 
 class Dialog extends DomElem {
 	size_enum = Object.freeze(['small', 'standard', 'large']);
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
-	constructor({ content, ...options }) {
-		const _header = new DialogHeader({
-			tag: 'h2',
-			append: options.header,
-		});
-		const _content = new DialogContent({ content });
-		const _footer = new DialogFooter({
-			append:
-				options.footer ||
-				(options.buttons || []).map(
-					button =>
-						new DialogButton({
-							onPointerPress: () =>
-								options.onButtonPress({ button, closeDialog: options.closeDialog || (() => super.remove()) }),
-							...(typeof button === 'object' ? button : { textContent: button }),
-						}),
-				),
-		});
-
-		_header.elem.id = _header.classId;
-
-		super({
-			...defaultOptions,
-			...options,
-			'aria-labelledby': _header.elem.id,
-			styles: theme => `
+	constructor(options = {}, ...children) {
+		super(
+			{
+				...defaultOptions,
+				...options,
+				styles: theme => `
 				background-color: ${theme.colors.darker(theme.colors.gray)};
 				color: ${theme.colors.white};
 				border-radius: 3px;
@@ -103,14 +83,38 @@ class Dialog extends DomElem {
 
 				${options.styles?.(theme) || ''}
 			`,
-			append: [_header, _content, _footer],
-		});
+			},
+			...children,
+		);
 
-		this._header = _header;
-		this._content = _content;
-		this._footer = _footer;
+		this.setOption('aria-labelledby', this.classId);
 
 		this.elem.addEventListener('close', this.elem.remove);
+	}
+
+	render(options = this.options) {
+		this._header = new DialogHeader({
+			tag: 'h2',
+			id: this.classId,
+			append: options.header,
+			appendTo: this,
+		});
+		this._content = new DialogContent({ content: options.content, appendTo: this });
+		this._footer = new DialogFooter({
+			append:
+				options.footer ||
+				(options.buttons || []).map(
+					button =>
+						new DialogButton({
+							onPointerPress: () =>
+								options.onButtonPress({ button, closeDialog: options.closeDialog || (() => super.remove()) }),
+							...(typeof button === 'object' ? button : { textContent: button }),
+						}),
+				),
+			appendTo: this,
+		});
+
+		super.render(options);
 	}
 
 	setOption(name, value) {
@@ -123,6 +127,8 @@ class Dialog extends DomElem {
 
 			this.removeClass(...this.size_enum);
 			this.addClass(value);
+		} else if (name === 'content') {
+			this._content.setOption(name, value);
 		} else super.setOption(name, value);
 	}
 

@@ -44,6 +44,7 @@ module.exports = {
 		'unicorn/no-this-assignment': 'off',
 		'unicorn/consistent-function-scoping': 'off',
 		'unicorn/numeric-separators-style': 'off',
+		'unicorn/prefer-switch': 'off',
 
 		'import/no-unused-modules': [1, { unusedExports: true }],
 		'import/no-useless-path-segments': 'error',
@@ -72,9 +73,12 @@ module.exports = {
 			},
 		},
 		{
-			files: ['**/*.test.js', 'components/**/test.js'],
+			files: ['vitest-setup.js', '**/*.test.js', 'components/**/test.js'],
 			env: {
 				'vitest-globals/env': true,
+			},
+			globals: {
+				container: true,
 			},
 			extends: ['plugin:vitest-globals/recommended', 'plugin:testing-library/dom'],
 			plugins: ['vitest', 'testing-library'],

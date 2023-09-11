@@ -5,15 +5,17 @@ import { state } from '../state';
 import { DomElem } from '../DomElem';
 
 class Page extends DomElem {
-	constructor(options = {}) {
-		super({
-			...options,
-			globalStyles: theme => `
+	constructor(options = {}, ...children) {
+		super(
+			{
+				...options,
+				globalStyles: theme => `
 				html {
 					height: 100%;
 				}
 
 				body {
+					display: flex;
 					position: relative;
 					width: 100%;
 					height: 100%;
@@ -36,7 +38,8 @@ class Page extends DomElem {
 				}
 
 				div#app {
-					height: 100%;
+					display: flex;
+					flex: 1;
 				}
 
 				@viewport {
@@ -50,28 +53,26 @@ class Page extends DomElem {
 
 				${options.globalStyles?.(theme) || ''}
 			`,
-			styles: theme => `
+				styles: theme => `
 				position: relative;
-				width: 100%;
-				height: 100%;
 				display: flex;
 				flex-direction: column;
+				flex: 1;
 
 				${theme.scrollbar}
 
 				${options.styles?.(theme) || ''}
 			`,
-			autoRender: false,
-		});
-
-		if (document.readyState !== 'loading') this.onLoad();
-		else document.addEventListener('DOMContentLoaded', this.onLoad);
+				autoRender: 'onload',
+			},
+			...children,
+		);
 	}
 
-	onLoad() {
+	render() {
 		if (this.options.touchSupport !== false) this.detectTouch();
 
-		this.render();
+		super.render();
 	}
 
 	detectTouch() {

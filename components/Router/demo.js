@@ -1,16 +1,22 @@
-import DemoView from '../../demo/DemoView';
-import { Label } from '../Label';
+import DemoView, { DemoWrapper } from '../../demo/DemoView';
+import { DomElem } from '../DomElem';
 import { Router } from '.';
 
 export default class Demo extends DemoView {
 	constructor(options) {
-		const component = new Router();
+		super(options);
+	}
 
-		super({ component, ...options });
+	render(options = this.options) {
+		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
-		new Label({
-			label: 'A basic hash based view router',
-			appendTo: this.demoContent,
+		const component = new Router({ views: [] });
+
+		new DomElem({
+			textContent: 'A basic hash based view router',
+			appendTo: this.demoWrapper,
 		});
+
+		super.render({ ...options, component });
 	}
 }

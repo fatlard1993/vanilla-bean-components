@@ -1,5 +1,5 @@
 import DemoView, { DemoWrapper } from '../../demo/DemoView';
-import { TagList } from '.';
+import { TooltipWrapper } from '.';
 
 export default class Demo extends DemoView {
 	constructor(options) {
@@ -9,7 +9,11 @@ export default class Demo extends DemoView {
 	render(options = this.options) {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
-		const component = new TagList({ tags: ['one', '2', 'three'], appendTo: this.demoWrapper });
+		const component = new TooltipWrapper({
+			textContent: 'My Custom TextContent',
+			tooltip: 'My Custom Hover Tooltip',
+			appendTo: this.demoWrapper,
+		});
 
 		super.render({ ...options, component });
 	}

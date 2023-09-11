@@ -15,6 +15,7 @@ export default defineConfig({
 		port: 9999,
 	},
 	test: {
+		setupFiles: ['vitest-setup.js'],
 		include: ['**/*.test.js', 'components/**/test.js'],
 		environment: 'jsdom',
 		globals: true,

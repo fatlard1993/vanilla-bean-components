@@ -1,4 +1,4 @@
-import { isMac, isNodeList, appendStyles, getScreenOrientation } from './dom';
+import { isMac, appendStyles, getScreenOrientation } from './dom';
 
 test('isMac', () => {
 	global.navigator = { platform: 'Linux' };
@@ -8,10 +8,6 @@ test('isMac', () => {
 	global.navigator = { platform: 'macOS' };
 
 	expect(isMac()).toStrictEqual(true);
-});
-
-test('isNodeList', () => {
-	expect(isNodeList([{}])).toStrictEqual(false);
 });
 
 test('appendStyles', () => {

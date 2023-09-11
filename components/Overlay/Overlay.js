@@ -1,10 +1,11 @@
 import { DomElem } from '../DomElem';
 
 class Overlay extends DomElem {
-	constructor(options = {}) {
-		super({
-			...options,
-			styles: theme => `
+	constructor(options = {}, ...children) {
+		super(
+			{
+				...options,
+				styles: theme => `
 				position: fixed;
 				z-index: 1;
 				background-color: ${theme.colors.darkest(theme.colors.gray)};
@@ -14,7 +15,9 @@ class Overlay extends DomElem {
 
 				${options.styles?.(theme) || ''}
 			`,
-		});
+			},
+			...children,
+		);
 	}
 }
 

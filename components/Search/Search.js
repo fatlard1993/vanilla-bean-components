@@ -3,11 +3,14 @@ import { Input } from '../Input';
 const defaultOptions = { type: 'search', placeholder: 'Search' };
 
 class Search extends Input {
-	constructor(options) {
-		super({
-			...defaultOptions,
-			...options,
-		});
+	constructor(options = {}, ...children) {
+		super(
+			{
+				...defaultOptions,
+				...options,
+			},
+			...children,
+		);
 	}
 
 	onSearch(callback) {

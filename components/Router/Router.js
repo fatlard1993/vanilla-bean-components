@@ -1,22 +1,22 @@
-import { empty } from '../../utils';
 import { DomElem } from '../DomElem';
+import { routeToRegex } from './utils';
 
 class Router extends DomElem {
-	constructor(options = {}) {
-		const views = options.views || [];
-
-		if (!options.defaultPath) options.defaultPath = Object.keys(views)[0];
-
-		super({
-			...options,
-			styles: theme => `
-				height: 100%;
+	constructor(options = {}, ...children) {
+		super(
+			{
+				defaultPath: Object.keys(options.views)[0],
+				...options,
+				styles: theme => `
+				display: flex;
+				flex: 1;
+				overflow: hidden;
 
 				${options.styles?.(theme) || ''}
 			`,
-		});
-
-		this.views = views;
+			},
+			...children,
+		);
 
 		window.addEventListener('popstate', () => this.renderView());
 	}
@@ -36,30 +36,14 @@ class Router extends DomElem {
 	}
 
 	pathToRoute(path) {
-		return this.views[path] ? path : Object.keys(this.views).find(route => this.routeToRegex(route).test(path)) || path;
-	}
-
-	routeToPath(route, parameters) {
-		let path = route;
-
-		if (parameters) {
-			Object.keys(parameters).forEach(key => {
-				path = path.replace(new RegExp(`:${key}`), parameters[key]);
-			});
-		} else {
-			path = path.replaceAll(/\/?:[^/]+/g, '');
-		}
-
-		return path;
-	}
-
-	routeToRegex(route) {
-		return new RegExp(`^${route.replaceAll('\\', '\\/').replaceAll(/:[^/]+/g, '([^/]+)')}$`);
+		return this.options.views[path]
+			? path
+			: Object.keys(this.options.views).find(route => routeToRegex(route).test(path)) || path;
 	}
 
 	parseRouteParameters(path = this.path) {
 		const route = this.pathToRoute(path);
-		const routeRegex = this.routeToRegex(route);
+		const routeRegex = routeToRegex(route);
 		let routeParameterValues = path.match(routeRegex);
 		let routeParameterKeys = route.match(routeRegex);
 		const parameters = {};
@@ -76,24 +60,22 @@ class Router extends DomElem {
 		return parameters;
 	}
 
-	render({ views, defaultPath, notFound, ...options } = this.options) {
-		this.views = views;
-		this.defaultPath = defaultPath;
-		this.notFound = notFound;
-
+	render(options = this.options) {
 		super.render(options);
 
 		this.renderView();
 	}
 
-	renderView(route = this.route || this.defaultPath) {
-		empty(this.elem);
+	renderView(route = this.route || this.options.defaultPath) {
+		this.options.onRenderView?.(route);
+
+		this.empty();
 
 		if (!this.path) return (this.path = route);
 
-		if (this.views[route]) this.view = new this.views[route]({ appendTo: this.elem });
-		else if (this.notFound) this.view = new this.notFound({ appendTo: this.elem, route });
-		else this.path = this.defaultPath;
+		if (this.options.views[route]) this.view = new this.options.views[route]({ appendTo: this.elem });
+		else if (this.options.notFound) this.view = new this.options.notFound({ appendTo: this.elem, route });
+		else if (this.options.defaultPath && this.path !== this.options.defaultPath) this.path = this.options.defaultPath;
 	}
 }
 

@@ -5,11 +5,12 @@ const defaultOptions = { tag: 'a', tooltip: { icon: 'link' } };
 class Link extends Button {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
-	constructor(options = {}) {
-		super({
-			...defaultOptions,
-			...options,
-			styles: theme => `
+	constructor(options = {}, ...children) {
+		super(
+			{
+				...defaultOptions,
+				...options,
+				styles: theme => `
 				&.disabled {
 					pointer-events: none;
 
@@ -20,7 +21,9 @@ class Link extends Button {
 
 				${options.styles?.(theme) || ''}
 			`,
-		});
+			},
+			...children,
+		);
 	}
 }
 

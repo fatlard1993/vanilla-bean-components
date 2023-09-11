@@ -7,24 +7,6 @@ export const isMac = () =>
 	(window.navigator?.userAgentData?.platform || navigator.platform).toLowerCase().startsWith('mac');
 
 /**
- * Check if the passed parameter is an HTML NodeList
- * @param {Object} nodes - The potential HTML NodeList
- * @return {Boolean} isNodeList
- */
-export const isNodeList = nodes => {
-	const nodeCount = nodes?.length;
-	const nodesString = Object.prototype.toString.call(nodes);
-	const stringRegex = /^\[object (HTMLCollection|NodeList|Object)]$/;
-
-	return (
-		typeof nodes === 'object' &&
-		typeof nodeCount === 'number' &&
-		stringRegex.test(nodesString) &&
-		(nodeCount === 0 || (typeof nodes[0] === 'object' && nodes[0].nodeType > 0))
-	);
-};
-
-/**
  * Append a style tag with custom css onto the page at runtime
  * @param {String} css - The css string to inject into the page
  */

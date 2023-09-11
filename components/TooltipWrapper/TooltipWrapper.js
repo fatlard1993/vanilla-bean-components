@@ -2,16 +2,16 @@ import { Icon } from '../Icon';
 import { Tooltip } from '../Tooltip';
 
 /** A DomElem with support for a tooltip */
-class TooltipSupport extends Icon {
+class TooltipWrapper extends Icon {
 	/**
-	 * Create a DomElem component with TooltipSupport
 	 * @param {Object} options - The options for initializing the component
 	 * @param {(String|Object)} options.tooltip - The content used for the tooltip element
 	 */
-	constructor(options = {}) {
-		super({
-			...options,
-			styles: theme => `
+	constructor(options = {}, ...children) {
+		super(
+			{
+				...options,
+				styles: theme => `
 				${
 					options.tooltip
 						? `
@@ -32,7 +32,9 @@ class TooltipSupport extends Icon {
 
 				${options.styles?.(theme) || ''}
 			`,
-		});
+			},
+			...children,
+		);
 	}
 
 	setOption(name, value) {
@@ -50,4 +52,4 @@ class TooltipSupport extends Icon {
 	}
 }
 
-export default TooltipSupport;
+export default TooltipWrapper;

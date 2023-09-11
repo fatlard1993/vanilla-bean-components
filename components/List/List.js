@@ -1,12 +1,13 @@
-import { LabelSupport } from '../LabelSupport';
-import { TooltipSupport } from '../TooltipSupport';
+import { DomElem } from '../DomElem';
+import { TooltipWrapper } from '../TooltipWrapper';
 
-class List extends LabelSupport {
-	constructor(options = {}) {
-		super({
-			...options,
-			tag: 'ul',
-			styles: theme => `
+class List extends DomElem {
+	constructor(options = {}, ...children) {
+		super(
+			{
+				...options,
+				tag: 'ul',
+				styles: theme => `
 				margin: 6px 0;
 				padding-left: 32px;
 
@@ -17,12 +18,14 @@ class List extends LabelSupport {
 
 				${options.styles?.(theme) || ''}
 			`,
-		});
+			},
+			...children,
+		);
 
 		this.append(
 			(options.items || []).map(
 				item =>
-					new TooltipSupport({
+					new TooltipWrapper({
 						tag: 'li',
 						...item,
 					}),

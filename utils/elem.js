@@ -1,25 +1,3 @@
-import { isNodeList } from './dom';
-
-/**
- * Remove all child elements from target element(s)
- */
-export const empty = elem_s => {
-	if (isNodeList(elem_s)) return Array.from(elem_s).forEach(elem => empty(elem));
-
-	if (!elem_s || !elem_s.lastChild) return;
-
-	while (elem_s.lastChild) elem_s.lastChild.remove();
-};
-
-/**
- * Remove target element(s)
- */
-export const remove = elem_s => {
-	if (isNodeList(elem_s)) elem_s = Array.from(elem_s);
-
-	elem_s?.remove();
-};
-
 /**
  * Return the index of a target element within its parent
  * @return {Number} index

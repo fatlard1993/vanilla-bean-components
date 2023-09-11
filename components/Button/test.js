@@ -1,9 +1,6 @@
 import { findByRole } from '@testing-library/dom';
-import { JSDOM } from 'jsdom';
 
 import { Button } from '.';
-
-const container = new JSDOM().window.document.body;
 
 describe('Button', () => {
 	test('must render a button', async () => {

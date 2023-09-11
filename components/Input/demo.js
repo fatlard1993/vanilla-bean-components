@@ -1,14 +1,18 @@
-import DemoView from '../../demo/DemoView';
+import DemoView, { DemoWrapper } from '../../demo/DemoView';
 import { Input } from '.';
 
 export default class Demo extends DemoView {
 	constructor(options) {
+		super(options);
+	}
+
+	render(options = this.options) {
+		this.demoWrapper = new DemoWrapper({ appendTo: this });
+
 		const component = new Input({
-			label: 'myCustomLabel',
-			tooltip: { textContent: 'myCustomTooltip', position: 'top' },
 			onKeyUp: event => {
 				console.log(event);
-				// dirtyLabel.elem.children[0].textContent = `isDirty: ${component.isDirty}`;
+				component._label.elem.children[0].textContent = `isDirty: ${component.isDirty}`;
 			},
 			onChange: () => component.validate(),
 			validations: [
@@ -20,8 +24,9 @@ export default class Demo extends DemoView {
 				],
 			],
 			value: 'value',
+			appendTo: this.demoWrapper,
 		});
 
-		super({ component, ...options });
+		super.render({ ...options, component });
 	}
 }

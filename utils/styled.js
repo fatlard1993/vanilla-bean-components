@@ -4,17 +4,21 @@
  * @param {Function} styles - The styles to embed
  * @return {Class} The overlaid DomElem class
  */
-export const styled = (domElem, styles = () => '') => {
+export const styled = (domElem, styles = () => '', options) => {
 	return class StyledElem extends domElem {
-		constructor({ styles: overlayStyles = () => '', ...options } = {}) {
-			super({
-				styles: theme => `
+		constructor({ styles: overlayStyles = () => '', ...overlayOptions } = {}, ...children) {
+			super(
+				{
+					styles: theme => `
 					${styles(theme)}
 
 					${overlayStyles(theme)}
 				`,
-				...options,
-			});
+					...options,
+					...overlayOptions,
+				},
+				...children,
+			);
 		}
 	};
 };

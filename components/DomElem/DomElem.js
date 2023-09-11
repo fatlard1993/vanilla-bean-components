@@ -3,25 +3,23 @@ import postcss from 'postcss';
 import plugin_autoprefixer from 'autoprefixer';
 import plugin_nested from 'postcss-nested';
 
-import {
-	remove,
-	empty,
-	appendStyles,
-	buildClassName,
-	getElemIndex,
-	isDescendantOf,
-	buildClassList,
-	removeExcessIndentation,
-} from '../../utils';
+import { appendStyles, getElemIndex, isDescendantOf, buildClassList, removeExcessIndentation } from '../../utils';
 import theme from '../../theme';
 import { state } from '../state';
 
 // eslint-disable-next-line spellcheck/spell-checker
 const classId = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-', 10);
 
+const priorityOptions = new Set(['textContent', 'content', 'appendTo', 'prependTo', 'options']);
+
 /** A general purpose base element building block */
 class DomElem {
-	defaultOptions = { tag: 'div', autoRender: true, knownAttributes: new Set(['role', 'for']) };
+	defaultOptions = {
+		tag: 'div',
+		autoRender: true,
+		knownAttributes: new Set(['role']),
+		priorityOptions: new Set(['textContent', 'content', 'appendTo', 'prependTo']),
+	};
 
 	/**
 	 * Create a DomElem component
@@ -30,26 +28,38 @@ class DomElem {
 	 * @param {Boolean} options.autoRender - Automatically render the component when constructed
 	 * @param {Set} options.knownAttributes - options to send to elem.setAttribute
 	 */
-	constructor(options = {}) {
-		this.options = {
-			...this.defaultOptions,
-			...options,
-		};
+	constructor(options = {}, ...children) {
+		const { tag, autoRender, ...optionsWithoutConfig } = { ...this.defaultOptions, ...options };
+
+		this.options = { ...optionsWithoutConfig, append: [...children, optionsWithoutConfig.append] };
 
 		this.classId = Object.freeze(classId());
 
-		this.elem = document.createElement(this.options.tag);
+		this.elem = document.createElement(tag);
 		this.elem._domElem = this;
 
 		this.addClass(this.classId);
 
-		if (this.options.autoRender !== false) this.addAnimation(() => this.render(options));
+		for (const key in this.elem) {
+			if (typeof this.elem[key] === 'function' && !this[key]) this[key] = (...args) => this.elem[key](...args);
+		}
+
+		if (autoRender === true) this.render();
+		else if (autoRender === 'onload') {
+			if (document.readyState === 'complete') this.render();
+			else window.addEventListener('load', () => this.render());
+		} else if (autoRender === 'animationFrame') requestAnimationFrame(() => this.render());
 	}
 
 	render(options = this.options) {
+		if (this.rendered) {
+			this.empty();
+			this.rendered = false;
+		}
+
 		if (options) this.setOptions(options);
 
-		if (this.options.onRender) this.options.onRender(options);
+		this.rendered = true;
 	}
 
 	get elemIndex() {
@@ -59,41 +69,52 @@ class DomElem {
 	setOption(name, value) {
 		this.options[name] = value;
 
-		if (name === 'className' && Array.isArray(value)) value = buildClassName(value);
+		if (name === 'knownAttributes' || name === 'priorityOptions') return;
 
 		if (value instanceof DomElem || DomElem.isPrototypeOf(value)) value = value.elem;
 
-		// TODO: Remove this with the new layered setOption approach?
-		if (name === 'options') return;
-
-		if (name === 'style') {
-			Object.keys(value).forEach(key => (this.elem.style[key] = value[key]));
-		} else if (typeof this[name] === 'function') this[name].call(this, value);
-		else if (typeof this.elem[name] === 'function') this.elem[name].call(this.elem, value);
-		// TODO: Move this to the target component with the new layered setOption approach?
-		else if (name === 'checked') this.elem.checked = value;
-		else if (this.hasOwnProperty(name)) this[name] = value;
+		if (name === 'style') Object.keys(value).forEach(key => (this.elem.style[key] = value[key]));
+		else if (name === 'attributes') this.setAttributes(value);
 		else if (this.options.knownAttributes.has(name) || name.startsWith('aria-')) {
 			this.elem.setAttribute(name, value);
-		} else this.elem[name] = value;
+		} else if (typeof this[name] === 'function') this[name].call(this, value);
+		else if (this.hasOwnProperty(name)) this[name] = value;
+		else this.elem[name] = value;
 	}
 
 	setOptions(options) {
-		Object.entries(options).forEach(([name, value]) => this.setOption(name, value));
+		const sortedOptions = Object.entries(options).reduce((_options, option) => {
+			if (priorityOptions.has(option[0])) return [option, ..._options];
+			return [..._options, option];
+		}, []);
+
+		sortedOptions.forEach(([name, value]) => this.setOption(name, value));
+	}
+
+	hasClass(...classes) {
+		return buildClassList(classes).every(className => {
+			const classRegex = className instanceof RegExp ? className : new RegExp(`\\b${className}\\b`, 'g');
+
+			return classRegex.test(this.elem.className);
+		});
 	}
 
 	addClass(...classes) {
 		this.elem.classList.add(...buildClassList(classes));
+
+		return this;
 	}
 
 	removeClass(...classes) {
 		buildClassList(classes).forEach(className => {
-			const classRegex = className instanceof RegExp ? className : new RegExp(`\\b${className}\\b/`, 'g');
+			const classRegex = className instanceof RegExp ? className : new RegExp(`\\b${className}\\b`, 'g');
 
 			if (classRegex.test(this.elem.className)) {
 				this.elem.className = this.elem.className.replace(classRegex, '');
 			}
 		});
+
+		return this;
 	}
 
 	toString() {
@@ -104,12 +125,8 @@ class DomElem {
 		return isDescendantOf(this.elem, parent);
 	}
 
-	remove() {
-		remove(this.elem);
-	}
-
 	empty() {
-		empty(this.elem);
+		this.elem.replaceChildren();
 	}
 
 	content(content) {
@@ -169,28 +186,7 @@ class DomElem {
 		return elem;
 	}
 
-	setTransform(value) {
-		this.elem.style.transform =
-			this.elem.style.MozTransform =
-			this.elem.style.msTransform =
-			this.elem.style.OTransform =
-				value;
-	}
-
-	addAnimation(callback) {
-		const requestAnimation =
-			window.requestAnimationFrame ||
-			window.webkitRequestAnimationFrame ||
-			window.mozRequestAnimationFrame ||
-			window.msRequestAnimationFrame ||
-			function (_callback) {
-				return setTimeout(_callback, 16);
-			};
-
-		requestAnimation(callback);
-	}
-
-	attr(attributes) {
+	setAttributes(attributes) {
 		Object.entries(attributes).forEach(([key, value]) => this.elem.setAttribute(key, value));
 	}
 
@@ -206,13 +202,15 @@ class DomElem {
 			)
 			.then(({ css }) => {
 				appendStyles(css);
-			});
+			})
+			.catch(() => {});
 	}
 
 	globalStyles(styles) {
 		postcss([plugin_nested, plugin_autoprefixer])
 			.process(removeExcessIndentation(styles(theme)), { from: undefined })
-			.then(({ css }) => appendStyles(css));
+			.then(({ css }) => appendStyles(css))
+			.catch(() => {});
 	}
 
 	pointerEventPolyfill(event) {

@@ -1,12 +1,8 @@
-import { afterEach } from 'vitest';
 import { findByText, findByRole, fireEvent, waitForElementToBeRemoved, queryByRole } from '@testing-library/dom';
-import { JSDOM } from 'jsdom';
 
-import { empty, DomElem } from '../..';
+import { DomElem } from '../..';
 
 import { Dialog } from '.';
-
-const container = new JSDOM().window.document.body;
 
 HTMLDialogElement.prototype.show = () => {
 	this.open = true;
@@ -21,8 +17,6 @@ HTMLDialogElement.prototype.close = () => {
 };
 
 describe('Dialog', () => {
-	afterEach(() => empty(container));
-
 	test('must display a dialog', async () => {
 		const header = 'header';
 

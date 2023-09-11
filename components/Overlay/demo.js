@@ -1,4 +1,4 @@
-import DemoView from '../../demo/DemoView';
+import DemoView, { DemoWrapper } from '../../demo/DemoView';
 import { DomElem } from '../DomElem';
 import { Label } from '../Label';
 import { Button } from '../Button';
@@ -6,15 +6,7 @@ import { Overlay } from '.';
 
 export default class Demo extends DemoView {
 	constructor(options) {
-		const component = new Overlay({
-			styles: () => `
-				display: none;
-			`,
-			append: new DomElem({ tag: 'p', textContent: 'Some content for our overlay' }),
-		});
-
 		super({
-			component,
 			...options,
 			onContextMenu: event => {
 				console.log('onContextMenu', event);
@@ -25,8 +17,22 @@ export default class Demo extends DemoView {
 				else this.openOverlay({ x: event.clientX, y: event.clientY });
 			},
 		});
+	}
+
+	render(options = this.options) {
+		this.demoWrapper = new DemoWrapper({ appendTo: this });
+
+		const component = new Overlay({
+			styles: () => `
+				display: none;
+			`,
+			append: new DomElem({ tag: 'p', textContent: 'Some content for our overlay' }),
+			appendTo: this.demoWrapper,
+		});
 
 		this.overlay = component;
+
+		super.render({ ...options, component });
 
 		new Label({
 			appendTo: this.demoWrapper,

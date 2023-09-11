@@ -1,9 +1,6 @@
 import { findByRole } from '@testing-library/dom';
-import { JSDOM } from 'jsdom';
 
 import { Link } from '.';
-
-const container = new JSDOM().window.document.body;
 
 describe('Link', () => {
 	test('must render', async () => {

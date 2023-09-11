@@ -1,15 +1,21 @@
-import DemoView from '../../demo/DemoView';
+import DemoView, { DemoWrapper } from '../../demo/DemoView';
 import { Select } from '.';
 
 export default class Demo extends DemoView {
 	constructor(options) {
+		super(options);
+	}
+
+	render(options = this.options) {
+		this.demoWrapper = new DemoWrapper({ appendTo: this });
+
 		const component = new Select({
-			label: 'myCustomLabel',
-			options: ['one', '2', { label: 'Three', value: 3 }],
+			options: ['one', '2', { label: 'Three', value: 3 }, 'FOUR'],
 			value: 3,
 			onChange: console.log,
+			appendTo: this.demoWrapper,
 		});
 
-		super({ component, ...options });
+		super.render({ ...options, component });
 	}
 }

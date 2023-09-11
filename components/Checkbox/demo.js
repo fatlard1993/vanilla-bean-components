@@ -1,16 +1,23 @@
-import DemoView from '../../demo/DemoView';
+import DemoView, { DemoWrapper } from '../../demo/DemoView';
 import { Checkbox } from '.';
 
 export default class Demo extends DemoView {
 	constructor(options) {
+		super(options);
+	}
+
+	render(options = this.options) {
+		this.demoWrapper = new DemoWrapper({ appendTo: this });
+
 		const component = new Checkbox({
-			label: 'enabled',
+			name: 'enabled',
 			value: true,
 			onChange: ({ target: { checked } }) => {
-				component.name = checked ? 'enabled' : 'disabled';
+				component.setOption('name', checked ? 'enabled' : 'disabled');
 			},
+			appendTo: this.demoWrapper,
 		});
 
-		super({ component, ...options });
+		super.render({ ...options, component });
 	}
 }

@@ -5,11 +5,14 @@ const defaultOptions = { tag: 'textarea' };
 class Textarea extends Input {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
-	constructor(options = {}) {
-		super({
-			...defaultOptions,
-			...options,
-		});
+	constructor(options = {}, ...children) {
+		super(
+			{
+				...defaultOptions,
+				...options,
+			},
+			...children,
+		);
 	}
 }
 

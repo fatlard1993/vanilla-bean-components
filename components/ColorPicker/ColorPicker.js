@@ -4,7 +4,6 @@ import { debounceCallback, styled } from '../../utils';
 import { state } from '../state';
 import { DomElem } from '../DomElem';
 import { Input } from '../Input';
-import { TextInput } from '../TextInput';
 
 import { saturation, hue } from './svg';
 
@@ -70,33 +69,36 @@ const HueIndicator = styled(
 	`,
 );
 
+const TextInput = styled(
+	Input,
+	() => `
+		margin: 18px auto 0;
+	`,
+);
+
 const defaultOptions = { tag: 'div', value: '#666', onChange: () => {} };
 
 class ColorPicker extends Input {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
-	constructor(options = {}) {
+	constructor(options = {}, ...children) {
 		options = { ...defaultOptions, ...options };
 
-		const textInput = new TextInput({
-			value: options.value,
-			onChange: ({ value }) => this.set(value),
-			onKeyUp: ({ target: { value } }) => debounceCallback(() => this.set(value), 700),
-		});
-
-		super({
-			...options,
-			labelOptions: { ...options.labelOptions, append: [textInput, ...(options.labelOptions?.append || [])] },
-			styles: theme => `
+		super(
+			{
+				...options,
+				styles: theme => `
 				background-color: ${theme.colors.light(theme.colors.gray)};
-				padding: 14px;
+				padding: 18px;
 				border-radius: 5px;
 				margin-bottom: 6px;
 				text-indent: 0;
 
 				${options.styles?.(theme) || ''}
 			`,
-		});
+			},
+			...children,
+		);
 
 		this.onChange = options.onChange;
 
@@ -116,7 +118,13 @@ class ColorPicker extends Input {
 			appendTo: this.hueArea,
 		});
 
-		this.textInput = textInput;
+		this.textInput = new TextInput({
+			type: 'text',
+			value: options.value,
+			onChange: ({ value }) => this.set(value),
+			onKeyUp: ({ target: { value } }) => debounceCallback(() => this.set(value), 700),
+			appendTo: this.elem,
+		});
 
 		this.set(options.value, true);
 
@@ -192,8 +200,8 @@ class ColorPicker extends Input {
 		const newS = position.x / pickerAreaWidth;
 		const newV = (pickerAreaHeight - position.y) / pickerAreaHeight;
 
-		this.addAnimation(() => {
-			this.pickerIndicator.setTransform(`translate3d(${position.x}px, ${position.y}px, 0)`);
+		requestAnimationFrame(() => {
+			this.pickerIndicator.elem.style.transform = `translate3d(${position.x}px, ${position.y}px, 0)`;
 
 			this.set({ h, s: newS, v: newV }, true);
 
@@ -217,8 +225,8 @@ class ColorPicker extends Input {
 
 		const newHue = (position.x / hueAreaWidth) * 360;
 
-		this.addAnimation(() => {
-			this.hueIndicator.setTransform(`translate3d(${position.x - indicatorOffset / 2}px, 0, 0)`);
+		requestAnimationFrame(() => {
+			this.hueIndicator.elem.style.transform = `translate3d(${position.x - indicatorOffset / 2}px, 0, 0)`;
 
 			this.set({ h: newHue, s, v }, true);
 

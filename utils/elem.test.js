@@ -1,32 +1,4 @@
-import { JSDOM } from 'jsdom';
-
-import { empty, remove, getElemIndex, isDescendantOf } from './elem';
-
-const container = new JSDOM().window.document.body;
-
-test('empty', async () => {
-	const testElem = document.createElement('div');
-	testElem.textContent = 'testElem';
-	container.append(testElem);
-
-	expect(container.children.length, 1);
-
-	empty(container);
-
-	expect(container.children.length, 0);
-});
-
-test('remove', async () => {
-	const testElem = document.createElement('div');
-	testElem.textContent = 'testElem';
-	container.append(testElem);
-
-	expect(container.children.length, 1);
-
-	remove(testElem);
-
-	expect(container.children.length, 0);
-});
+import { getElemIndex, isDescendantOf } from './elem';
 
 test('getElemIndex', async () => {
 	const testElem1 = document.createElement('div');

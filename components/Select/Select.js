@@ -1,49 +1,34 @@
 import { DomElem } from '../DomElem';
 import { Input } from '../Input';
 
-const defaultOptions = { tag: 'select' };
+const defaultOptions = {
+	tag: 'select',
+	priorityOptions: new Set(['textContent', 'content', 'appendTo', 'prependTo', 'options']),
+};
 
 class Select extends Input {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
-	constructor(options) {
-		super({
-			...defaultOptions,
-			...options,
-		});
+	constructor(options = {}, ...children) {
+		super({ ...defaultOptions, ...options }, ...children);
 	}
 
-	render(options = this.options) {
-		super.render(options);
+	setOption(name, value) {
+		if (name === 'options') {
+			this.empty();
 
-		if (options.options) {
+			if (!value) return;
+
 			this.append(
-				options.options.map(
+				value.map(
 					option =>
 						new DomElem({
 							tag: 'option',
-							selected: options.value === (typeof option === 'object' ? option.value : option),
 							...(typeof option === 'object' ? option : { label: option }),
 						}),
 				),
 			);
-		}
-	}
-
-	get value() {
-		const selected = Array.from(this.elem.children).find(({ selected }) => selected);
-
-		return selected?.value || selected?.label || selected?.textContent;
-	}
-
-	set value(newValue) {
-		const selected = Array.from(this.elem.children).find(({ selected }) => selected);
-		const toSelect = Array.from(this.elem.children).find(
-			({ value, label, textContent }) => value === newValue || label === newValue || textContent === newValue,
-		);
-
-		selected.selected = false;
-		toSelect.selected = true;
+		} else super.setOption(name, value);
 	}
 }
 

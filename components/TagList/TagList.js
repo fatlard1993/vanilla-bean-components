@@ -1,12 +1,12 @@
 import { styled } from '../../utils';
 import { DomElem } from '../DomElem';
-import { TextInput } from '../TextInput';
-import { IconButton } from '../IconButton';
+import { Input } from '../Input';
+import { Button } from '../Button';
 
 import Tag from './Tag';
 
 const TagListTextInput = styled(
-	TextInput,
+	Input,
 	() => `
 		display: inline-block;
 		flex: 1;
@@ -15,10 +15,8 @@ const TagListTextInput = styled(
 );
 
 const TagListIconButton = styled(
-	IconButton,
+	Button,
 	() => `
-		width: 30px;
-		height: 30px;
 		margin: 3px 0 3px 3px;
 	`,
 );
@@ -28,7 +26,7 @@ const defaultOptions = { readOnly: false };
 class TagList extends DomElem {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
-	constructor(options = {}) {
+	constructor(options = {}, ...children) {
 		let tagInput, addTag, addButton;
 
 		if (!options.readOnly) {
@@ -65,16 +63,16 @@ class TagList extends DomElem {
 			});
 		}
 
-		super({
-			...options,
-			tag: 'ul',
-			styles: theme => `
-				background-color: ${theme.colors.darkest(theme.colors.gray)};
+		super(
+			{
+				...options,
+				tag: 'ul',
+				styles: theme => `
 				margin: 1% auto;
 				border-radius: 3px;
 				box-sizing: border-box;
-				border: inset 2px ${theme.colors.light(theme.colors.gray)};
 				min-height: 1em;
+				padding: 0;
 
 				&:after {
 					content: '';
@@ -92,7 +90,9 @@ class TagList extends DomElem {
 
 				${options.styles?.(theme) || ''}
 			`,
-		});
+			},
+			...children,
+		);
 
 		this.tagInput = tagInput;
 		this.addButton = addButton;

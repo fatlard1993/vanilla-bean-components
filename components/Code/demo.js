@@ -1,8 +1,14 @@
-import DemoView from '../../demo/DemoView';
+import DemoView, { DemoWrapper } from '../../demo/DemoView';
 import { Code } from '.';
 
 export default class Demo extends DemoView {
 	constructor(options) {
+		super(options);
+	}
+
+	render(options = this.options) {
+		this.demoWrapper = new DemoWrapper({ appendTo: this });
+
 		const component = new Code({
 			code: `
 				import DemoView from '../../demo/DemoView';
@@ -21,8 +27,9 @@ export default class Demo extends DemoView {
 					}
 				}
 			`,
+			appendTo: this.demoWrapper,
 		});
 
-		super({ component, ...options });
+		super.render({ ...options, component });
 	}
 }

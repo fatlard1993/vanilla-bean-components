@@ -54,9 +54,11 @@ const CheckboxInput = styled(
 );
 
 class Checkbox extends DomElem {
-	constructor(options = {}) {
-		super(options);
+	constructor(options = {}, ...children) {
+		super(options, ...children);
+	}
 
+	render(options = this.options) {
 		this.inputElem = new CheckboxInput({
 			tag: 'input',
 			type: 'checkbox',
@@ -68,16 +70,30 @@ class Checkbox extends DomElem {
 			tag: 'label',
 			for: this.classId,
 			appendTo: this.elem,
-			append: [this.inputElem, options.label],
+			append: [this.inputElem, options.name],
 		});
+
+		super.render(options);
 	}
 
-	get name() {
-		return this.nameElem.elem.childNodes[1].textContent;
+	get value() {
+		return this.inputElem.elem.checked;
 	}
 
-	set name(name) {
-		this.nameElem.elem.childNodes[1].textContent = name;
+	set value(value) {
+		this.inputElem.elem.checked = !!value;
+	}
+
+	get isDirty() {
+		return this.initialValue !== this.value;
+	}
+
+	setOption(name, value) {
+		if (name === 'checked' || name === 'value') {
+			this.value = value;
+		} else if (name === 'name') {
+			this.nameElem.elem.childNodes[1].textContent = value;
+		} else super.setOption(name, value);
 	}
 }
 

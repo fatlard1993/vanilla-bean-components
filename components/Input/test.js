@@ -1,9 +1,6 @@
-import { findByDisplayValue, findByRole } from '@testing-library/dom';
-import { JSDOM } from 'jsdom';
+import { findByDisplayValue } from '@testing-library/dom';
 
 import { Input } from '.';
-
-const container = new JSDOM().window.document.body;
 
 describe('Input', () => {
 	test('must render', async () => {
@@ -12,14 +9,6 @@ describe('Input', () => {
 		new Input({ value, appendTo: container });
 
 		await findByDisplayValue(container, value);
-	});
-
-	test('must be able to render with a label', async () => {
-		const label = 'textLabel';
-
-		new Input({ type: 'text', label, appendTo: container });
-
-		await findByRole(container, 'textbox', { name: label });
 	});
 
 	test('must provide dirty state tracking', async () => {

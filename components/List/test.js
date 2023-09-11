@@ -1,9 +1,6 @@
 import { findAllByRole } from '@testing-library/dom';
-import { JSDOM } from 'jsdom';
 
 import { List } from '.';
-
-const container = new JSDOM().window.document.body;
 
 describe('List', () => {
 	test('must render items', async () => {

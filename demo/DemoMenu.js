@@ -1,8 +1,8 @@
 import { DomElem, Link, Search } from '../components';
 
-import { debounceCallback, capitalize, styled } from '../utils';
+import { debounceCallback, styled } from '../utils';
 
-import { paths } from './DemoRouter';
+import { views } from './DemoRouter';
 
 const MenuLink = styled(
 	Link,
@@ -14,7 +14,7 @@ const MenuLink = styled(
 );
 
 export default class DemoMenu extends DomElem {
-	constructor(options) {
+	constructor(options = {}) {
 		super({
 			...options,
 			styles: theme => `
@@ -28,34 +28,45 @@ export default class DemoMenu extends DomElem {
 				${options.styles?.(theme) || ''}
 			`,
 		});
+	}
 
-		this.links = [];
-
-		this.filterLinks = filter => {
-			this.links.forEach(link => {
-				link.elem.style.display = link.elem.textContent.toLowerCase().includes(filter.toLowerCase()) ? '' : 'none';
-			});
-		};
-
-		const appendTo = this;
+	render(options = this.options) {
+		this._links = [];
 
 		new Search({
-			appendTo,
+			appendTo: this,
 			onKeyUp: ({ value }) => debounceCallback(() => this.filterLinks(value)),
 			onSearch: ({ value }) => this.filterLinks(value),
 		});
 
-		Object.keys(paths).forEach(name => {
-			const href = `#${paths[name]}`;
+		Object.keys(views).forEach(name => {
+			const href = `#${name}`;
 
-			this.links.push(
+			this._links.push(
 				new MenuLink({
-					appendTo,
-					textContent: capitalize(name),
+					appendTo: this,
+					textContent: name.slice(1),
 					href,
 					addClass: href === window.location.hash ? 'disabled' : '',
 				}),
 			);
+		});
+
+		super.render(options);
+	}
+
+	filterLinks(filter) {
+		this._links.forEach(link => {
+			link.elem.style.display = link.elem.textContent.toLowerCase().includes(filter.toLowerCase()) ? '' : 'none';
+		});
+	}
+
+	updateSelection(route) {
+		if (!this._links) return;
+
+		this._links.forEach(link => {
+			if (link.options.href === `#${route}`) link.addClass('disabled');
+			else if (link.elem.classList.contains('disabled')) link.removeClass('disabled');
 		});
 	}
 }

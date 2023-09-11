@@ -1,11 +1,8 @@
 import { findByText } from '@testing-library/dom';
-import { JSDOM } from 'jsdom';
 
 import { DomElem } from '..';
 
 import { Overlay } from '.';
-
-const container = new JSDOM().window.document.body;
 
 describe('Overlay', () => {
 	test('must render', async () => {

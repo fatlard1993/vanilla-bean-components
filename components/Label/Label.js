@@ -1,6 +1,6 @@
 import { styled } from '../../utils';
-import { TooltipSupport } from '../TooltipSupport';
 import { DomElem } from '../DomElem';
+import { TooltipWrapper } from '../TooltipWrapper';
 
 const LabelText = styled(
 	DomElem,
@@ -11,11 +11,12 @@ const LabelText = styled(
 	`,
 );
 
-class Label extends TooltipSupport {
-	constructor(options = {}) {
-		super({
-			...options,
-			styles: theme => `
+class Label extends TooltipWrapper {
+	constructor(options = {}, ...children) {
+		super(
+			{
+				...options,
+				styles: theme => `
 				position: relative;
 				display: block;
 				font-size: 1em;
@@ -25,17 +26,32 @@ class Label extends TooltipSupport {
 				border-left: 3px solid ${theme.colors.lightest(theme.colors.gray)};
 				background-color: ${theme.colors.darkest(theme.colors.gray)};
 
+				&.collapsed {
+					height: 32px;
+				}
+
 				${options.styles?.(theme) || ''}
 			`,
+			},
+			...children,
+		);
+	}
+
+	render(options = this.options) {
+		this._labelText = new LabelText({
+			tag: 'label',
+			prependTo: this,
+			onPointerPress: () => this[this.hasClass('collapsed') ? 'removeClass' : 'addClass']('collapsed'),
 		});
 
-		this._labelText = new LabelText({ tag: 'label', prependTo: this.elem });
+		super.render(options);
 	}
 
 	setOption(name, value) {
-		if (name === 'label') this._labelText.setOption('content', value);
-		else if (name === 'for') this._labelText.setOption(name, value);
-		else super.setOption(name, value);
+		if (name === 'label' || name === 'for') {
+			if (name === 'label') this._labelText.setOption('content', value);
+			else if (name === 'for') this._labelText.elem.htmlFor = value;
+		} else super.setOption(name, value);
 	}
 }
 

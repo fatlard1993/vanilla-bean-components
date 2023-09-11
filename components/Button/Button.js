@@ -1,20 +1,23 @@
-import { TooltipSupport } from '../TooltipSupport';
+import { TooltipWrapper } from '../TooltipWrapper';
 
 const defaultOptions = { tag: 'button' };
 
-class Button extends TooltipSupport {
+class Button extends TooltipWrapper {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
-	constructor(options = {}) {
-		super({
-			...defaultOptions,
-			...options,
-			styles: theme => `
+	constructor(options = {}, ...children) {
+		super(
+			{
+				...defaultOptions,
+				...options,
+				styles: theme => `
 				${theme.button}
 
 				${options.styles?.(theme) || ''}
 			`,
-		});
+			},
+			...children,
+		);
 	}
 }
 

@@ -88,4 +88,14 @@ export default `
 	&.selected {
 		outline: 2px dashed ${colors.red};
 	}
+
+	&:empty {
+		width: 30px;
+		height: 30px;
+		padding: 3px 0 8px 0;
+
+		&:before {
+			padding: 0;
+		}
+	}
 `;

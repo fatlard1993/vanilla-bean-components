@@ -1,11 +1,6 @@
 import { findAllByText } from '@testing-library/dom';
-import { JSDOM } from 'jsdom';
 
-import { View } from '..';
-
-import { Router } from '.';
-
-const container = new JSDOM().window.document.body;
+import { Router, View } from '.';
 
 const textContent = 'textContent';
 
@@ -17,8 +12,7 @@ class TestView extends View {
 
 describe('Router', () => {
 	test('must render default view', async () => {
-		const paths = { test: '/Test' };
-		const views = { [paths.test]: TestView };
+		const views = { ['/Test']: TestView };
 
 		new Router({ views, appendTo: container });
 

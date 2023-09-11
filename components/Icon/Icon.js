@@ -1,17 +1,20 @@
 import { DomElem } from '../DomElem';
 
 class Icon extends DomElem {
-	constructor(options = {}) {
-		super({
-			...options,
-			styles: theme => `
+	constructor(options = {}, ...children) {
+		super(
+			{
+				...options,
+				styles: theme => `
 				&.fa-support:before {
 					${theme.fonts.fontAwesomeSolid}
 				}
 
 				${options.styles?.(theme) || ''}
 			`,
-		});
+			},
+			...children,
+		);
 	}
 
 	setOption(name, value) {

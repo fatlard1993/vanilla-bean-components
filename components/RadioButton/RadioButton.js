@@ -57,26 +57,35 @@ const RadioButtonInput = styled(
 );
 
 class RadioButton extends DomElem {
-	constructor(options) {
-		super(options);
+	constructor(options = {}, ...children) {
+		super(options, ...children);
+	}
 
-		this._options = options.options.map(
-			option =>
-				new RadioButtonLabel({
-					tag: 'label',
-					appendTo: this.elem,
-					append: [
-						new RadioButtonInput({
-							tag: 'input',
-							type: 'radio',
-							value: option?.value || option,
-							name: this.classId,
-							checked: options.value === (option?.value || option),
+	setOption(name, value) {
+		if (name === 'options') {
+			this.empty();
+
+			if (!value) return;
+
+			this.append(
+				value.map(
+					option =>
+						new RadioButtonLabel({
+							tag: 'label',
+							append: [
+								new RadioButtonInput({
+									tag: 'input',
+									type: 'radio',
+									value: option?.value || option,
+									name: this.classId,
+									checked: this.options.value === (option?.value || option),
+								}),
+								option?.label || option,
+							],
 						}),
-						option?.label || option,
-					],
-				}),
-		);
+				),
+			);
+		} else super.setOption(name, value);
 	}
 }
 

@@ -3,25 +3,30 @@ import Prism from 'prismjs';
 import { removeExcessIndentation } from '../../utils';
 import { DomElem } from '../DomElem';
 
-const defaultOptions = { tag: 'code', language: 'javascript', multiline: 'auto' };
+const defaultOptions = { tag: 'code', language: 'javascript', multiline: 'auto', autoRender: false };
 
 class Code extends DomElem {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
-	constructor(options = {}) {
+	constructor(options = {}, ...children) {
 		if ((options.multiline || defaultOptions.multiline) === 'auto') {
 			options.multiline = (options.code || '').includes('\n');
 		}
 
-		super({
-			...defaultOptions,
-			...options,
-			...(options.multiline ? { tag: 'pre' } : { tag: 'code' }),
-		});
+		super(
+			{
+				...defaultOptions,
+				...options,
+				...(options.multiline ? { tag: 'pre' } : { tag: 'code' }),
+			},
+			...children,
+		);
 
 		if (options.multiline) {
 			this._code = new DomElem({ tag: 'code', appendTo: this.elem });
 		}
+
+		this.render();
 	}
 
 	setOption(name, value) {
