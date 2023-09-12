@@ -83,6 +83,7 @@ module.exports = {
 		'keyup',
 		'utf8',
 		'combobox',
+		'keyframes',
 	],
 	skipIfMatch: ['\\d+v[wh]'],
 	skipWordIfMatch: [],
