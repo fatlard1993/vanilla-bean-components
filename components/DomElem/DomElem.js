@@ -10,8 +10,6 @@ import { state } from '../state';
 // eslint-disable-next-line spellcheck/spell-checker
 const classId = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-', 10);
 
-const priorityOptions = new Set(['textContent', 'content', 'appendTo', 'prependTo', 'options']);
-
 /** A general purpose base element building block */
 class DomElem {
 	isDomElem = true;
@@ -33,7 +31,21 @@ class DomElem {
 	constructor(options = {}, ...children) {
 		const { tag, autoRender, ...optionsWithoutConfig } = { ...this.defaultOptions, ...options };
 
-		this.options = { ...optionsWithoutConfig, append: [...children, optionsWithoutConfig.append] };
+		const domElem = this;
+
+		this.options = new Proxy(
+			{ ...optionsWithoutConfig, append: [...children, optionsWithoutConfig.append] },
+			{
+				get(target, key) {
+					return Reflect.get(target, key);
+				},
+				set(target, key, value) {
+					domElem.setOption(key, value);
+
+					return Reflect.set(target, key, value);
+				},
+			},
+		);
 
 		this.classId = Object.freeze(classId());
 
@@ -71,8 +83,6 @@ class DomElem {
 	}
 
 	setOption(name, value) {
-		this.options[name] = value;
-
 		if (name === 'knownAttributes' || name === 'priorityOptions') return;
 
 		if (value?.isDomElem) value = value.elem;
@@ -88,7 +98,7 @@ class DomElem {
 
 	setOptions(options) {
 		const sortedOptions = Object.entries(options).reduce((_options, option) => {
-			if (priorityOptions.has(option[0])) return [option, ..._options];
+			if (this.options.priorityOptions.has(option[0])) return [option, ..._options];
 			return [..._options, option];
 		}, []);
 
