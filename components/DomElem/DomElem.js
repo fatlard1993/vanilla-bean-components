@@ -199,7 +199,7 @@ class DomElem {
 			.process(
 				removeExcessIndentation(`
 					.${this.classId} {
-						${styles(theme)}
+						${styles(theme, this)}
 					}
 				`),
 				{ from: undefined },
