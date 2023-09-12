@@ -5,12 +5,12 @@ class Icon extends DomElem {
 		super(
 			{
 				...options,
-				styles: theme => `
+				styles: (theme, domElem) => `
 				&.fa-support:before {
 					${theme.fonts.fontAwesomeSolid}
 				}
 
-				${options.styles?.(theme) || ''}
+				${options.styles?.(theme, domElem) || ''}
 			`,
 			},
 			...children,

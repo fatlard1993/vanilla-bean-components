@@ -87,14 +87,14 @@ class ColorPicker extends Input {
 		super(
 			{
 				...options,
-				styles: theme => `
+				styles: (theme, domElem) => `
 				background-color: ${theme.colors.light(theme.colors.gray)};
 				padding: 18px;
 				border-radius: 5px;
 				margin-bottom: 6px;
 				text-indent: 0;
 
-				${options.styles?.(theme) || ''}
+				${options.styles?.(theme, domElem) || ''}
 			`,
 			},
 			...children,

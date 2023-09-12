@@ -19,7 +19,7 @@ class Label extends TooltipWrapper {
 			{
 				for: children[0],
 				...options,
-				styles: theme => `
+				styles: (theme, domElem) => `
 				position: relative;
 				display: block;
 				font-size: 1em;
@@ -33,7 +33,7 @@ class Label extends TooltipWrapper {
 					height: 32px;
 				}
 
-				${options.styles?.(theme) || ''}
+				${options.styles?.(theme, domElem) || ''}
 			`,
 			},
 			...children,

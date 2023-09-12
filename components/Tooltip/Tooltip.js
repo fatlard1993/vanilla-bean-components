@@ -12,7 +12,7 @@ class Tooltip extends Icon {
 			{
 				...defaultOptions,
 				...options,
-				styles: theme => `
+				styles: (theme, domElem) => `
 					display: none;
 					position: absolute;
 					padding: 3px;
@@ -71,7 +71,7 @@ class Tooltip extends Icon {
 						top: calc(100% - 9px);
 					}
 
-					${options.styles?.(theme) || ''}
+					${options.styles?.(theme, domElem) || ''}
 				`,
 			},
 			...children,

@@ -10,7 +10,7 @@ class Link extends Button {
 			{
 				...defaultOptions,
 				...options,
-				styles: theme => `
+				styles: (theme, domElem) => `
 				&.disabled {
 					pointer-events: none;
 
@@ -19,7 +19,7 @@ class Link extends Button {
 					}
 				}
 
-				${options.styles?.(theme) || ''}
+				${options.styles?.(theme, domElem) || ''}
 			`,
 			},
 			...children,

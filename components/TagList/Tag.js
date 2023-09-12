@@ -17,27 +17,27 @@ class Tag extends DomElem {
 		super(
 			{
 				...options,
-				styles: theme => `
-				border: 1px solid ${theme.colors.white};
-				padding: 9px;
-				margin: 3px;
-				display: inline-block;
-				float: left;
-				border: 2px solid;
-				border-radius: 3px;
-				border-top-left-radius: 0;
-				font-size: 18px;
-				background-color: ${theme.colors.black};
+				styles: (theme, domElem) => `
+					border: 1px solid ${theme.colors.white};
+					padding: 9px;
+					margin: 3px;
+					display: inline-block;
+					float: left;
+					border: 2px solid;
+					border-radius: 3px;
+					border-top-left-radius: 0;
+					font-size: 18px;
+					background-color: ${theme.colors.black};
 
-				&.addTag {
-					display: flex;
-					flex-direction: row;
-					padding: 0 3px;
-					min-width: 260px;
-				}
+					&.addTag {
+						display: flex;
+						flex-direction: row;
+						padding: 0 3px;
+						min-width: 260px;
+					}
 
-				${options.styles?.(theme) || ''}
-			`,
+					${options.styles?.(theme, domElem) || ''}
+				`,
 				tag: 'li',
 				appendTo: options.appendTo,
 				onPointerPress: options.readOnly ? () => {} : onPointerPress,

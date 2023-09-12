@@ -67,29 +67,29 @@ class TagList extends DomElem {
 			{
 				...options,
 				tag: 'ul',
-				styles: theme => `
-				margin: 1% auto;
-				border-radius: 3px;
-				box-sizing: border-box;
-				min-height: 1em;
-				padding: 0;
+				styles: (theme, domElem) => `
+					margin: 1% auto;
+					border-radius: 3px;
+					box-sizing: border-box;
+					min-height: 1em;
+					padding: 0;
 
-				&:after {
-					content: '';
-					clear: both;
-					display: table;
-				}
+					&:after {
+						content: '';
+						clear: both;
+						display: table;
+					}
 
-				&.readOnly {
-					pointer-events: none;
-					border: none;
-					background: none;
-					width: 100%;
-					margin: 0;
-				}
+					&.readOnly {
+						pointer-events: none;
+						border: none;
+						background: none;
+						width: 100%;
+						margin: 0;
+					}
 
-				${options.styles?.(theme) || ''}
-			`,
+					${options.styles?.(theme, domElem) || ''}
+				`,
 			},
 			...children,
 		);

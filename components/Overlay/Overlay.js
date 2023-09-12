@@ -5,7 +5,7 @@ class Overlay extends DomElem {
 		super(
 			{
 				...options,
-				styles: theme => `
+				styles: (theme, domElem) => `
 				position: fixed;
 				z-index: 1;
 				background-color: ${theme.colors.darkest(theme.colors.gray)};
@@ -13,7 +13,7 @@ class Overlay extends DomElem {
 				border-radius: 3px;
 				border: 1px solid ${theme.colors.lightest(theme.colors.gray)};
 
-				${options.styles?.(theme) || ''}
+				${options.styles?.(theme, domElem) || ''}
 			`,
 			},
 			...children,

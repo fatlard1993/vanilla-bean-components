@@ -7,7 +7,7 @@ class List extends DomElem {
 			{
 				...options,
 				tag: 'ul',
-				styles: theme => `
+				styles: (theme, domElem) => `
 				margin: 6px 0;
 				padding-left: 32px;
 
@@ -16,7 +16,7 @@ class List extends DomElem {
 					text-indent: 6px;
 				}
 
-				${options.styles?.(theme) || ''}
+				${options.styles?.(theme, domElem) || ''}
 			`,
 			},
 			...children,

@@ -17,7 +17,7 @@ export default class DemoMenu extends DomElem {
 	constructor(options = {}) {
 		super({
 			...options,
-			styles: theme => `
+			styles: (theme, domElem) => `
 				padding: 12px 24px;
 				margin-bottom: 6px;
 				display: flex;
@@ -25,7 +25,7 @@ export default class DemoMenu extends DomElem {
 				gap: 6px;
 				background-color: ${theme.colors.darkest(theme.colors.gray)}
 
-				${options.styles?.(theme) || ''}
+				${options.styles?.(theme, domElem) || ''}
 			`,
 		});
 	}

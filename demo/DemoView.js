@@ -16,7 +16,7 @@ export default class DemoView extends View {
 	constructor(options = {}) {
 		super({
 			...options,
-			styles: theme => `
+			styles: (theme, domElem) => `
 				display: flex;
 				flex-direction: column;
 				overflow: auto;
@@ -25,7 +25,7 @@ export default class DemoView extends View {
 					white-space: pre;
 				}
 
-				${options.styles?.(theme) || ''}
+				${options.styles?.(theme, domElem) || ''}
 			`,
 		});
 	}

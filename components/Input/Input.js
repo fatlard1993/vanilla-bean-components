@@ -21,10 +21,10 @@ class Input extends DomElem {
 			{
 				...defaultOptions,
 				...options,
-				styles: theme => `
+				styles: (theme, domElem) => `
 				${theme.input}
 
-				${options.styles?.(theme) || ''}
+				${options.styles?.(theme, domElem) || ''}
 			`,
 			},
 			...children,

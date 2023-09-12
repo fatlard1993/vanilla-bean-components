@@ -10,10 +10,10 @@ class Button extends TooltipWrapper {
 			{
 				...defaultOptions,
 				...options,
-				styles: theme => `
+				styles: (theme, domElem) => `
 				${theme.button}
 
-				${options.styles?.(theme) || ''}
+				${options.styles?.(theme, domElem) || ''}
 			`,
 			},
 			...children,

@@ -11,7 +11,7 @@ class TooltipWrapper extends Icon {
 		super(
 			{
 				...options,
-				styles: theme => `
+				styles: (theme, domElem) => `
 				${
 					options.tooltip
 						? `
@@ -30,7 +30,7 @@ class TooltipWrapper extends Icon {
 						: ''
 				}
 
-				${options.styles?.(theme) || ''}
+				${options.styles?.(theme, domElem) || ''}
 			`,
 			},
 			...children,

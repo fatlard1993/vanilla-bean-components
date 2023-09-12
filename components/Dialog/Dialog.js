@@ -51,7 +51,7 @@ class Dialog extends DomElem {
 			{
 				...defaultOptions,
 				...options,
-				styles: theme => `
+				styles: (theme, domElem) => `
 					display: none;
 					background-color: ${theme.colors.darker(theme.colors.gray)};
 					color: ${theme.colors.white};
@@ -82,7 +82,7 @@ class Dialog extends DomElem {
 						backdrop-filter: blur(3px);
 					}
 
-					${options.styles?.(theme) || ''}
+					${options.styles?.(theme, domElem) || ''}
 				`,
 			},
 			...children,

@@ -9,11 +9,11 @@ export const styled = (domElem, styles = () => '', options) => {
 		constructor({ styles: overlayStyles = () => '', ...overlayOptions } = {}, ...children) {
 			super(
 				{
-					styles: theme => `
-					${styles(theme)}
+					styles: (...args) => `
+						${styles(...args)}
 
-					${overlayStyles(theme)}
-				`,
+						${overlayStyles(...args)}
+					`,
 					...options,
 					...overlayOptions,
 				},

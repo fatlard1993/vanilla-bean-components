@@ -213,7 +213,7 @@ class DomElem {
 
 	globalStyles(styles) {
 		postcss([plugin_nested, plugin_autoprefixer])
-			.process(removeExcessIndentation(styles(theme)), { from: undefined })
+			.process(removeExcessIndentation(styles(theme, this)), { from: undefined })
 			.then(({ css }) => appendStyles(css))
 			// eslint-disable-next-line no-console
 			.catch(import.meta.env.DEV ? console.error : () => {});
