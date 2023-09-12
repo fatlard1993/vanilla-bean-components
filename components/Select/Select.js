@@ -30,6 +30,12 @@ class Select extends Input {
 			);
 		} else super.setOption(name, value);
 	}
+
+	get value() {
+		const selected = Array.from(this.elem.children).find(({ selected }) => selected);
+
+		return selected?.value || selected?.label || selected?.textContent;
+	}
 }
 
 export default Select;
