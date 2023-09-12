@@ -7,7 +7,7 @@ test('styled', () => {
 	const options = { test: 'test' };
 	const StyledElem = new (styled(DomElem, styles, options))();
 
-	expect(StyledElem instanceof DomElem).toStrictEqual(true);
+	expect(StyledElem.isDomElem).toStrictEqual(true);
 	expect(StyledElem.options.styles()).toContain(styles());
 	expect(StyledElem.options.test).toStrictEqual(options.test);
 });

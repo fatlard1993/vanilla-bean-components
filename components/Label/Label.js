@@ -13,8 +13,11 @@ const LabelText = styled(
 
 class Label extends TooltipWrapper {
 	constructor(options = {}, ...children) {
+		if (typeof options === 'string') options = { label: options };
+
 		super(
 			{
+				for: children[0],
 				...options,
 				styles: theme => `
 				position: relative;
@@ -48,9 +51,15 @@ class Label extends TooltipWrapper {
 	}
 
 	setOption(name, value) {
-		if (name === 'label' || name === 'for') {
-			if (name === 'label') this._labelText.setOption('content', value);
-			else if (name === 'for') this._labelText.elem.htmlFor = value;
+		if (name === 'label') this._labelText.setOption('content', value);
+		else if (name === 'for') {
+			let forId = typeof value === 'string' ? value : value?.id || value?.elem?.id;
+
+			if (!forId && value?.isDomElem) {
+				forId = value.elem.id = value.classId;
+			}
+
+			this._labelText.elem.htmlFor = forId;
 		} else super.setOption(name, value);
 	}
 }

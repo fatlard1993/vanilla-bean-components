@@ -14,6 +14,8 @@ const priorityOptions = new Set(['textContent', 'content', 'appendTo', 'prependT
 
 /** A general purpose base element building block */
 class DomElem {
+	isDomElem = true;
+
 	defaultOptions = {
 		tag: 'div',
 		autoRender: true,
@@ -73,7 +75,7 @@ class DomElem {
 
 		if (name === 'knownAttributes' || name === 'priorityOptions') return;
 
-		if (value instanceof DomElem || DomElem.isPrototypeOf(value)) value = value.elem;
+		if (value?.isDomElem) value = value.elem;
 
 		if (name === 'style') Object.keys(value).forEach(key => (this.elem.style[key] = value[key]));
 		else if (name === 'attributes') this.setAttributes(value);
@@ -150,7 +152,7 @@ class DomElem {
 			.flat(Number.POSITIVE_INFINITY)
 			.filter(child => !!child)
 			.forEach(child => {
-				if (child instanceof DomElem || DomElem.isPrototypeOf(child)) child = child.elem;
+				if (child?.isDomElem) child = child.elem;
 
 				this.elem.append(child);
 			});
@@ -170,7 +172,7 @@ class DomElem {
 			.flat(Number.POSITIVE_INFINITY)
 			.filter(child => !!child)
 			.forEach(child => {
-				if (child instanceof DomElem || DomElem.isPrototypeOf(child)) child = child.elem;
+				if (child?.isDomElem) child = child.elem;
 
 				if (this.elem.firstChild) this.elem.insertBefore(child, this.elem.firstChild);
 				else this.elem.append(child);
