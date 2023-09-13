@@ -1,4 +1,5 @@
 import DemoView, { DemoWrapper } from '../../demo/DemoView';
+import { DomElem } from '../DomElem';
 import { Button } from '../Button';
 import { Dialog } from '.';
 
@@ -13,7 +14,7 @@ export default class Demo extends DemoView {
 		const openDialog = () =>
 			new Dialog({
 				header: 'header',
-				body: 'body',
+				body: [new DomElem({ style: { color: 'green' }, textContent: 'body' }), 'more content'],
 				buttons: ['noop', 'dismiss'],
 				onButtonPress: ({ button, closeDialog }) => {
 					console.log({ button, closeDialog });
