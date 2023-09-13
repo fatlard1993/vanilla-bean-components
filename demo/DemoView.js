@@ -1,6 +1,5 @@
-import { DomElem, Label, Link, List, View, getCustomProperties, styled } from '..';
+import { DomElem, Label, Link, View, styled } from '..';
 import DemoOptions from './DemoOptions';
-import DemoProperties from './DemoProperties';
 
 export const DemoWrapper = styled(
 	DomElem,
@@ -35,10 +34,6 @@ export default class DemoView extends View {
 			.ancestry()
 			.filter(({ constructor: { name } }) => name !== options.component.constructor.name);
 
-		const ancestorProperties = new Set(componentAncestors.flatMap(ancestor => getCustomProperties(ancestor)));
-		const componentProperties = getCustomProperties(options.component).filter(key => !ancestorProperties.has(key));
-		const componentMethods = componentProperties.filter(key => typeof options.component[key] === 'function');
-
 		if (componentAncestors.length > 0) {
 			new Label({
 				label: 'Ancestors',
@@ -56,24 +51,6 @@ export default class DemoView extends View {
 				component: options.component,
 			}),
 		);
-
-		new Label(
-			{ label: 'Properties', appendTo: this },
-			new DemoProperties({
-				appendTo: this,
-				component: options.component,
-			}),
-		);
-
-		if (componentMethods.length > 0) {
-			new Label(
-				{ label: 'Methods', appendTo: this },
-				new List({
-					appendTo: this,
-					items: componentMethods.map(key => ({ textContent: key })),
-				}),
-			);
-		}
 
 		super.render(options);
 	}
