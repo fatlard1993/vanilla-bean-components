@@ -22,23 +22,15 @@ class Input extends DomElem {
 				...defaultOptions,
 				...options,
 				styles: (theme, domElem) => `
-				${theme.input}
+					${theme.input}
 
-				${options.styles?.(theme, domElem) || ''}
-			`,
+					${options.styles?.(theme, domElem) || ''}
+				`,
 			},
 			...children,
 		);
 
 		this.initialValue = this.options.value;
-	}
-
-	get value() {
-		return this.elem.value;
-	}
-
-	set value(value) {
-		this.elem.value = value;
 	}
 
 	get isDirty() {
@@ -53,24 +45,36 @@ class Input extends DomElem {
 		const errors = [];
 
 		this.options.validations.forEach(([validation, message]) => {
-			const isValid = validation instanceof RegExp ? validation.test(this.elem.value) : validation(this.elem.value);
+			const isValid = validation instanceof RegExp ? validation.test(this.value) : validation(this.value);
 
-			const resolvedMessage = typeof message == 'function' ? message(this.elem.value) : message;
+			const resolvedMessage = typeof message == 'function' ? message(this.value) : message;
 
 			if (!isValid) errors.push(resolvedMessage);
 
 			if (this.validationErrors[message]) {
-				this.validationErrors[message].elem.style.display = isValid ? 'none' : 'block';
+				this.validationErrors[message].style.display = isValid ? 'none' : 'block';
 			} else if (!isValid) {
 				this.validationErrors[message] = new InputValidationError({
 					append: resolvedMessage,
 				});
 
-				this.elem.parentElement.insertBefore(this.validationErrors[message].elem, this.elem);
+				this.parentElement.insertBefore(this.validationErrors[message].elem, this.elem);
 			}
 		});
 
 		return errors;
+	}
+
+	onInput(callback) {
+		const wrappedCallback = event => {
+			event.value = event.target.value || this.value;
+
+			callback(event);
+		};
+
+		this.elem.addEventListener('input', wrappedCallback);
+
+		return () => this.elem.removeEventListener('input', wrappedCallback);
 	}
 }
 

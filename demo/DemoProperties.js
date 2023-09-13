@@ -1,4 +1,4 @@
-import { Code, List, conditionalList, getCustomProperties } from '..';
+import { Code, List, Label, conditionalList, getCustomProperties } from '..';
 import { stringifyValue } from './utils';
 
 export default class DemoProperties extends List {
@@ -12,38 +12,46 @@ export default class DemoProperties extends List {
 
 		super({
 			...options,
+			addClass: 'noStyle',
 			items: componentProperties
-				.filter(key => typeof options.component[key] !== 'function' && key !== 'options' && key !== 'defaultOptions')
-				.map(key => ({
-					append: [
-						key,
-						new List({
-							items: conditionalList([
-								{
-									if: Object.isFrozen(options.component[key]) || key === 'elem',
-									thenItem: 'READ ONLY',
-									elseItem: new Code({
-										code: stringifyValue(options.component[key]),
-									}),
-								},
-								{
-									alwaysItems: [
-										`Type: ${
-											typeof options.component[key] === 'object'
-												? options.component[key].toString()
-												: typeof options.component[key]
-										}`,
-										'Current: ',
-										new Code({ code: stringifyValue(options.component[key]) }),
-									],
-								},
-							]).map(append => ({
-								append,
-								styles: () => `white-space: pre;`,
-							})),
-						}),
-					],
-				})),
+				.filter(
+					key =>
+						typeof options.component[key] !== 'function' &&
+						key !== 'options' &&
+						key !== 'defaultOptions' &&
+						!key.startsWith('on'),
+				)
+				.map(
+					key =>
+						new Label(
+							key,
+							new List({
+								addClass: 'noStyle',
+								items: conditionalList([
+									{
+										if: Object.isFrozen(options.component[key]) || key === 'elem',
+										thenItem: 'READ ONLY',
+										elseItem: new Code({ code: stringifyValue(options.component[key]) }),
+									},
+									{
+										alwaysItems: [
+											new Label(
+												'Type',
+												new Code({
+													code: stringifyValue(
+														typeof options.component[key] === 'object'
+															? options.component[key]
+															: typeof options.component[key],
+													),
+												}),
+											),
+											new Label('Current', new Code({ code: stringifyValue(options.component[key]) })),
+										],
+									},
+								]),
+							}),
+						),
+				),
 		});
 	}
 }

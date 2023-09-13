@@ -8,16 +8,26 @@ class List extends DomElem {
 				...options,
 				tag: 'ul',
 				styles: (theme, domElem) => `
-				margin: 6px 0;
-				padding-left: 32px;
+					margin: 6px 0;
+					padding-left: 32px;
 
-				li {
-					line-height: 1.3;
-					text-indent: 6px;
-				}
+					li {
+						line-height: 1.3;
+						text-indent: 6px;
+					}
 
-				${options.styles?.(theme, domElem) || ''}
-			`,
+					&.noStyle {
+						padding-left: 0;
+						list-style: none;
+
+						li {
+							line-height: 1;
+							text-indent: 0;
+						}
+					}
+
+					${options.styles?.(theme, domElem) || ''}
+				`,
 			},
 			...children,
 		);
@@ -27,7 +37,7 @@ class List extends DomElem {
 				item =>
 					new TooltipWrapper({
 						tag: 'li',
-						...item,
+						...(typeof item === 'string' || item?.isDomElem ? { content: item } : { ...item }),
 					}),
 			),
 		);

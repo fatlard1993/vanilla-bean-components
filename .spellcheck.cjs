@@ -84,6 +84,8 @@ module.exports = {
 		'utf8',
 		'combobox',
 		'keyframes',
+		'collapsable',
+		'vantablack',
 	],
 	skipIfMatch: ['\\d+v[wh]'],
 	skipWordIfMatch: [],

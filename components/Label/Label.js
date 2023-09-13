@@ -20,21 +20,38 @@ class Label extends TooltipWrapper {
 				for: children[0],
 				...options,
 				styles: (theme, domElem) => `
-				position: relative;
-				display: block;
-				font-size: 1em;
-				width: 95%;
-				margin: 0 auto 12px;
-				padding: 3px 12px 12px;
-				border-left: 3px solid ${theme.colors.lightest(theme.colors.gray)};
-				background-color: ${theme.colors.darkest(theme.colors.gray)};
+					position: relative;
+					display: block;
+					font-size: 1em;
+					width: 95%;
+					margin: 0 auto 12px;
+					padding: 12px;
+					border-left: 3px solid ${theme.colors.light(theme.colors.gray)};
+					background-color: ${theme.colors.darkest(theme.colors.gray)};
+					color: ${theme.colors.white};
 
-				&.collapsed {
-					height: 32px;
-				}
+					> *:not(label):not(.tooltip) {
+						margin-top: 12px;
+					}
 
-				${options.styles?.(theme, domElem) || ''}
-			`,
+					&.collapsed {
+						> label {
+							color: ${theme.colors.superWhite};
+
+							&:before {
+								content: "" !important;
+								opacity: 1;
+								color: ${theme.colors.lightest(theme.colors.blue)};
+							}
+						}
+
+						> *:not(label) {
+							display: none !important;
+						}
+					}
+
+					${options.styles?.(theme, domElem) || ''}
+				`,
 			},
 			...children,
 		);
@@ -44,6 +61,22 @@ class Label extends TooltipWrapper {
 		this._labelText = new LabelText({
 			tag: 'label',
 			prependTo: this,
+			styles: theme => `
+				cursor: pointer;
+				margin: 0;
+
+				&:before {
+					${theme.fonts.fontAwesomeSolid}
+
+					content: "";
+					opacity: 0.5;
+					font-size: 14px;
+					padding-right: 6px;
+					color: ${theme.colors.white};
+
+					transition: opacity 0.8s, color 1s;
+				}
+			`,
 			onPointerPress: () => this[this.hasClass('collapsed') ? 'removeClass' : 'addClass']('collapsed'),
 		});
 

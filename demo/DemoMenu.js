@@ -57,7 +57,7 @@ export default class DemoMenu extends DomElem {
 
 	filterLinks(filter) {
 		this._links.forEach(link => {
-			link.elem.style.display = link.elem.textContent.toLowerCase().includes(filter.toLowerCase()) ? '' : 'none';
+			link.style.display = link.textContent.toLowerCase().includes(filter.toLowerCase()) ? '' : 'none';
 		});
 	}
 
@@ -66,7 +66,7 @@ export default class DemoMenu extends DomElem {
 
 		this._links.forEach(link => {
 			if (link.options.href === `#${route}`) link.addClass('disabled');
-			else if (link.elem.classList.contains('disabled')) link.removeClass('disabled');
+			else if (link.hasClass('disabled')) link.removeClass('disabled');
 		});
 	}
 }

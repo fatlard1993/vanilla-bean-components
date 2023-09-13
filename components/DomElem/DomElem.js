@@ -10,7 +10,7 @@ import { state } from '../state';
 // eslint-disable-next-line spellcheck/spell-checker
 const classId = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-', 10);
 
-/** A general purpose base element building block */
+/** DomElem - A general purpose base element building block */
 class DomElem {
 	isDomElem = true;
 
@@ -27,6 +27,8 @@ class DomElem {
 	 * @param {String} options.tag - The HTML tag
 	 * @param {Boolean} options.autoRender - Automatically render the component when constructed
 	 * @param {Set} options.knownAttributes - options to send to elem.setAttribute
+	 * @param {Set} options.priorityOptions - options to process first when processing a whole options object
+	 * @param {...children} children - child elements to add to append option
 	 */
 	constructor(options = {}, ...children) {
 		const { tag, autoRender, ...optionsWithoutConfig } = { ...this.defaultOptions, ...options };
@@ -34,7 +36,7 @@ class DomElem {
 		const domElem = this;
 
 		this.options = new Proxy(
-			{ ...optionsWithoutConfig, append: [...children, optionsWithoutConfig.append] },
+			{ ...optionsWithoutConfig, append: [optionsWithoutConfig.append, ...children] },
 			{
 				get(target, key) {
 					return Reflect.get(target, key);
@@ -57,7 +59,18 @@ class DomElem {
 		if (import.meta.env.DEV) this.addClass(...this.ancestry().map(({ constructor }) => constructor.name));
 
 		for (const key in this.elem) {
-			if (typeof this.elem[key] === 'function' && !this[key]) this[key] = (...args) => this.elem[key](...args);
+			if (!this[key]) {
+				Object.defineProperties(this, {
+					[key]: {
+						get() {
+							return domElem.elem[key];
+						},
+						set(value) {
+							domElem.elem[key] = value;
+						},
+					},
+				});
+			}
 		}
 
 		if (autoRender === true) this.render();
@@ -145,16 +158,22 @@ class DomElem {
 
 	content(content) {
 		if (typeof content === 'string') this.elem.textContent = content;
-		else {
-			this.empty();
-			this.append(content);
-		}
+		else this.elem.replaceChildren(content?.elem || content);
 	}
 
 	ancestry(targetClass = this) {
 		if (!targetClass || targetClass?.constructor?.name === 'Object') return [];
 
 		return [targetClass, ...this.ancestry(Object.getPrototypeOf(targetClass))];
+	}
+
+	appendTo(parentElem) {
+		if (parentElem?.append) parentElem.append(this.elem);
+	}
+
+	prependTo(parentElem) {
+		if (parentElem.firstChild) parentElem.insertBefore(this.elem, parentElem.firstChild);
+		else parentElem.append(this.elem);
 	}
 
 	append(...children) {
@@ -166,15 +185,6 @@ class DomElem {
 
 				this.elem.append(child);
 			});
-	}
-
-	appendTo(parentElem) {
-		if (parentElem?.append) parentElem.append(this.elem);
-	}
-
-	prependTo(parentElem) {
-		if (parentElem.firstChild) parentElem.insertBefore(this.elem, parentElem.firstChild);
-		else parentElem.append(this.elem);
 	}
 
 	prepend(...children) {

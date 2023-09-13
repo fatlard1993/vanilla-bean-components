@@ -20,11 +20,11 @@ describe('Input', () => {
 
 		expect(input.isDirty, false);
 
-		input.elem.value = 'tempValue';
+		input.value = 'tempValue';
 
 		expect(input.isDirty, true);
 
-		input.elem.value = value;
+		input.value = value;
 
 		expect(input.isDirty, false);
 	});

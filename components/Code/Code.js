@@ -3,7 +3,7 @@ import Prism from 'prismjs';
 import { removeExcessIndentation } from '../../utils';
 import { DomElem } from '../DomElem';
 
-const defaultOptions = { tag: 'code', language: 'javascript', multiline: 'auto', autoRender: false };
+const defaultOptions = { tag: 'code', language: 'javascript', multiline: 'auto' };
 
 class Code extends DomElem {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
@@ -18,15 +18,23 @@ class Code extends DomElem {
 				...defaultOptions,
 				...options,
 				...(options.multiline ? { tag: 'pre' } : { tag: 'code' }),
+				styles: (theme, domElem) => `
+					display: ${options.multiline ? '' : 'inline-'}block;
+					border-radius: 0.2em;
+
+					${options.styles?.(theme, domElem) || ''}
+				`,
 			},
 			...children,
 		);
+	}
 
+	render(options = this.options) {
 		if (options.multiline) {
 			this._code = new DomElem({ tag: 'code', appendTo: this.elem });
 		}
 
-		this.render();
+		super.render(options);
 	}
 
 	setOption(name, value) {
@@ -45,7 +53,7 @@ class Code extends DomElem {
 				this.options.language,
 			);
 
-			(this.options.multiline ? this._code : this).elem.innerHTML = codeHTML;
+			(this.options.multiline ? this._code : this).innerHTML = codeHTML;
 		} else super.setOption(name, value);
 	}
 }

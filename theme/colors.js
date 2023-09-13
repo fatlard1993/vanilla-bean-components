@@ -41,6 +41,12 @@ const colors = {
 	get black() {
 		return colors.blackish();
 	},
+	get superWhite() {
+		return new TinyColor('hsl(0, 100%, 100%)');
+	},
+	get vantablack() {
+		return new TinyColor('hsl(0, 0%, 0%)');
+	},
 	whiteish: (color = colors.gray) => color.lighten(45),
 	lightest: color => color.lighten(40),
 	lighter: color => color.lighten(27),

@@ -11,8 +11,10 @@ export default class Demo extends DemoView {
 
 		const component = new Input({
 			onKeyUp: event => {
-				console.log(event);
-				component._label.elem.children[0].textContent = `isDirty: ${component.isDirty}`;
+				console.log(event, `isDirty: ${component.isDirty}`);
+			},
+			onInput: event => {
+				console.log(event, `isDirty: ${component.isDirty}`);
 			},
 			onChange: () => component.validate(),
 			validations: [

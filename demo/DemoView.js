@@ -41,6 +41,7 @@ export default class DemoView extends View {
 
 		if (componentAncestors.length > 0) {
 			new Label({
+				label: 'Ancestors',
 				appendTo: this,
 				append: componentAncestors.map(
 					({ constructor: { name } }) => new Link({ textContent: name, href: `#/${name}` }),
@@ -48,21 +49,30 @@ export default class DemoView extends View {
 			});
 		}
 
-		new DemoOptions({
-			appendTo: this,
-			component: options.component,
-		});
+		new Label(
+			{ label: 'Options', appendTo: this },
+			new DemoOptions({
+				appendTo: this,
+				component: options.component,
+			}),
+		);
 
-		new DemoProperties({
-			appendTo: this,
-			component: options.component,
-		});
+		new Label(
+			{ label: 'Properties', appendTo: this },
+			new DemoProperties({
+				appendTo: this,
+				component: options.component,
+			}),
+		);
 
 		if (componentMethods.length > 0) {
-			new List({
-				appendTo: this,
-				items: componentMethods.map(key => ({ textContent: key })),
-			});
+			new Label(
+				{ label: 'Methods', appendTo: this },
+				new List({
+					appendTo: this,
+					items: componentMethods.map(key => ({ textContent: key })),
+				}),
+			);
 		}
 
 		super.render(options);
