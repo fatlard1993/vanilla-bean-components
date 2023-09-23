@@ -38,10 +38,10 @@
     "dev": "bun --hot demo/server.js",
     "build": "bun build demo/index.js --outdir demo/build --define 'process.env.AUTOPREFIXER_GRID=\"undefined\"'",
     "build:dev": "bun run build -- --watch",
-    "lint": "bunx eslint --ext .js .",
-    "lint:fix": "bunx eslint --fix --ext .js .",
-    "pretty": "bunx prettier .",
-    "pretty:fix": "bunx prettier --write .",
+    "lint": "bun --bun eslint --ext .js .",
+    "lint:fix": "bun --bun eslint --fix --ext .js .",
+    "pretty": "bun --bun prettier .",
+    "pretty:fix": "bun --bun prettier --write .",
     "fix": "bun run lint:fix ; bun run pretty:fix"
   },
   "repository": {
@@ -74,6 +74,7 @@
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-spellcheck": "0.0.20",
     "eslint-plugin-testing-library": "^6.0.1",
+    "eslint-plugin-unicorn": "^48.0.1",
     "eslint-plugin-write-good-comments": "^0.2.0",
     "prettier": "3.0.3"
   }

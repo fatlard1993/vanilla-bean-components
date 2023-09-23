@@ -13,10 +13,11 @@ module.exports = {
 	extends: [
 		'eslint:recommended',
 		'plugin:compat/recommended',
+		'plugin:unicorn/recommended',
 		'plugin:import/recommended',
 		'plugin:prettier/recommended',
 	],
-	plugins: ['compat', 'write-good-comments', 'spellcheck'],
+	plugins: ['compat', 'unicorn', 'write-good-comments', 'spellcheck'],
 	rules: {
 		'no-console': 'warn',
 		'no-nested-ternary': 'error',
@@ -25,6 +26,28 @@ module.exports = {
 		'comma-dangle': ['error', 'only-multiline'],
 		'no-async-promise-executor': 'off',
 		'no-prototype-builtins': 'off',
+
+		'unicorn/prevent-abbreviations': [
+			'error',
+			{
+				allowList: {
+					elem: true,
+					Elem: true,
+					args: true,
+				},
+			},
+		],
+		'unicorn/filename-case': 'off',
+		'unicorn/no-array-for-each': 'off',
+		'unicorn/prefer-spread': 'off',
+		'unicorn/no-negated-condition': 'off',
+		'unicorn/no-array-reduce': 'off',
+		'unicorn/prefer-query-selector': 'off',
+		'unicorn/prefer-node-protocol': 'off',
+		'unicorn/no-this-assignment': 'off',
+		'unicorn/consistent-function-scoping': 'off',
+		'unicorn/numeric-separators-style': 'off',
+		'unicorn/prefer-switch': 'off',
 
 		'import/no-unresolved': [1, { ignore: ['bun', 'bun:test'] }],
 		'import/no-unused-modules': [1, { unusedExports: true }],
@@ -77,6 +100,7 @@ module.exports = {
 				Bun: true,
 				container: true,
 				expect: true,
+				describe: true,
 				test: true,
 			},
 			extends: ['plugin:testing-library/dom'],
