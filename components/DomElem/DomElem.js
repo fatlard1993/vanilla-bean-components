@@ -56,7 +56,9 @@ class DomElem {
 
 		this.addClass(this.classId);
 
-		if (import.meta.env.DEV) this.addClass(...this.ancestry().map(({ constructor }) => constructor.name));
+		if (process.env.NODE_ENV === 'development') {
+			this.addClass(...this.ancestry().map(({ constructor }) => constructor.name));
+		}
 
 		for (const key in this.elem) {
 			if (!this[key]) {
@@ -231,7 +233,7 @@ class DomElem {
 				appendStyles(css);
 			})
 			// eslint-disable-next-line no-console
-			.catch(import.meta.env.DEV ? console.error : () => {});
+			.catch(process.env.NODE_ENV === 'development' ? console.error : () => {});
 	}
 
 	globalStyles(styles) {
@@ -239,7 +241,7 @@ class DomElem {
 			.process(removeExcessIndentation(styles(theme, this)), { from: undefined })
 			.then(({ css }) => appendStyles(css))
 			// eslint-disable-next-line no-console
-			.catch(import.meta.env.DEV ? console.error : () => {});
+			.catch(process.env.NODE_ENV === 'development' ? console.error : () => {});
 	}
 
 	pointerEventPolyfill(event) {

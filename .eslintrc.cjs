@@ -1,7 +1,10 @@
 module.exports = {
 	env: {
 		browser: true,
-		es2022: true,
+		es2024: true,
+	},
+	globals: {
+		process: true,
 	},
 	parserOptions: {
 		sourceType: 'module',
@@ -10,11 +13,10 @@ module.exports = {
 	extends: [
 		'eslint:recommended',
 		'plugin:compat/recommended',
-		'plugin:unicorn/recommended',
 		'plugin:import/recommended',
 		'plugin:prettier/recommended',
 	],
-	plugins: ['compat', 'unicorn', 'write-good-comments', 'spellcheck'],
+	plugins: ['compat', 'write-good-comments', 'spellcheck'],
 	rules: {
 		'no-console': 'warn',
 		'no-nested-ternary': 'error',
@@ -24,28 +26,7 @@ module.exports = {
 		'no-async-promise-executor': 'off',
 		'no-prototype-builtins': 'off',
 
-		'unicorn/prevent-abbreviations': [
-			'error',
-			{
-				allowList: {
-					elem: true,
-					Elem: true,
-					args: true,
-				},
-			},
-		],
-		'unicorn/filename-case': 'off',
-		'unicorn/no-array-for-each': 'off',
-		'unicorn/prefer-spread': 'off',
-		'unicorn/no-negated-condition': 'off',
-		'unicorn/no-array-reduce': 'off',
-		'unicorn/prefer-query-selector': 'off',
-		'unicorn/prefer-node-protocol': 'off',
-		'unicorn/no-this-assignment': 'off',
-		'unicorn/consistent-function-scoping': 'off',
-		'unicorn/numeric-separators-style': 'off',
-		'unicorn/prefer-switch': 'off',
-
+		'import/no-unresolved': [1, { ignore: ['bun', 'bun:test'] }],
 		'import/no-unused-modules': [1, { unusedExports: true }],
 		'import/no-useless-path-segments': 'error',
 		'import/first': 'warn',
@@ -55,7 +36,7 @@ module.exports = {
 
 		'spellcheck/spell-checker': ['warn', require('./.spellcheck.cjs')],
 	},
-	ignorePatterns: ['package-lock.json', 'node_modules', 'dist'],
+	ignorePatterns: ['package-lock.json', 'node_modules', 'build'],
 	overrides: [
 		{
 			files: ['**/*.cjs'],
@@ -68,21 +49,38 @@ module.exports = {
 			},
 		},
 		{
-			files: ['**/demo.js'],
+			files: ['**/demo.js', 'demo/*'],
 			rules: {
 				'no-console': 'off',
 			},
 		},
 		{
-			files: ['vitest-setup.js', '**/*.test.js', 'components/**/test.js'],
+			files: ['demo/server.js'],
 			env: {
-				'vitest-globals/env': true,
+				browser: false,
+				node: true,
 			},
 			globals: {
-				container: true,
+				Bun: true,
 			},
-			extends: ['plugin:vitest-globals/recommended', 'plugin:testing-library/dom'],
-			plugins: ['vitest', 'testing-library'],
+			rules: {
+				'no-console': 'off',
+			},
+		},
+		{
+			files: ['test-setup.js', '**/*.test.js', 'components/**/.test.js'],
+			env: {
+				browser: true,
+				node: true,
+			},
+			globals: {
+				Bun: true,
+				container: true,
+				expect: true,
+				test: true,
+			},
+			extends: ['plugin:testing-library/dom'],
+			plugins: ['testing-library'],
 			rules: {
 				'no-console': 'off',
 				'testing-library/prefer-screen-queries': 'off',

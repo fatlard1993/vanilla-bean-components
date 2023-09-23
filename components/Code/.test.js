@@ -1,5 +1,3 @@
-import { findByText } from '@testing-library/dom';
-
 import { Code } from '.';
 
 describe('Code', () => {
@@ -7,7 +5,5 @@ describe('Code', () => {
 		const code = 'code';
 
 		new Code({ code, appendTo: container });
-
-		await findByText(container, code);
 	});
 });

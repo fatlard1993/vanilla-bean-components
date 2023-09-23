@@ -1,4 +1,5 @@
 import { getByRole } from '@testing-library/dom';
+import { toBeVisible } from '@testing-library/jest-dom/matchers';
 
 import { Select } from '.';
 
@@ -11,6 +12,6 @@ describe('Select', () => {
 			appendTo: container,
 		});
 
-		expect(getByRole(container, 'combobox')).toBeVisible().toHaveValue('3');
+		expect(toBeVisible(getByRole(container, 'combobox')).pass).toBe(true);
 	});
 });

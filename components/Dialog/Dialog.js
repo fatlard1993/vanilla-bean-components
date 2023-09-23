@@ -157,7 +157,7 @@ class Dialog extends DomElem {
 			this.elem[modal ? 'showModal' : 'show']();
 		} catch (error) {
 			// eslint-disable-next-line no-console
-			if (import.meta.env.DEV) console.error(error, 'Retrying...');
+			if (process.env.NODE_ENV === 'development') console.error(error, 'Retrying...');
 
 			this.render();
 		}

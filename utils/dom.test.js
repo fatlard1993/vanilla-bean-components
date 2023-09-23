@@ -16,20 +16,10 @@ test('appendStyles', () => {
 			margin: 0;
 		}
 	`;
-	let result;
-
-	global.document = {
-		createElement: () => ({}),
-		head: {
-			append: style => {
-				result = style;
-			},
-		},
-	};
 
 	appendStyles(styles);
 
-	expect(result.innerHTML).toContain(styles);
+	expect(document.getElementsByTagName('style')[0].innerHTML).toContain(styles);
 });
 
 test('getScreenOrientation', () => {

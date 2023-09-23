@@ -1,3 +1,5 @@
+/// <reference lib="dom" />
+
 import { DomElem } from '..';
 
 import { styled } from './styled';

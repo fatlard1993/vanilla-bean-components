@@ -18,13 +18,13 @@ class Textarea extends Input {
 			} else {
 				this.elem.removeEventListener('input', this.updateAutoHeight);
 
-				this.style.height = typeof value === 'number' ? `${value + 1}em` : value;
+				this.elem.style.height = typeof value === 'number' ? `${value + 1}em` : value;
 			}
 		} else super.setOption(key, value);
 	}
 
 	updateAutoHeight() {
-		this.style.height = `${(this.value.match(/\n/g) || '').length + 2}em`;
+		this.elem.style.height = `${(this.elem.value?.match(/\n/g) || '').length + 2}em`;
 	}
 }
 
