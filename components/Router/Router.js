@@ -73,8 +73,9 @@ class Router extends DomElem {
 
 		if (!this.path) return (this.path = route);
 
-		if (this.options.views[route]) this.view = new this.options.views[route]({ appendTo: this.elem });
-		else if (this.options.notFound) this.view = new this.options.notFound({ appendTo: this.elem, route });
+		if (this.options.views[route]) {
+			this.view = new this.options.views[route]({ appendTo: this.elem, ...this.parseRouteParameters() });
+		} else if (this.options.notFound) this.view = new this.options.notFound({ appendTo: this.elem, route });
 		else if (this.options.defaultPath && this.path !== this.options.defaultPath) this.path = this.options.defaultPath;
 	}
 }
