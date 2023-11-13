@@ -1,4 +1,4 @@
-import { isMac, appendStyles, getScreenOrientation } from './dom';
+import { isMac, appendStyles } from './dom';
 
 test('isMac', () => {
 	global.navigator = { platform: 'Linux' };
@@ -22,8 +22,4 @@ test('appendStyles', () => {
 	expect(document.getElementsByTagName('style')[0].innerHTML).toContain(styles);
 });
 
-test('getScreenOrientation', () => {
-	global.screen = { orientation: { type: 'landscape' } };
-
-	expect(getScreenOrientation(), 'landscape');
-});
+test.skip('copyToClipboard', () => {});

@@ -19,16 +19,14 @@ export const appendStyles = css => {
 };
 
 /**
- * Retrieve the current devices orientation
- * @return {'landscape'|'portrait'} The current device's screen orientation
+ * Copy a piece of text to the clipboard
+ * @param {String} text - The text to copy to the clipboard
+ * @return {Boolean} A boolean indicating the success of the action
  */
-export const getScreenOrientation = () => {
-	let orientation = 'primary';
+export const copyToClipboard = text => {
+	if (!isSecureContext) return false;
 
-	if (window.screen && window.screen.orientation && window.screen.orientation.type)
-		orientation = window.screen.orientation.type;
-	else if (window.orientation !== undefined)
-		orientation = Math.abs(window.orientation) === 90 ? 'landscape' : 'portrait';
+	navigator.clipboard.writeText(text);
 
-	return orientation;
+	return true;
 };

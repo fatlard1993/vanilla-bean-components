@@ -38,6 +38,8 @@ module.exports = {
 			},
 		],
 		'unicorn/filename-case': 'off',
+		'unicorn/no-null': 'off',
+		'unicorn/no-await-expression-member': 'off',
 		'unicorn/no-array-for-each': 'off',
 		'unicorn/prefer-spread': 'off',
 		'unicorn/no-negated-condition': 'off',
