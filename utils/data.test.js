@@ -1,28 +1,28 @@
 // import { vi } from 'vitest';
 
-import { debounceCallback, getCustomProperties, conditionalList } from './data';
+import { debounce, getCustomProperties, conditionalList } from './data';
 
 const vi = {};
 
-test.skip('debounceCallback', () => {
+test.skip('debounce', () => {
 	vi.useFakeTimers();
 
 	let count = 0;
 	const bumpCount = (modifier = 1) => (count += modifier);
 
-	debounceCallback(bumpCount, 100);
-	debounceCallback(bumpCount, 100);
-	debounceCallback(bumpCount, 100);
+	debounce(bumpCount, 100);
+	debounce(bumpCount, 100);
+	debounce(bumpCount, 100);
 
 	vi.advanceTimersByTime(100);
 
 	expect(count).toStrictEqual(1);
 
-	debounceCallback(bumpCount, 100);
+	debounce(bumpCount, 100);
 
 	vi.advanceTimersByTime(100);
 
-	debounceCallback(bumpCount, 200);
+	debounce(bumpCount, 200);
 
 	vi.advanceTimersByTime(100);
 
@@ -32,7 +32,7 @@ test.skip('debounceCallback', () => {
 
 	expect(count).toStrictEqual(3);
 
-	debounceCallback(bumpCount, 100, 3);
+	debounce(bumpCount, 100, 3);
 
 	vi.advanceTimersByTime(100);
 

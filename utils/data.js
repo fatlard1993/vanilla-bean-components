@@ -1,15 +1,16 @@
 /**
  * Debounce a function
  * @param {Function} callback - The function to debounced
+ * @param {Number} delay - The number of ms to delay the running of the function
  */
-export const debounceCallback = (callback, delay = 400, ...args) => {
-	const state = '__vanilla-bean-components__state__debounceCallback';
+export const debounce = (callback, delay = 400) => {
+	let timerId;
 
-	window[state] = window[state] || {};
+	return (...args) => {
+		clearTimeout(timerId);
 
-	if (window[state][callback]) clearTimeout(window[state][callback]);
-
-	window[state][callback] = setTimeout(() => callback(...args), delay);
+		timerId = setTimeout(() => callback(...args), delay);
+	};
 };
 
 /**

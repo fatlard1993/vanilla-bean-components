@@ -1,6 +1,6 @@
 import { DomElem, Link, Search } from '../components';
 
-import { debounceCallback, styled } from '../utils';
+import { debounce, styled } from '../utils';
 
 import { views } from './DemoRouter';
 
@@ -33,9 +33,11 @@ export default class DemoMenu extends DomElem {
 	render(options = this.options) {
 		this._links = [];
 
+		const debouncedFilter = debounce(this.filterLinks.bind(this), 700);
+
 		new Search({
 			appendTo: this,
-			onKeyUp: ({ value }) => debounceCallback(() => this.filterLinks(value)),
+			onKeyUp: ({ value }) => debouncedFilter(value),
 			onSearch: ({ value }) => this.filterLinks(value),
 		});
 

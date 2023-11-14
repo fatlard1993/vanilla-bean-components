@@ -1,6 +1,6 @@
 import { TinyColor, random as randomColor } from '@ctrl/tinycolor';
 
-import { debounceCallback, styled } from '../../utils';
+import { debounce, styled } from '../../utils';
 import context from '../context';
 import { DomElem } from '../DomElem';
 import { Input } from '../Input';
@@ -102,11 +102,13 @@ class ColorPicker extends Input {
 
 		this.onChange = options.onChange;
 
+		const debouncedUpdate = debounce(this.set.bind(this), 700);
+
 		this.textInput = new TextInput({
 			type: 'text',
 			value: options.value,
 			onChange: ({ value }) => this.set(value),
-			onKeyUp: ({ target: { value } }) => debounceCallback(() => this.set(value), 700),
+			onKeyUp: ({ target: { value } }) => debouncedUpdate(value),
 			prependTo: this.elem,
 		});
 

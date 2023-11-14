@@ -5,6 +5,9 @@ import { DomElem } from '../DomElem';
 
 const defaultOptions = { tag: 'code', language: 'javascript', multiline: 'auto' };
 
+const codeToHTML = (code, language) =>
+	Prism.highlight(removeExcessIndentation(code), Prism.languages[language], language);
+
 class Code extends DomElem {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
@@ -31,7 +34,11 @@ class Code extends DomElem {
 
 	render(options = this.options) {
 		if (options.multiline) {
-			this._code = new DomElem({ tag: 'code', appendTo: this.elem });
+			this._code = new DomElem({
+				tag: 'code',
+				innerHTML: codeToHTML(this.options.code, this.options.language),
+				appendTo: this.elem,
+			});
 		}
 
 		super.render(options);
@@ -47,13 +54,7 @@ class Code extends DomElem {
 			this.removeClass(/\blanguage-.+\b/g);
 			this.addClass(`language-${value}`);
 		} else if (name === 'code') {
-			const codeHTML = Prism.highlight(
-				removeExcessIndentation(value),
-				Prism.languages[this.options.language],
-				this.options.language,
-			);
-
-			(this.options.multiline ? this._code : this).innerHTML = codeHTML;
+			this[this.options.multiline ? '_code' : 'elem'].innerHTML = codeToHTML(this.options.code, this.options.language);
 		} else super.setOption(name, value);
 	}
 }

@@ -4,13 +4,13 @@ Vanilla JS class-based component building block
 
 ## Usage
 
-```
+```javascript
 new DomElem(options, ...children);
 ```
 
 ### One-Off Elements
 
-```
+```javascript
 new DomElem({
 	tag: 'p',
 	textContent: 'A general purpose base element building block',
@@ -20,7 +20,7 @@ new DomElem({
 
 ### Extended Components
 
-```
+```javascript
 class Button extends DomElem {
 	constructor(options = {}, ...children) {
 		super(
@@ -41,7 +41,7 @@ class Button extends DomElem {
 
 ### Styled Components
 
-```
+```javascript
 const FocusedContent = styled(
 	DomElem,
 	({ colors }) => `
@@ -69,7 +69,7 @@ Class instance property `options` is a Proxy. All `set` operations run through `
   - prependTo: DomElem || HTMLElement
   - append: ...(DomElem || HTMLElement)
   - prepend: ...(DomElem || HTMLElement)
-  - setAttributes: Object
+  - (setAttributes || attributes): Object
   - styles: (theme, this) => String
   - globalStyles: (theme, this) => String
   - onContextMenu: (event) => (() => removeEventListener)
@@ -97,7 +97,6 @@ Not all DomElem methods make sense to use with options:
 - toString => '[object DomElem]'
 - empty
 - ancestry(targetClass) => []
-- findAncestor(selector) => HTMLElement
 - detectTouch
 - pointerEventPolyfill(event) => event
 - wrapPointerCallback(callback) => ((event) => {})

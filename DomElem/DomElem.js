@@ -30,7 +30,13 @@ class DomElem {
 	 * @param {...children} children - child elements to add to append option
 	 */
 	constructor(options = {}, ...children) {
-		const { tag, autoRender, ...optionsWithoutConfig } = { ...this.defaultOptions, ...options };
+		const { tag, autoRender, knownAttributes, priorityOptions, ...optionsWithoutConfig } = {
+			...this.defaultOptions,
+			...options,
+		};
+
+		this.__knownAttributes = knownAttributes;
+		this.__priorityOptions = priorityOptions;
 
 		const domElem = this;
 
@@ -59,21 +65,6 @@ class DomElem {
 			this.addClass(...this.ancestry().map(({ constructor }) => constructor.name));
 		}
 
-		for (const key in this.elem) {
-			if (!this[key]) {
-				Object.defineProperties(this, {
-					[key]: {
-						get() {
-							return domElem.elem[key];
-						},
-						set(value) {
-							domElem.elem[key] = value;
-						},
-					},
-				});
-			}
-		}
-
 		if (autoRender === true) this.render();
 		else if (autoRender === 'onload') {
 			if (document.readyState === 'complete') this.render();
@@ -93,22 +84,22 @@ class DomElem {
 	}
 
 	setOption(name, value) {
-		if (name === 'knownAttributes' || name === 'priorityOptions') return;
-
-		if (value?.isDomElem) value = value.elem;
-
 		if (name === 'style') Object.keys(value).forEach(key => (this.elem.style[key] = value[key]));
 		else if (name === 'attributes') this.setAttributes(value);
-		else if (this.options.knownAttributes.has(name) || name.startsWith('aria-')) {
+		else if (this.__knownAttributes.has(name) || name.startsWith('aria-')) {
 			this.elem.setAttribute(name, value);
 		} else if (typeof this[name] === 'function') this[name].call(this, value);
 		else if (this.hasOwnProperty(name)) this[name] = value;
-		else this.elem[name] = value;
+		else if (typeof this.elem[name] === 'function') {
+			if (value?.isDomElem) value = value.elem;
+
+			this.elem[name].call(this.elem, value);
+		} else this.elem[name] = value;
 	}
 
 	setOptions(options) {
 		const sortedOptions = Object.entries(options).reduce((_options, option) => {
-			if (this.options.priorityOptions.has(option[0])) return [option, ..._options];
+			if (this.__priorityOptions.has(option[0])) return [option, ..._options];
 			return [..._options, option];
 		}, []);
 
@@ -173,37 +164,24 @@ class DomElem {
 	}
 
 	append(...children) {
-		(Array.isArray(children) ? children : [children])
-			.flat(Number.POSITIVE_INFINITY)
-			.filter(child => !!child)
-			.forEach(child => {
-				if (child?.isDomElem) child = child.elem;
+		[children].flat(Number.POSITIVE_INFINITY).forEach(child => {
+			if (!child) return;
 
-				this.elem.append(child);
-			});
+			if (child?.isDomElem) child = child.elem;
+
+			this.elem.append(child);
+		});
 	}
 
 	prepend(...children) {
-		(Array.isArray(children) ? children : [children])
-			.flat(Number.POSITIVE_INFINITY)
-			.filter(child => !!child)
-			.forEach(child => {
-				if (child?.isDomElem) child = child.elem;
+		[children].flat(Number.POSITIVE_INFINITY).forEach(child => {
+			if (!child) return;
 
-				if (this.elem.firstChild) this.elem.insertBefore(child, this.elem.firstChild);
-				else this.elem.append(child);
-			});
-	}
+			if (child?.isDomElem) child = child.elem;
 
-	findAncestor(selector) {
-		let elem = this.elem;
-
-		while (
-			(elem = elem.parentElement) &&
-			(selector[0] === '#' ? `#${elem.id}` !== selector : !elem.className.includes(selector))
-		);
-
-		return elem;
+			if (this.elem.firstChild) this.elem.insertBefore(child, this.elem.firstChild);
+			else this.elem.append(child);
+		});
 	}
 
 	setAttributes(attributes) {

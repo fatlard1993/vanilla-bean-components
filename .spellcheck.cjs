@@ -93,6 +93,7 @@ module.exports = {
 		'matchers',
 		'nanoid',
 		'esnext',
+		'keypress',
 	],
 	skipIfMatch: ['\\d+v[wh]'],
 	skipWordIfMatch: [],

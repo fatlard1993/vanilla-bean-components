@@ -8,11 +8,26 @@ Vanilla JS class-based components
 
 All components maintain a [demo](./components/Button/demo.js) & [test file](./components/Button/.test.js) with good examples of how each component can be used.
 
-For font & icon support:
+### HTML
 
-```
+> [example](./demo/index.html)
+
+#### Font & icon support
+
+```html
 <link rel="stylesheet" href="@fortawesome/fontawesome-free/css/all.css" />
 <link rel="stylesheet" href="source-code-pro/source-code-pro.css" />
+```
+
+### JS
+
+> [example](./demo/index.js)
+
+```javascript
+new Page({
+	appendTo: document.getElementById('app'),
+	content,
+});
 ```
 
 ## Demo
