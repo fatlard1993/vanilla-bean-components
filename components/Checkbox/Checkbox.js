@@ -54,10 +54,6 @@ const CheckboxInput = styled(
 );
 
 class Checkbox extends DomElem {
-	constructor(options = {}, ...children) {
-		super(options, ...children);
-	}
-
 	render(options = this.options) {
 		this.inputElem = new CheckboxInput({
 			tag: 'input',

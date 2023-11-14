@@ -1,7 +1,7 @@
 import { TinyColor, random as randomColor } from '@ctrl/tinycolor';
 
 import { debounceCallback, styled } from '../../utils';
-import { state } from '../state';
+import context from '../context';
 import { DomElem } from '../DomElem';
 import { Input } from '../Input';
 
@@ -237,7 +237,7 @@ class ColorPicker extends Input {
 	}
 
 	onPointerDown(event) {
-		if (state.isTouchDevice && !event.targetTouches) return;
+		if (context.domElem.isTouchDevice && !event.targetTouches) return;
 
 		if (event.target === this.pickerArea.elem || event.target === this.hueArea.elem) {
 			const onMove = this[`${event.target === this.hueArea.elem ? 'hue' : 'picker'}Move`].bind(this);

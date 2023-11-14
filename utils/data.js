@@ -1,15 +1,15 @@
-import { state } from '../components/state';
-
 /**
  * Debounce a function
  * @param {Function} callback - The function to debounced
  */
 export const debounceCallback = (callback, delay = 400, ...args) => {
-	if (state?.debounceCallback?.[callback]) clearTimeout(state.debounceCallback[callback]);
+	const state = '__vanilla-bean-components__state__debounceCallback';
 
-	state.debounceCallback = state.debounceCallback || {};
+	window[state] = window[state] || {};
 
-	state.debounceCallback[callback] = setTimeout(() => callback(...args), delay);
+	if (window[state][callback]) clearTimeout(window[state][callback]);
+
+	window[state][callback] = setTimeout(() => callback(...args), delay);
 };
 
 /**

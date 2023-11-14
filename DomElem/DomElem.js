@@ -3,9 +3,8 @@ import postcss from 'postcss';
 import plugin_autoprefixer from 'autoprefixer';
 import plugin_nested from 'postcss-nested';
 
-import { appendStyles, getElemIndex, isDescendantOf, buildClassList, removeExcessIndentation } from '../../utils';
-import theme from '../../theme';
-import { state } from '../state';
+import { appendStyles, buildClassList, removeExcessIndentation } from './utils';
+import context from './context';
 
 // eslint-disable-next-line spellcheck/spell-checker
 const classId = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-', 10);
@@ -93,10 +92,6 @@ class DomElem {
 		this.rendered = true;
 	}
 
-	get elemIndex() {
-		return getElemIndex(this.elem);
-	}
-
 	setOption(name, value) {
 		if (name === 'knownAttributes' || name === 'priorityOptions') return;
 
@@ -148,10 +143,6 @@ class DomElem {
 
 	toString() {
 		return '[object DomElem]';
-	}
-
-	isDescendantOf(parent) {
-		return isDescendantOf(this.elem, parent);
 	}
 
 	empty() {
@@ -222,9 +213,9 @@ class DomElem {
 	styles(styles) {
 		postcss([plugin_nested, plugin_autoprefixer])
 			.process(
-				removeExcessIndentation(`
+				(process.env.NODE_ENV === 'development' ? x => x : removeExcessIndentation)(`
 					.${this.classId} {
-						${styles(theme, this)}
+						${styles(context.theme, this)}
 					}
 				`),
 				{ from: undefined },
@@ -238,10 +229,29 @@ class DomElem {
 
 	globalStyles(styles) {
 		postcss([plugin_nested, plugin_autoprefixer])
-			.process(removeExcessIndentation(styles(theme, this)), { from: undefined })
+			.process(
+				(process.env.NODE_ENV === 'development' ? x => x : removeExcessIndentation)(styles(context.theme, this)),
+				{ from: undefined },
+			)
 			.then(({ css }) => appendStyles(css))
 			// eslint-disable-next-line no-console
 			.catch(process.env.NODE_ENV === 'development' ? console.error : () => {});
+	}
+
+	detectTouch() {
+		if (this.__touchDetectionEnabled) return;
+
+		this.__touchDetectionEnabled = true;
+
+		this.__detectTouch = ({ type }) => {
+			context.isTouchDevice = type.startsWith('touch');
+		};
+
+		document.addEventListener('touchstart', this.__detectTouch);
+		document.addEventListener('touchend', this.__detectTouch);
+		document.addEventListener('touchcancel', this.__detectTouch);
+		document.addEventListener('mousedown', this.__detectTouch);
+		document.addEventListener('mouseup', this.__detectTouch);
 	}
 
 	pointerEventPolyfill(event) {
@@ -254,7 +264,7 @@ class DomElem {
 		if (!event.pointerType) {
 			if (event.type.startsWith('touch')) event.pointerType = 'touch';
 			else if (event.type.startsWith('mouse')) event.pointerType = 'mouse';
-			else event.pointerType = state.isTouchDevice ? 'touch' : 'mouse';
+			else event.pointerType = context.isTouchDevice ? 'touch' : 'mouse';
 		}
 
 		return event;
@@ -264,7 +274,7 @@ class DomElem {
 		return event => {
 			event = this.pointerEventPolyfill(event);
 
-			if (state.isTouchDevice && event.pointerType !== 'touch') return;
+			if (context.isTouchDevice && event.pointerType !== 'touch') return;
 
 			callback.call(this, event);
 		};
@@ -341,7 +351,7 @@ class DomElem {
 
 			if (this.pointerUpOff) this.pointerUpOff();
 
-			if (event.target !== this.elem || (state.isTouchDevice && event.pointerType !== 'touch')) return;
+			if (event.target !== this.elem || (context.isTouchDevice && event.pointerType !== 'touch')) return;
 
 			callback.call(this, event);
 		};
@@ -349,7 +359,7 @@ class DomElem {
 		const pointerDown = event => {
 			event = this.pointerEventPolyfill(event);
 
-			if (event.target !== this.elem || (state.isTouchDevice && event.pointerType !== 'touch')) return;
+			if (event.target !== this.elem || (context.isTouchDevice && event.pointerType !== 'touch')) return;
 
 			document.addEventListener('touchend', wrappedCallback, true);
 			document.addEventListener('touchcancel', wrappedCallback, true);
@@ -387,7 +397,7 @@ class DomElem {
 		const pointerDown = event => {
 			event = this.pointerEventPolyfill(event);
 
-			if (event.target !== this.elem || (state.isTouchDevice && event.pointerType !== 'touch')) return;
+			if (event.target !== this.elem || (context.isTouchDevice && event.pointerType !== 'touch')) return;
 
 			this.addClass('pointerHold');
 

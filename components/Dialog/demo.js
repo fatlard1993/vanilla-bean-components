@@ -4,10 +4,6 @@ import { Button } from '../Button';
 import { Dialog } from '.';
 
 export default class Demo extends DemoView {
-	constructor(options) {
-		super(options);
-	}
-
 	render(options = this.options) {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 

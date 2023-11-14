@@ -2,10 +2,6 @@ import DemoView, { DemoWrapper } from '../../demo/DemoView';
 import { DomElem } from '.';
 
 export default class Demo extends DemoView {
-	constructor(options) {
-		super(options);
-	}
-
 	render(options = this.options) {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 

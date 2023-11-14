@@ -57,10 +57,6 @@ const RadioButtonInput = styled(
 );
 
 class RadioButton extends DomElem {
-	constructor(options = {}, ...children) {
-		super(options, ...children);
-	}
-
 	setOption(name, value) {
 		if (name === 'options') {
 			this.empty();

@@ -55,27 +55,27 @@
   "dependencies": {
     "@ctrl/tinycolor": "^4.0.2",
     "@fortawesome/fontawesome-free": "^6.4.2",
-    "autoprefixer": "^10.4.15",
-    "nanoid": "^4.0.2",
-    "postcss": "^8.4.29",
+    "autoprefixer": "^10.4.16",
+    "nanoid": "^5.0.3",
+    "postcss": "^8.4.31",
     "postcss-nested": "^6.0.1",
     "prismjs": "^1.29.0",
     "source-code-pro": "^2.38.0"
   },
   "devDependencies": {
     "@happy-dom/global-registrator": "^12.1.5",
-    "@testing-library/dom": "^9.3.1",
-    "@testing-library/jest-dom": "^6.1.3",
-    "bun-types": "^1.0.2",
-    "eslint": "^8.49.0",
+    "@testing-library/dom": "^9.3.3",
+    "@testing-library/jest-dom": "^6.1.4",
+    "bun-types": "^1.0.11",
+    "eslint": "^8.53.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-compat": "^4.2.0",
-    "eslint-plugin-import": "^2.28.1",
-    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-spellcheck": "0.0.20",
-    "eslint-plugin-testing-library": "^6.0.1",
-    "eslint-plugin-unicorn": "^48.0.1",
+    "eslint-plugin-testing-library": "^6.1.2",
+    "eslint-plugin-unicorn": "^49.0.0",
     "eslint-plugin-write-good-comments": "^0.2.0",
-    "prettier": "3.0.3"
+    "prettier": "3.1.0"
   }
 }

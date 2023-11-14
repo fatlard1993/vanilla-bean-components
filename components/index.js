@@ -22,4 +22,4 @@ export * from './Textarea';
 export * from './Tooltip';
 export * from './TooltipWrapper';
 
-export * from './state';
+export { default as context } from './context';

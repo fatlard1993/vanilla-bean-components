@@ -1,7 +1,6 @@
 import '@fortawesome/fontawesome-free/css/all.css';
 import 'source-code-pro/source-code-pro.css';
 
-import { state } from '../state';
 import { DomElem } from '../DomElem';
 
 class Page extends DomElem {
@@ -73,22 +72,6 @@ class Page extends DomElem {
 		if (this.options.touchSupport !== false) this.detectTouch();
 
 		super.render();
-	}
-
-	detectTouch() {
-		if (state.touchDetectionEnabled) return;
-
-		state.touchDetectionEnabled = true;
-
-		document.addEventListener('touchstart', this.onPointerEvt);
-		document.addEventListener('touchend', this.onPointerEvt);
-		document.addEventListener('touchcancel', this.onPointerEvt);
-		document.addEventListener('mousedown', this.onPointerEvt);
-		document.addEventListener('mouseup', this.onPointerEvt);
-	}
-
-	onPointerEvt({ type }) {
-		state.isTouchDevice = type.startsWith('touch');
 	}
 }
 
