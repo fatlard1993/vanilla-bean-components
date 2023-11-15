@@ -5,6 +5,7 @@ const CheckboxLabel = styled(
 	DomElem,
 	({ colors }) => `
 		line-height: 1.1;
+		padding-top: 3px;
 		display: grid;
 		grid-template-columns: 1em auto;
 		gap: 0.5em;

@@ -97,7 +97,7 @@ class ColorPicker extends Input {
 				...options,
 				styles: (theme, domElem) => `
 					background-color: ${theme.colors.light(theme.colors.gray)};
-					padding: 18px;
+					padding: 18px 18px 12px;
 					border-radius: 5px;
 					margin-bottom: 6px;
 					text-indent: 0;

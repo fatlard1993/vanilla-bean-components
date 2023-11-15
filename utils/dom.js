@@ -18,3 +18,13 @@ export const copyToClipboard = text => {
 
 	return true;
 };
+
+/**
+ * Get the current text from the clipboard
+ * @return {String} The current clipboard content
+ */
+export const readClipboard = async () => {
+	if (!isSecureContext) return false;
+
+	return await navigator.clipboard.readText();
+};
