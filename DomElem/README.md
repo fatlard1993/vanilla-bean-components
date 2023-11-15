@@ -57,12 +57,23 @@ Everything in a DomElem can be controlled by its `options`. In addition to confi
 
 Class instance property `options` is a Proxy. All `set` operations run through `setOption`.
 
+- ...[EventTarget](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget)
+- ...[Node](https://developer.mozilla.org/en-US/docs/Web/API/Node)
+- ...[Element](https://developer.mozilla.org/en-US/docs/Web/API/Element)
+  - className: String
+  - id: String
+  - innerHTML: String
+  - before: HTMLElement
 - ...[HTMLElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)
+  - innerText: String
+- ...[Target HTML tag class, Ex: HTMLButtonElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLButtonElement)
+  - disabled: Boolean
 - DomElem options
   - @param {String} tag - The HTML tag
   - @param {Boolean} autoRender - Automatically render the component when constructed
   - @param {Set} knownAttributes - options to send to elem.setAttribute
   - @param {Set} priorityOptions - options to process first when processing a whole options object
+  - @param {Object} style - style properties to set in the resulting HTMLElement
 - DomElem methods
   - content: String || DomElem || HTMLElement
   - appendTo: DomElem || HTMLElement

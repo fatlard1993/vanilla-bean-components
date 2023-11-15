@@ -27,6 +27,7 @@ class DomElem {
 	 * @param {Boolean} options.autoRender - Automatically render the component when constructed
 	 * @param {Set} options.knownAttributes - options to send to elem.setAttribute
 	 * @param {Set} options.priorityOptions - options to process first when processing a whole options object
+	 * @param {Object} options.style - style properties to set in the resulting HTMLElement
 	 * @param {...children} children - child elements to add to append option
 	 */
 	constructor(options = {}, ...children) {
