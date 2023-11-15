@@ -6,12 +6,12 @@ class NoData extends DomElem {
 			{
 				...options,
 				styles: (theme, domElem) => `
-				margin: 6px auto;
-				padding: 6px 12px;
-				text-align: center;
+					margin: 6px auto;
+					padding: 6px 12px;
+					text-align: center;
 
-				${options.styles?.(theme, domElem) || ''}
-			`,
+					${options.styles?.(theme, domElem) || ''}
+				`,
 			},
 			...children,
 		);

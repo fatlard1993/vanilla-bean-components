@@ -4,13 +4,7 @@ const defaultOptions = { type: 'search', placeholder: 'Search' };
 
 class Search extends Input {
 	constructor(options = {}, ...children) {
-		super(
-			{
-				...defaultOptions,
-				...options,
-			},
-			...children,
-		);
+		super({ ...defaultOptions, ...options }, ...children);
 	}
 
 	onSearch(callback) {

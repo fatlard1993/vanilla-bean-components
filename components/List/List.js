@@ -31,6 +31,10 @@ class List extends DomElem {
 			},
 			...children,
 		);
+	}
+
+	render(options = this.options) {
+		super.render(options);
 
 		this.append(
 			(options.items || []).map(
