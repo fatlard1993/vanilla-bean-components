@@ -48,9 +48,11 @@ class DomElem {
 					return Reflect.get(target, key);
 				},
 				set(target, key, value) {
-					domElem.setOption(key, value);
+					const result = Reflect.set(target, key, value);
 
-					return Reflect.set(target, key, value);
+					domElem.setOption(key, value, result);
+
+					return result;
 				},
 			},
 		);
