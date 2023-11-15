@@ -9,6 +9,7 @@ export default class Demo extends DemoView {
 			value: 'random',
 			onChange: console.log,
 			appendTo: this.demoWrapper,
+			swatches: ['random', '#FF0000', 'green', 'rgb(0, 0, 255)'],
 		});
 
 		super.render({ ...options, component });

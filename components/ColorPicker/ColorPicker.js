@@ -4,6 +4,7 @@ import { debounce, styled } from '../../utils';
 import context from '../context';
 import { DomElem } from '../DomElem';
 import { Input } from '../Input';
+import { Button } from '../Button';
 
 import { saturation, hue } from './svg';
 
@@ -76,6 +77,13 @@ const TextInput = styled(
 	`,
 );
 
+const ColorSwatch = styled(
+	Button,
+	() => `
+		margin-top: 12px;
+	`,
+);
+
 const defaultOptions = { tag: 'div', value: '#666', onChange: () => {} };
 
 class ColorPicker extends Input {
@@ -88,27 +96,32 @@ class ColorPicker extends Input {
 			{
 				...options,
 				styles: (theme, domElem) => `
-				background-color: ${theme.colors.light(theme.colors.gray)};
-				padding: 18px;
-				border-radius: 5px;
-				margin-bottom: 6px;
-				text-indent: 0;
+					background-color: ${theme.colors.light(theme.colors.gray)};
+					padding: 18px;
+					border-radius: 5px;
+					margin-bottom: 6px;
+					text-indent: 0;
 
-				${options.styles?.(theme, domElem) || ''}
-			`,
+					${options.styles?.(theme, domElem) || ''}
+				`,
 			},
 			...children,
 		);
 
-		this.onChange = options.onChange;
+		this.set(options.value, true);
 
-		const debouncedUpdate = debounce(this.set.bind(this), 700);
+		document.addEventListener('mousedown', this.onPointerDown.bind(this));
+		document.addEventListener('touchstart', this.onPointerDown.bind(this));
+	}
+
+	render(options = this.options) {
+		super.render(options);
 
 		this.textInput = new TextInput({
 			type: 'text',
 			value: options.value,
 			onChange: ({ value }) => this.set(value),
-			onKeyUp: ({ target: { value } }) => debouncedUpdate(value),
+			onKeyUp: debounce(({ target: { value } }) => this.set(value), 700),
 			prependTo: this.elem,
 		});
 
@@ -128,10 +141,53 @@ class ColorPicker extends Input {
 			appendTo: this.pickerArea,
 		});
 
-		this.set(options.value, true);
+		if (options.swatches) {
+			options.swatches.forEach(color => {
+				new ColorSwatch({
+					appendTo: this.elem,
+					icon: 'fill-drip',
+					styles: ({ colors }) =>
+						color === 'random'
+							? `
+								animation: rainbow 2s linear;
+								animation-iteration-count: infinite;
+								color: ${colors.black};
 
-		document.addEventListener('mousedown', this.onPointerDown.bind(this));
-		document.addEventListener('touchstart', this.onPointerDown.bind(this));
+								@keyframes rainbow {
+									100%,0%{
+										background-color: ${colors.light(colors.red)};
+									}
+									12%{
+										background-color: ${colors.light(colors.orange)};
+									}
+									25%{
+										background-color: ${colors.light(colors.yellow)};
+									}
+									37%{
+										background-color: ${colors.light(colors.green)};
+									}
+									50%{
+										background-color: ${colors.light(colors.teal)};
+									}
+									62%{
+										background-color: ${colors.light(colors.blue)};
+									}
+									75%{
+										background-color: ${colors.light(colors.purple)};
+									}
+									87%{
+										background-color: ${colors.light(colors.pink)};
+									}
+								}
+							`
+							: `
+								background: ${color};
+								color: ${colors.mostReadable(color, [colors.white, colors.black])}
+							`,
+					onPointerPress: () => this.set(color),
+				});
+			});
+		}
 	}
 
 	get value() {
@@ -157,7 +213,7 @@ class ColorPicker extends Input {
 
 		this.pickerArea.elem.style.backgroundColor = `hsl(${hsv.h}, 100%, 50%)`;
 
-		if (triggerEvent) this.onChange(this);
+		if (triggerEvent) this.options.onChange(this);
 	}
 
 	normalizePosition(event, parent, offsetX, offsetY) {
