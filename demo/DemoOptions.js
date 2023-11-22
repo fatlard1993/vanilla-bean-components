@@ -3,13 +3,13 @@ import { stringifyValue } from './utils';
 
 export default class DemoOptions extends List {
 	constructor(options) {
-		const isMethod = key =>
-			typeof options.component[key] === 'function' || typeof options.component.elem[key] === 'function';
+		const { component } = options;
+		const isMethod = key => typeof component[key] === 'function' || typeof component.elem[key] === 'function';
 
 		super({
 			...options,
 			addClass: 'noStyle',
-			items: Object.entries(options.component.options).map(
+			items: Object.entries(component.options).map(
 				([key, value]) =>
 					new Label(
 						key,
@@ -25,34 +25,31 @@ export default class DemoOptions extends List {
 									),
 								},
 								{
-									if: !isMethod(key) && options.component.defaultOptions[key],
-									thenItem: new Label(
-										'Default',
-										new Code({ code: stringifyValue(options.component.defaultOptions[key]) }),
-									),
+									if: !isMethod(key) && component.defaultOptions[key],
+									thenItem: new Label('Default', new Code({ code: stringifyValue(component.defaultOptions[key]) })),
 								},
 								{
-									if: isMethod(key) && !options.component[`${key}_enum`],
+									if: isMethod(key) && !component[`${key}_enum`],
 									thenItem: new Label('Current', new Code({ code: stringifyValue(value) })),
 								},
 								{
-									if: options.component[`${key}_enum`],
+									if: component[`${key}_enum`],
 									thenItem: new Label(
 										'Current',
 										new Select({
 											value,
-											options: options.component[`${key}_enum`],
-											onChange: ({ value: newValue }) => (options.component.options[key] = newValue),
+											options: component[`${key}_enum`],
+											onChange: ({ value: newValue }) => (component.options[key] = newValue),
 										}),
 									),
 								},
 								{
-									if: !isMethod(key) && !options.component[`${key}_enum`],
+									if: !isMethod(key) && !component[`${key}_enum`],
 									thenItem: new Label(
 										'Current',
 										new Textarea({
 											value: stringifyValue(value),
-											onChange: ({ value: newValue }) => (options.component.options[key] = newValue),
+											onChange: ({ value: newValue }) => (component.options[key] = newValue),
 										}),
 									),
 								},

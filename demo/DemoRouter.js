@@ -25,10 +25,6 @@ import TooltipWrapperDemo from '../components/TooltipWrapper/demo';
 import { NoData, Router, View } from '../components';
 
 class NotFound extends View {
-	constructor(options) {
-		super(options);
-	}
-
 	render(options = this.options) {
 		new NoData({ textContent: `Could not find route "${this.options.route}"`, appendTo: this });
 

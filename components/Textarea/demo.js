@@ -7,7 +7,10 @@ export default class Demo extends DemoView {
 
 		const component = new Textarea({
 			value: 'multiline\nvalue',
-			onChange: console.log,
+			onChange: ({ value: newValue }) => {
+				component.options.value = newValue;
+				console.log('onChange', { newValue });
+			},
 			onKeyUp: console.log,
 			appendTo: this.demoWrapper,
 		});
