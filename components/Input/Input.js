@@ -33,6 +33,20 @@ class Input extends DomElem {
 		this.initialValue = this.options.value;
 	}
 
+	setOption(key, value) {
+		super.setOption(key, value);
+
+		if (this.rendered && key === 'value') this.validate();
+	}
+
+	get value() {
+		return this.elem.value;
+	}
+
+	set value(newValue) {
+		this.elem.value = newValue;
+	}
+
 	get isDirty() {
 		return this.initialValue !== this.value;
 	}
@@ -52,13 +66,12 @@ class Input extends DomElem {
 			if (!isValid) errors.push(resolvedMessage);
 
 			if (this.validationErrors[message]) {
-				this.validationErrors[message].style.display = isValid ? 'none' : 'block';
+				this.validationErrors[message].elem.style.display = isValid ? 'none' : 'block';
 			} else if (!isValid) {
-				this.validationErrors[message] = new InputValidationError({
-					append: resolvedMessage,
-				});
+				this.validationErrors[message] = new InputValidationError({ content: resolvedMessage });
 
-				this.parentElement.insertBefore(this.validationErrors[message].elem, this.elem);
+				// Insert directly before the input element in case there is a label or other stacked elements
+				this.elem.parentElement.insertBefore(this.validationErrors[message].elem, this.elem);
 			}
 		});
 

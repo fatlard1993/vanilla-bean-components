@@ -12,13 +12,16 @@ export default class Demo extends DemoView {
 			onInput: event => {
 				console.log(event, `isDirty: ${component.isDirty}`);
 			},
-			onChange: () => component.validate(),
+			onChange: ({ value: newValue }) => {
+				component.options.value = newValue;
+				console.log('onChange', { newValue });
+			},
 			validations: [
 				[/.+/, 'This input is required'],
-				[/^.{3,5}$/, 'Must be between 5 and 7 characters long'],
+				[/^.{3,5}$/, 'Must be between 3 and 5 characters long'],
 				[
 					value => value !== component.initialValue.split('').reverse().join(''),
-					value => `Must not be the inverse of the initial value: ${value}`,
+					() => `Must not be the inverse of the initial value: ${component.initialValue}`,
 				],
 			],
 			value: 'value',
