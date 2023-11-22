@@ -1,1 +1,1 @@
-export { DomElem } from '../../DomElem';
+export { default as DomElem } from './DomElem';

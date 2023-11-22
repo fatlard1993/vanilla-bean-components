@@ -108,7 +108,6 @@ Not all DomElem methods make sense to use with options:
 - removeClass(...classes) => this
 - toString => '[object DomElem]'
 - empty
-- ancestry(targetClass) => []
 - detectTouch
 - pointerEventPolyfill(event) => event
 - wrapPointerCallback(callback) => ((event) => {})

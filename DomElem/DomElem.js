@@ -25,10 +25,10 @@ class DomElem {
 	 * @param {Object} options - The options for initializing the component
 	 * @param {String} options.tag - The HTML tag
 	 * @param {Boolean} options.autoRender - Automatically render the component when constructed
-	 * @param {Set} options.knownAttributes - options to send to elem.setAttribute
-	 * @param {Set} options.priorityOptions - options to process first when processing a whole options object
-	 * @param {Object} options.style - style properties to set in the resulting HTMLElement
-	 * @param {...children} children - child elements to add to append option
+	 * @param {Set} options.knownAttributes - Options to send to elem.setAttribute
+	 * @param {Set} options.priorityOptions - Options to process first when processing a whole options object
+	 * @param {Object} options.style - Style properties to set in the resulting HTMLElement
+	 * @param {...children} children - Child elements to add to append option
 	 */
 	constructor(options = {}, ...children) {
 		const { tag, autoRender, knownAttributes, priorityOptions, ...optionsWithoutConfig } = {
@@ -63,10 +63,6 @@ class DomElem {
 		this.elem._domElem = this;
 
 		this.addClass(this.classId);
-
-		if (process.env.NODE_ENV === 'development') {
-			this.addClass(...this.ancestry().map(({ constructor }) => constructor.name));
-		}
 
 		if (autoRender === true) this.render();
 		else if (autoRender === 'onload') {
@@ -149,12 +145,6 @@ class DomElem {
 			this.empty();
 			this.append(content);
 		}
-	}
-
-	ancestry(targetClass = this) {
-		if (!targetClass || targetClass?.constructor?.name === 'Object') return [];
-
-		return [targetClass, ...this.ancestry(Object.getPrototypeOf(targetClass))];
 	}
 
 	appendTo(parentElem) {
