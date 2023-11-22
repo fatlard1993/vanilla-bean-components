@@ -84,7 +84,7 @@ class Label extends TooltipWrapper {
 	}
 
 	setOption(name, value) {
-		if (name === 'label') this._labelText.setOption('content', value);
+		if (name === 'label') this._labelText.options.content = value;
 		else if (name === 'for') {
 			let forId = typeof value === 'string' ? value : value?.id || value?.elem?.id;
 

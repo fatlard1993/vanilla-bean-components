@@ -88,7 +88,7 @@ class Dialog extends DomElem {
 			...children,
 		);
 
-		this.setOption('aria-labelledby', this.classId);
+		this.options['aria-labelledby'] = this.classId;
 
 		this.elem.addEventListener('close', this.elem.remove);
 	}
@@ -146,7 +146,7 @@ class Dialog extends DomElem {
 			this.removeClass(...size_enum);
 			this.addClass(value);
 		} else if (name === 'body') {
-			this._body.setOption('content', value);
+			this._body.options.content = value;
 		} else super.setOption(name, value);
 	}
 

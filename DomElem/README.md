@@ -101,6 +101,7 @@ Not all DomElem methods make sense to use with options:
 
 - render(options)
 - setOption(name, value)
+  - *This method is used internally to synchronize options property changes and not intended to be called directly*
 - setOptions(options)
 - hasClass(...classes) => Boolean
 - addClass(...classes) => this

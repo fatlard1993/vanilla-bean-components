@@ -9,7 +9,7 @@ export default class Demo extends DemoView {
 			name: 'enabled',
 			value: true,
 			onChange: ({ target: { checked } }) => {
-				component.setOption('name', checked ? 'enabled' : 'disabled');
+				component.options.name = checked ? 'enabled' : 'disabled';
 			},
 			appendTo: this.demoWrapper,
 		});
