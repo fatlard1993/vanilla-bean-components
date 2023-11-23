@@ -32,14 +32,17 @@ export default class DemoView extends View {
 	render(options = this.options) {
 		const componentAncestors = options.component
 			.ancestry()
-			.filter(({ constructor: { name } }) => name !== options.component.constructor.name);
+			.filter(
+				({ constructor: { name } }) => name !== options.component.constructor.name && name !== 'VanillaBeanDomElem',
+			);
 
 		if (componentAncestors.length > 0) {
 			new Label({
 				label: 'Ancestors',
 				appendTo: this,
 				append: componentAncestors.map(
-					({ constructor: { name } }) => new Link({ textContent: name, href: `#/${name}` }),
+					({ constructor: { name } }) =>
+						new Link({ textContent: name.replace(/\d$/, ''), href: `#/${name.replace(/\d$/, '')}` }),
 				),
 			});
 		}
