@@ -1,4 +1,4 @@
-import { isMac } from './dom';
+import { copyToClipboard, isMac, readClipboard } from './dom';
 
 test('isMac', () => {
 	global.navigator = { platform: 'Linux' };
@@ -10,4 +10,24 @@ test('isMac', () => {
 	expect(isMac()).toStrictEqual(true);
 });
 
-test.skip('copyToClipboard', () => {});
+test('copyToClipboard', () => {
+	const writeText = global.mock();
+
+	global.isSecureContext = true;
+	global.navigator = { clipboard: { writeText } };
+
+	copyToClipboard('test');
+
+	expect(writeText.mock.calls.length).toStrictEqual(1);
+});
+
+test('readClipboard', () => {
+	const readText = global.mock();
+
+	global.isSecureContext = true;
+	global.navigator = { clipboard: { readText } };
+
+	readClipboard();
+
+	expect(readText.mock.calls.length).toStrictEqual(1);
+});
