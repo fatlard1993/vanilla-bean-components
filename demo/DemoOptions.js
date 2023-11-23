@@ -48,7 +48,7 @@ export default class DemoOptions extends List {
 									thenItem: new Label(
 										'Current',
 										new Textarea({
-											value: stringifyValue(value),
+											value: component.options.subscriber(key),
 											onChange: ({ value: newValue }) => (component.options[key] = newValue),
 										}),
 									),

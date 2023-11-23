@@ -1,4 +1,5 @@
 import DemoView, { DemoWrapper } from '../../demo/DemoView';
+import { DomElem } from '../DomElem';
 import { Input } from '.';
 
 export default class Demo extends DemoView {
@@ -25,6 +26,12 @@ export default class Demo extends DemoView {
 				],
 			],
 			value: 'value',
+			appendTo: this.demoWrapper,
+		});
+
+		new DomElem({
+			tag: 'p',
+			textContent: component.options.subscriber('value', value => `The current value is: ${value}`),
 			appendTo: this.demoWrapper,
 		});
 

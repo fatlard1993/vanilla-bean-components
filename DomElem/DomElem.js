@@ -3,7 +3,7 @@ import postcss from 'postcss';
 import plugin_autoprefixer from 'autoprefixer';
 import plugin_nested from 'postcss-nested';
 
-import { appendStyles, buildClassList, removeExcessIndentation } from './utils';
+import { appendStyles, buildClassList, removeExcessIndentation, Context } from './utils';
 import context from './context';
 
 // eslint-disable-next-line spellcheck/spell-checker
@@ -39,23 +39,9 @@ class DomElem {
 		this.__knownAttributes = knownAttributes;
 		this.__priorityOptions = priorityOptions;
 
-		const domElem = this;
+		this.options = new Context({ ...optionsWithoutConfig, append: [optionsWithoutConfig.append, ...children] });
 
-		this.options = new Proxy(
-			{ ...optionsWithoutConfig, append: [optionsWithoutConfig.append, ...children] },
-			{
-				get(target, key) {
-					return Reflect.get(target, key);
-				},
-				set(target, key, value) {
-					const result = Reflect.set(target, key, value);
-
-					domElem.setOption(key, value, result);
-
-					return result;
-				},
-			},
-		);
+		this.options.addEventListener('set', ({ detail: { key, value } }) => this.setOption(key, value));
 
 		this.classId = Object.freeze(classId());
 
@@ -77,36 +63,43 @@ class DomElem {
 			this.rendered = false;
 		}
 
-		if (options) this.setOptions(options);
+		if (options) {
+			const sortedOptions = Object.entries(options).reduce((_options, option) => {
+				if (this.__priorityOptions.has(option[0])) return [option, ..._options];
+				return [..._options, option];
+			}, []);
+
+			sortedOptions.forEach(([name, value]) => this.setOption(name, value));
+		}
 
 		this.rendered = true;
 	}
 
-	setOption(name, value) {
-		if (name === 'style') Object.keys(value).forEach(key => (this.elem.style[key] = value[key]));
-		else if (name === 'attributes') this.setAttributes(value);
-		else if (this.__knownAttributes.has(name) || name.startsWith('aria-')) {
-			this.elem.setAttribute(name, value);
-		} else if (typeof this[name] === 'function') this[name].call(this, value);
-		else if (this.hasOwnProperty(name)) this[name] = value;
-		else if (typeof this.elem[name] === 'function') {
+	setOption(key, value) {
+		if (value?.__isSubscriber && typeof value.subscribe === 'function') {
+			value.subscribe(_value => (this.options[key] = _value));
+			value = value.current;
+		}
+
+		if (key === 'style') Object.keys(value).forEach(key => (this.elem.style[key] = value[key]));
+		else if (key === 'attributes') this.setAttributes(value);
+		else if (this.__knownAttributes.has(key) || key.startsWith('aria-')) {
+			this.elem.setAttribute(key, value);
+		} else if (typeof this[key] === 'function') this[key].call(this, value);
+		else if (this.hasOwnProperty(key)) this[key] = value;
+		else if (typeof this.elem[key] === 'function') {
 			if (value?.isDomElem) value = value.elem;
 
-			this.elem[name].call(this.elem, value);
-		} else this.elem[name] = value;
+			this.elem[key].call(this.elem, value);
+		} else this.elem[key] = value;
 	}
 
 	setOptions(options) {
-		const sortedOptions = Object.entries(options).reduce((_options, option) => {
-			if (this.__priorityOptions.has(option[0])) return [option, ..._options];
-			return [..._options, option];
-		}, []);
-
-		sortedOptions.forEach(([name, value]) => this.setOption(name, value));
+		Object.entries(options).forEach(([name, value]) => (this.options[name] = value));
 	}
 
 	hasClass(...classes) {
-		return buildClassList(classes).every(className => {
+		return classes.flat(Number.Infinity).every(className => {
 			const classRegex = className instanceof RegExp ? className : new RegExp(`\\b${className}\\b`, 'g');
 
 			return classRegex.test(this.elem.className);
@@ -120,11 +113,11 @@ class DomElem {
 	}
 
 	removeClass(...classes) {
-		buildClassList(classes).forEach(className => {
+		classes.flat(Number.Infinity).forEach(className => {
 			const classRegex = className instanceof RegExp ? className : new RegExp(`\\b${className}\\b`, 'g');
 
 			if (classRegex.test(this.elem.className)) {
-				this.elem.className = this.elem.className.replace(classRegex, '');
+				this.elem.className = this.elem.className.replaceAll(classRegex, '');
 			}
 		});
 

@@ -11,9 +11,18 @@ new DomElem(options, ...children);
 ### One-Off Elements
 
 ```javascript
+const input = new DomElem({
+	tag: 'input',
+	value: 'Some text',
+	onChange: ({ value: newValue }) => {
+		component.options.value = newValue;
+	},
+	appendTo: document.body,
+});
+
 new DomElem({
 	tag: 'p',
-	textContent: 'A general purpose base element building block',
+	textContent: component.options.subscriber('value', value => `The current value is: ${value}`),
 	appendTo: document.body,
 });
 ```
@@ -36,6 +45,11 @@ class Button extends DomElem {
 			...children,
 		);
 	}
+
+	setOption(key, value) {
+		if (key === 'mode') this.removeClass(/\bmode-.+\b/g).addClass(`mode-${value}`);
+		else super.setOption(key, value);
+	}
 }
 ```
 
@@ -51,11 +65,32 @@ const FocusedContent = styled(
 );
 ```
 
+### Context
+
+```javascript
+const context = new Context({
+	myCustomState: 'aString',
+});
+
+console.log(context.myCustomState);
+// log: 'aString'
+
+context.addEventListener('myCustomState', ({ detail: value }) => console.log(`new value: ${value}`));
+
+context.myCustomState = 'bString';
+// log: 'new value: bString'
+```
+
 ## Options
 
 Everything in a DomElem can be controlled by its `options`. In addition to configuration, `options` offers access to properties, methods, and events of the DomElem class and its base HTMLElement.
 
-Class instance property `options` is a Proxy. All `set` operations run through `setOption`.
+Class instance property `options` is built on Context.
+All `set` operations run through the internal method `setOption`.
+The base `setOption` method handles applying options as either method calls or property sets.
+Keys that exist on the DomElem class take precedence, otherwise apply to the base HTMLElement.
+Additional behavior can be configured or overwritten in extended components by overlaying the `setOption` method.
+Option changes can also be observed and subscribed to via the Context API.
 
 - ...[EventTarget](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget)
 - ...[Node](https://developer.mozilla.org/en-US/docs/Web/API/Node)
@@ -101,7 +136,7 @@ Not all DomElem methods make sense to use with options:
 
 - render(options)
 - setOption(name, value)
-  - *This method is used internally to synchronize options property changes and not intended to be called directly*
+  - _This method is used internally to synchronize options property changes and not intended to be called directly_
 - setOptions(options)
 - hasClass(...classes) => Boolean
 - addClass(...classes) => this
