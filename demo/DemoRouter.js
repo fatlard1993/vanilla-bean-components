@@ -4,6 +4,7 @@ import CheckboxDemo from '../components/Checkbox/demo';
 import CodeDemo from '../components/Code/demo';
 import DialogDemo from '../components/Dialog/demo';
 import DomElemDemo from '../components/DomElem/demo';
+import FormDemo from '../components/Form/demo';
 import IconDemo from '../components/Icon/demo';
 import InputDemo from '../components/Input/demo';
 import LabelDemo from '../components/Label/demo';
@@ -39,6 +40,7 @@ export const views = {
 	['/Code']: CodeDemo,
 	['/Dialog']: DialogDemo,
 	['/DomElem']: DomElemDemo,
+	['/Form']: FormDemo,
 	['/Icon']: IconDemo,
 	['/Input']: InputDemo,
 	['/Label']: LabelDemo,

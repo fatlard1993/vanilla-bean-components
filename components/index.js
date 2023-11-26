@@ -4,6 +4,7 @@ export * from './Code';
 export * from './ColorPicker';
 export * from './Dialog';
 export * from './DomElem';
+export * from './Form';
 export * from './Icon';
 export * from './Input';
 export * from './Label';
