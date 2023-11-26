@@ -1,4 +1,6 @@
 export * from '../DomElem/utils';
+
+export * from './api';
 export * from './color';
 export * from './data';
 export * from './dom';
