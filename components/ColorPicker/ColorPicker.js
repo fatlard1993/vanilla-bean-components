@@ -213,7 +213,7 @@ class ColorPicker extends Input {
 
 		this.pickerArea.elem.style.backgroundColor = `hsl(${hsv.h}, 100%, 50%)`;
 
-		if (triggerEvent) this.options.onChange(this);
+		if (triggerEvent) this.options.onChange.call(this, { value: rgbString });
 	}
 
 	normalizePosition(event, parent, offsetX, offsetY) {
