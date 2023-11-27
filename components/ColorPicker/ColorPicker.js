@@ -184,7 +184,7 @@ class ColorPicker extends Input {
 								background: ${color};
 								color: ${colors.mostReadable(color, [colors.white, colors.black])}
 							`,
-					onPointerPress: () => this.set(color),
+					onPointerPress: () => this.set(color, true),
 				});
 			});
 		}
