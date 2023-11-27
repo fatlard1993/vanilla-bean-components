@@ -14,7 +14,7 @@ export default class Form extends DomElem {
 					value: options.data[key],
 					onChange: ({ value }) => {
 						this.options.data[key] = value;
-						this.validate();
+						input.validate?.();
 					},
 					...(Component === Input ? { type: typeof options.data[key] === 'number' ? 'number' : 'string' } : {}),
 					...inputOptions,
