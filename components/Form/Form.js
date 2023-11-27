@@ -7,14 +7,16 @@ export default class Form extends DomElem {
 	async render(options = this.options) {
 		super.render(options);
 
+		const form = this;
+
 		this.inputElements = Object.fromEntries(
 			options.inputs.map(({ key, label, Component = Input, ...inputOptions }) => {
 				const input = new Component({
 					appendTo: this.elem,
 					value: options.data[key],
-					onChange: ({ value }) => {
-						this.options.data[key] = value;
-						input.validate?.();
+					onChange: function ({ value }) {
+						form.options.data[key] = value;
+						this.validate?.();
 					},
 					...(Component === Input ? { type: typeof options.data[key] === 'number' ? 'number' : 'string' } : {}),
 					...inputOptions,
