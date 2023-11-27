@@ -91,7 +91,10 @@ class DomElem {
 			if (value?.isDomElem) value = value.elem;
 
 			this.elem[key].call(this.elem, value);
-		} else this.elem[key] = value;
+		} else {
+			if (!Object.isFrozen(this[key])) this[key] = value;
+			if (!Object.isFrozen(this.elem[key])) this.elem[key] = value;
+		}
 	}
 
 	setOptions(options) {
