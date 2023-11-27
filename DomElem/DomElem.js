@@ -91,9 +91,9 @@ class DomElem {
 			if (value?.isDomElem) value = value.elem;
 
 			this.elem[key].call(this.elem, value);
-		} else {
-			if (!Object.isFrozen(this[key])) this[key] = value;
-
+		} else if (typeof value === 'function') this[key] = value;
+		else {
+			this[key] = value;
 			this.elem[key] = value;
 		}
 	}
