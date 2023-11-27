@@ -23,9 +23,9 @@ export default class Form extends DomElem {
 		);
 	}
 
-	validate() {
+	validate(options) {
 		const validationErrors = this.options.inputs
-			.map(({ key }) => this.inputElements[key].validate?.())
+			.map(({ key }) => this.inputElements[key].validate?.(options))
 			.filter(errors => !!errors);
 
 		return validationErrors.length > 0;

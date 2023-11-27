@@ -51,7 +51,7 @@ class Input extends DomElem {
 		return this.initialValue !== this.value;
 	}
 
-	validate() {
+	validate({ clear } = {}) {
 		if (!this.options.validations?.length) return;
 
 		this.validationErrors = this.validationErrors || {};
@@ -59,7 +59,7 @@ class Input extends DomElem {
 		const errors = [];
 
 		this.options.validations.forEach(([validation, message]) => {
-			const isValid = validation instanceof RegExp ? validation.test(this.value) : validation(this.value);
+			const isValid = clear || (validation instanceof RegExp ? validation.test(this.value) : validation(this.value));
 
 			const resolvedMessage = typeof message == 'function' ? message(this.value) : message;
 
