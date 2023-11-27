@@ -12,6 +12,10 @@ export default class Form extends DomElem {
 				const input = new Component({
 					appendTo: this.elem,
 					value: options.data[key],
+					onChange: ({ value }) => {
+						this.options.data[key] = value;
+						this.validate();
+					},
 					...(Component === Input ? { type: typeof options.data[key] === 'number' ? 'number' : 'string' } : {}),
 					...inputOptions,
 				});
@@ -24,8 +28,10 @@ export default class Form extends DomElem {
 	}
 
 	validate(options) {
-		const validationErrors = this.options.inputs
-			.map(({ key }) => this.inputElements[key].validate?.(options))
+		if (!this.inputElements) return;
+
+		const validationErrors = Object.values(this.inputElements)
+			.map(input => input?.validate?.(options))
 			.filter(errors => !!errors);
 
 		return validationErrors.length > 0;

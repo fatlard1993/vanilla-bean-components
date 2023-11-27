@@ -75,7 +75,7 @@ class Input extends DomElem {
 			}
 		});
 
-		return errors;
+		return errors.length > 0 ? errors : undefined;
 	}
 
 	onInput(callback) {
