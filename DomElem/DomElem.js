@@ -260,7 +260,7 @@ class DomElem {
 		callback = this.wrapPointerCallback(callback);
 
 		const mouseEnter = event => {
-			callback(event);
+			callback.call(this, event);
 
 			this.elem.addEventListener('mousemove', callback, true);
 		};
@@ -410,7 +410,7 @@ class DomElem {
 		const wrappedCallback = event => {
 			event.value = event.target.value || this.elem.value || this.value;
 
-			callback(event);
+			callback.call(this, event);
 		};
 
 		this.elem.addEventListener('keydown', wrappedCallback);
@@ -422,7 +422,7 @@ class DomElem {
 		const wrappedCallback = event => {
 			event.value = event.target.value || this.elem.value || this.value;
 
-			callback(event);
+			callback.call(this, event);
 		};
 
 		this.elem.addEventListener('keyup', wrappedCallback);
@@ -434,7 +434,7 @@ class DomElem {
 		const wrappedCallback = event => {
 			event.value = event.target.value || this.elem.value || this.value;
 
-			callback(event);
+			callback.call(this, event);
 		};
 
 		this.elem.addEventListener('change', wrappedCallback);
@@ -446,7 +446,7 @@ class DomElem {
 		const wrappedCallback = event => {
 			event.value = event.target.value || this.elem.value || this.value;
 
-			callback(event);
+			callback.call(this, event);
 		};
 
 		this.elem.addEventListener('blur', wrappedCallback);
