@@ -93,7 +93,8 @@ class DomElem {
 			this.elem[key].call(this.elem, value);
 		} else {
 			if (!Object.isFrozen(this[key])) this[key] = value;
-			if (!Object.isFrozen(this.elem[key])) this.elem[key] = value;
+
+			this.elem[key] = value;
 		}
 	}
 
