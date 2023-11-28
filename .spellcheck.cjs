@@ -94,6 +94,9 @@ module.exports = {
 		'nanoid',
 		'esnext',
 		'keypress',
+		'datetime',
+		'aug',
+		'bg'
 	],
 	skipIfMatch: ['\\d+v[wh]'],
 	skipWordIfMatch: [],

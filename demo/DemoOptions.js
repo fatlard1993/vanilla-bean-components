@@ -37,7 +37,7 @@ export default class DemoOptions extends List {
 									thenItem: new Label(
 										'Current',
 										new Select({
-											value,
+											value: component.options.subscriber(key),
 											options: component[`${key}_enum`],
 											onChange: ({ value: newValue }) => (component.options[key] = newValue),
 										}),

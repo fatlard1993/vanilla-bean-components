@@ -7,6 +7,7 @@ export default class Demo extends DemoView {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
 		const component = new Input({
+			type: 'text',
 			onKeyUp: event => {
 				console.log(event, `isDirty: ${component.isDirty}`);
 			},

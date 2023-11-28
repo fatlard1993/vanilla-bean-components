@@ -11,14 +11,40 @@ const InputValidationError = styled(
 	`,
 );
 
+const type_enum = Object.freeze([
+	'button',
+	'checkbox',
+	'color',
+	'date',
+	'datetime-local',
+	'email',
+	'file',
+	'hidden',
+	'image',
+	'month',
+	'number',
+	'password',
+	'radio',
+	'range',
+	'reset',
+	'search',
+	'submit',
+	'tel',
+	'text',
+	'time',
+	'url',
+	'week',
+]);
 const defaultOptions = { tag: 'input', value: '', autocomplete: 'off', autocapitalize: 'off', autocorrect: 'off' };
 
 class Input extends DomElem {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
+	type_enum = type_enum;
 
 	constructor(options = {}, ...children) {
 		super(
 			{
+				...((options.tag || 'input') === 'input' ? { type: 'text' } : {}),
 				...defaultOptions,
 				...options,
 				styles: (theme, domElem) => `

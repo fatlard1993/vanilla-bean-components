@@ -55,6 +55,7 @@
   "dependencies": {
     "@ctrl/tinycolor": "^4.0.2",
     "@fortawesome/fontawesome-free": "^6.4.2",
+    "augmented-ui": "^2.0.0",
     "autoprefixer": "^10.4.16",
     "nanoid": "^5.0.3",
     "postcss": "^8.4.31",

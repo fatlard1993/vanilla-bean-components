@@ -1,3 +1,4 @@
+/* eslint-disable spellcheck/spell-checker */
 import { styled } from '../../utils';
 import { DomElem } from '../DomElem';
 import { TooltipWrapper } from '../TooltipWrapper';
@@ -21,20 +22,38 @@ class Label extends TooltipWrapper {
 				...options,
 				styles: (theme, domElem) => `
 					position: relative;
-					display: block;
+					display: inline-block;
 					font-size: 1em;
 					width: 95%;
-					margin: 0 auto 12px;
+					margin: 0 1.5% 12px;
 					padding: 12px;
-					border-left: 3px solid ${theme.colors.light(theme.colors.gray)};
-					background-color: ${theme.colors.darkest(theme.colors.gray)};
+					background-color: ${theme.colors.white.setAlpha(0.06)};
 					color: ${theme.colors.white};
+					transition: all 0.5s;
+
+					&:after {
+						transition: all 0.5s;
+					}
+
+					--aug-border-bg: linear-gradient(-66deg, ${theme.colors
+						.lighter(theme.colors.teal)
+						.setAlpha(0.5)}, ${theme.colors.blue.setAlpha(0.5)});
+					--aug-border-all: 2px;
+					--aug-tl1: 12px;
+					--aug-tr-extend1: 42%;
+					--aug-tr1: 12px;
+					--aug-bl1: 6px;
+					--aug-br1: 6px;
 
 					> *:not(label):not(.tooltip) {
 						margin-top: 12px;
 					}
 
 					&.collapsed {
+						width: 54%;
+
+						--aug-tr-extend1: 0%;
+
 						> label {
 							color: ${theme.colors.superWhite};
 
@@ -55,6 +74,9 @@ class Label extends TooltipWrapper {
 			},
 			...children,
 		);
+
+		// eslint-disable-next-line spellcheck/spell-checker
+		this.elem.setAttribute('data-augmented-ui', 'tl-clip tr-2-clip-x br-clip bl-clip border');
 	}
 
 	render(options = this.options) {

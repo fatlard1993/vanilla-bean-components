@@ -9,6 +9,7 @@ export default `
 	text-decoration: none;
 	color: ${colors.white};
 	background-color: ${colors.blue};
+	outline-color: ${colors.lighter(colors.orange)};
 	text-align: center;
 	position: relative;
 	white-space: nowrap;

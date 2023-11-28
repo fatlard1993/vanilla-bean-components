@@ -7,9 +7,10 @@ export default class Demo extends DemoView {
 	render(options = this.options) {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
-		const openDialog = () =>
+		const openDialog = moreOptions =>
 			new Dialog({
 				header: 'header',
+				size: 'small',
 				body: [new DomElem({ style: { color: 'green' }, textContent: 'body' }), 'more content'],
 				buttons: ['noop', 'dismiss'],
 				onButtonPress: ({ button, closeDialog }) => {
@@ -17,6 +18,7 @@ export default class Demo extends DemoView {
 
 					closeDialog();
 				},
+				...moreOptions,
 			});
 
 		const component = openDialog();
@@ -26,7 +28,7 @@ export default class Demo extends DemoView {
 		new Button({
 			appendTo: this.demoWrapper,
 			textContent: 'Open',
-			onPointerPress: () => openDialog(),
+			onPointerPress: () => openDialog(component.options),
 		});
 	}
 }

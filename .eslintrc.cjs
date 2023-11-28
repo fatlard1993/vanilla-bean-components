@@ -50,6 +50,7 @@ module.exports = {
 		'unicorn/consistent-function-scoping': 'off',
 		'unicorn/numeric-separators-style': 'off',
 		'unicorn/prefer-switch': 'off',
+		'unicorn/prefer-dom-node-dataset': 'off',
 
 		'import/no-unresolved': [1, { ignore: ['bun', 'bun:test'] }],
 		'import/no-unused-modules': [1, { unusedExports: true }],

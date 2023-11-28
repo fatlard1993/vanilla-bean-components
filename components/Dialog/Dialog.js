@@ -4,21 +4,35 @@ import { Button } from '../Button';
 
 const DialogHeader = styled(
 	DomElem,
-	({ colors }) => `
+	() => `
+		width: 50%;
 		text-align: center;
 		font-size: 1.2em;
 		line-height: 30px;
 		margin: 0;
-		border-bottom: 1px solid ${colors.dark(colors.gray)};
 	`,
 );
 
 const DialogContent = styled(
 	DomElem,
-	() => `
+	({ colors }) => `
 		flex: 1;
-		padding: 6px;
+		padding: 6px 6px 6px 21px;
 		overflow: auto;
+
+		&::before {
+			content: "";
+			display: block;
+			position: absolute;
+			background: repeating-linear-gradient(43deg, transparent, transparent 7px, ${colors.lightest(
+				colors.teal,
+			)} 7px, ${colors.lightest(colors.teal)} 14px );
+			width: 9px;
+			height: 56px;
+			bottom: 64px;
+			left: 9px;
+			opacity: 0.8;
+		}
 	`,
 );
 
@@ -26,16 +40,17 @@ const DialogFooter = styled(
 	DomElem,
 	({ colors }) => `
 		height: 40px;
-		border-top: 1px solid ${colors.dark(colors.gray)};
+		border-top: 2px solid ${colors.lighter(colors.teal)};
 		display: flex;
 		flex-direction: row;
+		margin-right: -4px;
 	`,
 );
 
 const DialogButton = styled(
 	Button,
 	() => `
-		margin: 6px;
+		margin: 9px 18px 3px 30px;
 		flex: 1;
 	`,
 );
@@ -45,6 +60,7 @@ const defaultOptions = { tag: 'dialog', openOnRender: 16, modal: true, appendTo:
 
 class Dialog extends DomElem {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
+	size_enum = size_enum;
 
 	constructor(options = {}, ...children) {
 		super(
@@ -53,7 +69,7 @@ class Dialog extends DomElem {
 				...options,
 				styles: (theme, domElem) => `
 					display: none;
-					background-color: ${theme.colors.darker(theme.colors.gray)};
+					background-color: ${theme.colors.darkest(theme.colors.gray)};
 					color: ${theme.colors.white};
 					border-radius: 3px;
 					flex-direction: column;
@@ -62,6 +78,16 @@ class Dialog extends DomElem {
 					border: 2px solid ${theme.colors.dark(theme.colors.blue)};
 					top: 50%;
 					transform: translateY(-50%);
+
+					--aug-border-bg: linear-gradient(-12deg, ${theme.colors.light(theme.colors.teal)}, ${theme.colors.light(
+						theme.colors.blue,
+					)});
+					--aug-border-all: 2px;
+					--aug-tl1: 24px;
+					--aug-tr-extend1: 42%;
+					--aug-tr1: 24px;
+					--aug-bl-extend2: 32px;
+					--aug-br1: 12px;
 
 					/* Default size: small */
 					width: 420px;
@@ -87,6 +113,9 @@ class Dialog extends DomElem {
 			},
 			...children,
 		);
+
+		// eslint-disable-next-line spellcheck/spell-checker
+		this.elem.setAttribute('data-augmented-ui', 'tl-clip tr-2-clip-x br-clip bl-2-clip-y border');
 
 		this.options['aria-labelledby'] = this.classId;
 

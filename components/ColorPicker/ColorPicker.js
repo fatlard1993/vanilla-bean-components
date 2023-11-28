@@ -1,3 +1,4 @@
+/* eslint-disable spellcheck/spell-checker */
 import { TinyColor, random as randomColor } from '@ctrl/tinycolor';
 
 import { debounce, styled } from '../../utils';
@@ -73,14 +74,15 @@ const HueIndicator = styled(
 const TextInput = styled(
 	Input,
 	() => `
-		margin: 18px auto 0;
+		margin: 18px auto 9px;
+		width: 90%;
 	`,
 );
 
 const ColorSwatch = styled(
 	Button,
 	() => `
-		margin-top: 12px;
+		margin-top: 3px;
 	`,
 );
 
@@ -101,12 +103,23 @@ class ColorPicker extends Input {
 					border-radius: 5px;
 					margin-bottom: 6px;
 					text-indent: 0;
+					border: none;
+
+					--aug-tl1: 32px;
+					--aug-tr-extend2: 42%;
+					--aug-br-extend1: 0px;
+					--aug-border-bg: linear-gradient(-66deg, ${theme.colors
+						.lighter(theme.colors.teal)
+						.setAlpha(0.5)}, ${theme.colors.blue.setAlpha(0.5)});
 
 					${options.styles?.(theme, domElem) || ''}
 				`,
 			},
 			...children,
 		);
+
+		// eslint-disable-next-line spellcheck/spell-checker
+		this.elem.setAttribute('data-augmented-ui', 'tl-clip tr-2-clip-y br-2-clip-y bl-clip border');
 
 		this.set(options.value, true);
 

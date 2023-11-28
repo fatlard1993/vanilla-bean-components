@@ -1,6 +1,3 @@
-import '@fortawesome/fontawesome-free/css/all.css';
-import 'source-code-pro/source-code-pro.css';
-
 import { DomElem } from '../DomElem';
 
 class Page extends DomElem {
@@ -20,7 +17,7 @@ class Page extends DomElem {
 						height: 100%;
 						box-sizing: border-box;
 						overflow: hidden;
-						line-height: 1;
+						line-height: normal;
 						tab-size: 2;
 						background: ${theme.colors.black};
 						color: ${theme.colors.white};
@@ -32,7 +29,7 @@ class Page extends DomElem {
 
 							font: 600 16px 'Source Code Pro';
 							font-family: 'Source Code Pro', monospace;
-							line-height: 1;
+							line-height: normal;
 						}
 					}
 

@@ -34,11 +34,11 @@ class Select extends Input {
 	get value() {
 		const selected = Array.from(this.elem.children).find(({ selected }) => selected);
 
-		return selected?.value || selected?.label || selected?.textContent || this._value;
+		return selected?.value || selected?.label || selected?.textContent || this.elem.value;
 	}
 
 	set value(newValue) {
-		this._value = newValue;
+		this.elem.value = newValue;
 	}
 }
 

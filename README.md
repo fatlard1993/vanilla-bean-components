@@ -19,6 +19,12 @@ All components maintain a [demo](./components/Button/demo.js) & [test file](./co
 <link rel="stylesheet" href="source-code-pro/source-code-pro.css" />
 ```
 
+#### Augmented UI support
+
+```html
+<link rel="stylesheet" href="augmented-ui/augmented-ui.min.css" />
+```
+
 ### JS
 
 > [example](./demo/index.js)
@@ -29,6 +35,12 @@ new Page({
 	content,
 });
 ```
+
+### Theme
+
+#### Colors
+
+[TinyColor](https://github.com/scttcper/tinycolor)
 
 ## Demo
 
