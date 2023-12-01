@@ -1,7 +1,8 @@
 import ButtonDemo from '../components/Button/demo';
-import ColorPickerDemo from '../components/ColorPicker/demo';
+import CalendarDemo from '../components/Calendar/demo';
 import CheckboxDemo from '../components/Checkbox/demo';
 import CodeDemo from '../components/Code/demo';
+import ColorPickerDemo from '../components/ColorPicker/demo';
 import DialogDemo from '../components/Dialog/demo';
 import DomElemDemo from '../components/DomElem/demo';
 import FormDemo from '../components/Form/demo';
@@ -35,9 +36,10 @@ class NotFound extends View {
 
 export const views = {
 	['/Button']: ButtonDemo,
-	['/ColorPicker']: ColorPickerDemo,
+	['/Calendar']: CalendarDemo,
 	['/Checkbox']: CheckboxDemo,
 	['/Code']: CodeDemo,
+	['/ColorPicker']: ColorPickerDemo,
 	['/Dialog']: DialogDemo,
 	['/DomElem']: DomElemDemo,
 	['/Form']: FormDemo,
