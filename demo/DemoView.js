@@ -52,7 +52,13 @@ export default class DemoView extends View {
 				appendTo: this,
 				append: componentAncestors.map(
 					({ constructor: { name } }) =>
-						new Link({ textContent: name.replace(/\d$/, ''), href: `#/${name.replace(/\d$/, '')}` }),
+						new Link({
+							textContent: name.replace(/\d$/, ''),
+							href:
+								name === 'EventTarget'
+									? 'https://developer.mozilla.org/en-US/docs/Web/API/EventTarget'
+									: `#/${name.replace(/\d$/, '')}`,
+						}),
 				),
 			});
 		}

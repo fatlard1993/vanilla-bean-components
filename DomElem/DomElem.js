@@ -10,7 +10,7 @@ import context from './context';
 const classId = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-', 10);
 
 /** DomElem - A general purpose base element building block */
-class DomElem {
+class DomElem extends EventTarget {
 	isDomElem = true;
 
 	defaultOptions = {
@@ -31,6 +31,8 @@ class DomElem {
 	 * @param {...children} children - Child elements to add to append option
 	 */
 	constructor(options = {}, ...children) {
+		super();
+
 		const { tag, autoRender, knownAttributes, priorityOptions, ...optionsWithoutConfig } = {
 			...this.defaultOptions,
 			...options,
