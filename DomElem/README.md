@@ -47,7 +47,7 @@ class Button extends DomElem {
 	}
 
 	setOption(key, value) {
-		if (key === 'mode') this.removeClass(/\bmode-.+\b/g).addClass(`mode-${value}`);
+		if (key === 'mode') this.removeClass(/\bmode-\S+\b/g).addClass(`mode-${value}`);
 		else super.setOption(key, value);
 	}
 }

@@ -47,11 +47,11 @@ class Code extends DomElem {
 	setOption(name, value) {
 		if (name === 'language') {
 			if (this.options.multiline) {
-				this._code.removeClass(/\blanguage-.+\b/g);
+				this._code.removeClass(/\blanguage-\S+\b/g);
 				this._code.addClass(`language-${value}`);
 			}
 
-			this.removeClass(/\blanguage-.+\b/g);
+			this.removeClass(/\blanguage-\S+\b/g);
 			this.addClass(`language-${value}`);
 		} else if (name === 'code') {
 			this[this.options.multiline ? '_code' : 'elem'].innerHTML = codeToHTML(this.options.code, this.options.language);

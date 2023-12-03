@@ -19,7 +19,7 @@ class Icon extends DomElem {
 
 	setOption(name, value) {
 		if (name === 'icon') {
-			this.removeClass(/\bfa-.+?\b/g);
+			this.removeClass(/\bfa-\S+?\b/g);
 
 			if (value) this.addClass('fa-support', `fa-${value}`);
 		} else super.setOption(name, value);
