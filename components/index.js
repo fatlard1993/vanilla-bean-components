@@ -8,6 +8,7 @@ export * from './DomElem';
 export * from './Form';
 export * from './Icon';
 export * from './Input';
+export * from './Keyboard';
 export * from './Label';
 export * from './Link';
 export * from './List';

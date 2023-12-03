@@ -8,6 +8,7 @@ import DomElemDemo from '../components/DomElem/demo';
 import FormDemo from '../components/Form/demo';
 import IconDemo from '../components/Icon/demo';
 import InputDemo from '../components/Input/demo';
+import KeyboardDemo from '../components/Keyboard/demo';
 import LabelDemo from '../components/Label/demo';
 import LinkDemo from '../components/Link/demo';
 import ListDemo from '../components/List/demo';
@@ -45,6 +46,7 @@ export const views = {
 	['/Form']: FormDemo,
 	['/Icon']: IconDemo,
 	['/Input']: InputDemo,
+	['/Keyboard']: KeyboardDemo,
 	['/Label']: LabelDemo,
 	['/Link']: LinkDemo,
 	['/List']: ListDemo,
