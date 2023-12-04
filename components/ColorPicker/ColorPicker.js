@@ -121,7 +121,7 @@ class ColorPicker extends Input {
 		// eslint-disable-next-line spellcheck/spell-checker
 		this.elem.setAttribute('data-augmented-ui', 'tl-clip tr-2-clip-y br-2-clip-y bl-clip border');
 
-		this.set(options.value, true);
+		this.set(options.value);
 
 		document.addEventListener('mousedown', this.onPointerDown.bind(this));
 		document.addEventListener('touchstart', this.onPointerDown.bind(this));
@@ -197,7 +197,7 @@ class ColorPicker extends Input {
 								background: ${color};
 								color: ${colors.mostReadable(color, [colors.white, colors.black])}
 							`,
-					onPointerPress: () => this.set(color, true),
+					onPointerPress: () => this.set(color),
 				});
 			});
 		}
@@ -211,8 +211,14 @@ class ColorPicker extends Input {
 		this._value = value;
 	}
 
-	set(userInput, triggerEvent) {
-		if (!userInput) return;
+	set(userInput) {
+		if (!userInput) {
+			this.value = '';
+
+			this.options.onChange.call(this, { value: '' });
+
+			return;
+		}
 
 		const color = userInput === 'random' ? randomColor() : new TinyColor(userInput);
 		const hsv = color.toHsv();
@@ -226,7 +232,7 @@ class ColorPicker extends Input {
 
 		this.pickerArea.elem.style.backgroundColor = `hsl(${hsv.h}, 100%, 50%)`;
 
-		if (triggerEvent) this.options.onChange.call(this, { value: rgbString });
+		this.options.onChange.call(this, { value: rgbString });
 	}
 
 	normalizePosition(event, parent, offsetX, offsetY) {
@@ -274,7 +280,7 @@ class ColorPicker extends Input {
 		requestAnimationFrame(() => {
 			this.pickerIndicator.elem.style.transform = `translate3d(${position.x}px, ${position.y}px, 0)`;
 
-			this.set({ h, s: newS, v: newV }, true);
+			this.set({ h, s: newS, v: newV });
 
 			this.runningAnimation = false;
 		});
@@ -299,7 +305,7 @@ class ColorPicker extends Input {
 		requestAnimationFrame(() => {
 			this.hueIndicator.elem.style.transform = `translate3d(${position.x - indicatorOffset / 2}px, 0, 0)`;
 
-			this.set({ h: newHue, s, v }, true);
+			this.set({ h: newHue, s, v });
 
 			this.pickerArea.elem.style.backgroundColor = `hsl(${newHue}, 100%, 50%)`;
 
