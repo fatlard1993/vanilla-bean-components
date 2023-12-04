@@ -10,7 +10,7 @@ export default class Form extends DomElem {
 		const form = this;
 
 		this.inputElements = Object.fromEntries(
-			options.inputs.map(({ key, label, Component = Input, ...inputOptions }) => {
+			options.inputs.map(({ key, label, collapsed, Component = Input, ...inputOptions }) => {
 				const input = new Component({
 					appendTo: this.elem,
 					value: options.data[key],
@@ -22,7 +22,7 @@ export default class Form extends DomElem {
 					...inputOptions,
 				});
 
-				this.append(new Label(label || capitalize(key), input));
+				this.append(new Label({ label: label || capitalize(key), collapsed }, input));
 
 				return [key, input];
 			}),
