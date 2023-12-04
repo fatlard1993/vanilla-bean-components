@@ -107,6 +107,7 @@ class Label extends TooltipWrapper {
 
 	setOption(name, value) {
 		if (name === 'label') this._labelText.options.content = value;
+		else if (name === 'collapsed') this[value ? 'addClass' : 'removeClass']('collapsed');
 		else if (name === 'for') {
 			let forId = typeof value === 'string' ? value : value?.id || value?.elem?.id;
 
