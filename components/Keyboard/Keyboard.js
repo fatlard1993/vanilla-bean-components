@@ -13,7 +13,6 @@ class Keyboard extends DomElem {
 	constructor(options = {}, ...children) {
 		super(
 			{
-				...options,
 				layout: 'simple',
 				keyDefinitions: {
 					simple: { text: 'ABC' },
@@ -42,6 +41,7 @@ class Keyboard extends DomElem {
 						['.', '0', '-', 'exponent'],
 					],
 				},
+				...options,
 			},
 			...children,
 		);
