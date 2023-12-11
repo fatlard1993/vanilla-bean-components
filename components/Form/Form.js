@@ -10,14 +10,18 @@ export default class Form extends DomElem {
 		const form = this;
 
 		this.inputElements = Object.fromEntries(
-			options.inputs.map(({ key, label, collapsed, Component = Input, ...inputOptions }) => {
+			options.inputs.map(({ key, label, collapsed, Component = Input, onChange = () => {}, ...inputOptions }) => {
 				const input = new Component({
 					appendTo: this.elem,
 					value: options.data[key],
-					onChange: function ({ value }) {
-						form.options.data[key] = value;
-						this.validate?.();
-					},
+					onChange,
+					...(Component === Input && {
+						onChange: function (event) {
+							form.options.data[key] = event.value;
+							this.validate?.();
+							onChange(event);
+						},
+					}),
 					...(Component === Input ? { type: typeof options.data[key] === 'number' ? 'number' : 'string' } : {}),
 					...inputOptions,
 				});
