@@ -8,8 +8,8 @@ export default class Demo extends DemoView {
 		const component = new Checkbox({
 			name: 'enabled',
 			value: true,
-			onChange: ({ target: { checked } }) => {
-				component.options.name = checked ? 'enabled' : 'disabled';
+			onChange: ({ value }) => {
+				component.options.name = value ? 'enabled' : 'disabled';
 			},
 			appendTo: this.demoWrapper,
 		});

@@ -70,7 +70,12 @@ class Checkbox extends DomElem {
 			append: [this.inputElem, options.name],
 		});
 
-		super.render(options);
+		super.render({
+			...options,
+			onChange(event) {
+				options.onChange({ ...event, value: event.target.checked });
+			},
+		});
 	}
 
 	get value() {
