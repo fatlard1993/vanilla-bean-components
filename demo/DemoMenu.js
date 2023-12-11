@@ -23,7 +23,7 @@ export default class DemoMenu extends DomElem {
 				display: flex;
 				flex-wrap: wrap;
 				gap: 6px;
-				background-color: ${theme.colors.darkest(theme.colors.gray)}
+				background-color: ${theme.colors.darkest(theme.colors.gray)};
 
 				${options.styles?.(theme, domElem) || ''}
 			`,

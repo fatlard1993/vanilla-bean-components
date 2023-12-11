@@ -8,12 +8,12 @@ class Router extends DomElem {
 				defaultPath: Object.keys(options.views)[0],
 				...options,
 				styles: (theme, domElem) => `
-				display: flex;
-				flex: 1;
-				overflow: hidden;
+					display: flex;
+					flex: 1;
+					overflow: hidden;
 
-				${options.styles?.(theme, domElem) || ''}
-			`,
+					${options.styles?.(theme, domElem) || ''}
+				`,
 			},
 			...children,
 		);

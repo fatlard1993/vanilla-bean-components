@@ -14,7 +14,7 @@ export default `
 	position: relative;
 	white-space: nowrap;
 	text-overflow: ellipsis;
-	overflow: hidden;
+	overflow: visible;
 	border: none;
 	cursor: pointer;
 
