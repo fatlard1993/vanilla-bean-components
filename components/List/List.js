@@ -41,7 +41,7 @@ class List extends DomElem {
 				item =>
 					new TooltipWrapper({
 						tag: 'li',
-						...(typeof item === 'string' || item?.isDomElem ? { content: item } : { ...item }),
+						...(typeof item === 'string' || item?.isDomElem || Array.isArray(item) ? { content: item } : { ...item }),
 					}),
 			),
 		);
