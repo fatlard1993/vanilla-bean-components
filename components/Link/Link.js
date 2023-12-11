@@ -1,6 +1,6 @@
 import { Button } from '../Button';
 
-const defaultOptions = { tag: 'a', tooltip: { icon: 'link' } };
+const defaultOptions = { tag: 'a', tooltip: { icon: 'link', style: { fontSize: '12px' } } };
 
 class Link extends Button {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
