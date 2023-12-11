@@ -1,7 +1,7 @@
 import { styled } from '../../utils';
 import { DomElem } from '../DomElem';
 
-const InputValidationError = styled(
+export const InputValidationError = styled(
 	DomElem,
 	({ colors }) => `
 		background-color: ${colors.red};
@@ -36,6 +36,38 @@ const type_enum = Object.freeze([
 	'week',
 ]);
 const defaultOptions = { tag: 'input', value: '', autocomplete: 'off', autocapitalize: 'off', autocorrect: 'off' };
+
+export const updateValidationErrors = ({ elem, validations, value, clear }) => {
+	if (!validations?.length) return;
+
+	const errors = [];
+
+	validations.forEach(([validation, message]) => {
+		const isValid = clear || (validation instanceof RegExp ? validation.test(value) : validation(value));
+
+		const resolvedMessage = typeof message == 'function' ? message(value) : message;
+
+		const existingValidationError = document.evaluate(
+			`//div[text()='${resolvedMessage}']`,
+			elem.parentElement,
+			null,
+			XPathResult.FIRST_ORDERED_NODE_TYPE,
+		).singleNodeValue;
+
+		if (!isValid) errors.push(resolvedMessage);
+
+		if (existingValidationError) {
+			existingValidationError.style.display = isValid ? 'none' : 'block';
+		} else if (!isValid) {
+			const validationError = new InputValidationError({ content: resolvedMessage });
+
+			// Insert directly before the input element in case there is a label or other stacked elements
+			elem.parentElement.insertBefore(validationError.elem, elem);
+		}
+	});
+
+	return errors.length > 0 ? errors : undefined;
+};
 
 class Input extends DomElem {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
@@ -78,30 +110,7 @@ class Input extends DomElem {
 	}
 
 	validate({ clear } = {}) {
-		if (!this.options.validations?.length) return;
-
-		this.validationErrors = this.validationErrors || {};
-
-		const errors = [];
-
-		this.options.validations.forEach(([validation, message]) => {
-			const isValid = clear || (validation instanceof RegExp ? validation.test(this.value) : validation(this.value));
-
-			const resolvedMessage = typeof message == 'function' ? message(this.value) : message;
-
-			if (!isValid) errors.push(resolvedMessage);
-
-			if (this.validationErrors[message]) {
-				this.validationErrors[message].elem.style.display = isValid ? 'none' : 'block';
-			} else if (!isValid) {
-				this.validationErrors[message] = new InputValidationError({ content: resolvedMessage });
-
-				// Insert directly before the input element in case there is a label or other stacked elements
-				this.elem.parentElement.insertBefore(this.validationErrors[message].elem, this.elem);
-			}
-		});
-
-		return errors.length > 0 ? errors : undefined;
+		return updateValidationErrors({ elem: this.elem, validations: this.options.validations, value: this.value, clear });
 	}
 
 	onInput(callback) {

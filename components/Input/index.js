@@ -1,1 +1,1 @@
-export { default as Input } from './Input';
+export { updateValidationErrors, InputValidationError, default as Input } from './Input';
