@@ -67,16 +67,16 @@
     "@happy-dom/global-registrator": "^12.1.5",
     "@testing-library/dom": "^9.3.3",
     "@testing-library/jest-dom": "^6.1.5",
-    "bun-types": "^1.0.14",
-    "eslint": "^8.55.0",
-    "eslint-config-prettier": "^9.0.0",
+    "bun-types": "^1.0.18",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-compat": "^4.2.0",
-    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-spellcheck": "0.0.20",
     "eslint-plugin-testing-library": "^6.2.0",
     "eslint-plugin-unicorn": "^49.0.0",
     "eslint-plugin-write-good-comments": "^0.2.0",
-    "prettier": "3.1.0"
+    "prettier": "3.1.1"
   }
 }
