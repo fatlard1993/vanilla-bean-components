@@ -16,7 +16,8 @@ import MenuDemo from '../components/Menu/demo';
 import NoDataDemo from '../components/NoData/demo';
 import PageDemo from '../components/Page/demo';
 import RadioButtonDemo from '../components/RadioButton/demo';
-import OverlayDemo from '../components/Overlay/demo';
+import NotifyDemo from '../components/Notify/demo';
+import PopoverDemo from '../components/Popover/demo';
 import RouterDemo from '../components/Router/demo';
 import SearchDemo from '../components/Search/demo';
 import SelectDemo from '../components/Select/demo';
@@ -52,7 +53,8 @@ export const views = {
 	['/List']: ListDemo,
 	['/Menu']: MenuDemo,
 	['/NoData']: NoDataDemo,
-	['/Overlay']: OverlayDemo,
+	['/Notify']: NotifyDemo,
+	['/Popover']: PopoverDemo,
 	['/Page']: PageDemo,
 	['/RadioButton']: RadioButtonDemo,
 	['/Router']: RouterDemo,

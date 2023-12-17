@@ -96,7 +96,9 @@ module.exports = {
 		'keypress',
 		'datetime',
 		'aug',
-		'bg'
+		'bg',
+		'popovertarget',
+		'popovertargetaction',
 	],
 	skipIfMatch: ['\\d+v[wh]'],
 	skipWordIfMatch: [],

@@ -1,10 +1,10 @@
-import { Icon } from '../Icon';
+import { Popover } from '../Popover';
 
 const defaultOptions = { position: 'topRight' };
 
 const position_enum = ['center', 'top', 'bottom', 'left', 'right', 'topLeft', 'topRight', 'bottomLeft', 'bottomRight'];
 
-class Tooltip extends Icon {
+class Tooltip extends Popover {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
 	constructor(options = {}, ...children) {
@@ -17,9 +17,9 @@ class Tooltip extends Icon {
 					position: absolute;
 					padding: 3px;
 					z-index: 1;
-					border-radius: 3px;
 					pointer-events: none;
 					max-width: 240px;
+					margin: auto;
 					background-color: ${theme.colors.white};
 					color: ${theme.colors.black};
 
