@@ -12,7 +12,7 @@ export default class Popover extends Icon {
 				state: 'auto',
 				...options,
 				styles: (theme, domElem) => `
-					position: fixed;
+					position: absolute;
 					background-color: ${theme.colors.darkest(theme.colors.gray)};
 					color: ${theme.colors.white};
 					padding: 12px;
@@ -34,9 +34,11 @@ export default class Popover extends Icon {
 		if (autoOpen) setTimeout(() => this.elem.showPopover(), 300);
 	}
 
-	edgeAwarePlacement({ x, y, maxHeight = 132, maxWidth = 264, visualParent = document.body }) {
-		const pastRight = x + maxWidth >= visualParent.clientWidth;
-		const pastBottom = maxHeight >= visualParent.clientHeight;
+	edgeAwarePlacement({ x, y, maxHeight = 132, maxWidth = 264, padding = 24, visualParent }) {
+		if (!visualParent) visualParent = this.options.visualParent || this.options.appendTo;
+
+		const pastRight = x + maxWidth + padding >= visualParent.clientWidth;
+		const pastBottom = y + maxHeight + padding >= visualParent.clientHeight;
 
 		this.elem.style.maxWidth = `${maxWidth}px`;
 		this.elem.style.maxHeight = `${maxHeight}px`;
