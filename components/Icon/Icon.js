@@ -18,10 +18,16 @@ class Icon extends DomElem {
 	}
 
 	setOption(name, value) {
-		if (name === 'icon') {
+		if (name === 'icon' || name === 'animation') {
 			this.removeClass(/\bfa-\S+?\b/g);
 
-			if (value) this.addClass('fa-support', `fa-${value}`);
+			if (value) {
+				this.addClass(
+					...['support', this.options[name === 'icon' ? 'animation' : 'icon'], value]
+						.filter(_ => !!_)
+						.map(_ => `fa-${_}`),
+				);
+			}
 		} else super.setOption(name, value);
 	}
 }
