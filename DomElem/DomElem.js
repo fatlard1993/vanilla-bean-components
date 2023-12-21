@@ -83,7 +83,7 @@ class DomElem extends EventTarget {
 			value = value.current;
 		}
 
-		if (key === 'style') Object.keys(value).forEach(key => (this.elem.style[key] = value[key]));
+		if (key === 'style') this.setStyle(value);
 		else if (key === 'attributes') this.setAttributes(value);
 		else if (this.__knownAttributes.has(key) || key.startsWith('aria-')) {
 			this.elem.setAttribute(key, value);
@@ -102,6 +102,20 @@ class DomElem extends EventTarget {
 
 	setOptions(options) {
 		Object.entries(options).forEach(([name, value]) => (this.options[name] = value));
+
+		return this;
+	}
+
+	setStyle(style) {
+		Object.entries(style).forEach(([key, value]) => (this.elem.style[key] = value));
+
+		return this;
+	}
+
+	setAttributes(attributes) {
+		Object.entries(attributes).forEach(([key, value]) => this.elem.setAttribute(key, value));
+
+		return this;
 	}
 
 	hasClass(...classes) {
@@ -163,6 +177,8 @@ class DomElem extends EventTarget {
 
 			this.elem.append(child);
 		});
+
+		return this;
 	}
 
 	prepend(...children) {
@@ -174,10 +190,8 @@ class DomElem extends EventTarget {
 			if (this.elem.firstChild) this.elem.insertBefore(child, this.elem.firstChild);
 			else this.elem.append(child);
 		});
-	}
 
-	setAttributes(attributes) {
-		Object.entries(attributes).forEach(([key, value]) => this.elem.setAttribute(key, value));
+		return this;
 	}
 
 	styles(styles) {
