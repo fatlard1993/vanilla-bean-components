@@ -1,4 +1,4 @@
-import { capitalize } from '../../utils';
+import { fromCamelCase, capitalize } from '../../utils';
 import { DomElem } from '../DomElem';
 import { Input } from '../Input';
 import { Label } from '../Label';
@@ -14,8 +14,7 @@ export default class Form extends DomElem {
 				const input = new Component({
 					appendTo: this.elem,
 					value: options.data[key],
-					onChange,
-					...(Component === Input && {
+					...(Component !== DomElem && {
 						onChange: function (event) {
 							form.options.data[key] = event.value;
 							this.validate?.();
@@ -26,7 +25,7 @@ export default class Form extends DomElem {
 					...inputOptions,
 				});
 
-				this.append(new Label({ label: label || capitalize(key), collapsed }, input));
+				this.append(new Label({ label: label || capitalize(fromCamelCase(key), true), collapsed }, input));
 
 				return [key, input];
 			}),
