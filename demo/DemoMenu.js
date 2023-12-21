@@ -59,7 +59,7 @@ export default class DemoMenu extends DomElem {
 
 	filterLinks(filter) {
 		this._links.forEach(link => {
-			link.style.display = link.textContent.toLowerCase().includes(filter.toLowerCase()) ? '' : 'none';
+			link.elem.style.display = link.elem.textContent.toLowerCase().includes(filter.toLowerCase()) ? '' : 'none';
 		});
 	}
 
