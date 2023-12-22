@@ -40,36 +40,38 @@ export default class DemoView extends View {
 	}
 
 	render(options = this.options) {
-		const componentAncestors = options.component
-			.ancestry()
-			.filter(
-				({ constructor: { name } }) => name !== options.component.constructor.name && name !== 'VanillaBeanDomElem',
+		if (options.component) {
+			const componentAncestors = options.component
+				.ancestry()
+				.filter(
+					({ constructor: { name } }) => name !== options.component.constructor.name && name !== 'VanillaBeanDomElem',
+				);
+
+			if (componentAncestors.length > 0) {
+				new Label({
+					label: 'Ancestors',
+					appendTo: this,
+					append: componentAncestors.map(
+						({ constructor: { name } }) =>
+							new Link({
+								textContent: name.replace(/\d$/, ''),
+								href:
+									name === 'EventTarget'
+										? 'https://developer.mozilla.org/en-US/docs/Web/API/EventTarget'
+										: `#/${name.replace(/\d$/, '')}`,
+							}),
+					),
+				});
+			}
+
+			new Label(
+				{ label: 'Options', appendTo: this },
+				new DemoOptions({
+					appendTo: this,
+					component: options.component,
+				}),
 			);
-
-		if (componentAncestors.length > 0) {
-			new Label({
-				label: 'Ancestors',
-				appendTo: this,
-				append: componentAncestors.map(
-					({ constructor: { name } }) =>
-						new Link({
-							textContent: name.replace(/\d$/, ''),
-							href:
-								name === 'EventTarget'
-									? 'https://developer.mozilla.org/en-US/docs/Web/API/EventTarget'
-									: `#/${name.replace(/\d$/, '')}`,
-						}),
-				),
-			});
 		}
-
-		new Label(
-			{ label: 'Options', appendTo: this },
-			new DemoOptions({
-				appendTo: this,
-				component: options.component,
-			}),
-		);
 
 		super.render(options);
 	}

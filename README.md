@@ -6,7 +6,7 @@ Vanilla JS class-based components
 
 ## Usage
 
-All components maintain a [demo](./components/Button/demo.js) & [test file](./components/Button/.test.js) with good examples of how each component can be used.
+All components maintain a [demo](./components/Button/demo.js) & [test file](./components/Button/.test.js) with good examples of how each component can be used. Additionally, there are a set of [examples](./demo/examples) available for reference.
 
 ### HTML
 

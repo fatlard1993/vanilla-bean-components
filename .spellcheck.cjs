@@ -99,6 +99,7 @@ module.exports = {
 		'bg',
 		'popovertarget',
 		'popovertargetaction',
+		'xmark',
 	],
 	skipIfMatch: ['\\d+v[wh]'],
 	skipWordIfMatch: [],

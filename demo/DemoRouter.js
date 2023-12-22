@@ -1,3 +1,5 @@
+import { NoData, Router, View } from '../components';
+
 import ButtonDemo from '../components/Button/demo';
 import CalendarDemo from '../components/Calendar/demo';
 import CheckboxDemo from '../components/Checkbox/demo';
@@ -26,7 +28,12 @@ import TextareaDemo from '../components/Textarea/demo';
 import TooltipDemo from '../components/Tooltip/demo';
 import TooltipWrapperDemo from '../components/TooltipWrapper/demo';
 
-import { NoData, Router, View } from '../components';
+import BlogExample from './examples/Blog';
+import CounterExample from './examples/Counter';
+import BombGameExample from './examples/BombGame';
+import MultiWidgetExample from './examples/MultiWidget';
+import StopwatchExample from './examples/Stopwatch';
+import CalculatorExample from './examples/Calculator';
 
 class NotFound extends View {
 	render(options = this.options) {
@@ -64,6 +71,12 @@ export const views = {
 	['/Textarea']: TextareaDemo,
 	['/Tooltip']: TooltipDemo,
 	['/TooltipWrapper']: TooltipWrapperDemo,
+	['/examples/Blog']: BlogExample,
+	['/examples/Counter']: CounterExample,
+	['/examples/Stopwatch']: StopwatchExample,
+	['/examples/MultiWidget']: MultiWidgetExample,
+	['/examples/BombGame']: BombGameExample,
+	['/examples/Calculator']: CalculatorExample,
 };
 
 export default class DemoRouter extends Router {
