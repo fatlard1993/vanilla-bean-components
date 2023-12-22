@@ -79,7 +79,7 @@ class TagList extends DomElem {
 				onPointerPress: () => {
 					const tags = Array.from(this.elem.children).map(elem => elem.textContent);
 
-					if (this.tagInput.elem.value.length < 2 || tags.includes(this.tagInput.elem.value)) return;
+					if (this.tagInput.elem.value.length === 0 || tags.includes(this.tagInput.elem.value)) return;
 
 					const newTag = new Tag({ textContent: this.tagInput.elem.value });
 
