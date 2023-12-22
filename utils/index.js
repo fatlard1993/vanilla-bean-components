@@ -5,5 +5,6 @@ export * from './color';
 export * from './data';
 export * from './dom';
 export * from './elem';
+export * from './rand';
 export * from './string';
 export * from '../components/Router/utils';
