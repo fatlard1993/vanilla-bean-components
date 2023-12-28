@@ -60,21 +60,20 @@ class Checkbox extends DomElem {
 			tag: 'input',
 			type: 'checkbox',
 			id: this.classId,
-			checked: options.value,
 		});
 
 		this.nameElem = new CheckboxLabel({
 			tag: 'label',
 			for: this.classId,
 			appendTo: this.elem,
-			append: [this.inputElem, options.name],
+			content: [this.inputElem],
 		});
 
 		super.render({
-			...options,
+			...this.options,
 			onChange(event) {
 				event.value = event.target.checked;
-				options.onChange(event);
+				this.options.onChange?.(event);
 			},
 		});
 	}
@@ -92,10 +91,10 @@ class Checkbox extends DomElem {
 	}
 
 	setOption(name, value) {
-		if (name === 'checked' || name === 'value') {
-			this.value = value;
-		} else if (name === 'name') {
-			this.nameElem.elem.childNodes[1].textContent = value;
+		if (name === 'checked' || name === 'value') this.value = value;
+		else if (name === 'name') {
+			if (this.nameElem.elem.childNodes[1]) this.nameElem.elem.childNodes[1].textContent = value;
+			else this.nameElem.append(value);
 		} else super.setOption(name, value);
 	}
 }
