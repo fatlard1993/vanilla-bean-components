@@ -1,5 +1,31 @@
 import { nanoid } from 'nanoid';
 
+class Subscriber {
+	__isSubscriber = true;
+
+	constructor({ key, parser = _ => _, context }) {
+		this.key = key;
+		this.parser = parser;
+		this.context = context;
+	}
+
+	subscribe(callback) {
+		this.subscription = this.context.subscribe({ callback, key: this.key, parser: this.parser });
+	}
+
+	unsubscribe() {
+		return this.context.unsubscribe(this.subscription.id);
+	}
+
+	get current() {
+		return this.parser(this.context.proxy[this.key]);
+	}
+
+	toString() {
+		return this.current;
+	}
+}
+
 export class Context extends EventTarget {
 	constructor(target) {
 		super();
@@ -14,6 +40,10 @@ export class Context extends EventTarget {
 
 					return context[key];
 				}
+
+				const targetValue = Reflect.get(target, key);
+
+				if (targetValue?.__isSubscriber) return targetValue.current;
 
 				return Reflect.get(target, key);
 			},
@@ -37,23 +67,23 @@ export class Context extends EventTarget {
 		this.dispatchEvent(new CustomEvent(key, { detail: value }));
 	}
 
-	subscriber(key, parser = value => value) {
-		return {
-			__isSubscriber: true,
-			subscribe: callback => {
-				const id = nanoid();
-				const subscription = ({ detail }) => callback(parser(detail));
-
-				this.subscriptions[id] = subscription;
-				this.addEventListener(key, subscription);
-
-				return { unsubscribe: () => this.unsubscribe(key, id), current: parser(this.proxy[key]) };
-			},
-			current: parser(this.proxy[key]),
-		};
+	subscriber(key, parser) {
+		return new Subscriber({ key, parser, context: this });
 	}
 
-	unsubscribe(key, id) {
+	subscribe({ callback, key, parser = _ => _ }) {
+		const id = nanoid();
+		const subscription = ({ detail }) => callback(this.parser(detail));
+
+		subscription.key = key;
+		this.subscriptions[id] = subscription;
+		this.addEventListener(key, subscription);
+
+		return { unsubscribe: () => this.unsubscribe(id), current: parser(this.proxy[key]), id };
+	}
+
+	unsubscribe(id) {
+		const { key } = this.subscriptions[id];
 		this.removeEventListener(key, this.subscriptions[id]);
 
 		delete this.subscriptions[id];
