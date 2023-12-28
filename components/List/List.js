@@ -33,18 +33,22 @@ class List extends DomElem {
 		);
 	}
 
-	render(options = this.options) {
-		super.render(options);
+	setOption(key, value) {
+		if (key === 'items') {
+			this.content(
+				value.map(item => {
+					const isContent = typeof item === 'string' || item?.isDomElem || Array.isArray(item);
+					const listItem = new TooltipWrapper({ tag: 'li' });
 
-		this.append(
-			(options.items || []).map(
-				item =>
-					new TooltipWrapper({
-						tag: 'li',
-						...(typeof item === 'string' || item?.isDomElem || Array.isArray(item) ? { content: item } : { ...item }),
-					}),
-			),
-		);
+					if (this.options.ListItemComponent) {
+						listItem.content(new this.options.ListItemComponent(isContent ? { content: item } : item));
+					} else if (isContent) listItem.content(item);
+					else listItem.setOptions(item);
+
+					return listItem;
+				}),
+			);
+		} else super.setOption(key, value);
 	}
 }
 
