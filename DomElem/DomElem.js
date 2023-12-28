@@ -102,6 +102,14 @@ class DomElem extends EventTarget {
 		}
 	}
 
+	get parentElem() {
+		return this.elem?.parentElement;
+	}
+
+	get parent() {
+		return this.parentElem?._domElem;
+	}
+
 	setOptions(options) {
 		Object.entries(options).forEach(([name, value]) => (this.options[name] = value));
 
