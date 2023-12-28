@@ -7,6 +7,8 @@ class Subscriber {
 		this.key = key;
 		this.parser = parser;
 		this.context = context;
+
+		return this.current;
 	}
 
 	subscribe(callback) {
@@ -41,10 +43,6 @@ export class Context extends EventTarget {
 					return context[key];
 				}
 
-				const targetValue = Reflect.get(target, key);
-
-				if (targetValue?.__isSubscriber) return targetValue.current;
-
 				return Reflect.get(target, key);
 			},
 			set(target, key, value) {
@@ -73,7 +71,7 @@ export class Context extends EventTarget {
 
 	subscribe({ callback, key, parser = _ => _ }) {
 		const id = nanoid();
-		const subscription = ({ detail }) => callback(this.parser(detail));
+		const subscription = ({ detail }) => callback(parser(detail));
 
 		subscription.key = key;
 		this.subscriptions[id] = subscription;
