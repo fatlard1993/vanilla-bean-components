@@ -71,18 +71,20 @@ class DomElem extends EventTarget {
 				return [..._options, option];
 			}, []);
 
-			sortedOptions.forEach(([name, value]) => this.setOption(name, value));
+			sortedOptions.forEach(([key, value]) => {
+				if (value?.__isSubscriber && typeof value.subscribe === 'function') {
+					value.subscribe(_value => (this.options[key] = _value));
+					value = value.current;
+				}
+
+				this.setOption(key, value);
+			});
 		}
 
 		this.rendered = true;
 	}
 
 	setOption(key, value) {
-		if (value?.__isSubscriber && typeof value.subscribe === 'function') {
-			value.subscribe(_value => (this.options[key] = _value));
-			value = value.current;
-		}
-
 		if (key === 'style') this.setStyle(value);
 		else if (key === 'attributes') this.setAttributes(value);
 		else if (this.__knownAttributes.has(key) || key.startsWith('aria-')) {
