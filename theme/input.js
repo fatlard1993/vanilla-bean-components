@@ -3,7 +3,6 @@ import colors from './colors';
 export default `
 	display: block;
 	border-radius: 3px;
-	text-indent: 3px;
 	border: inset 3px ${colors.lightest(colors.teal).setAlpha(0.8)};
 	box-sizing: border-box;
 	width: 100%;
