@@ -1,5 +1,7 @@
 import { nanoid } from 'nanoid';
 
+const subscriberKeys = new Set(['__isSubscriber', 'key', 'parser', 'context', 'proxy', 'subscribe', 'unsubscribe']);
+
 class Subscriber {
 	__isSubscriber = true;
 
@@ -8,7 +10,29 @@ class Subscriber {
 		this.parser = parser;
 		this.context = context;
 
-		return this.current;
+		const subscriber = this;
+
+		this.proxy = new Proxy(
+			{},
+			{
+				get(_, _key) {
+					if (subscriberKeys.has(_key)) {
+						if (typeof subscriber[_key] === 'function') return subscriber[_key].bind(subscriber);
+
+						return subscriber[_key];
+					}
+
+					const primitive = parser(context.proxy[key]);
+					const value = primitive[_key];
+
+					if (typeof value === 'function') return value.bind(primitive);
+
+					return value;
+				},
+			},
+		);
+
+		return this.proxy;
 	}
 
 	subscribe(callback) {
@@ -17,14 +41,6 @@ class Subscriber {
 
 	unsubscribe() {
 		return this.context.unsubscribe(this.subscription.id);
-	}
-
-	get current() {
-		return this.parser(this.context.proxy[this.key]);
-	}
-
-	toString() {
-		return this.current;
 	}
 }
 
@@ -37,6 +53,7 @@ export class Context extends EventTarget {
 
 		this.proxy = new Proxy(target, {
 			get(target, key) {
+				// console.log('context.get', key);
 				if (context[key]) {
 					if (typeof context[key] === 'function') return context[key].bind(context);
 
@@ -46,6 +63,7 @@ export class Context extends EventTarget {
 				return Reflect.get(target, key);
 			},
 			set(target, key, value) {
+				console.log('context.set', key, value);
 				const result = Reflect.set(target, key, value);
 
 				context.onSet(key, value, result);

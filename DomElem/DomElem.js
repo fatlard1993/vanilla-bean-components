@@ -74,7 +74,6 @@ class DomElem extends EventTarget {
 			sortedOptions.forEach(([key, value]) => {
 				if (value?.__isSubscriber) {
 					value.subscribe(_value => (this.options[key] = _value));
-					value = value.current;
 				}
 
 				this.setOption(key, value);
