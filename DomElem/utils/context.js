@@ -23,9 +23,10 @@ class Subscriber {
 					}
 
 					const primitive = parser(context.proxy[key]);
-					const value = primitive[_key];
+					const value = primitive?.[_key];
 
 					if (typeof value === 'function') return value.bind(primitive);
+					if (_key === 'toJSON') return () => primitive;
 
 					return value;
 				},
@@ -45,15 +46,25 @@ class Subscriber {
 }
 
 export class Context extends EventTarget {
-	constructor(target) {
+	constructor(_target) {
 		super();
 
 		const context = this;
 		this.subscriptions = {};
 
-		this.proxy = new Proxy(target, {
+		this.target = Object.fromEntries(
+			Object.entries(_target).map(([key, value]) => {
+				if (value?.__isSubscriber) {
+					value.subscribe(_value => (this.proxy[key] = _value));
+					value = value.toJSON();
+				}
+
+				return [key, value];
+			}),
+		);
+
+		this.proxy = new Proxy(this.target, {
 			get(target, key) {
-				// console.log('context.get', key);
 				if (context[key]) {
 					if (typeof context[key] === 'function') return context[key].bind(context);
 
@@ -63,7 +74,6 @@ export class Context extends EventTarget {
 				return Reflect.get(target, key);
 			},
 			set(target, key, value) {
-				console.log('context.set', key, value);
 				const result = Reflect.set(target, key, value);
 
 				context.onSet(key, value, result);

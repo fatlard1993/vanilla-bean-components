@@ -71,13 +71,7 @@ class DomElem extends EventTarget {
 				return [..._options, option];
 			}, []);
 
-			sortedOptions.forEach(([key, value]) => {
-				if (value?.__isSubscriber) {
-					value.subscribe(_value => (this.options[key] = _value));
-				}
-
-				this.setOption(key, value);
-			});
+			sortedOptions.forEach(([key, value]) => this.setOption(key, value));
 		}
 
 		this.rendered = true;
@@ -95,10 +89,7 @@ class DomElem extends EventTarget {
 
 			this.elem[key].call(this.elem, value);
 		} else if (typeof value === 'function') this[key] = value;
-		else {
-			this[key] = value;
-			this.elem[key] = value;
-		}
+		else this.elem[key] = value;
 	}
 
 	get parentElem() {
