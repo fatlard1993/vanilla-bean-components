@@ -34,6 +34,7 @@ import BombGameExample from './examples/BombGame';
 import MultiWidgetExample from './examples/MultiWidget';
 import StopwatchExample from './examples/Stopwatch';
 import CalculatorExample from './examples/Calculator';
+import TodoExample from './examples/Todo';
 
 class NotFound extends View {
 	render(options = this.options) {
@@ -77,6 +78,7 @@ export const views = {
 	['/examples/MultiWidget']: MultiWidgetExample,
 	['/examples/BombGame']: BombGameExample,
 	['/examples/Calculator']: CalculatorExample,
+	['/examples/Todo']: TodoExample,
 };
 
 export default class DemoRouter extends Router {
