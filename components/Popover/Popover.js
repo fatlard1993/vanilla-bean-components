@@ -8,6 +8,7 @@ export default class Popover extends Icon {
 	constructor({ autoOpen = true, ...options } = {}, ...children) {
 		super(
 			{
+				visualParent: document.body,
 				appendTo: document.body,
 				state: 'auto',
 				...options,

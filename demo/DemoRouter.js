@@ -26,6 +26,7 @@ import TagListDemo from '../components/TagList/demo';
 import TextareaDemo from '../components/Textarea/demo';
 import TooltipDemo from '../components/Tooltip/demo';
 import TooltipWrapperDemo from '../components/TooltipWrapper/demo';
+import WhiteboardDemo from '../components/Whiteboard/demo';
 
 import BlogExample from './examples/Blog';
 import CounterExample from './examples/Counter';
@@ -78,6 +79,8 @@ export const views = {
 	['/Textarea']: TextareaDemo,
 	['/Tooltip']: TooltipDemo,
 	['/TooltipWrapper']: TooltipWrapperDemo,
+	['/Whiteboard']: WhiteboardDemo,
+
 	['/examples/Blog']: BlogExample,
 	['/examples/Counter']: CounterExample,
 	['/examples/Stopwatch']: StopwatchExample,

@@ -13,6 +13,19 @@ export const debounce = (callback, delay = 400) => {
 	};
 };
 
+export const throttle = (callback, delay) => {
+	let previousCall = Date.now();
+
+	return function () {
+		const time = Date.now();
+
+		if (time - previousCall >= delay) {
+			previousCall = time;
+			Reflect.apply(callback, null, arguments);
+		}
+	};
+};
+
 /**
  * Retrieve a list of non-native properties from a javascript object
  * @param {Object} object - The target Object
