@@ -13,8 +13,8 @@ class Page extends DomElem {
 					body {
 						display: flex;
 						position: relative;
-						width: 100%;
-						height: 100%;
+						width: 100vw;
+						height: 100vh;
 						box-sizing: border-box;
 						overflow: hidden;
 						line-height: normal;
@@ -33,11 +33,6 @@ class Page extends DomElem {
 						}
 					}
 
-					div#app {
-						display: flex;
-						flex: 1;
-					}
-
 					@viewport {
 						width: device-width;
 						zoom: 1;
@@ -53,7 +48,8 @@ class Page extends DomElem {
 					position: relative;
 					display: flex;
 					flex-direction: column;
-					flex: 1;
+					width: 100vw;
+					height: 100vh;
 
 					${theme.scrollbar}
 

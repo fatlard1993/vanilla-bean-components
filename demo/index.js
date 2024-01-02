@@ -9,7 +9,7 @@ window.process = process;
 const menu = new DemoMenu();
 
 new Page({
-	appendTo: document.getElementById('app'),
+	appendTo: document.body,
 	append: [menu, new DemoRouter({ onRenderView: route => menu.updateSelection(route) })],
 });
 

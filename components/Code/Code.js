@@ -25,6 +25,10 @@ class Code extends DomElem {
 					display: ${options.multiline ? '' : 'inline-'}block;
 					border-radius: 0.2em;
 
+					&[class*="language-"] {
+						margin: 0;
+					}
+
 					${options.styles?.(theme, domElem) || ''}
 				`,
 			},
