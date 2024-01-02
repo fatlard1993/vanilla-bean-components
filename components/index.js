@@ -13,7 +13,6 @@ export * from './Label';
 export * from './Link';
 export * from './List';
 export * from './Menu';
-export * from './NoData';
 export * from './Notify';
 export * from './Popover';
 export * from './Page';

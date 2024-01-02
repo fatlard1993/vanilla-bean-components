@@ -1,4 +1,4 @@
-import { NoData, Router, View } from '../components';
+import { DomElem, Router, View } from '../components';
 
 import ButtonDemo from '../components/Button/demo';
 import CalendarDemo from '../components/Calendar/demo';
@@ -15,7 +15,6 @@ import LabelDemo from '../components/Label/demo';
 import LinkDemo from '../components/Link/demo';
 import ListDemo from '../components/List/demo';
 import MenuDemo from '../components/Menu/demo';
-import NoDataDemo from '../components/NoData/demo';
 import PageDemo from '../components/Page/demo';
 import RadioButtonDemo from '../components/RadioButton/demo';
 import NotifyDemo from '../components/Notify/demo';
@@ -38,7 +37,15 @@ import TodoExample from './examples/Todo';
 
 class NotFound extends View {
 	render(options = this.options) {
-		new NoData({ textContent: `Could not find route "${this.options.route}"`, appendTo: this });
+		new DomElem({
+			styles: () => `
+				margin: 6px auto;
+				padding: 6px 12px;
+				text-align: center;
+			`,
+			textContent: `Could not find route "${this.options.route}"`,
+			appendTo: this,
+		});
 
 		super.render(options);
 	}
@@ -60,7 +67,6 @@ export const views = {
 	['/Link']: LinkDemo,
 	['/List']: ListDemo,
 	['/Menu']: MenuDemo,
-	['/NoData']: NoDataDemo,
 	['/Notify']: NotifyDemo,
 	['/Popover']: PopoverDemo,
 	['/Page']: PageDemo,
