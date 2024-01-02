@@ -2,7 +2,7 @@
 
 import { DomElem } from '..';
 
-import { styled } from './styled';
+import { styled, appendStyles } from './styled';
 
 test('styled', () => {
 	const styles = () => 'display: flex;';
@@ -12,4 +12,16 @@ test('styled', () => {
 	expect(StyledElem.isDomElem).toStrictEqual(true);
 	expect(StyledElem.options.styles()).toContain(styles());
 	expect(StyledElem.options.test).toStrictEqual(options.test);
+});
+
+test('appendStyles', () => {
+	const styles = `
+		.test {
+			margin: 0;
+		}
+	`;
+
+	appendStyles(styles);
+
+	expect(document.getElementsByTagName('style')[0].innerHTML).toContain(styles);
 });

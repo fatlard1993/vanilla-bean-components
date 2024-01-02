@@ -1,9 +1,6 @@
 import { customAlphabet } from 'nanoid';
-import postcss from 'postcss';
-import plugin_autoprefixer from 'autoprefixer';
-import plugin_nested from 'postcss-nested';
 
-import { appendStyles, buildClassList, removeExcessIndentation, Context } from './utils';
+import { processStyles, appendStyles, buildClassList, Context } from './utils';
 import context from './context';
 
 // eslint-disable-next-line spellcheck/spell-checker
@@ -59,20 +56,18 @@ class DomElem extends EventTarget {
 		} else if (autoRender === 'animationFrame') requestAnimationFrame(() => this.render());
 	}
 
-	render(options = this.options) {
+	render() {
 		if (this.rendered) {
 			this.empty();
 			this.rendered = false;
 		}
 
-		if (options) {
-			const sortedOptions = Object.entries(options).reduce((_options, option) => {
-				if (this.__priorityOptions.has(option[0])) return [option, ..._options];
-				return [..._options, option];
-			}, []);
+		const sortedOptions = Object.entries(this.options).reduce((options, option) => {
+			if (this.__priorityOptions.has(option[0])) return [option, ...options];
+			return [...options, option];
+		}, []);
 
-			sortedOptions.forEach(([key, value]) => this.setOption(key, value));
-		}
+		sortedOptions.forEach(([key, value]) => this.setOption(key, value));
 
 		this.rendered = true;
 	}
@@ -195,31 +190,13 @@ class DomElem extends EventTarget {
 	}
 
 	styles(styles) {
-		postcss([plugin_nested, plugin_autoprefixer])
-			.process(
-				(process.env.NODE_ENV === 'development' ? x => x : removeExcessIndentation)(`
-					.${this.classId} {
-						${styles(context.theme, this)}
-					}
-				`),
-				{ from: undefined },
-			)
-			.then(({ css }) => {
-				appendStyles(css);
-			})
-			// eslint-disable-next-line no-console
-			.catch(process.env.NODE_ENV === 'development' ? console.error : () => {});
+		processStyles({ styles, theme: context.theme, context: this, scope: `.${this.classId}` }).then(css =>
+			appendStyles(css),
+		);
 	}
 
 	globalStyles(styles) {
-		postcss([plugin_nested, plugin_autoprefixer])
-			.process(
-				(process.env.NODE_ENV === 'development' ? x => x : removeExcessIndentation)(styles(context.theme, this)),
-				{ from: undefined },
-			)
-			.then(({ css }) => appendStyles(css))
-			// eslint-disable-next-line no-console
-			.catch(process.env.NODE_ENV === 'development' ? console.error : () => {});
+		processStyles({ styles, theme: context.theme, context: this }).then(css => appendStyles(css));
 	}
 
 	detectTouch() {
