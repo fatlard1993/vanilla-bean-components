@@ -38,6 +38,8 @@ class Subscriber {
 
 	subscribe(callback) {
 		this.subscription = this.context.subscribe({ callback, key: this.key, parser: this.parser });
+
+		return this.subscription;
 	}
 
 	unsubscribe() {

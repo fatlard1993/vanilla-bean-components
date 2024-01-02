@@ -35,7 +35,7 @@ test('Context > Must provide a subscriber factory', () => {
 	const subscriber = context.subscriber('x');
 
 	expect(subscriber.__isSubscriber).toStrictEqual(true);
-	expect(subscriber.current).toStrictEqual('x');
+	expect(subscriber.toString()).toStrictEqual('x');
 
 	context.x = 0;
 
@@ -54,7 +54,7 @@ test('Context > Subscriber factory > Must accept value parser function', () => {
 
 	const subscriber = context.subscriber('x', parserMock);
 
-	expect(subscriber.current).toStrictEqual('prefix: x');
+	expect(subscriber.toString()).toStrictEqual('prefix: x');
 
 	subscriber.subscribe(eventMock);
 
