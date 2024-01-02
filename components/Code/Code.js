@@ -36,8 +36,8 @@ class Code extends DomElem {
 		);
 	}
 
-	render(options = this.options) {
-		if (options.multiline) {
+	render() {
+		if (this.options.multiline) {
 			this._code = new DomElem({
 				tag: 'code',
 				innerHTML: codeToHTML(this.options.code, this.options.language),
@@ -45,7 +45,7 @@ class Code extends DomElem {
 			});
 		}
 
-		super.render(options);
+		super.render();
 	}
 
 	setOption(name, value) {

@@ -19,8 +19,8 @@ export class Counter extends DomElem {
 }
 
 export default class Example extends DemoView {
-	render(options = this.options) {
-		super.render(options);
+	render() {
+		super.render();
 
 		new DemoWrapper({ appendTo: this }, new Counter());
 	}

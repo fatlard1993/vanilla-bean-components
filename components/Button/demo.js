@@ -2,10 +2,10 @@ import DemoView, { DemoWrapper } from '../../demo/DemoView';
 import { Button } from '.';
 
 export default class Demo extends DemoView {
-	render(options = this.options) {
+	render() {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
-		const component = new Button({
+		this.component = new Button({
 			icon: 'icons',
 			tooltip: { textContent: 'tooltip', position: 'bottom' },
 			onPointerPress: console.log,
@@ -13,6 +13,6 @@ export default class Demo extends DemoView {
 			appendTo: this.demoWrapper,
 		});
 
-		super.render({ ...options, component });
+		super.render();
 	}
 }

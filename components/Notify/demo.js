@@ -3,25 +3,25 @@ import { Button } from '../Button';
 import { Notify } from '.';
 
 export default class Demo extends DemoView {
-	render(options = this.options) {
+	render() {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
-		const component = new Notify({
+		this.component = new Notify({
 			type: 'info',
 			textContent: 'test',
 			autoOpen: false,
-			onPointerPress: () => component.hide(),
+			onPointerPress: () => this.component.hide(),
 		});
 
-		super.render({ ...options, component });
+		super.render();
 
 		new Button({
 			appendTo: this.demoWrapper,
 			textContent: 'Show Notification',
-			attributes: { popovertarget: component.classId, popovertargetaction: 'show' },
+			attributes: { popovertarget: this.component.classId, popovertargetaction: 'show' },
 			onPointerPress: event => {
 				console.log(event);
-				component.edgeAwarePlacement({ x: event.clientX + 10, y: event.clientY + 10 });
+				this.component.edgeAwarePlacement({ x: event.clientX + 10, y: event.clientY + 10 });
 			},
 		});
 	}

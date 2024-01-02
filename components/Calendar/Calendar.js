@@ -192,8 +192,8 @@ class Calendar extends DomElem {
 		);
 	}
 
-	render(options = this.options) {
-		super.render(options);
+	render() {
+		super.render();
 
 		this.toolbar = new Toolbar({ appendTo: this, calendar: this, views: this.options.views });
 		this.wrapper = new CalendarWrapper({ appendTo: this });
@@ -206,14 +206,13 @@ class Calendar extends DomElem {
 			this.adjustDateToView();
 		}
 
-		if (options.view === 'day') this.renderDay();
-		else if (options.view === 'week') this.renderWeek();
+		if (this.options.view === 'day') this.renderDay();
+		else if (this.options.view === 'week') this.renderWeek();
 		else this.renderMonth();
 
 		this.wrapper.elem.scrollTop = 0;
 
 		if (document.activeElement) document.activeElement.blur();
-
 	}
 
 	renderDay() {

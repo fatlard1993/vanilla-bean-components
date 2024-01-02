@@ -7,8 +7,8 @@ import { Calculator } from './Calculator';
 import { Stopwatch } from './Stopwatch';
 
 class MultiWidget extends DomElem {
-	render(options = this.options) {
-		super.render(options);
+	render() {
+		super.render();
 
 		const chooseWidget = new Select({
 			appendTo: this,
@@ -33,8 +33,8 @@ class MultiWidget extends DomElem {
 }
 
 export default class Example extends DemoView {
-	render(options = this.options) {
-		super.render(options);
+	render() {
+		super.render();
 
 		new DemoWrapper({ appendTo: this }, new MultiWidget());
 	}

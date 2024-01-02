@@ -7,7 +7,7 @@ export class Stopwatch extends DomElem {
 		super({ tag: 'span', time: 0, interval: 10, running: false, ...options });
 	}
 
-	render(options = this.options) {
+	render() {
 		this._time = new DomElem({ tag: 'span' });
 
 		const start = new Button({ content: 'Start', onPointerPress: () => this.start() });
@@ -16,7 +16,7 @@ export class Stopwatch extends DomElem {
 
 		this.content([this._time, start, stop, reset]);
 
-		super.render(options);
+		super.render();
 	}
 
 	setOption(key, value) {
@@ -38,8 +38,8 @@ export class Stopwatch extends DomElem {
 }
 
 export default class Example extends DemoView {
-	render(options = this.options) {
-		super.render(options);
+	render() {
+		super.render();
 
 		new DemoWrapper({ appendTo: this }, new Stopwatch());
 	}

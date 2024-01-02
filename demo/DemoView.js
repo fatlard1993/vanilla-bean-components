@@ -39,12 +39,12 @@ export default class DemoView extends View {
 		});
 	}
 
-	render(options = this.options) {
-		if (options.component) {
-			const componentAncestors = options.component
+	render() {
+		if (this.component) {
+			const componentAncestors = this.component
 				.ancestry()
 				.filter(
-					({ constructor: { name } }) => name !== options.component.constructor.name && name !== 'VanillaBeanDomElem',
+					({ constructor: { name } }) => name !== this.component.constructor.name && name !== 'VanillaBeanDomElem',
 				);
 
 			if (componentAncestors.length > 0) {
@@ -68,11 +68,11 @@ export default class DemoView extends View {
 				{ label: 'Options', appendTo: this },
 				new DemoOptions({
 					appendTo: this,
-					component: options.component,
+					component: this.component,
 				}),
 			);
 		}
 
-		super.render(options);
+		super.render();
 	}
 }

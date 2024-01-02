@@ -36,7 +36,7 @@ import CalculatorExample from './examples/Calculator';
 import TodoExample from './examples/Todo';
 
 class NotFound extends View {
-	render(options = this.options) {
+	render() {
 		new DomElem({
 			styles: () => `
 				margin: 6px auto;
@@ -47,7 +47,7 @@ class NotFound extends View {
 			appendTo: this,
 		});
 
-		super.render(options);
+		super.render();
 	}
 }
 

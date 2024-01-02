@@ -52,5 +52,5 @@ export const formatDuration = (duration, append = '', prepend = '') => {
 	const hours = Math.floor(duration / 60);
 	const minutes = duration % 60;
 
-	return append + (hours ? hours + 'h ' : '') + (minutes ? minutes + 'mins' : '') + prepend;
+	return append + (hours ? hours + 'h ' : '') + (minutes ? minutes + 'm' : '') + prepend;
 };

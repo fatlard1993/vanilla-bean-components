@@ -4,16 +4,16 @@ import { Input } from '../Input';
 import { Label } from '../Label';
 
 export default class Form extends DomElem {
-	async render(options = this.options) {
-		super.render(options);
+	async render() {
+		super.render();
 
 		const form = this;
 
 		this.inputElements = Object.fromEntries(
-			options.inputs.map(({ key, label, collapsed, Component = Input, onChange = () => {}, ...inputOptions }) => {
+			this.options.inputs.map(({ key, label, collapsed, Component = Input, onChange = () => {}, ...inputOptions }) => {
 				const input = new Component({
 					appendTo: this.elem,
-					value: options.data[key],
+					value: this.options.data[key],
 					...(Component !== DomElem && {
 						onChange: function (event) {
 							form.options.data[key] = event.value;
@@ -21,7 +21,7 @@ export default class Form extends DomElem {
 							onChange(event);
 						},
 					}),
-					...(Component === Input ? { type: typeof options.data[key] === 'number' ? 'number' : 'string' } : {}),
+					...(Component === Input ? { type: typeof this.options.data[key] === 'number' ? 'number' : 'string' } : {}),
 					...inputOptions,
 				});
 

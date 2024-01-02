@@ -59,10 +59,10 @@ class TagList extends DomElem {
 		);
 	}
 
-	render(options = this.options) {
-		super.render(options);
+	render() {
+		super.render();
 
-		if (!options.readOnly) {
+		if (!this.options.readOnly) {
 			this.tagInput = new TagListTextInput({
 				placeholder: 'New Tag',
 				onKeyUp: () => {
@@ -99,7 +99,7 @@ class TagList extends DomElem {
 		}
 
 		this.append([
-			...(options.tags || []).map(textContent => new Tag({ readOnly: options.readOnly, textContent })),
+			...(this.options.tags || []).map(textContent => new Tag({ readOnly: this.options.readOnly, textContent })),
 			...(this.addTag ? [this.addTag] : []),
 		]);
 	}

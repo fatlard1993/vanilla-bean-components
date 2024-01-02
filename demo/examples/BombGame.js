@@ -16,7 +16,7 @@ class BombGame extends DomElem {
 		});
 	}
 
-	render(options = this.options) {
+	render() {
 		this._score = new DomElem();
 		this._time = new DomElem();
 		this._playPause = new Button(
@@ -56,7 +56,7 @@ class BombGame extends DomElem {
 
 		this.content([this._score, this._time, this._playPause, this._minefield]);
 
-		super.render(options);
+		super.render();
 	}
 
 	setOption(key, value) {
@@ -141,8 +141,8 @@ class BombGame extends DomElem {
 }
 
 export default class Example extends DemoView {
-	render(options = this.options) {
-		super.render(options);
+	render() {
+		super.render();
 
 		new DemoWrapper({ style: { height: '100%' }, appendTo: this }, new BombGame());
 	}

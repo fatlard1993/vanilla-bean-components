@@ -60,7 +60,7 @@ export default class DemoMenu extends DomElem {
 		});
 	}
 
-	render(options = this.options) {
+	render() {
 		this._links = [];
 
 		const debouncedFilter = debounce(this.filterLinks.bind(this), 700);
@@ -102,7 +102,7 @@ export default class DemoMenu extends DomElem {
 			);
 		});
 
-		super.render(options);
+		super.render();
 	}
 
 	filterLinks(filter) {

@@ -12,39 +12,37 @@ export default class Demo extends DemoView {
 
 				event.stop();
 
-				this.popover.show({ x: event.clientX, y: event.clientY });
+				this.component.show({ x: event.clientX, y: event.clientY });
 			},
 		});
 	}
 
-	render(options = this.options) {
+	render() {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
-		const component = new Popover({
+		this.component = new Popover({
 			autoOpen: false,
 			content: 'Some content for our popover',
 		});
 
-		this.popover = component;
-
-		super.render({ ...options, component });
+		super.render();
 
 		new Label({
 			appendTo: this.demoWrapper,
 			label: 'Hover Me',
-			onHover: event => this.popover.show({ x: event.clientX + 10, y: event.clientY + 10 }),
-			onMouseLeave: () => this.popover.hide(),
+			onHover: event => this.component.show({ x: event.clientX + 10, y: event.clientY + 10 }),
+			onMouseLeave: () => this.component.hide(),
 		});
 
 		new Button({
 			appendTo: this.demoWrapper,
 			textContent: 'Open Popover',
-			attributes: { popovertarget: component.classId },
+			attributes: { popovertarget: this.component.classId },
 			onPointerPress: event => {
 				console.log(event);
-				this.popover.edgeAwarePlacement({ x: event.clientX + 10, y: event.clientY + 10 });
+				this.component.edgeAwarePlacement({ x: event.clientX + 10, y: event.clientY + 10 });
 			},
-			onMouseLeave: () => this.popover.hide(),
+			onMouseLeave: () => this.component.hide(),
 		});
 	}
 }

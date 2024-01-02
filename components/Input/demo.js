@@ -3,27 +3,27 @@ import { DomElem } from '../DomElem';
 import { Input } from '.';
 
 export default class Demo extends DemoView {
-	render(options = this.options) {
+	render() {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
-		const component = new Input({
+		this.component = new Input({
 			type: 'text',
 			onKeyUp: event => {
-				console.log(event, `isDirty: ${component.isDirty}`);
+				console.log(event, `isDirty: ${this.component.isDirty}`);
 			},
 			onInput: event => {
-				console.log(event, `isDirty: ${component.isDirty}`);
+				console.log(event, `isDirty: ${this.component.isDirty}`);
 			},
 			onChange: ({ value: newValue }) => {
-				component.options.value = newValue;
+				this.component.options.value = newValue;
 				console.log('onChange', { newValue });
 			},
 			validations: [
 				[/.+/, 'This input is required'],
 				[/^.{3,5}$/, 'Must be between 3 and 5 characters long'],
 				[
-					value => value !== component.initialValue.split('').reverse().join(''),
-					() => `Must not be the inverse of the initial value: ${component.initialValue}`,
+					value => value !== this.component.initialValue.split('').reverse().join(''),
+					() => `Must not be the inverse of the initial value: ${this.component.initialValue}`,
 				],
 			],
 			value: 'value',
@@ -32,10 +32,10 @@ export default class Demo extends DemoView {
 
 		new DomElem({
 			tag: 'p',
-			textContent: component.options.subscriber('value', value => `The current value is: ${value}`),
+			textContent: this.component.options.subscriber('value', value => `The current value is: ${value}`),
 			appendTo: this.demoWrapper,
 		});
 
-		super.render({ ...options, component });
+		super.render();
 	}
 }

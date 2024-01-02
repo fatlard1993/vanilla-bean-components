@@ -61,14 +61,14 @@ export default class CalendarEvent {
 		});
 
 		if (type === 'day') {
-			const gapPos = this.at.getHours() * 2 + this.at.getMinutes() / 30;
+			const gapPosition = this.at.getHours() * 2 + this.at.getMinutes() / 30;
 			const gapHeight = `${(this.duration ? Math.ceil(this.duration / 1000 / 60 / 30) : 1) * 3}em`;
-			const gapTop = `${gapPos * 3}em`;
+			const gapTop = `${gapPosition * 3}em`;
 
 			this.eventElem.elem.style.height = gapHeight;
 			this.eventElem.elem.style.top = gapTop;
 			this.eventElem.elem.style.left = '0';
-			this.eventElem.elem.style.zIndex = Math.floor(gapPos);
+			this.eventElem.elem.style.zIndex = Math.floor(gapPosition);
 
 			if (this.duration) {
 				this.eventElem.elem.children[0].textContent = formattedTime + formatDuration(this.duration, ', ');

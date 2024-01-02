@@ -43,7 +43,7 @@ export class Calculator extends DomElem {
 		});
 	}
 
-	render(options = this.options) {
+	render() {
 		this._display = new CalculatorDisplay();
 		this._keypad = new StyledKeyboard({
 			layout: 'calculator',
@@ -79,7 +79,7 @@ export class Calculator extends DomElem {
 
 		this.content([this._display, this._keypad]);
 
-		super.render(options);
+		super.render();
 	}
 
 	setOption(key, value) {
@@ -89,8 +89,8 @@ export class Calculator extends DomElem {
 }
 
 export default class Example extends DemoView {
-	render(options = this.options) {
-		super.render(options);
+	render() {
+		super.render();
 
 		new DemoWrapper({ appendTo: this }, new Calculator());
 	}

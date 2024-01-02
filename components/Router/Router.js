@@ -60,8 +60,8 @@ class Router extends DomElem {
 		return parameters;
 	}
 
-	render(options = this.options) {
-		super.render(options);
+	render() {
+		super.render();
 
 		this.renderView();
 	}

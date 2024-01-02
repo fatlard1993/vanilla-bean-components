@@ -3,7 +3,7 @@ import { DomElem, List, Input, Button, Checkbox, Popover } from '../..';
 import DemoView, { DemoWrapper } from '../DemoView';
 
 class TodoListItem extends DomElem {
-	render(options = this.options) {
+	render() {
 		this.initialLabel = this.options.label;
 
 		this._checkbox = new Checkbox({
@@ -53,7 +53,7 @@ class TodoListItem extends DomElem {
 
 		this.content([this._checkbox, this._edit, this._trash]);
 
-		super.render(options);
+		super.render();
 	}
 }
 
@@ -62,7 +62,7 @@ class Todo extends DomElem {
 		super({ items: JSON.parse(localStorage.getItem('todo_items') || '[]'), ...options });
 	}
 
-	render(options = this.options) {
+	render() {
 		this._list = new List({ items: this.options.subscriber('items'), ListItemComponent: TodoListItem });
 		this._input = new Input({ type: 'text', style: { display: 'inline', width: '68%', margin: '1%' } });
 		this._add = new Button({
@@ -76,7 +76,7 @@ class Todo extends DomElem {
 
 		this.content([this._input, this._add, this._list]);
 
-		super.render(options);
+		super.render();
 	}
 
 	setOption(key, value) {
@@ -87,8 +87,8 @@ class Todo extends DomElem {
 }
 
 export default class Example extends DemoView {
-	render(options = this.options) {
-		super.render(options);
+	render() {
+		super.render();
 
 		new DemoWrapper({ appendTo: this }, new Todo());
 	}

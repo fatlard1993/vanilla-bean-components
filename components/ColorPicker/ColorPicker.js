@@ -127,12 +127,12 @@ class ColorPicker extends Input {
 		document.addEventListener('touchstart', this.onPointerDown.bind(this));
 	}
 
-	render(options = this.options) {
-		super.render(options);
+	render() {
+		super.render();
 
 		this.textInput = new TextInput({
 			type: 'text',
-			value: options.value,
+			value: this.options.value,
 			onChange: ({ value }) => this.set(value),
 			onKeyUp: debounce(({ target: { value } }) => this.set(value), 700),
 			prependTo: this.elem,
@@ -154,8 +154,8 @@ class ColorPicker extends Input {
 			appendTo: this.pickerArea,
 		});
 
-		if (options.swatches) {
-			options.swatches.forEach(color => {
+		if (this.options.swatches) {
+			this.options.swatches.forEach(color => {
 				new ColorSwatch({
 					appendTo: this.elem,
 					icon: 'fill-drip',

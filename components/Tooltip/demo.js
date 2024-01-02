@@ -2,10 +2,10 @@ import DemoView, { DemoWrapper } from '../../demo/DemoView';
 import { Tooltip } from '.';
 
 export default class Demo extends DemoView {
-	render(options = this.options) {
+	render() {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
-		const component = new Tooltip({
+		this.component = new Tooltip({
 			textContent: 'My Custom Tooltip',
 			icon: 'icons',
 			position: 'center',
@@ -16,6 +16,6 @@ export default class Demo extends DemoView {
 			appendTo: this.demoWrapper,
 		});
 
-		super.render({ ...options, component });
+		super.render();
 	}
 }

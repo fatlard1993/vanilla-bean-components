@@ -2,10 +2,10 @@ import DemoView, { DemoWrapper } from '../../demo/DemoView';
 import { Code } from '.';
 
 export default class Demo extends DemoView {
-	render(options = this.options) {
+	render() {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
-		const component = new Code({
+		this.component = new Code({
 			code: `
 				import DemoView from '../../demo/DemoView';
 				import Code from '.';
@@ -14,7 +14,7 @@ export default class Demo extends DemoView {
 
 				export default class Demo extends DemoView {
 					constructor(options) {
-						const component = new Code({
+						this.component = new Code({
 							code: '',
 							multiline: true,
 						});
@@ -26,6 +26,6 @@ export default class Demo extends DemoView {
 			appendTo: this.demoWrapper,
 		});
 
-		super.render({ ...options, component });
+		super.render();
 	}
 }

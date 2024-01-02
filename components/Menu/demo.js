@@ -2,16 +2,16 @@ import DemoView, { DemoWrapper } from '../../demo/DemoView';
 import { Menu } from '.';
 
 export default class Demo extends DemoView {
-	render(options = this.options) {
+	render() {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
-		const component = new Menu({
+		this.component = new Menu({
 			items: [{ textContent: 'one' }, { textContent: 'two' }, { textContent: 'three' }],
 			onSelect: console.log,
 			style: { width: '60px' },
 			appendTo: this.demoWrapper,
 		});
 
-		super.render({ ...options, component });
+		super.render();
 	}
 }

@@ -79,8 +79,8 @@ class Blog extends DomElem {
 }
 
 export default class Example extends DemoView {
-	async render(options = this.options) {
-		super.render(options);
+	async render() {
+		super.render();
 
 		const wrapper = new DemoWrapper({ appendTo: this }, new Loader());
 

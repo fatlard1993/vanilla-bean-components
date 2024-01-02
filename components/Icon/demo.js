@@ -4,15 +4,15 @@ import { Link } from '../Link';
 import { Icon } from '.';
 
 export default class Demo extends DemoView {
-	render(options = this.options) {
+	render() {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
-		const component = new Icon({
+		this.component = new Icon({
 			icon: 'icons',
 			appendTo: this.demoWrapper,
 		});
 
-		super.render({ ...options, component });
+		super.render();
 
 		new Label({
 			appendTo: this,

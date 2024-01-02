@@ -3,14 +3,14 @@ import { DomElem } from '../DomElem';
 import { Keyboard } from '.';
 
 export default class Demo extends DemoView {
-	render(options = this.options) {
+	render() {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
 		const output = new DomElem({
 			appendTo: this.demoWrapper,
 		});
 
-		const component = new Keyboard({
+		this.component = new Keyboard({
 			appendTo: this.demoWrapper,
 			// onKeyDown: console.log,
 			// onKeyUp: console.log,
@@ -18,7 +18,7 @@ export default class Demo extends DemoView {
 				const { key } = event.detail;
 				const shiftKey = event.target.elem.querySelector('button.shift')?._domElem;
 
-				if (key === 'number' || key === 'simple') component.setLayout(key);
+				if (key === 'number' || key === 'simple') this.component.setLayout(key);
 				else if (key === 'backspace') output.elem.textContent = output.elem.textContent.slice(0, -1);
 				else if (key === 'clear') output.elem.textContent = output.elem.textContent = '';
 				else if (key === 'return' || key === 'done') {
@@ -34,6 +34,6 @@ export default class Demo extends DemoView {
 			},
 		});
 
-		super.render({ ...options, component });
+		super.render();
 	}
 }

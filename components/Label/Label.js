@@ -80,7 +80,7 @@ class Label extends TooltipWrapper {
 		this.elem.setAttribute('data-augmented-ui', 'tl-clip tr-2-clip-x br-clip bl-clip border');
 	}
 
-	render(options = this.options) {
+	render() {
 		this._labelText = new LabelText({
 			tag: 'label',
 			prependTo: this,
@@ -103,7 +103,7 @@ class Label extends TooltipWrapper {
 			onPointerPress: () => this[this.hasClass('collapsed') ? 'removeClass' : 'addClass']('collapsed'),
 		});
 
-		super.render(options);
+		super.render();
 	}
 
 	setOption(name, value) {

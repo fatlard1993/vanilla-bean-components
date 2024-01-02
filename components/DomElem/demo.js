@@ -2,15 +2,15 @@ import DemoView, { DemoWrapper } from '../../demo/DemoView';
 import { DomElem } from '.';
 
 export default class Demo extends DemoView {
-	render(options = this.options) {
+	render() {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
-		const component = new DomElem({
+		this.component = new DomElem({
 			tag: 'p',
 			textContent: 'A general purpose base element building block',
 			appendTo: this.demoWrapper,
 		});
 
-		super.render({ ...options, component });
+		super.render();
 	}
 }

@@ -44,8 +44,8 @@ class Toolbar extends DomElem {
 		this.calendar = calendar;
 	}
 
-	render(options = this.options) {
-		super.render(options);
+	render() {
+		super.render();
 
 		new Left({
 			appendTo: this,
@@ -67,7 +67,7 @@ class Toolbar extends DomElem {
 			append: (this.options.views || VIEWS).map(
 				view =>
 					new Button({
-						addClass: [`set-${view}`, ...(view === options.view ? ['pressed'] : [])],
+						addClass: [`set-${view}`, ...(view === this.options.view ? ['pressed'] : [])],
 						textContent: capitalize(view),
 						onPointerPress: () => {
 							this.calendar.setView(view);

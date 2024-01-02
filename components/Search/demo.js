@@ -2,11 +2,11 @@ import DemoView, { DemoWrapper } from '../../demo/DemoView';
 import { Search } from '.';
 
 export default class Demo extends DemoView {
-	render(options = this.options) {
+	render() {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
-		const component = new Search({ appendTo: this.demoWrapper });
+		this.component = new Search({ appendTo: this.demoWrapper });
 
-		super.render({ ...options, component });
+		super.render();
 	}
 }

@@ -3,10 +3,10 @@ import { DomElem } from '../DomElem';
 import { Label } from '.';
 
 export default class Demo extends DemoView {
-	render(options = this.options) {
+	render() {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
-		const component = new Label(
+		this.component = new Label(
 			{
 				label: 'label',
 				tooltip: 'tooltip',
@@ -15,6 +15,6 @@ export default class Demo extends DemoView {
 			new DomElem({ textContent: 'Child Element' }),
 		);
 
-		super.render({ ...options, component });
+		super.render();
 	}
 }

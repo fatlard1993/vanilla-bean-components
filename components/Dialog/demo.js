@@ -4,7 +4,7 @@ import { Button } from '../Button';
 import { Dialog } from '.';
 
 export default class Demo extends DemoView {
-	render(options = this.options) {
+	render() {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
 		const openDialog = moreOptions =>
@@ -21,14 +21,14 @@ export default class Demo extends DemoView {
 				...moreOptions,
 			});
 
-		const component = openDialog();
+		this.component = openDialog();
 
-		super.render({ ...options, component });
+		super.render();
 
 		new Button({
 			appendTo: this.demoWrapper,
 			textContent: 'Open',
-			onPointerPress: () => openDialog(component.options),
+			onPointerPress: () => openDialog(this.component.options),
 		});
 	}
 }

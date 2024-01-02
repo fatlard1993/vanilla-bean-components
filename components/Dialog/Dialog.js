@@ -122,29 +122,29 @@ class Dialog extends DomElem {
 		this.elem.addEventListener('close', this.elem.remove);
 	}
 
-	render(options = this.options) {
+	render() {
 		if (!this._header) {
 			this._header = new DialogHeader({
 				tag: 'h2',
 				id: this.classId,
-				append: options.header,
+				append: this.options.header,
 				appendTo: this,
 			});
 		}
 
 		if (!this._body) {
-			this._body = new DialogContent({ content: options.body, appendTo: this });
+			this._body = new DialogContent({ content: this.options.body, appendTo: this });
 		}
 
 		if (!this._footer) {
 			this._footer = new DialogFooter({
 				append:
-					options.footer ||
-					(options.buttons || []).map(
+					this.options.footer ||
+					(this.options.buttons || []).map(
 						button =>
 							new DialogButton({
 								onPointerPress: () =>
-									options.onButtonPress({ button, closeDialog: options.closeDialog || (() => this.close()) }),
+									this.options.onButtonPress({ button, closeDialog: this.options.closeDialog || (() => this.close()) }),
 								...(typeof button === 'object' ? button : { textContent: button }),
 							}),
 					),
@@ -152,7 +152,7 @@ class Dialog extends DomElem {
 			});
 		}
 
-		super.render(options);
+		super.render();
 
 		if (this.options.openOnRender) {
 			setTimeout(
