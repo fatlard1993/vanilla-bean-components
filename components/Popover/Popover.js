@@ -32,7 +32,7 @@ export default class Popover extends Icon {
 
 		if (this.options.x !== undefined && this.options.y !== undefined) this.edgeAwarePlacement(this.options);
 
-		if (autoOpen) setTimeout(() => this.elem.showPopover(), 400);
+		if (autoOpen) requestAnimationFrame(() => this.show());
 	}
 
 	edgeAwarePlacement({ x, y, maxHeight = 132, maxWidth = 264, padding = 24, visualParent }) {

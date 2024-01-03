@@ -12,6 +12,7 @@ class Tooltip extends Popover {
 			{
 				...defaultOptions,
 				...options,
+				autoOpen: false,
 				styles: (theme, domElem) => `
 					display: none;
 					position: absolute;
