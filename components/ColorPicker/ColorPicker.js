@@ -71,14 +71,6 @@ const HueIndicator = styled(
 	`,
 );
 
-const TextInput = styled(
-	Input,
-	() => `
-		margin: 18px auto 9px;
-		width: 90%;
-	`,
-);
-
 const ColorSwatch = styled(
 	Button,
 	() => `
@@ -112,6 +104,11 @@ class ColorPicker extends Input {
 						.lighter(theme.colors.teal)
 						.setAlpha(0.5)}, ${theme.colors.blue.setAlpha(0.5)});
 
+					input {
+						margin: 18px auto 9px;
+						width: 90%;
+					}
+
 					${options.styles?.(theme, domElem) || ''}
 				`,
 			},
@@ -130,7 +127,7 @@ class ColorPicker extends Input {
 	render() {
 		super.render();
 
-		this.textInput = new TextInput({
+		this.textInput = new Input({
 			type: 'text',
 			value: this.options.value,
 			onChange: ({ value }) => this.set(value),
