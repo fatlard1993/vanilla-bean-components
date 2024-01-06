@@ -10,9 +10,11 @@ import { Whiteboard } from '.';
 
 export default class Demo extends DemoView {
 	render() {
+		const size = document.body.clientWidth - document.body.clientWidth * 0.2;
+
 		this.component = new Whiteboard({
-			width: `${document.body.clientWidth - 180}px`,
-			height: `${(document.body.clientWidth - 180) / 2}px`,
+			width: `${size}px`,
+			height: `${size / 2}px`,
 			color: JSON.parse(localStorage.getItem('last_whiteboard_line_color') || '"#000"'),
 			lineWidth: JSON.parse(localStorage.getItem('last_whiteboard_line_size') || 3),
 			lines: JSON.parse(localStorage.getItem('last_whiteboard_lines') || '[]'),
@@ -64,11 +66,12 @@ export default class Demo extends DemoView {
 				color: theme.colors.mostReadable(backgroundColor, [theme.colors.white, theme.colors.black]),
 			})),
 			appendTo: this.demoWrapper,
-			onPointerPress: event => colorPicker.show({ x: event.clientX, y: event.clientY, maxHeight: 360, maxWidth: 318 }),
+			onPointerPress: event => colorPicker.show({ x: event.clientX, y: event.clientY, maxHeight: 378, maxWidth: 318 }),
 		});
 
 		const trash = new Button({
 			icon: 'trash-can',
+			style: { backgroundColor: theme.colors.red },
 			appendTo: this.demoWrapper,
 			onPointerPress: () => {
 				this.component.options.lines = [];
