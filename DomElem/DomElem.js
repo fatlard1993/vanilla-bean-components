@@ -44,6 +44,7 @@ class DomElem extends EventTarget {
 
 		this.classId = Object.freeze(classId());
 
+		this.tag = tag;
 		this.elem = document.createElement(tag);
 		this.elem._domElem = this;
 
@@ -190,8 +191,8 @@ class DomElem extends EventTarget {
 	}
 
 	styles(styles) {
-		processStyles({ styles, theme: context.theme, context: this, scope: `.${this.classId}` }).then(css =>
-			appendStyles(css),
+		processStyles({ styles, theme: context.theme, context: this, scope: `body ${this.tag}.${this.classId}` }).then(
+			css => appendStyles(css),
 		);
 	}
 
