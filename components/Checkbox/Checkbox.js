@@ -90,12 +90,12 @@ class Checkbox extends DomElem {
 		return this.initialValue !== this.value;
 	}
 
-	setOption(name, value) {
-		if (name === 'checked' || name === 'value') this.value = value;
-		else if (name === 'name') {
+	setOption(key, value) {
+		if (key === 'checked' || key === 'value') this.value = value;
+		else if (key === 'name') {
 			if (this.nameElem.elem.childNodes[1]) this.nameElem.elem.childNodes[1].textContent = value;
 			else this.nameElem.append(value);
-		} else super.setOption(name, value);
+		} else super.setOption(key, value);
 	}
 }
 

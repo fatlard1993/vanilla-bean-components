@@ -1,5 +1,7 @@
+preload = ["./plugins/markdownLoader.js"]
+
 [install]
 registry = "https://registry.npmjs.org"
 
 [test]
-preload = "./test-setup.js"
+preload = ["./test-setup.js"]

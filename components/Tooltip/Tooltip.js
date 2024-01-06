@@ -81,8 +81,8 @@ class Tooltip extends Popover {
 		this.addClass('tooltip');
 	}
 
-	setOption(name, value) {
-		if (name === 'position') {
+	setOption(key, value) {
+		if (key === 'position') {
 			if (!position_enum.includes(value)) {
 				throw new Error(
 					`"${value}" is not a valid position. The position must be one of the following values: ${this.position_enum.join(
@@ -93,7 +93,7 @@ class Tooltip extends Popover {
 
 			this.removeClass(...position_enum);
 			this.addClass(value);
-		} else super.setOption(name, value);
+		} else super.setOption(key, value);
 	}
 }
 

@@ -23,7 +23,6 @@ class Code extends DomElem {
 				...(options.multiline ? { tag: 'pre' } : { tag: 'code' }),
 				styles: (theme, domElem) => `
 					display: ${options.multiline ? '' : 'inline-'}block;
-					border-radius: 0.2em;
 
 					&[class*="language-"] {
 						margin: 0;
@@ -48,8 +47,8 @@ class Code extends DomElem {
 		super.render();
 	}
 
-	setOption(name, value) {
-		if (name === 'language') {
+	setOption(key, value) {
+		if (key === 'language') {
 			if (this.options.multiline) {
 				this._code.removeClass(/\blanguage-\S+\b/g);
 				this._code.addClass(`language-${value}`);
@@ -57,9 +56,9 @@ class Code extends DomElem {
 
 			this.removeClass(/\blanguage-\S+\b/g);
 			this.addClass(`language-${value}`);
-		} else if (name === 'code') {
+		} else if (key === 'code') {
 			this[this.options.multiline ? '_code' : 'elem'].innerHTML = codeToHTML(this.options.code, this.options.language);
-		} else super.setOption(name, value);
+		} else super.setOption(key, value);
 	}
 }
 

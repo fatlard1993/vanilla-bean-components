@@ -1,5 +1,5 @@
 /* eslint-disable spellcheck/spell-checker */
-import { DomElem, Label, Link, View, styled } from '..';
+import { DomElem, Label, Link, View, styled, GET } from '..';
 import DemoOptions from './DemoOptions';
 
 export const DemoWrapper = styled(
@@ -39,7 +39,7 @@ export default class DemoView extends View {
 		});
 	}
 
-	render() {
+	async render() {
 		if (this.component) {
 			const componentAncestors = this.component
 				.ancestry()
@@ -47,11 +47,16 @@ export default class DemoView extends View {
 					({ constructor: { name } }) => name !== this.component.constructor.name && name !== 'VanillaBeanDomElem',
 				);
 
+			const readme = await GET(`components/${this.component.constructor.name}/README.md`);
+
+			if (readme.response.ok) {
+				new Label({ label: 'README', appendTo: this }, new DomElem({ innerHTML: readme.body.parsed }));
+			}
+
 			if (componentAncestors.length > 0) {
-				new Label({
-					label: 'Ancestors',
-					appendTo: this,
-					append: componentAncestors.map(
+				new Label(
+					{ label: 'Ancestors', appendTo: this },
+					componentAncestors.map(
 						({ constructor: { name } }) =>
 							new Link({
 								textContent: name.replace(/\d$/, ''),
@@ -61,7 +66,7 @@ export default class DemoView extends View {
 										: `#/${name.replace(/\d$/, '')}`,
 							}),
 					),
-				});
+				);
 			}
 
 			new Label(

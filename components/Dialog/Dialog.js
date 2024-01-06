@@ -162,10 +162,10 @@ class Dialog extends DomElem {
 		}
 	}
 
-	setOption(name, value) {
-		if (name === 'openOnRender' || name === 'modal') return;
+	setOption(key, value) {
+		if (key === 'openOnRender' || key === 'modal') return;
 
-		if (name === 'size') {
+		if (key === 'size') {
 			if (!size_enum.includes(value)) {
 				throw new Error(
 					`"${value}" is not a valid size. The size must be one of the following values: ${size_enum.join(', ')}`,
@@ -174,9 +174,9 @@ class Dialog extends DomElem {
 
 			this.removeClass(...size_enum);
 			this.addClass(value);
-		} else if (name === 'body') {
+		} else if (key === 'body') {
 			this._body.options.content = value;
-		} else super.setOption(name, value);
+		} else super.setOption(key, value);
 	}
 
 	open(modal = this.options.modal) {

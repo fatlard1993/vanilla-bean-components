@@ -37,8 +37,8 @@ class TooltipWrapper extends Icon {
 		);
 	}
 
-	setOption(name, value) {
-		if (name === 'tooltip') {
+	setOption(key, value) {
+		if (key === 'tooltip') {
 			const tooltipOptions = typeof value === 'object' ? value : { textContent: value };
 
 			if (this._tooltip) this._tooltip.setOptions(tooltipOptions);
@@ -48,7 +48,7 @@ class TooltipWrapper extends Icon {
 					...tooltipOptions,
 				});
 			}
-		} else super.setOption(name, value);
+		} else super.setOption(key, value);
 	}
 }
 

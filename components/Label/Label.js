@@ -106,10 +106,10 @@ class Label extends TooltipWrapper {
 		super.render();
 	}
 
-	setOption(name, value) {
-		if (name === 'label') this._labelText.options.content = value;
-		else if (name === 'collapsed') this[value ? 'addClass' : 'removeClass']('collapsed');
-		else if (name === 'for') {
+	setOption(key, value) {
+		if (key === 'label') this._labelText.options.content = value;
+		else if (key === 'collapsed') this[value ? 'addClass' : 'removeClass']('collapsed');
+		else if (key === 'for') {
 			let forId = typeof value === 'string' ? value : value?.id || value?.elem?.id;
 
 			if (!forId && value?.isDomElem) {
@@ -117,7 +117,7 @@ class Label extends TooltipWrapper {
 			}
 
 			this._labelText.elem.htmlFor = forId;
-		} else super.setOption(name, value);
+		} else super.setOption(key, value);
 	}
 }
 

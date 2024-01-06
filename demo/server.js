@@ -32,6 +32,10 @@ const server = Bun.serve({
 			return success ? undefined : new Response('WebSocket upgrade error', { status: 400 });
 		}
 
+		if (path.endsWith('.md') && (await Bun.file(path.slice(1)).exists())) {
+			return Response.json(await import(`..${path}`));
+		}
+
 		let file = Bun.file(`demo/build${path}`);
 
 		if (!(await file.exists())) file = Bun.file(`node_modules${path}`);

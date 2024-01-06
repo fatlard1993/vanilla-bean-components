@@ -134,8 +134,8 @@ Option changes can also be observed and subscribed to via the Context API.
 
 Not all DomElem methods make sense to use with options:
 
-- render(options)
-- setOption(name, value)
+- render()
+- setOption(key, value)
   - _This method is used internally to synchronize options property changes and not intended to be called directly_
 - setOptions(options)
 - hasClass(...classes) => Boolean

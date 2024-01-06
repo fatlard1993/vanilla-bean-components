@@ -57,8 +57,8 @@ const RadioButtonInput = styled(
 );
 
 class RadioButton extends DomElem {
-	setOption(name, value) {
-		if (name === 'options') {
+	setOption(key, value) {
+		if (key === 'options') {
 			this.empty();
 
 			if (!value) return;
@@ -81,7 +81,7 @@ class RadioButton extends DomElem {
 						}),
 				),
 			);
-		} else super.setOption(name, value);
+		} else super.setOption(key, value);
 	}
 }
 

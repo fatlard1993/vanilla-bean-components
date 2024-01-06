@@ -13,8 +13,8 @@ class Select extends Input {
 		super({ ...defaultOptions, ...options }, ...children);
 	}
 
-	setOption(name, value) {
-		if (name === 'options') {
+	setOption(key, value) {
+		if (key === 'options') {
 			this.empty();
 
 			if (!value) return;
@@ -28,7 +28,7 @@ class Select extends Input {
 						}),
 				),
 			);
-		} else super.setOption(name, value);
+		} else super.setOption(key, value);
 	}
 
 	get value() {

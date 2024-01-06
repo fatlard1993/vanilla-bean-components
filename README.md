@@ -30,10 +30,7 @@ All components maintain a [demo](./components/Button/demo.js) & [test file](./co
 > [example](./demo/index.js)
 
 ```javascript
-new Page({
-	appendTo: document.getElementById('app'),
-	content,
-});
+new Page({ appendTo: document.body, content });
 ```
 
 ### Theme
