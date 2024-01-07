@@ -28,7 +28,7 @@ class Menu extends List {
 				`,
 				items: (options.items || []).map(item => ({
 					onPointerPress: options.onSelect,
-					...item,
+					...(typeof item === 'string' ? { textContent: item } : item),
 				})),
 			},
 			...children,
