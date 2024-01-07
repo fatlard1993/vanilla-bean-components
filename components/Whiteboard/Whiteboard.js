@@ -72,7 +72,7 @@ export default class Whiteboard extends DomElem {
 
 					this.drawEvent(event);
 				}).bind(this),
-				6,
+				Math.min(Math.max(this.options.lineWidth + 3, 24), 6),
 			);
 
 			const onDrop = () => {
@@ -85,7 +85,7 @@ export default class Whiteboard extends DomElem {
 
 				this.canvas.closePath();
 
-				if (this.line.length === 0) return;
+				if (this.line.length === 0) this.drawEvent(event, true);
 
 				this.dispatchEvent(
 					new CustomEvent('change', {
