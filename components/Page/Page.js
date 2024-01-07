@@ -38,7 +38,7 @@ class Page extends DomElem {
 					}
 
 					h2 {
-						font-size: 24px;
+						font-size: 21px;
 					}
 
 					h3, h4, h5 {
