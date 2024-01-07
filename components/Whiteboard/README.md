@@ -5,6 +5,7 @@ new Whiteboard({
 	color: '#BADA55',
 	background: '#FFF',
 	lineWidth: 3,
+	readOnly: false,
 	lines: [
 		{
 			color: '#000',
@@ -15,6 +16,7 @@ new Whiteboard({
 			],
 		},
 	],
+	onDraw: event => {},
 	onChange: event => {},
 })
 ```

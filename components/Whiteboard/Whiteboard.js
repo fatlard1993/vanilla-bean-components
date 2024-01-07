@@ -9,6 +9,7 @@ const defaultOptions = {
 	lineWidth: 3,
 	width: '200px',
 	height: '200px',
+	readOnly: false,
 };
 
 export default class Whiteboard extends DomElem {
@@ -58,10 +59,21 @@ export default class Whiteboard extends DomElem {
 	}
 
 	onPointerDown(event) {
+		if (this.options.readOnly) return;
+
 		if (context.domElem.isTouchDevice && !event.targetTouches) return;
 
 		if (event.target === this.elem) {
-			const onMove = throttle(this.onMove.bind(this), 6);
+			const onMove = throttle(
+				(event => {
+					if (this.options.readOnly) return;
+
+					event.preventDefault();
+
+					this.drawEvent(event);
+				}).bind(this),
+				6,
+			);
 
 			const onDrop = () => {
 				this.elem.removeEventListener('mouseup', onDrop);
@@ -97,12 +109,6 @@ export default class Whiteboard extends DomElem {
 		}
 	}
 
-	onMove(event) {
-		event.preventDefault();
-
-		this.drawEvent(event);
-	}
-
 	drawEvent(event, cap) {
 		const { x, y } = this.normalizePosition(event);
 
@@ -118,6 +124,10 @@ export default class Whiteboard extends DomElem {
 		this.canvas.lineTo(x, y);
 		this.canvas.stroke();
 		if (cap) this.canvas.closePath();
+
+		this.dispatchEvent(
+			new CustomEvent('draw', { detail: { event, cap, from: { x: this.x, y: this.y }, to: { x, y } } }),
+		);
 
 		this.x = x;
 		this.y = y;
@@ -136,6 +146,12 @@ export default class Whiteboard extends DomElem {
 		line.forEach(({ x, y }) => this.canvas.lineTo(x, y));
 		this.canvas.stroke();
 		this.canvas.closePath();
+	}
+
+	onDraw(callback) {
+		this.addEventListener('draw', callback);
+
+		return () => this.removeEventListener('draw', callback);
 	}
 
 	onChange(callback) {

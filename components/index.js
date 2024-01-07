@@ -14,8 +14,8 @@ export * from './Link';
 export * from './List';
 export * from './Menu';
 export * from './Notify';
-export * from './Popover';
 export * from './Page';
+export * from './Popover';
 export * from './RadioButton';
 export * from './Router';
 export * from './Search';
@@ -24,5 +24,6 @@ export * from './TagList';
 export * from './Textarea';
 export * from './Tooltip';
 export * from './TooltipWrapper';
+export * from './Whiteboard';
 
 export { default as context } from './context';
