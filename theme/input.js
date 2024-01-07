@@ -7,6 +7,7 @@ export default `
 	box-sizing: border-box;
 	width: 100%;
 	color: ${colors.light(colors.red)};
+	accent-color: ${colors.blue};
 	background-color: ${colors.black};
 	outline-color: ${colors.lighter(colors.orange)};
 	padding: 2px 6px;
