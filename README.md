@@ -33,6 +33,18 @@ All components maintain a [demo](./components/Button/demo.js) & [test file](./co
 new Page({ appendTo: document.body, content });
 ```
 
+### Examples
+
+Check out some examples to help get a feel for what its like to build with vanilla-bean-components:
+
+- [Blog](./demo/examples/Blog.js)
+- [BombGame](./demo/examples/BombGame.js)
+- [Calculator](./demo/examples/Calculator.js)
+- [Counter](./demo/examples/Counter.js)
+- [MultiWidget](./demo/examples/MultiWidget.js)
+- [Stopwatch](./demo/examples/Stopwatch.js)
+- [Todo](./demo/examples/Todo.js)
+
 ### Theme
 
 #### Colors
