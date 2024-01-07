@@ -10,7 +10,7 @@ import { Whiteboard } from '.';
 
 export default class Demo extends DemoView {
 	render() {
-		const size = document.body.clientWidth - document.body.clientWidth * 0.2;
+		const size = document.body.clientWidth - document.body.clientWidth * 0.22;
 
 		this.component = new Whiteboard({
 			width: `${size}px`,

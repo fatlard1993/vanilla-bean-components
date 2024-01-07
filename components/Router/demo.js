@@ -6,7 +6,7 @@ export default class Demo extends DemoView {
 	render() {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
-		this.component = new Router({ views: [] });
+		this.component = new Router({ views: {} });
 
 		new DomElem({
 			textContent: 'A basic hash based view router',

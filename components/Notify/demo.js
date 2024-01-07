@@ -8,7 +8,7 @@ export default class Demo extends DemoView {
 
 		this.component = new Notify({
 			type: 'info',
-			textContent: 'test',
+			textContent: 'textContent',
 			autoOpen: false,
 			onPointerPress: () => this.component.hide(),
 		});

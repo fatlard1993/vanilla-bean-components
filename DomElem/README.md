@@ -92,6 +92,7 @@ Keys that exist on the DomElem class take precedence, otherwise apply to the bas
 Additional behavior can be configured or overwritten in extended components by overlaying the `setOption` method.
 Option changes can also be observed and subscribed to via the Context API.
 
+- ...[EventTarget](https://developer.mozilla.org/en-UK/docs/Web/API/EventTarget)
 - ...[EventTarget](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget)
 - ...[Node](https://developer.mozilla.org/en-US/docs/Web/API/Node)
 - ...[Element](https://developer.mozilla.org/en-US/docs/Web/API/Element)

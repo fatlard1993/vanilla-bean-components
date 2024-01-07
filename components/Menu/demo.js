@@ -6,7 +6,11 @@ export default class Demo extends DemoView {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
 		this.component = new Menu({
-			items: [{ textContent: 'one' }, { textContent: 'two' }, { textContent: 'three' }],
+			items: [
+				{ textContent: 'one', style: { textTransform: 'uppercase' } },
+				'two',
+				{ textContent: 'three', styles: ({ colors }) => `color: ${colors.red};` },
+			],
 			onSelect: console.log,
 			style: { width: '60px' },
 			appendTo: this.demoWrapper,

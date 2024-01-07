@@ -33,6 +33,26 @@ class Page extends DomElem {
 						}
 					}
 
+					h1 {
+						font-size: 30px;
+					}
+
+					h2 {
+						font-size: 24px;
+					}
+
+					h3, h4, h5 {
+						font-size: 18px;
+					}
+
+					a {
+						color: ${theme.colors.blue};
+
+						&:visited {
+							color: ${theme.colors.purple};
+						}
+					}
+
 					@viewport {
 						width: device-width;
 						zoom: 1;

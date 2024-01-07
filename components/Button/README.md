@@ -1,9 +1,8 @@
 ```js
 new Button({
 	icon: 'icons',
-	tooltip: { textContent: 'tooltip', position: 'bottom' },
-	onPointerPress: () => {},
 	textContent: 'textContent',
-	appendTo: this.demoWrapper,
+	tooltip: { textContent: 'tooltip', position: 'bottom' },
+	onPointerPress: event => {},
 })
 ```

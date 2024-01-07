@@ -4,7 +4,7 @@ import { Input } from '../Input';
 import { Label } from '../Label';
 
 export default class Form extends DomElem {
-	async render() {
+	render() {
 		super.render();
 
 		const form = this;

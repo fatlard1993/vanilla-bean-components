@@ -6,7 +6,7 @@ export const DemoWrapper = styled(
 	DomElem,
 	({ colors }) => `
 		position: relative;
-		margin: 5%;
+		margin: 3% 6%;
 		padding: 5%;
 		background: ${colors.darkest(colors.gray)};
 
@@ -28,7 +28,8 @@ export default class DemoView extends View {
 			styles: (theme, domElem) => `
 				display: flex;
 				flex-direction: column;
-				overflow: auto;
+				overflow-y: auto;
+				overflow-x: hidden;
 
 				li {
 					white-space: pre;
@@ -47,7 +48,11 @@ export default class DemoView extends View {
 					({ constructor: { name } }) => name !== this.component.constructor.name && name !== 'VanillaBeanDomElem',
 				);
 
-			const readme = await GET(`components/${this.component.constructor.name}/README.md`);
+			const readme = await GET(
+				this.component.constructor.name === 'VanillaBeanDomElem'
+					? 'DomElem/README.md'
+					: `components/${this.component.constructor.name.replace(/\d$/, '')}/README.md`,
+			);
 
 			if (readme.response.ok) {
 				new Label({ label: 'README', appendTo: this }, new DomElem({ innerHTML: readme.body.parsed }));

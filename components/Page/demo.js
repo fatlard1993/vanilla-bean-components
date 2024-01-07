@@ -8,6 +8,7 @@ export default class Demo extends DemoView {
 		this.component = new Page({
 			textContent:
 				'The entrypoint to a page built with vanilla-bean-components. Mounts its children when the dom is ready',
+			style: { width: 'auto', height: 'auto' },
 			appendTo: this.demoWrapper,
 		});
 

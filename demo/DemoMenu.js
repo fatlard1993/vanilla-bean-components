@@ -22,6 +22,7 @@ const LinkHeading = styled(
 		width: 50%;
 		margin: 0 auto;
 		flex-basis: 100%;
+		font-size: 18px;
 	`,
 	{ tag: 'h2' },
 );
@@ -39,6 +40,7 @@ const LinkContainer = styled(
 export default class DemoMenu extends DomElem {
 	constructor(options = {}) {
 		super({
+			collapsed: false,
 			...options,
 			styles: (theme, domElem) => `
 				display: flex;
@@ -67,13 +69,17 @@ export default class DemoMenu extends DomElem {
 
 		this.collapseButton = new Button({
 			icon: 'angle-up',
+			tooltip: this.options.subscriber('collapsed', collapsed => ({
+				position: 'bottomRight',
+				textContent: collapsed ? 'Expand' : 'Collapse',
+			})),
 			appendTo: this,
 			onPointerPress: () => {
-				const isCollapsed = this.collapseButton.options.icon === 'angle-down';
+				this.options.collapsed = !this.options.collapsed;
 
-				this.collapseButton.options.icon = isCollapsed ? 'angle-up' : 'angle-down';
+				this.collapseButton.options.icon = this.options.collapsed ? 'angle-down' : 'angle-up';
 
-				this[isCollapsed ? 'removeClass' : 'addClass']('collapsed');
+				this[this.options.collapsed ? 'addClass' : 'removeClass']('collapsed');
 			},
 		});
 
