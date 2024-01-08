@@ -143,8 +143,12 @@ class Dialog extends DomElem {
 					(this.options.buttons || []).map(
 						button =>
 							new DialogButton({
-								onPointerPress: () =>
-									this.options.onButtonPress({ button, closeDialog: this.options.closeDialog || (() => this.close()) }),
+								onPointerPress: event =>
+									this.options.onButtonPress({
+										event,
+										button,
+										closeDialog: this.options.closeDialog || (() => this.close()),
+									}),
 								...(typeof button === 'object' ? button : { textContent: button }),
 							}),
 					),
