@@ -72,10 +72,10 @@ export default class Whiteboard extends DomElem {
 
 					this.drawEvent(event);
 				}).bind(this),
-				Math.min(Math.max(this.options.lineWidth + 3, 24), 6),
+				this.options.drawThrottle || Math.min(Math.max(this.options.lineWidth + 3, 24), 6),
 			);
 
-			const onDrop = () => {
+			const onDrop = event => {
 				this.elem.removeEventListener('mouseup', onDrop);
 				this.elem.removeEventListener('mouseout', onDrop);
 				this.elem.removeEventListener('mousemove', onMove);
@@ -89,7 +89,7 @@ export default class Whiteboard extends DomElem {
 
 				this.dispatchEvent(
 					new CustomEvent('change', {
-						detail: { color: this.options.color, width: this.options.lineWidth, line: this.line },
+						detail: { event, color: this.options.color, width: this.options.lineWidth, line: this.line },
 					}),
 				);
 			};
