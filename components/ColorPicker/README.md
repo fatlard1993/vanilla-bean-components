@@ -5,3 +5,5 @@ new ColorPicker({
 	onChange: event => {},
 })
 ```
+
+[TinyColor Docs](https://github.com/scttcper/tinycolor)
