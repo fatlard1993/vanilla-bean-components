@@ -24,8 +24,8 @@ class Label extends TooltipWrapper {
 					position: relative;
 					display: inline-block;
 					font-size: 1em;
-					width: 95%;
-					margin: 0 1.5% 12px;
+					width: 90%;
+					margin: 0 2.5% 12px;
 					margin-right: -12px;
 					padding: 12px;
 					background-color: ${theme.colors.white.setAlpha(0.06)};
