@@ -38,10 +38,12 @@ new Page({ appendTo: document.body, content });
 Check out some examples to help get a feel for what its like to build with vanilla-bean-components:
 
 - [Blog](./demo/examples/Blog.js)
-- [BombGame](./demo/examples/BombGame.js)
+- [Bomb Game](./demo/examples/BombGame.js)
 - [Calculator](./demo/examples/Calculator.js)
 - [Counter](./demo/examples/Counter.js)
-- [MultiWidget](./demo/examples/MultiWidget.js)
+- [DLC Whiteboard](./demo/examples/DlcWhiteboard.js)
+- [Multi Widget](./demo/examples/MultiWidget.js)
+- [Shape Match Game](./demo/examples/ShapeMatchGame.js)
 - [Stopwatch](./demo/examples/Stopwatch.js)
 - [Todo](./demo/examples/Todo.js)
 

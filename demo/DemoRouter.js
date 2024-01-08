@@ -36,6 +36,7 @@ import StopwatchExample from './examples/Stopwatch';
 import CalculatorExample from './examples/Calculator';
 import TodoExample from './examples/Todo';
 import ShapeMatchGameExample from './examples/ShapeMatchGame';
+import DlcWhiteboardExample from './examples/DlcWhiteboard';
 
 class NotFound extends View {
 	render() {
@@ -90,6 +91,7 @@ export const views = {
 	['/examples/Calculator']: CalculatorExample,
 	['/examples/Todo']: TodoExample,
 	['/examples/ShapeMatchGame']: ShapeMatchGameExample,
+	['/examples/DlcWhiteboard']: DlcWhiteboardExample,
 };
 
 export default class DemoRouter extends Router {
