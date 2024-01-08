@@ -44,6 +44,7 @@ module.exports = {
 		'unicorn/prefer-spread': 'off',
 		'unicorn/no-negated-condition': 'off',
 		'unicorn/no-array-reduce': 'off',
+		'unicorn/no-array-callback-reference': 'off',
 		'unicorn/prefer-query-selector': 'off',
 		'unicorn/prefer-node-protocol': 'off',
 		'unicorn/no-this-assignment': 'off',

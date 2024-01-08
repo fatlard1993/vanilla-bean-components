@@ -59,10 +59,12 @@
     "autoprefixer": "^10.4.16",
     "marked": "^11.1.1",
     "marked-highlight": "^2.1.0",
+    "moresketchy": "wbern/MoreSketchy.js",
     "nanoid": "^5.0.4",
     "postcss": "^8.4.32",
     "postcss-nested": "^6.0.1",
     "prismjs": "^1.29.0",
+    "simplify-js": "^1.2.4",
     "source-code-pro": "^2.38.0"
   },
   "devDependencies": {

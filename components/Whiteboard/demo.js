@@ -45,10 +45,6 @@ export default class Demo extends DemoView {
 				},
 				new Input({
 					type: 'number',
-					styles: () => `
-						margin: 18px auto 9px;
-						width: 90%;
-					`,
 					value: this.component.options.lineWidth,
 					onChange: ({ value }) => {
 						this.component.options.lineWidth = value;
