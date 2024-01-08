@@ -118,20 +118,16 @@ class ColorPicker extends Input {
 		// eslint-disable-next-line spellcheck/spell-checker
 		this.elem.setAttribute('data-augmented-ui', 'tl-clip tr-2-clip-y br-2-clip-y bl-clip border');
 
-		this.set(options.value);
-
 		document.addEventListener('mousedown', this.onPointerDown.bind(this));
 		document.addEventListener('touchstart', this.onPointerDown.bind(this));
 	}
 
 	render() {
-		super.render();
-
 		this.textInput = new Input({
 			type: 'text',
-			value: this.options.value,
-			onChange: ({ value }) => this.set(value),
-			onKeyUp: debounce(({ target: { value } }) => this.set(value), 700),
+			value: this.options.subscriber('value', value => this.hslString || value),
+			onChange: ({ value }) => (this.options.value = value),
+			onKeyUp: debounce(({ target: { value } }) => (this.options.value = value), 700),
 			prependTo: this.elem,
 		});
 
@@ -192,44 +188,42 @@ class ColorPicker extends Input {
 							`
 							: `
 								background: ${color};
-								color: ${colors.mostReadable(color, [colors.white, colors.black])}
+								color: ${colors.mostReadable(color, [colors.white, colors.black])};
 							`,
-					onPointerPress: () => this.set(color),
+					onPointerPress: () => (this.options.value = color),
 				});
 			});
 		}
+
+		super.render();
 	}
 
-	get value() {
-		return this._value;
-	}
+	setOption(key, value) {
+		if (key === 'value') {
+			if (!value) {
+				this.options.onChange.call(this, { value: '' });
 
-	set value(value) {
-		this._value = value;
-	}
+				return;
+			}
 
-	set(userInput) {
-		if (!userInput) {
-			this.value = '';
+			const color = value === 'random' ? randomColor() : new TinyColor(value);
+			const { h, s, l } = typeof value === 'object' ? value : color.toHsv();
+			const hslString =
+				typeof value === 'object'
+					? `hsl(${Math.round(value.h)}, ${Math.round(value.s * 100)}%, ${Math.round(value.l * 100)}%)`
+					: color.toHslString();
 
-			this.options.onChange.call(this, { value: '' });
+			this.hslString = hslString;
+			this.hue = h;
+			this.saturation = s;
+			this.lightness = l;
 
-			return;
-		}
+			this.elem.style.backgroundColor = hslString;
 
-		const color = userInput === 'random' ? randomColor() : new TinyColor(userInput);
-		const hsv = color.toHsv();
-		const rgbString = color.toRgbString();
+			this.pickerArea.elem.style.backgroundColor = `hsl(${h}, 100%, 50%)`;
 
-		this.color = color;
-
-		this.value = rgbString;
-		this.textInput.elem.value = rgbString;
-		this.elem.style.backgroundColor = rgbString;
-
-		this.pickerArea.elem.style.backgroundColor = `hsl(${hsv.h}, 100%, 50%)`;
-
-		this.options.onChange.call(this, { value: rgbString });
+			this.options.onChange.call(this, { value: hslString, color, h, s, l });
+		} else super.setOption(key, value);
 	}
 
 	normalizePosition(event, parent, offsetX, offsetY) {
@@ -269,15 +263,13 @@ class ColorPicker extends Input {
 		position.x -= indicatorOffsetX;
 		position.y -= indicatorOffsetY;
 
-		const { h } = this.color.toHsv();
-
 		const newS = position.x / pickerAreaWidth;
-		const newV = (pickerAreaHeight - position.y) / pickerAreaHeight;
+		const newL = (pickerAreaHeight - position.y) / pickerAreaHeight;
 
 		requestAnimationFrame(() => {
 			this.pickerIndicator.elem.style.transform = `translate3d(${position.x}px, ${position.y}px, 0)`;
 
-			this.set({ h, s: newS, v: newV });
+			this.options.value = { h: this.hue, s: newS, l: newL };
 
 			this.runningAnimation = false;
 		});
@@ -295,14 +287,12 @@ class ColorPicker extends Input {
 
 		position.x -= indicatorOffset;
 
-		const { s, v } = this.color.toHsv();
-
-		const newHue = (position.x / hueAreaWidth) * 360;
+		const newHue = Math.round((position.x / hueAreaWidth) * 360);
 
 		requestAnimationFrame(() => {
 			this.hueIndicator.elem.style.transform = `translate3d(${position.x - indicatorOffset / 2}px, 0, 0)`;
 
-			this.set({ h: newHue, s, v });
+			this.options.value = { h: newHue, s: this.saturation, l: this.lightness };
 
 			this.pickerArea.elem.style.backgroundColor = `hsl(${newHue}, 100%, 50%)`;
 
