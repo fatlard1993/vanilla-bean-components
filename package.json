@@ -1,6 +1,6 @@
 {
   "name": "vanilla-bean-components",
-  "version": "0.0.80",
+  "version": "0.0.81",
   "type": "module",
   "exports": {
     "./theme/*": "./theme/*.js",
