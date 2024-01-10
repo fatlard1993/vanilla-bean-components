@@ -30,7 +30,7 @@ result += '\n';
 
 examples.forEach(file => {
 	const match = file.match(/(.+)\/(.+?)(\..+)?$/);
-	result += `\t['/${match[2]}']: ${match[2]}Example,\n`;
+	result += `\t['/examples/${match[2]}']: ${match[2]}Example,\n`;
 });
 
 result += '};\n';
