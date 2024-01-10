@@ -2,7 +2,7 @@ import { DomElem, Button, Link, Search } from '../components';
 
 import { debounce, styled } from '../utils';
 
-import { views } from './DemoRouter';
+import views from './views';
 
 const MenuLink = styled(
 	Link,

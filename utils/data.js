@@ -26,6 +26,8 @@ export const throttle = (callback, delay) => {
 	};
 };
 
+export const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 /**
  * Retrieve a list of non-native properties from a javascript object
  * @param {Object} object - The target Object
@@ -63,3 +65,26 @@ export const conditionalList = conditionalItems =>
 
 			return [];
 		});
+
+export const orderBy = orders => (a, b) => {
+	const sortDirection = { asc: -1, desc: 1 };
+	const sortCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+
+	if (!Array.isArray(orders)) orders = [orders];
+
+	const totalOrders = orders.length;
+
+	for (let index = 0; index < totalOrders; index++) {
+		const { property, direction = 'asc' } = orders[index];
+		const directionInt = sortDirection[direction];
+		const compare = sortCollator.compare(
+			property === undefined ? a : a[property],
+			property === undefined ? b : b[property],
+		);
+
+		if (compare < 0) return directionInt;
+		if (compare > 0) return -directionInt;
+	}
+
+	return 0;
+};

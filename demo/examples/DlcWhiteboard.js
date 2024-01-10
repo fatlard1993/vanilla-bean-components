@@ -104,8 +104,6 @@ class DlcWhiteboard extends DomElem {
 			firstInkRunOut: false,
 		};
 
-		console.log({ database });
-
 		super({
 			...database,
 			styles: () => `

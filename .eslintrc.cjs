@@ -82,7 +82,7 @@ module.exports = {
 			},
 		},
 		{
-			files: ['demo/server.js'],
+			files: ['demo/server.js', 'devTools/*'],
 			env: {
 				browser: false,
 				node: true,

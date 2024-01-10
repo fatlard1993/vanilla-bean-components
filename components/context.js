@@ -1,4 +1,4 @@
-import domElem from '../DomElem/context';
+import { context as domElem } from '../DomElem';
 
 import { Context } from '../utils';
 import theme from '../theme';

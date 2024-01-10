@@ -106,6 +106,7 @@ module.exports = {
 		'outdir',
 		'plaintext',
 		'dlc',
+		'argv',
 	],
 	skipIfMatch: ['\\d+v[wh]'],
 	skipWordIfMatch: [],

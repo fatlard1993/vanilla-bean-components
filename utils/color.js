@@ -41,12 +41,16 @@ export const deltaE = (rgbA, rgbB) => {
 	const deltaC = c1 - c2;
 	let deltaH = deltaA * deltaA + deltaB * deltaB - deltaC * deltaC;
 	deltaH = deltaH < 0 ? 0 : Math.sqrt(deltaH);
-	const sc = 1 + 0.045 * c1;
 	const sh = 1 + 0.015 * c1;
+
+	/* eslint-disable spellcheck/spell-checker */
+	const sc = 1 + 0.045 * c1;
 	const deltaLKlsl = deltaL / 1;
 	const deltaCkcsc = deltaC / sc;
 	const deltaHkhsh = deltaH / sh;
 	const index = deltaLKlsl * deltaLKlsl + deltaCkcsc * deltaCkcsc + deltaHkhsh * deltaHkhsh;
+	/* eslint-enable spellcheck/spell-checker */
+
 	return index < 0 ? 0 : Math.sqrt(index);
 };
 

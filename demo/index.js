@@ -1,16 +1,32 @@
 import process from 'process';
-import { Page } from '..';
+import { DomElem, Page, Router, View } from '..';
 
 import DemoMenu from './DemoMenu';
-import DemoRouter from './DemoRouter';
+import views from './views';
 
 window.process = process;
 
 const menu = new DemoMenu();
 
+class NotFound extends View {
+	render() {
+		new DomElem({
+			styles: () => `
+				margin: 6px auto;
+				padding: 6px 12px;
+				text-align: center;
+			`,
+			textContent: `Could not find route "${this.options.route}"`,
+			appendTo: this,
+		});
+
+		super.render();
+	}
+}
+
 new Page({
 	appendTo: document.body,
-	append: [menu, new DemoRouter({ onRenderView: route => menu.updateSelection(route) })],
+	append: [menu, new Router({ views, notFound: NotFound, onRenderView: route => menu.updateSelection(route) })],
 });
 
 const socket = new WebSocket(`ws://${window.location.host}/ws`);

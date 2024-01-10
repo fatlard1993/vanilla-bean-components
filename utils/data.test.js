@@ -1,6 +1,6 @@
 // import { vi } from 'vitest';
 
-import { debounce, getCustomProperties, conditionalList } from './data';
+import { debounce, getCustomProperties, conditionalList, orderBy } from './data';
 
 const vi = {};
 
@@ -69,4 +69,31 @@ test('conditionalList', () => {
 			{ alwaysItems: [23, 42] },
 		]),
 	).toStrictEqual([4, 8, 15, 16, 23, 42]);
+});
+
+test('orderBy', () => {
+	expect(
+		[{ testProp: 'beta' }, { testProp: 'alpha' }, { testProp: 'delta' }, { testProp: 'charlie' }].sort(
+			orderBy({ property: 'testProp', direction: 'asc' }),
+		),
+	).toEqual([{ testProp: 'alpha' }, { testProp: 'beta' }, { testProp: 'charlie' }, { testProp: 'delta' }]);
+
+	expect(
+		[
+			{ testProp: 'beta', value: 0 },
+			{ testProp: 'alpha', value: 3 },
+			{ testProp: 'beta', value: 9 },
+			{ testProp: 'charlie', value: 0 },
+		].sort(
+			orderBy([
+				{ property: 'testProp', direction: 'asc' },
+				{ property: 'value', direction: 'desc' },
+			]),
+		),
+	).toEqual([
+		{ testProp: 'alpha', value: 3 },
+		{ testProp: 'beta', value: 9 },
+		{ testProp: 'beta', value: 0 },
+		{ testProp: 'charlie', value: 0 },
+	]);
 });

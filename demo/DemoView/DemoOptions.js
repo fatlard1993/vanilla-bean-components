@@ -1,4 +1,4 @@
-import { Code, List, Select, Textarea, Label, conditionalList } from '..';
+import { Code, List, Select, Textarea, Label, conditionalList } from '../..';
 import { stringifyValue } from './utils';
 
 export default class DemoOptions extends List {

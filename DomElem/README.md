@@ -1,6 +1,8 @@
 # DomElem
 
-Vanilla JS class-based component building block
+> Vanilla JS class-based component building block
+
+DomElem is the product of a research project aiming to solve frontend development with a pattern and native tooling. DomElem implements the core common concepts I've discovered while building out [vanilla-bean-components](https://github.com/fatlard1993/vanilla-bean-components). Ideally this particular point of abstraction should be largely unnecessary, but I've found that there are still some shortcomings in the native feature sets and APIs. As I have more time, examples, and thoughts this piece will continue to simplify and reduce. Though at this current time I feel it may be necessary to keep this core piece. If I'm able to simplify it enough and harden its core principles it will eventually become its own repo.
 
 ## Usage
 
@@ -85,14 +87,8 @@ context.myCustomState = 'bString';
 
 Everything in a DomElem can be controlled by its `options`. In addition to configuration, `options` offers access to properties, methods, and events of the DomElem class and its base HTMLElement.
 
-Class instance property `options` is built on Context.
-All `set` operations run through the internal method `setOption`.
-The base `setOption` method handles applying options as either method calls or property sets.
-Keys that exist on the DomElem class take precedence, otherwise apply to the base HTMLElement.
-Additional behavior can be configured or overwritten in extended components by overlaying the `setOption` method.
-Option changes can also be observed and subscribed to via the Context API.
+Class instance property `options` is built on Context. All `set` operations run through the internal method `setOption`. The base `setOption` method handles applying options as either method calls or property sets. Keys that exist on the DomElem class take precedence, otherwise apply to the base HTMLElement. Additional behavior can be configured or overwritten in extended components by overlaying the `setOption` method. Option changes can also be observed and subscribed to via the Context API.
 
-- ...[EventTarget](https://developer.mozilla.org/en-UK/docs/Web/API/EventTarget)
 - ...[EventTarget](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget)
 - ...[Node](https://developer.mozilla.org/en-US/docs/Web/API/Node)
 - ...[Element](https://developer.mozilla.org/en-US/docs/Web/API/Element)
@@ -118,7 +114,6 @@ Option changes can also be observed and subscribed to via the Context API.
   - prepend: ...(DomElem || HTMLElement)
   - (setAttributes || attributes): Object
   - styles: (theme, this) => String
-  - globalStyles: (theme, this) => String
   - onContextMenu: (event) => (() => removeEventListener)
   - onHover: (event) => (() => removeEventListener)
   - onMouseLeave: (event) => (() => removeEventListener)

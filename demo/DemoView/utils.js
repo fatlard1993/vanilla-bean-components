@@ -1,4 +1,4 @@
-import { removeExcessIndentation } from '../utils';
+import { removeExcessIndentation } from '../../utils';
 
 export const stringifyValue = value => {
 	if (typeof value === 'string') return value;
