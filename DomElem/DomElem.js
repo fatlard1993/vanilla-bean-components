@@ -196,10 +196,6 @@ class DomElem extends EventTarget {
 		);
 	}
 
-	globalStyles(styles) {
-		processStyles({ styles, theme: context.theme, context: this }).then(css => appendStyles(css));
-	}
-
 	detectTouch() {
 		if (this.__touchDetectionEnabled) return;
 

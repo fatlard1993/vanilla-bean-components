@@ -3,6 +3,7 @@ import code from './code';
 import colors from './colors';
 import fonts from './fonts';
 import input from './input';
+import page from './page';
 import scrollbar from './scrollbar';
 
-export default { code, colors, fonts, input, button, scrollbar };
+export default { code, colors, fonts, input, button, page, scrollbar };

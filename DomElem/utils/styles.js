@@ -53,3 +53,6 @@ export const processStyles = async ({ styles = () => '', theme, context, scope }
 		.then(({ css }) => css)
 		// eslint-disable-next-line no-console
 		.catch(process.env.NODE_ENV === 'development' ? console.error : () => {});
+
+export const applyStyles = async ({ styles, theme, context, scope }) =>
+	processStyles({ styles, theme, context, scope }).then(css => appendStyles(css));
