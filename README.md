@@ -103,8 +103,8 @@ styled
 const RedOne = styled(
 	DomElem,
 	theme => `
-	color: ${theme.colors.red};
-`,
+		color: ${theme.colors.red};
+	`,
 );
 ```
 
