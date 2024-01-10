@@ -17,6 +17,7 @@ Projects with similar goals or results:
 - [VanJS](https://github.com/vanjs-org/van)
 - [RawJS](https://github.com/squaresapp/rawjs)
 - [Alpine.js](https://github.com/alpinejs/alpine)
+- [uHTML](https://github.com/WebReflection/uhtml)
 
 ### My Opinions
 
