@@ -14,7 +14,7 @@ class DomElem extends EventTarget {
 		tag: 'div',
 		autoRender: true,
 		knownAttributes: new Set(['role']),
-		priorityOptions: new Set(['textContent', 'content', 'appendTo', 'prependTo']),
+		priorityOptions: new Set(['onConnected', 'textContent', 'content', 'appendTo', 'prependTo']),
 	};
 
 	/**
@@ -94,6 +94,38 @@ class DomElem extends EventTarget {
 
 	get parent() {
 		return this.parentElem?._domElem;
+	}
+
+	observeElementConnection() {
+		if (this.elemObserver) return;
+
+		this.elemObserver = new MutationObserver(mutationList => {
+			for (const mutation of mutationList) {
+				if (mutation.removedNodes.length > 0 && mutation.removedNodes[0] === this.elem) {
+					this.dispatchEvent(new CustomEvent('disconnected', { detail: mutation }));
+				} else if (mutation.addedNodes.length > 0 && mutation.addedNodes[0] === this.elem) {
+					this.dispatchEvent(new CustomEvent('connected', { detail: mutation }));
+				}
+			}
+		});
+
+		this.elemObserver.observe(this.parentElem || document, { childList: true, subtree: true });
+	}
+
+	onConnected(callback) {
+		this.observeElementConnection();
+
+		this.addEventListener('connected', callback);
+
+		return () => this.removeEventListener('connected', callback);
+	}
+
+	onDisconnected(callback) {
+		this.observeElementConnection();
+
+		this.addEventListener('disconnected', callback);
+
+		return () => this.removeEventListener('disconnected', callback);
 	}
 
 	setOptions(options) {

@@ -11,6 +11,9 @@ export default class Popover extends Icon {
 				visualParent: document.body,
 				appendTo: document.body,
 				state: 'auto',
+				onConnected: () => {
+					if (autoOpen) setTimeout(() => this.show(), 200);
+				},
 				...options,
 				styles: (theme, domElem) => `
 					position: absolute;
@@ -31,8 +34,6 @@ export default class Popover extends Icon {
 		this.elem.popover = this.options.state;
 
 		if (this.options.x !== undefined && this.options.y !== undefined) this.edgeAwarePlacement(this.options);
-
-		if (autoOpen) requestAnimationFrame(() => this.show());
 	}
 
 	edgeAwarePlacement({ x, y, maxHeight = 132, maxWidth = 264, padding = 24, visualParent }) {
