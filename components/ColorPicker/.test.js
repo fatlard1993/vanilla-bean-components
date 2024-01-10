@@ -8,8 +8,8 @@ describe('ColorPicker', () => {
 
 		await findByRole(container, 'textbox');
 
-		fireEvent.change(await findByRole(container, 'textbox'), { target: { value: 'rgb(0, 0, 255)' } });
+		fireEvent.change(await findByRole(container, 'textbox'), { target: { value: 'hsl(123, 50%, 50%)' } });
 
-		await findByDisplayValue(container, 'rgb(0, 0, 255)');
+		await findByDisplayValue(container, 'hsl(123, 50%, 50%)');
 	});
 });
