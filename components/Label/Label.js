@@ -27,7 +27,7 @@ class Label extends TooltipWrapper {
 					width: 90%;
 					margin: 0 2.5% 12px;
 					margin-right: -12px;
-					padding: 12px;
+					padding: 9px 12px 12px;
 					background-color: ${theme.colors.white.setAlpha(0.06)};
 					color: ${theme.colors.white};
 					transition: all 0.5s;
@@ -47,7 +47,7 @@ class Label extends TooltipWrapper {
 					--aug-br1: 6px;
 
 					> *:not(label):not(.tooltip) {
-						margin-top: 12px;
+						margin-top: 6px;
 					}
 
 					&.collapsed {
