@@ -430,7 +430,7 @@ class DomElem extends EventTarget {
 
 	onKeyDown(callback) {
 		const wrappedCallback = event => {
-			event.value = event.target.value || this.elem.value || this.value;
+			event.value = this.value ?? this.elem.value ?? event.target.value;
 
 			callback.call(this, event);
 		};
@@ -442,7 +442,7 @@ class DomElem extends EventTarget {
 
 	onKeyUp(callback) {
 		const wrappedCallback = event => {
-			event.value = event.target.value || this.elem.value || this.value;
+			event.value = this.value ?? this.elem.value ?? event.target.value;
 
 			callback.call(this, event);
 		};
@@ -454,7 +454,7 @@ class DomElem extends EventTarget {
 
 	onChange(callback) {
 		const wrappedCallback = event => {
-			event.value = event.target.value || this.elem.value || this.value;
+			event.value = this.value ?? this.elem.value ?? event.target.value;
 
 			callback.call(this, event);
 		};
@@ -466,7 +466,7 @@ class DomElem extends EventTarget {
 
 	onBlur(callback) {
 		const wrappedCallback = event => {
-			event.value = event.target.value || this.elem.value || this.value;
+			event.value = this.value ?? this.elem.value ?? event.target.value;
 
 			callback.call(this, event);
 		};

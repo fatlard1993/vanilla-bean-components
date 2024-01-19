@@ -9,7 +9,7 @@ class Search extends Input {
 
 	onSearch(callback) {
 		const wrappedCallback = event => {
-			event.value = event.target.value || this.elem.value || this.value;
+			event.value = this.value ?? this.elem.value ?? event.target.value;
 
 			callback(event);
 		};
