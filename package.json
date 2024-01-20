@@ -35,7 +35,7 @@
   "scripts": {
     "start": "bun run dev",
     "demo": "bun run dev",
-    "dev": "bun --hot demo/server.js",
+    "dev": "bun run build:index ; bun --hot demo/server.js",
     "build": "bun build demo/index.js --outdir demo/build --define 'process.env.AUTOPREFIXER_GRID=\"undefined\"'",
     "build:index": "bun run devTools/updateComponentIndex.js ; bun run devTools/updateDemoViewIndex.js",
     "build:dev": "bun run build -- --watch",
