@@ -6,6 +6,7 @@ export default class Demo extends DemoView {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
 		this.component = new Code({
+			style: { margin: '0 auto' },
 			code: `
 				import DemoView from '../../demo/DemoView';
 				import Code from '.';

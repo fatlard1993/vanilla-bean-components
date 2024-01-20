@@ -2,9 +2,24 @@ import { customAlphabet } from 'nanoid';
 
 import { processStyles, appendStyles, buildClassList, Context } from './utils';
 import context from './context';
+import { observeElementConnection } from './utils/elem';
 
 // eslint-disable-next-line spellcheck/spell-checker
 const classId = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-', 10);
+
+const connectionEvents = new Set(['connected', 'disconnected']);
+const inputEvents = new Set(['keydown', 'keyup', 'change', 'blur', 'input', 'search']);
+const commonEvents = new Set([
+	'pointerover',
+	'pointerenter',
+	'pointerdown',
+	'pointermove',
+	'pointerup',
+	'pointercancel',
+	'pointerout',
+	'pointerleave',
+	'contextmenu',
+]);
 
 /** DomElem - A general purpose base element building block */
 class DomElem extends EventTarget {
@@ -47,6 +62,7 @@ class DomElem extends EventTarget {
 		this.tag = tag;
 		this.elem = document.createElement(tag);
 		this.elem._domElem = this;
+		this.cleanup = {};
 
 		this.addClass(this.classId);
 
@@ -74,6 +90,12 @@ class DomElem extends EventTarget {
 	}
 
 	setOption(key, value) {
+		if (key.startsWith('on')) {
+			const targetEvent = key.replace(/^on/, '').toLowerCase();
+
+			if (this.on({ targetEvent, id: key, callback: value })) return;
+		}
+
 		if (key === 'style') this.setStyle(value);
 		else if (key === 'attributes') this.setAttributes(value);
 		else if (this.__knownAttributes.has(key) || key.startsWith('aria-')) {
@@ -96,36 +118,49 @@ class DomElem extends EventTarget {
 		return this.parentElem?._domElem;
 	}
 
-	observeElementConnection() {
-		if (this.elemObserver) return;
+	on({ targetEvent, id = targetEvent, callback }) {
+		this.cleanup[id]?.();
 
-		this.elemObserver = new MutationObserver(mutationList => {
-			for (const mutation of mutationList) {
-				if (mutation.removedNodes.length > 0 && mutation.removedNodes[0] === this.elem) {
-					this.dispatchEvent(new CustomEvent('disconnected', { detail: mutation }));
-				} else if (mutation.addedNodes.length > 0 && mutation.addedNodes[0] === this.elem) {
-					this.dispatchEvent(new CustomEvent('connected', { detail: mutation }));
-				}
+		if (commonEvents.has(targetEvent)) {
+			this.elem.addEventListener(targetEvent, callback);
+
+			this.cleanup[id] = () => this.elem.removeEventListener(targetEvent, callback);
+
+			return true;
+		}
+
+		if (inputEvents.has(targetEvent)) {
+			const _callback = event => {
+				event.value = event.target.value ?? this.options.value ?? this.elem.value;
+
+				callback.call(this, event);
+			};
+
+			this.elem.addEventListener(targetEvent, _callback);
+
+			this.cleanup[id] = () => this.elem.removeEventListener(targetEvent, _callback);
+
+			return true;
+		}
+
+		if (connectionEvents.has(targetEvent)) {
+			if (!this.elemObserver) {
+				this.elemObserver = observeElementConnection({
+					parent: this.parentElem || document,
+					target: this.elem,
+					onConnected: event => this.dispatchEvent(new CustomEvent('connected', { detail: event })),
+					onDisconnected: event => this.dispatchEvent(new CustomEvent('disconnected', { detail: event })),
+				});
 			}
-		});
 
-		this.elemObserver.observe(this.parentElem || document, { childList: true, subtree: true });
-	}
+			this.elemObserver.observe(this.parentElem || document, { childList: true, subtree: true });
 
-	onConnected(callback) {
-		this.observeElementConnection();
+			this.addEventListener(targetEvent, callback);
 
-		this.addEventListener('connected', callback);
+			this.cleanup[id] = () => this.removeEventListener(targetEvent, callback);
 
-		return () => this.removeEventListener('connected', callback);
-	}
-
-	onDisconnected(callback) {
-		this.observeElementConnection();
-
-		this.addEventListener('disconnected', callback);
-
-		return () => this.removeEventListener('disconnected', callback);
+			return true;
+		}
 	}
 
 	setOptions(options) {
@@ -147,7 +182,7 @@ class DomElem extends EventTarget {
 	}
 
 	hasClass(...classes) {
-		return classes.flat(Number.Infinity).every(className => {
+		return classes.flat(Number.POSITIVE_INFINITY).every(className => {
 			const classRegex = className instanceof RegExp ? className : new RegExp(`\\b${className}\\b`, 'g');
 
 			return classRegex.test(this.elem.className);
@@ -161,7 +196,7 @@ class DomElem extends EventTarget {
 	}
 
 	removeClass(...classes) {
-		classes.flat(Number.Infinity).forEach(className => {
+		classes.flat(Number.POSITIVE_INFINITY).forEach(className => {
 			const classRegex = className instanceof RegExp ? className : new RegExp(`\\b${className}\\b`, 'g');
 
 			if (classRegex.test(this.elem.className)) {
@@ -228,252 +263,57 @@ class DomElem extends EventTarget {
 		);
 	}
 
-	detectTouch() {
-		if (this.__touchDetectionEnabled) return;
-
-		this.__touchDetectionEnabled = true;
-
-		this.__detectTouch = ({ type }) => {
-			context.isTouchDevice = type.startsWith('touch');
-		};
-
-		document.addEventListener('touchstart', this.__detectTouch);
-		document.addEventListener('touchend', this.__detectTouch);
-		document.addEventListener('touchcancel', this.__detectTouch);
-		document.addEventListener('mousedown', this.__detectTouch);
-		document.addEventListener('mouseup', this.__detectTouch);
-	}
-
-	pointerEventPolyfill(event) {
-		event.stop = () => {
-			if (event.cancelable) event.preventDefault();
-
-			if (event.stopPropagation) event.stopPropagation();
-		};
-
-		if (!event.pointerType) {
-			if (event.type.startsWith('touch')) event.pointerType = 'touch';
-			else if (event.type.startsWith('mouse')) event.pointerType = 'mouse';
-			else event.pointerType = context.isTouchDevice ? 'touch' : 'mouse';
-		}
-
-		return event;
-	}
-
-	wrapPointerCallback(callback = () => {}) {
-		return event => {
-			event = this.pointerEventPolyfill(event);
-
-			if (context.isTouchDevice && event.pointerType !== 'touch') return;
-
-			callback.call(this, event);
-		};
-	}
-
-	onContextMenu(callback) {
-		callback = this.wrapPointerCallback(callback);
-
-		this.elem.addEventListener('contextmenu', callback);
-
-		return () => this.elem.removeEventListener('contextmenu', callback);
-	}
-
 	onHover(callback) {
-		callback = this.wrapPointerCallback(callback);
+		this.cleanup.onHover?.();
 
-		const mouseEnter = event => {
+		const pointerEnter = event => {
 			callback.call(this, event);
 
-			this.elem.addEventListener('mousemove', callback, true);
+			this.elem.addEventListener('pointermove', callback, true);
 		};
 
-		const mouseLeave = () => {
-			this.elem.removeEventListener('mousemove', callback, true);
+		const pointerLeave = () => {
+			this.elem.removeEventListener('pointermove', callback, true);
 		};
 
-		this.elem.addEventListener('mouseenter', mouseEnter);
-		this.elem.addEventListener('mouseleave', mouseLeave);
+		this.elem.addEventListener('pointerenter', pointerEnter);
+		this.elem.addEventListener('pointerleave', pointerLeave);
+		this.elem.addEventListener('pointercancel', pointerLeave);
+		this.elem.addEventListener('pointerout', pointerLeave);
 
-		return () => {
-			this.elem.removeEventListener('mouseenter', mouseEnter);
-			this.elem.removeEventListener('mouseleave', mouseLeave);
-			this.elem.removeEventListener('mousemove', callback, true);
-		};
-	}
-
-	onMouseLeave(callback) {
-		callback = this.wrapPointerCallback(callback);
-
-		this.elem.addEventListener('mouseleave', callback);
-
-		return () => this.elem.removeEventListener('mouseleave', callback);
-	}
-
-	onPointerDown(callback) {
-		callback = this.wrapPointerCallback(callback);
-
-		this.elem.addEventListener('touchstart', callback);
-		this.elem.addEventListener('mousedown', callback);
-
-		return () => {
-			this.elem.removeEventListener('touchstart', callback);
-			this.elem.removeEventListener('mousedown', callback);
-		};
-	}
-
-	onPointerUp(callback) {
-		callback = this.wrapPointerCallback(callback);
-
-		this.elem.addEventListener('touchend', callback);
-		this.elem.addEventListener('touchcancel', callback);
-		this.elem.addEventListener('mouseup', callback);
-
-		return () => {
-			this.elem.removeEventListener('touchend', callback);
-			this.elem.removeEventListener('touchcancel', callback);
-			this.elem.removeEventListener('mouseup', callback);
+		this.cleanup.onHover = () => {
+			this.elem.removeEventListener('pointerenter', pointerEnter);
+			this.elem.removeEventListener('pointerleave', pointerLeave);
+			this.elem.removeEventListener('pointercancel', pointerLeave);
+			this.elem.removeEventListener('pointerout', pointerLeave);
+			this.elem.removeEventListener('pointermove', callback, true);
 		};
 	}
 
 	onPointerPress(callback) {
-		const wrappedCallback = event => {
-			event = this.pointerEventPolyfill(event);
+		this.cleanup.onPointerPress?.();
 
-			if (this.pointerUpOff) this.pointerUpOff();
-
-			if (event.target !== this.elem || (context.isTouchDevice && event.pointerType !== 'touch')) return;
-
-			callback.call(this, event);
+		const cleanupPointerDown = () => {
+			this.elem.removeEventListener('pointerup', callback);
+			this.elem.removeEventListener('pointerleave', cleanupPointerDown);
+			this.elem.removeEventListener('pointercancel', cleanupPointerDown);
+			this.elem.removeEventListener('pointerout', cleanupPointerDown);
 		};
 
-		const pointerDown = event => {
-			event = this.pointerEventPolyfill(event);
-
-			if (event.target !== this.elem || (context.isTouchDevice && event.pointerType !== 'touch')) return;
-
-			document.addEventListener('touchend', wrappedCallback, true);
-			document.addEventListener('touchcancel', wrappedCallback, true);
-			document.addEventListener('mouseup', wrappedCallback, true);
-
-			this.pointerUpOff = () => {
-				document.removeEventListener('touchend', wrappedCallback, true);
-				document.removeEventListener('touchcancel', wrappedCallback, true);
-				document.removeEventListener('mouseup', wrappedCallback, true);
-
-				this.pointerUpOff = undefined;
-			};
+		const pointerDown = () => {
+			this.elem.addEventListener('pointerup', callback);
+			this.elem.addEventListener('pointerleave', cleanupPointerDown);
+			this.elem.addEventListener('pointercancel', cleanupPointerDown);
+			this.elem.addEventListener('pointerout', cleanupPointerDown);
 		};
 
-		this.elem.addEventListener('touchstart', pointerDown);
-		this.elem.addEventListener('mousedown', pointerDown);
+		this.elem.addEventListener('pointerdown', pointerDown);
 
-		return () => {
-			this.elem.removeEventListener('touchstart', pointerDown);
-			this.elem.removeEventListener('mousedown', pointerDown);
+		this.cleanup.onPointerPress = () => {
+			this.elem.removeEventListener('pointerdown', pointerDown);
 
-			document.removeEventListener('touchend', wrappedCallback);
-			document.removeEventListener('touchcancel', wrappedCallback);
-			document.removeEventListener('mouseup', wrappedCallback);
+			cleanupPointerDown();
 		};
-	}
-
-	onPointerPressAndHold(callback) {
-		this.elem.dataset.pressAndHoldTime = this.elem.dataset.pressAndHoldTime || 900;
-
-		const pointerUp = () => {
-			this.pointerUpOff();
-		};
-
-		const pointerDown = event => {
-			event = this.pointerEventPolyfill(event);
-
-			if (event.target !== this.elem || (context.isTouchDevice && event.pointerType !== 'touch')) return;
-
-			this.addClass('pointerHold');
-
-			this.holdTimeout = setTimeout(() => {
-				callback.call(this, event);
-			}, Number.parseInt(this.elem.dataset.pressAndHoldTime));
-
-			document.addEventListener('touchend', pointerUp, true);
-			document.addEventListener('touchcancel', pointerUp, true);
-			document.addEventListener('mouseup', pointerUp, true);
-			this.elem.addEventListener('mouseleave', pointerUp, true);
-
-			this.pointerUpOff = () => {
-				clearTimeout(this.holdTimeout);
-
-				this.removeClass('pointerHold');
-
-				document.removeEventListener('touchend', pointerUp, true);
-				document.removeEventListener('touchcancel', pointerUp, true);
-				document.removeEventListener('mouseup', pointerUp, true);
-				this.elem.removeEventListener('mouseleave', pointerUp, true);
-
-				this.pointerUpOff = undefined;
-			};
-		};
-
-		this.elem.addEventListener('touchstart', pointerDown);
-		this.elem.addEventListener('mousedown', pointerDown);
-
-		return () => {
-			this.elem.removeEventListener('touchstart', pointerDown);
-			this.elem.removeEventListener('mousedown', pointerDown);
-
-			document.removeEventListener('touchend', pointerUp, true);
-			document.removeEventListener('touchcancel', pointerUp, true);
-			document.removeEventListener('mouseup', pointerUp, true);
-			this.elem.removeEventListener('mouseleave', pointerUp, true);
-		};
-	}
-
-	onKeyDown(callback) {
-		const wrappedCallback = event => {
-			event.value = this.value ?? this.elem.value ?? event.target.value;
-
-			callback.call(this, event);
-		};
-
-		this.elem.addEventListener('keydown', wrappedCallback);
-
-		return () => this.elem.removeEventListener('keydown', wrappedCallback);
-	}
-
-	onKeyUp(callback) {
-		const wrappedCallback = event => {
-			event.value = this.value ?? this.elem.value ?? event.target.value;
-
-			callback.call(this, event);
-		};
-
-		this.elem.addEventListener('keyup', wrappedCallback);
-
-		return () => this.elem.removeEventListener('keyup', wrappedCallback);
-	}
-
-	onChange(callback) {
-		const wrappedCallback = event => {
-			event.value = this.value ?? this.elem.value ?? event.target.value;
-
-			callback.call(this, event);
-		};
-
-		this.elem.addEventListener('change', wrappedCallback);
-
-		return () => this.elem.removeEventListener('change', wrappedCallback);
-	}
-
-	onBlur(callback) {
-		const wrappedCallback = event => {
-			event.value = this.value ?? this.elem.value ?? event.target.value;
-
-			callback.call(this, event);
-		};
-
-		this.elem.addEventListener('blur', wrappedCallback);
-
-		return () => this.elem.removeEventListener('blur', wrappedCallback);
 	}
 }
 

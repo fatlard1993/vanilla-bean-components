@@ -1,6 +1,7 @@
 import DemoView, { DemoWrapper } from '../../demo/DemoView';
 import { ColorPicker } from '../ColorPicker';
 import { Button } from '../Button';
+import { Select } from '../Select';
 import { Form } from '.';
 
 export default class Demo extends DemoView {
@@ -8,11 +9,13 @@ export default class Demo extends DemoView {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
 		this.component = new Form({
-			data: { name: 'myName', url: 'myUrl', color: 'red' },
+			data: { string: 'myString', number: 13, bool: true, color: 'red', multiChoice: 'one' },
 			inputs: [
-				{ key: 'name', validations: [[/.+/, 'Required']] },
-				{ key: 'url', validations: [[/.+/, 'Required']] },
+				{ key: 'string', validations: [[/.+/, 'Required']] },
+				{ key: 'number', validations: [[_ => _ === 42, 'Must be the answer to Life, the Universe and Everything']] },
+				{ key: 'bool' },
 				{ key: 'color', Component: ColorPicker },
+				{ key: 'multiChoice', Component: Select, options: ['one', 'two', 'three'] },
 			],
 			appendTo: this.demoWrapper,
 		});

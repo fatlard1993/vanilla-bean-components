@@ -8,3 +8,14 @@ new Input({
 	onChange: event => {},
 })
 ```
+
+```js
+new Input({
+	tag: 'textarea',
+	value: 'multiline\nvalue',
+	validations: [[/.+/, 'This input is required']],
+	onKeyUp: event => {},
+	onInput: event => {},
+	onChange: event => {},
+})
+```

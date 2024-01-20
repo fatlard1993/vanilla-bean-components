@@ -21,7 +21,6 @@ export default class Form extends DomElem {
 							onChange(event);
 						},
 					}),
-					...(Component === Input ? { type: typeof this.options.data[key] === 'number' ? 'number' : 'string' } : {}),
 					...inputOptions,
 				});
 

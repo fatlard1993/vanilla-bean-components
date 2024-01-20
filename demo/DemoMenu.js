@@ -1,4 +1,4 @@
-import { DomElem, Button, Link, Search } from '../components';
+import { DomElem, Button, Link, Input } from '../components';
 
 import { debounce, styled } from '../utils';
 
@@ -83,7 +83,8 @@ export default class DemoMenu extends DomElem {
 			},
 		});
 
-		new Search({
+		new Input({
+			type: 'search',
 			style: { flex: 1 },
 			appendTo: this,
 			onKeyUp: ({ value }) => debouncedFilter(value),

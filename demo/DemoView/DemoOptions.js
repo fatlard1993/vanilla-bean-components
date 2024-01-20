@@ -1,4 +1,4 @@
-import { Code, List, Select, Textarea, Label, conditionalList } from '../..';
+import { Code, List, Select, Input, Label, conditionalList } from '../..';
 import { stringifyValue } from './utils';
 
 export default class DemoOptions extends List {
@@ -47,7 +47,8 @@ export default class DemoOptions extends List {
 									if: !isMethod(key) && !component[`${key}_enum`],
 									thenItem: new Label(
 										'Current',
-										new Textarea({
+										new Input({
+											tag: 'textarea',
 											value: component.options.subscriber(key),
 											onChange: ({ value: newValue }) => (component.options[key] = newValue),
 										}),

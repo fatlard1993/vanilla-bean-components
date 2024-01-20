@@ -116,11 +116,9 @@ Class instance property `options` is built on Context. All `set` operations run 
   - styles: (theme, this) => String
   - onContextMenu: (event) => (() => removeEventListener)
   - onHover: (event) => (() => removeEventListener)
-  - onMouseLeave: (event) => (() => removeEventListener)
   - onPointerDown: (event) => (() => removeEventListener)
   - onPointerUp: (event) => (() => removeEventListener)
   - onPointerPress: (event) => (() => removeEventListener)
-  - onPointerPressAndHold: (event) => (() => removeEventListener)
   - onKeyDown: (event) => (() => removeEventListener)
   - onKeyUp: (event) => (() => removeEventListener)
   - onChange: (event) => (() => removeEventListener)
@@ -139,6 +137,3 @@ Not all DomElem methods make sense to use with options:
 - removeClass(...classes) => this
 - toString => '[object DomElem]'
 - empty
-- detectTouch
-- pointerEventPolyfill(event) => event
-- wrapPointerCallback(callback) => ((event) => {})

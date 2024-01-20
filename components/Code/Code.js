@@ -57,7 +57,7 @@ class Code extends DomElem {
 			this.removeClass(/\blanguage-\S+\b/g);
 			this.addClass(`language-${value}`);
 		} else if (key === 'code') {
-			this[this.options.multiline ? '_code' : 'elem'].innerHTML = codeToHTML(this.options.code, this.options.language);
+			(this.options.multiline ? this._code : this).options.innerHTML = codeToHTML(value, this.options.language);
 		} else super.setOption(key, value);
 	}
 }

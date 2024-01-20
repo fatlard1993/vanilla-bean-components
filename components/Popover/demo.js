@@ -10,7 +10,8 @@ export default class Demo extends DemoView {
 			onContextMenu: event => {
 				console.log('onContextMenu', event);
 
-				event.stop();
+				event.preventDefault();
+				event.stopPropagation();
 
 				this.component.show({ x: event.clientX, y: event.clientY });
 			},
@@ -31,7 +32,7 @@ export default class Demo extends DemoView {
 			appendTo: this.demoWrapper,
 			label: 'Hover Me',
 			onHover: event => this.component.show({ x: event.clientX + 10, y: event.clientY + 10 }),
-			onMouseLeave: () => this.component.hide(),
+			onPointerLeave: () => this.component.hide(),
 		});
 
 		new Button({
@@ -42,7 +43,7 @@ export default class Demo extends DemoView {
 				console.log(event);
 				this.component.edgeAwarePlacement({ x: event.clientX + 10, y: event.clientY + 10 });
 			},
-			onMouseLeave: () => this.component.hide(),
+			onPointerLeave: () => this.component.hide(),
 		});
 	}
 }

@@ -12,6 +12,7 @@ export default `
 		color: ${colors.light(colors.red)};
 		background: ${colors.black};
 		border-radius: 0.2em;
+		width: fit-content;
 	}
 
 	code[class*="language-"]::-moz-selection,

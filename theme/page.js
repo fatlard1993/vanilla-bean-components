@@ -1,5 +1,6 @@
 import code from './code';
 import colors from './colors';
+import input, { number, checkbox } from './input';
 import scrollbar from './scrollbar';
 
 export default `
@@ -60,4 +61,8 @@ export default `
 	${code}
 
 	${scrollbar}
+
+	input, select { ${input} }
+	${number}
+	${checkbox}
 `;

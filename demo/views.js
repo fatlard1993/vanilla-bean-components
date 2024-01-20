@@ -18,10 +18,8 @@ import PageDemo from '../components/Page/demo.js';
 import PopoverDemo from '../components/Popover/demo.js';
 import RadioButtonDemo from '../components/RadioButton/demo.js';
 import RouterDemo from '../components/Router/demo.js';
-import SearchDemo from '../components/Search/demo.js';
 import SelectDemo from '../components/Select/demo.js';
 import TagListDemo from '../components/TagList/demo.js';
-import TextareaDemo from '../components/Textarea/demo.js';
 import TooltipDemo from '../components/Tooltip/demo.js';
 import TooltipWrapperDemo from '../components/TooltipWrapper/demo.js';
 import WhiteboardDemo from '../components/Whiteboard/demo.js';
@@ -57,10 +55,8 @@ export default {
 	['/Popover']: PopoverDemo,
 	['/RadioButton']: RadioButtonDemo,
 	['/Router']: RouterDemo,
-	['/Search']: SearchDemo,
 	['/Select']: SelectDemo,
 	['/TagList']: TagListDemo,
-	['/Textarea']: TextareaDemo,
 	['/Tooltip']: TooltipDemo,
 	['/TooltipWrapper']: TooltipWrapperDemo,
 	['/Whiteboard']: WhiteboardDemo,

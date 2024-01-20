@@ -20,18 +20,12 @@ class Page extends DomElem {
 			},
 			...children,
 		);
-	}
-
-	render() {
-		if (this.options.touchSupport !== false) this.detectTouch();
 
 		applyStyles({
 			styles: ({ page }) => page,
 			theme: context.domElem.theme,
 			context: this,
 		});
-
-		super.render();
 	}
 }
 
