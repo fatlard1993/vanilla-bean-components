@@ -24,7 +24,7 @@ class Select extends Input {
 					option =>
 						new DomElem({
 							tag: 'option',
-							...(typeof option === 'object' ? option : { label: option }),
+							...(typeof option === 'object' ? option : { label: option, value: option }),
 						}),
 				),
 			);
