@@ -19,3 +19,14 @@ new Input({
 	onChange: event => {},
 })
 ```
+
+```js
+new Input({
+	tag: 'checkbox',
+	value: true,
+	validations: [[_ => !!_, 'Must be true']],
+	onKeyUp: event => {},
+	onInput: event => {},
+	onChange: event => {},
+})
+```

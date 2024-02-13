@@ -110,7 +110,8 @@ class Input extends DomElem {
 
 				this.elem.style.height = typeof value === 'number' ? `${value + 1}em` : value;
 			}
-		} else super.setOption(key, value);
+		} else if (key === 'value' && this.options.type === 'checkbox') this.elem.checked = value;
+		else super.setOption(key, value);
 
 		if (this.rendered && key === 'value') this.validate();
 	}

@@ -9,10 +9,10 @@ export default class Demo extends DemoView {
 		this.component = new Input({
 			type: 'text',
 			onKeyUp: event => {
-				console.log(event, `isDirty: ${this.component.isDirty}`);
+				console.log('onKeyUp', event, `isDirty: ${this.component.isDirty}`);
 			},
 			onInput: event => {
-				console.log(event, `isDirty: ${this.component.isDirty}`);
+				console.log('onInput', event, `isDirty: ${this.component.isDirty}`);
 			},
 			onChange: ({ value: newValue }) => {
 				this.component.options.value = newValue;
@@ -32,7 +32,10 @@ export default class Demo extends DemoView {
 
 		new DomElem({
 			tag: 'p',
-			textContent: this.component.options.subscriber('value', value => `The current value is: ${value}`),
+			textContent: this.component.options.subscriber(
+				'value',
+				value => `value: ${value} | valid: ${!this.component.validate()}`,
+			),
 			appendTo: this.demoWrapper,
 		});
 
