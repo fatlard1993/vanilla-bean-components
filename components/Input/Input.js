@@ -44,19 +44,19 @@ const defaultOptions = {
 	height: 'auto',
 };
 
-export const updateValidationErrors = ({ elem, validations, value, clear }) => {
+export const updateValidationErrors = ({ elem, validations, value }) => {
 	if (!validations?.length) return;
 
 	const errors = [];
 
 	validations.forEach(([validation, message]) => {
-		const isValid = clear || (validation instanceof RegExp ? validation.test(value) : validation(value));
+		const isValid = validation instanceof RegExp ? validation.test(value) : validation(value);
 
 		const resolvedMessage = typeof message == 'function' ? message(value) : message;
 
 		const existingValidationError = document.evaluate(
-			`//div[text()='${resolvedMessage}']`,
-			elem.parentElement,
+			`..//div[text()='${resolvedMessage}']`,
+			elem,
 			null,
 			XPathResult.FIRST_ORDERED_NODE_TYPE,
 		).singleNodeValue;
@@ -119,12 +119,11 @@ class Input extends DomElem {
 		return this.initialValue !== this.options.value;
 	}
 
-	validate({ clear, value, validations } = {}) {
+	validate({ validations, value } = {}) {
 		return updateValidationErrors({
 			elem: this.elem,
 			validations: validations ?? this.options.validations,
 			value: value ?? this.options.value,
-			clear,
 		});
 	}
 }
