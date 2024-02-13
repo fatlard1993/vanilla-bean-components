@@ -24,6 +24,8 @@ export default class Form extends DomElem {
 					...inputOptions,
 				});
 
+				form.options.data[key] = input.options.value;
+
 				this.append(new Label({ label: label || capitalize(fromCamelCase(key), true), collapsed }, input));
 
 				return [key, input];
