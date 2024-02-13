@@ -8,6 +8,20 @@ export const cacheOptions = {
 export const cache = {};
 export const subscriptions = {};
 
+/** @type {(url: String, parameters: Object) => String */
+export const hydrateUrl = (url, parameters = {}) => {
+	let hydratedUrl = url;
+
+	Object.entries(parameters)
+		.filter(([, value]) => typeof value === 'string' && value.length > 0)
+		.forEach(([key, value]) => {
+			hydratedUrl = hydratedUrl.replace(`:${key}`, encodeURIComponent(value));
+		});
+
+	return hydratedUrl;
+};
+
+/** @type {(url: String, parameters: Object) => String */
 export const request = async (url, options = {}) => {
 	const {
 		invalidateAfter = cacheOptions.staleTime,
@@ -16,13 +30,25 @@ export const request = async (url, options = {}) => {
 		isRefetch,
 		onRefetch,
 		enabled = true,
-		searchParams,
+		urlParameters,
+		searchParameters,
 		...fetchOptions
 	} = options;
 
-	if (!enabled) return {};
+	if (!enabled) {
+		const response = {
+			url,
+			options,
+			refetch: async overrides => await request.call(this, url, { isRefetch: true, ...options, ...overrides }),
+		};
 
-	if (searchParams) url = `${url}?${new URLSearchParams(searchParams)}`;
+		if (onRefetch && isRefetch) onRefetch(response);
+
+		return response;
+	}
+
+	if (urlParameters) url = hydrateUrl(url, urlParameters);
+	if (searchParameters) url = `${url}?${new URLSearchParams(searchParameters)}`;
 
 	const id = options.id || options.method + url;
 
@@ -36,16 +62,16 @@ export const request = async (url, options = {}) => {
 		...(options.body ? { body: JSON.stringify(options.body) } : {}),
 	});
 
-	const refetch = async () => await request.call(this, url, { isRefetch: true, ...options });
 	const success = response.status % 200 < 100;
 	const contentType = response.headers.get('content-type');
 
 	response = {
+		url,
+		options,
 		response,
 		contentType,
 		body: await (contentType && contentType.includes('application/json') ? response.json() : response.text()),
 		success,
-		refetch,
 	};
 
 	if (success && invalidates) {
@@ -82,23 +108,35 @@ export const request = async (url, options = {}) => {
 	}
 
 	if (onRefetch) {
-		if (isRefetch) onRefetch(response);
-		else {
+		if (isRefetch) {
+			response.subscriptionId = isRefetch;
+			response.unsubscribe = subscriptions[id]?.[isRefetch]?.unsubscribe;
+			response.refetch = async overrides => await request.call(this, url, { isRefetch, ...options, ...overrides });
+
+			onRefetch(response);
+		} else {
 			const subscriptionId = nanoid(5);
 			const unsubscribe = () => {
 				delete subscriptions[id][subscriptionId];
 			};
+			const refetch = async overrides =>
+				await request.call(this, url, { isRefetch: subscriptionId, ...options, ...overrides });
 
 			subscriptions[id] = subscriptions[id] || { refetch };
 			subscriptions[id][subscriptionId] = {
 				onRefetch: () => {
 					unsubscribe();
-					onRefetch();
+					onRefetch(response);
 				},
 				unsubscribe,
 			};
+
+			response.subscriptionId = subscriptionId;
 			response.unsubscribe = unsubscribe;
+			response.refetch = refetch;
 		}
+	} else {
+		response.refetch = async overrides => await request.call(this, url, { isRefetch: true, ...options, ...overrides });
 	}
 
 	return response;
