@@ -1,6 +1,5 @@
 import ButtonDemo from '../components/Button/demo.js';
 import CalendarDemo from '../components/Calendar/demo.js';
-import CheckboxDemo from '../components/Checkbox/demo.js';
 import CodeDemo from '../components/Code/demo.js';
 import ColorPickerDemo from '../components/ColorPicker/demo.js';
 import DialogDemo from '../components/Dialog/demo.js';
@@ -37,7 +36,6 @@ import TodoExample from './examples/Todo';
 export default {
 	['/Button']: ButtonDemo,
 	['/Calendar']: CalendarDemo,
-	['/Checkbox']: CheckboxDemo,
 	['/Code']: CodeDemo,
 	['/ColorPicker']: ColorPickerDemo,
 	['/Dialog']: DialogDemo,

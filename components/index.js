@@ -1,6 +1,5 @@
 export * from './Button';
 export * from './Calendar';
-export * from './Checkbox';
 export * from './Code';
 export * from './ColorPicker';
 export * from './Dialog';

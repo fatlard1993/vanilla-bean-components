@@ -28,7 +28,7 @@ class DomElem extends EventTarget {
 	defaultOptions = {
 		tag: 'div',
 		autoRender: true,
-		knownAttributes: new Set(['role']),
+		knownAttributes: new Set(['role', 'name']),
 		priorityOptions: new Set(['onConnected', 'textContent', 'content', 'appendTo', 'prependTo']),
 	};
 
@@ -132,6 +132,7 @@ class DomElem extends EventTarget {
 		if (inputEvents.has(targetEvent)) {
 			const _callback = event => {
 				event.value = event.target.value ?? this.options.value ?? this.elem.value;
+				console.log(event.target.value, this.options.value, this.elem.value);
 
 				callback.call(this, event);
 			};

@@ -1,4 +1,4 @@
-import { DomElem, List, Input, Button, Checkbox, Popover } from '../..';
+import { DomElem, List, Input, Button, Popover } from '../..';
 
 import DemoView, { DemoWrapper } from '../DemoView';
 
@@ -6,7 +6,8 @@ class TodoListItem extends DomElem {
 	render() {
 		this.initialLabel = this.options.label;
 
-		this._checkbox = new Checkbox({
+		this._checkbox = new Input({
+			type: 'checkbox',
 			name: this.options.subscriber('label'),
 			value: this.options.subscriber('checked'),
 			styles: () => `

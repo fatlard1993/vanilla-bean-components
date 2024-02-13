@@ -127,18 +127,6 @@ class Input extends DomElem {
 			clear,
 		});
 	}
-
-	onInput(callback) {
-		const wrappedCallback = event => {
-			event.value = event.target.value || this.options.value;
-
-			callback(event);
-		};
-
-		this.elem.addEventListener('input', wrappedCallback);
-
-		return () => this.elem.removeEventListener('input', wrappedCallback);
-	}
 }
 
 export default Input;
