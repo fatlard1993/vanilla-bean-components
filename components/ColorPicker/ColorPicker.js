@@ -86,6 +86,8 @@ class ColorPicker extends Input {
 	constructor(options = {}, ...children) {
 		options = { ...defaultOptions, ...options };
 
+		if (options.value === 'random') options.value = randomColor().toHslString();
+
 		super(
 			{
 				...options,
@@ -198,12 +200,13 @@ class ColorPicker extends Input {
 		super.render();
 	}
 
-	change(value) {
-		if (!value) {
-			this.options.onChange.call(this, { value: '' });
+	setOption(key, value) {
+		if (key === 'value') this.set(value === 'random' ? randomColor().toHslString() : value);
+		else super.setOption(key, value);
+	}
 
-			return;
-		}
+	set(value) {
+		if (!value) return;
 
 		const color = value === 'random' ? randomColor() : new TinyColor(value);
 		const { h, s, l } = typeof value === 'object' ? value : color.toHsv();
@@ -221,7 +224,17 @@ class ColorPicker extends Input {
 
 		this.pickerArea.elem.style.backgroundColor = `hsl(${h}, 100%, 50%)`;
 
-		this.options.onChange.call(this, { value: hslString, color, h, s, l });
+		return { value: hslString, color, h, s, l };
+	}
+
+	change(value) {
+		if (!value) {
+			this.options.onChange.call(this, { value: '' });
+
+			return;
+		}
+
+		this.options.onChange.call(this, this.set(value));
 	}
 
 	normalizePosition(event, parent, offsetX, offsetY) {
