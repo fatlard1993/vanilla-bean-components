@@ -17,7 +17,7 @@ export default class Form extends DomElem {
 					...(Component !== DomElem && {
 						onChange: function (event) {
 							form.options.data[key] = event.value;
-							this.validate?.();
+							this.validate?.({ value: event.value });
 							onChange(event);
 						},
 					}),

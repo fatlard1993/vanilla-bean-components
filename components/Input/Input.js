@@ -119,11 +119,11 @@ class Input extends DomElem {
 		return this.initialValue !== this.options.value;
 	}
 
-	validate({ clear } = {}) {
+	validate({ clear, value, validations } = {}) {
 		return updateValidationErrors({
 			elem: this.elem,
-			validations: this.options.validations,
-			value: this.options.value,
+			validations: validations ?? this.options.validations,
+			value: value ?? this.options.value,
 			clear,
 		});
 	}
