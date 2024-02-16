@@ -10,6 +10,8 @@ class Link extends Button {
 			{
 				...defaultOptions,
 				...options,
+				onPointerDown: event => event.stopPropagation(),
+				onPointerUp: event => event.stopPropagation(),
 				styles: (theme, domElem) => `
 				&.disabled {
 					pointer-events: none;
