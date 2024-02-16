@@ -1,6 +1,14 @@
 /* eslint-disable spellcheck/spell-checker */
-import { DomElem, Label, Link, View, GET } from '../..';
+import { DomElem, Label, Link, View, styled, GET } from '../..';
 import DemoOptions from './DemoOptions';
+
+const StyledLabel = styled(
+	Label,
+	() => `
+		width: auto;
+		margin: 0 3% 9px;
+	`,
+);
 
 export class DemoView extends View {
 	constructor(options = {}) {
@@ -36,11 +44,11 @@ export class DemoView extends View {
 			);
 
 			if (readme.response.ok) {
-				new Label({ label: 'README', appendTo: this }, new DomElem({ innerHTML: readme.body.parsed }));
+				new StyledLabel({ label: 'README', appendTo: this }, new DomElem({ innerHTML: readme.body.parsed }));
 			}
 
 			if (componentAncestors.length > 0) {
-				new Label(
+				new StyledLabel(
 					{ label: 'Ancestors', appendTo: this },
 					componentAncestors.map(
 						({ constructor: { name } }) =>
@@ -55,7 +63,7 @@ export class DemoView extends View {
 				);
 			}
 
-			new Label(
+			new StyledLabel(
 				{ label: 'Options', appendTo: this },
 				new DemoOptions({
 					appendTo: this,

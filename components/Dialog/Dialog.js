@@ -18,7 +18,7 @@ const DialogContent = styled(
 	({ colors }) => `
 		flex: 1;
 		padding: 6px 6px 6px 21px;
-		overflow: auto;
+		overflow: hidden auto;
 
 		&::before {
 			content: "";

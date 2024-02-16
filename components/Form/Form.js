@@ -5,6 +5,8 @@ import { Label } from '../Label';
 
 export default class Form extends DomElem {
 	render() {
+		this.options.style = { overflow: 'hidden auto' };
+
 		super.render();
 
 		const form = this;
