@@ -79,12 +79,14 @@ class DomElem extends EventTarget {
 			this.rendered = false;
 		}
 
-		const sortedOptions = Object.entries(this.options).reduce((options, option) => {
-			if (this.__priorityOptions.has(option[0])) return [option, ...options];
-			return [...options, option];
-		}, []);
+		if (this.options) {
+			const sortedOptions = Object.entries(this.options).reduce((options, option) => {
+				if (this.__priorityOptions.has(option[0])) return [option, ...options];
+				return [...options, option];
+			}, []);
 
-		sortedOptions.forEach(([key, value]) => this.setOption(key, value));
+			sortedOptions.forEach(([key, value]) => this.setOption(key, value));
+		} else this.options = {};
 
 		this.rendered = true;
 	}
@@ -266,11 +268,12 @@ class DomElem extends EventTarget {
 		);
 	}
 
-	onHover(callback) {
+	onHover(callback = () => {}) {
 		this.cleanup.onHover?.();
+		callback = callback.bind(this);
 
 		const pointerEnter = event => {
-			callback.call(this, event);
+			callback(event);
 
 			this.elem.addEventListener('pointermove', callback, true);
 		};
@@ -293,8 +296,9 @@ class DomElem extends EventTarget {
 		};
 	}
 
-	onPointerPress(callback) {
+	onPointerPress(callback = () => {}) {
 		this.cleanup.onPointerPress?.();
+		callback = callback.bind(this);
 
 		const cleanupPointerDown = () => {
 			this.elem.removeEventListener('pointerup', callback);
