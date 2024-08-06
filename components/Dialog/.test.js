@@ -4,18 +4,6 @@ import { DomElem } from '../..';
 
 import { Dialog } from '.';
 
-HTMLDialogElement.prototype.show = () => {
-	this.open = true;
-};
-
-HTMLDialogElement.prototype.showModal = () => {
-	this.open = true;
-};
-
-HTMLDialogElement.prototype.close = () => {
-	this.open = false;
-};
-
 describe('Dialog', () => {
 	test('must display a dialog', async () => {
 		const header = 'header';

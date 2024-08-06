@@ -27,6 +27,20 @@ HTMLElement.prototype.hidePopover = function () {
 	this.style.display = 'none';
 };
 
+// happy dom doesn't support dialogs yet
+HTMLDialogElement.prototype.show = function () {
+	this.open = true;
+	this.style.display = 'block';
+};
+HTMLDialogElement.prototype.showModal = function () {
+	this.open = true;
+	this.style.display = 'block';
+};
+HTMLDialogElement.prototype.close = function () {
+	this.open = false;
+	this.style.display = 'none';
+};
+
 // happy dom doesn't support canvas yet
 HTMLCanvasElement.prototype.getContext = function () {
 	return {
