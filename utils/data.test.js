@@ -2,8 +2,6 @@
 
 import { debounce, getCustomProperties, conditionalList, orderBy } from './data';
 
-const vi = {};
-
 test.skip('debounce', () => {
 	vi.useFakeTimers();
 

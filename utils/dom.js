@@ -4,7 +4,7 @@
  */
 export const isMac = () =>
 	// eslint-disable-next-line compat/compat
-	(window.navigator?.userAgentData?.platform || navigator.platform).toLowerCase().startsWith('mac');
+	(window.navigator?.userAgentData?.platform || window.navigator.platform).toLowerCase().startsWith('mac');
 
 /**
  * Copy a piece of text to the clipboard
@@ -14,7 +14,7 @@ export const isMac = () =>
 export const copyToClipboard = text => {
 	if (!isSecureContext) return false;
 
-	navigator.clipboard.writeText(text);
+	window.navigator.clipboard.writeText(text);
 
 	return true;
 };
@@ -26,5 +26,5 @@ export const copyToClipboard = text => {
 export const readClipboard = async () => {
 	if (!isSecureContext) return false;
 
-	return await navigator.clipboard.readText();
+	return await window.navigator.clipboard.readText();
 };

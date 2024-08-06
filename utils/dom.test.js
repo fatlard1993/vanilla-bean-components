@@ -1,33 +1,41 @@
 import { copyToClipboard, isMac, readClipboard } from './dom';
 
-test('isMac', () => {
-	global.navigator = { platform: 'Linux' };
+test('isMac => true', () => {
+	const windowSpy = spyOn(window, 'window', 'get');
 
-	expect(isMac()).toStrictEqual(false);
+	windowSpy.mockImplementation(() => ({ navigator: { platform: 'macOS' } }));
 
-	global.navigator = { platform: 'macOS' };
+	console.log(window.navigator);
 
 	expect(isMac()).toStrictEqual(true);
 });
 
+test('isMac => false', () => {
+	const windowSpy = spyOn(window, 'window', 'get');
+
+	windowSpy.mockImplementation(() => ({ navigator: { platform: 'Linux' } }));
+
+	console.log(window.navigator);
+
+	expect(isMac()).toStrictEqual(false);
+});
+
 test('copyToClipboard', () => {
-	const writeText = global.mock();
+	const writeText = spyOn(window.navigator.clipboard, 'writeText');
 
 	global.isSecureContext = true;
-	global.navigator = { clipboard: { writeText } };
 
 	copyToClipboard('test');
 
-	expect(writeText.mock.calls.length).toStrictEqual(1);
+	expect(writeText).toHaveBeenCalledTimes(1);
 });
 
 test('readClipboard', () => {
-	const readText = global.mock();
+	const readText = spyOn(window.navigator.clipboard, 'readText');
 
 	global.isSecureContext = true;
-	global.navigator = { clipboard: { readText } };
 
 	readClipboard();
 
-	expect(readText.mock.calls.length).toStrictEqual(1);
+	expect(readText).toHaveBeenCalledTimes(1);
 });
