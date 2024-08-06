@@ -5,8 +5,8 @@ export const cacheOptions = {
 	staleTime: 60 * 1000,
 };
 
-export const cache = {};
-export const subscriptions = {};
+export const cache = new Map();
+export const subscriptions = new Map();
 
 /** @type {(url: String, parameters: Object) => String */
 export const hydrateUrl = (url, parameters = {}) => {
@@ -21,7 +21,8 @@ export const hydrateUrl = (url, parameters = {}) => {
 	return hydratedUrl;
 };
 
-/** @type {(url: String, parameters: Object) => String */
+/** @typedef {(url: String, options: { invalidateAfter: Number, invalidates: Array, cache: Boolean, isRefetch: Boolean, onRefetch: Function, enabled: Boolean, urlParameters: Object, searchParameters: Object }) => Object Request */
+/** @type {Request} */
 export const request = async (url, options = {}) => {
 	const {
 		invalidateAfter = cacheOptions.staleTime,
@@ -52,9 +53,7 @@ export const request = async (url, options = {}) => {
 
 	const id = options.id || options.method + url;
 
-	if (isRefetch && cache[id]) cache[id] = undefined;
-
-	if (useCache && cache[id]) return cache[id].response;
+	if (useCache && cache.has(id)) return cache.get(id).response;
 
 	let response = await fetch(url, {
 		headers: { 'Content-Type': 'application/json' },
@@ -75,7 +74,21 @@ export const request = async (url, options = {}) => {
 	};
 
 	if (success && invalidates) {
-		Object.entries(subscriptions).forEach(([_id, { refetch }]) => {
+		cache.forEach(({ invalidate: dropCache }, _id) => {
+			if (
+				invalidates.some(invalidate => {
+					if (Array.isArray(_id)) {
+						return Array.isArray(invalidate) ? invalidate === _id : _id.includes(invalidate);
+					} else {
+						return Array.isArray(invalidate) ? false : _id === invalidate;
+					}
+				})
+			) {
+				dropCache();
+			}
+		});
+
+		subscriptions.forEach(({ refetch }, _id) => {
 			if (
 				invalidates.some(invalidate => {
 					if (Array.isArray(_id)) {
@@ -91,45 +104,50 @@ export const request = async (url, options = {}) => {
 	}
 
 	const invalidate = () => {
-		cache[id] = undefined;
+		cache.delete(id);
 	};
 
 	if (useCache) {
-		if (cache[id]?.timeout) clearTimeout(cache[id].timeout);
+		if (cache.get(id)?.timeout) clearTimeout(cache.get(id).timeout);
 
-		cache[id] = { invalidate, response };
+		cache.set(id, {
+			invalidate,
+			response,
+			...(invalidateAfter ? { timeout: setTimeout(invalidate, invalidateAfter) } : {}),
+		});
+
 		response.invalidate = invalidate;
-
-		if (invalidateAfter) cache[id].timeout = setTimeout(invalidate, invalidateAfter);
 	}
 
-	if (subscriptions[id]) {
-		Object.values(subscriptions[id]).forEach(({ onRefetch: listener }) => listener?.(response));
+	if (subscriptions.has(id)) {
+		Object.values(subscriptions.get(id)).forEach(({ onRefetch: listener }) => listener?.(response));
 	}
 
 	if (onRefetch) {
 		if (isRefetch) {
 			response.subscriptionId = isRefetch;
-			response.unsubscribe = subscriptions[id]?.[isRefetch]?.unsubscribe;
+			response.unsubscribe = subscriptions.get(id)?.[isRefetch]?.unsubscribe;
 			response.refetch = async overrides => await request.call(this, url, { isRefetch, ...options, ...overrides });
-
-			onRefetch(response);
 		} else {
 			const subscriptionId = nanoid(5);
 			const unsubscribe = () => {
-				delete subscriptions[id][subscriptionId];
+				const newSubscription = subscriptions.get(id);
+				delete newSubscription[subscriptionId];
+
+				subscriptions.set(id, newSubscription);
 			};
 			const refetch = async overrides =>
 				await request.call(this, url, { isRefetch: subscriptionId, ...options, ...overrides });
 
-			subscriptions[id] = subscriptions[id] || { refetch };
-			subscriptions[id][subscriptionId] = {
-				onRefetch: () => {
-					unsubscribe();
-					onRefetch(response);
+			const subscription = {
+				[subscriptionId]: {
+					onRefetch,
+					unsubscribe,
 				},
-				unsubscribe,
 			};
+
+			if (!subscriptions.has(id)) subscriptions.set(id, { refetch, ...subscription });
+			else subscriptions.set(id, { ...subscriptions.get(id), ...subscription });
 
 			response.subscriptionId = subscriptionId;
 			response.unsubscribe = unsubscribe;
@@ -142,12 +160,13 @@ export const request = async (url, options = {}) => {
 	return response;
 };
 
+/** @type {Request} */
 export const GET = async (url, options = {}) => await request(url, { method: 'GET', ...options });
-
+/** @type {Request} */
 export const POST = async (url, options = {}) => await request(url, { method: 'POST', ...options });
-
+/** @type {Request} */
 export const PUT = async (url, options = {}) => await request(url, { method: 'PUT', ...options });
-
+/** @type {Request} */
 export const PATCH = async (url, options = {}) => await request(url, { method: 'PATCH', ...options });
-
+/** @type {Request} */
 export const DELETE = async (url, options = {}) => await request(url, { method: 'DELETE', ...options });
