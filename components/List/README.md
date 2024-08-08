@@ -5,5 +5,5 @@ new List({
 		'two',
 		{ textContent: 'three', styles: ({ colors }) => `color: ${colors.red};` },
 	],
-})
+});
 ```

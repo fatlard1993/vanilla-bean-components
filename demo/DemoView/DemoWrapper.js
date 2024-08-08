@@ -15,7 +15,6 @@ export const DemoWrapper = styled(
 		--aug-br1: 6px;
 	`,
 	{
-		// eslint-disable-next-line spellcheck/spell-checker
 		attributes: { 'data-augmented-ui': 'tl-clip br-clip border' },
 	},
 );

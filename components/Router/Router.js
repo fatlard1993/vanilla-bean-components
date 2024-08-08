@@ -48,8 +48,8 @@ class Router extends DomElem {
 		let routeParameterKeys = route.match(routeRegex);
 		const parameters = {};
 
-		routeParameterValues = routeParameterValues.slice(1, routeParameterValues.length);
-		routeParameterKeys = routeParameterKeys.slice(1, routeParameterKeys.length);
+		routeParameterValues = routeParameterValues.slice(1);
+		routeParameterKeys = routeParameterKeys.slice(1);
 
 		routeParameterValues.forEach((parameter, index) => {
 			const name = routeParameterKeys[index].slice(1);

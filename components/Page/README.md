@@ -6,5 +6,5 @@ new Page(
 	toolbar,
 	view,
 	footer,
-)
+);
 ```

@@ -75,7 +75,6 @@ class Label extends TooltipWrapper {
 			...children,
 		);
 
-		// eslint-disable-next-line spellcheck/spell-checker
 		this.elem.setAttribute('data-augmented-ui', 'tl-clip tr-2-clip-x br-clip bl-clip border');
 	}
 

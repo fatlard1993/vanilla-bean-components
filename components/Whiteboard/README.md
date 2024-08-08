@@ -18,5 +18,5 @@ new Whiteboard({
 	],
 	onDraw: event => {},
 	onChange: event => {},
-})
+});
 ```

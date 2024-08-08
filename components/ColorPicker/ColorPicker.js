@@ -117,7 +117,6 @@ class ColorPicker extends Input {
 			...children,
 		);
 
-		// eslint-disable-next-line spellcheck/spell-checker
 		this.elem.setAttribute('data-augmented-ui', 'tl-clip tr-2-clip-y br-2-clip-y bl-clip border');
 
 		document.addEventListener('mousedown', this.onPointerDown.bind(this));

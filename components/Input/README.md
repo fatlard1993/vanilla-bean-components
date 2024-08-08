@@ -6,7 +6,7 @@ new Input({
 	onKeyUp: event => {},
 	onInput: event => {},
 	onChange: event => {},
-})
+});
 ```
 
 ```js
@@ -17,7 +17,7 @@ new Input({
 	onKeyUp: event => {},
 	onInput: event => {},
 	onChange: event => {},
-})
+});
 ```
 
 ```js
@@ -28,5 +28,5 @@ new Input({
 	onKeyUp: event => {},
 	onInput: event => {},
 	onChange: event => {},
-})
+});
 ```

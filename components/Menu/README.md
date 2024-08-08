@@ -6,5 +6,5 @@ new Menu({
 		{ textContent: 'three', styles: ({ colors }) => `color: ${colors.red};` },
 	],
 	onSelect: event => {},
-})
+});
 ```

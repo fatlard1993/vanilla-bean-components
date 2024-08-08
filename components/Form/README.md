@@ -6,5 +6,5 @@ new Form({
 		{ key: 'url', validations: [[/.+/, 'Required']] },
 		{ key: 'color', Component: ColorPicker },
 	],
-})
+});
 ```

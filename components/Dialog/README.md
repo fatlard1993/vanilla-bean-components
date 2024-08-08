@@ -4,6 +4,6 @@ new Dialog({
 	size: 'small',
 	body: 'content',
 	buttons: ['noop', 'dismiss'],
-	onButtonPress: ({ button, closeDialog }) =>	{},
-})
+	onButtonPress: ({ button, closeDialog }) => {},
+});
 ```

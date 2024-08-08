@@ -16,6 +16,9 @@ export const stringifyValue = value => {
 	);
 
 	return removeExcessIndentation(
-		(string || '').replaceAll('\\t', '\t').replaceAll('\\n', '\n').replaceAll(/^"|"$/g, ''),
+		(string || '')
+			.replaceAll(String.raw`\t`, '\t')
+			.replaceAll(String.raw`\n`, '\n')
+			.replaceAll(/^"|"$/g, ''),
 	);
 };

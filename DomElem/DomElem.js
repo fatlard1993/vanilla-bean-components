@@ -136,7 +136,7 @@ class DomElem extends EventTarget {
 				event.value =
 					event.target.type === 'checkbox'
 						? event.target.checked
-						: event.target.value ?? this.options.value ?? this.elem.value;
+						: (event.target.value ?? this.options.value ?? this.elem.value);
 
 				callback.call(this, event);
 			};

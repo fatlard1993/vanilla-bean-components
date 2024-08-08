@@ -15,5 +15,5 @@ new Keyboard({
 	onKeyDown: event => {},
 	onKeyUp: event => {},
 	onKeyPress: event => {},
-})
+});
 ```

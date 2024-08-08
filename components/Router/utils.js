@@ -13,5 +13,5 @@ export const routeToPath = (route, parameters) => {
 };
 
 export const routeToRegex = route => {
-	return new RegExp(`^${route.replaceAll('\\', '\\/').replaceAll(/:[^/]+/g, '([^/]+)')}$`);
+	return new RegExp(`^${route.replaceAll('\\', String.raw`\/`).replaceAll(/:[^/]+/g, '([^/]+)')}$`);
 };

@@ -52,7 +52,6 @@ class Tag extends DomElem {
 			...children,
 		);
 
-		// eslint-disable-next-line spellcheck/spell-checker
 		this.elem.setAttribute('data-augmented-ui', 'tl-clip-y r-clip-y bl-clip-y border');
 	}
 }

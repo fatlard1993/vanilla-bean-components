@@ -1,9 +1,10 @@
-// import { vi } from 'vitest';
-
 import { debounce, getCustomProperties, conditionalList, orderBy } from './data';
 
 test.skip('debounce', () => {
-	vi.useFakeTimers();
+	const useFakeTimers = () => {};
+	const advanceTimersByTime = () => {};
+
+	useFakeTimers();
 
 	let count = 0;
 	const bumpCount = (modifier = 1) => (count += modifier);
@@ -12,27 +13,27 @@ test.skip('debounce', () => {
 	debounce(bumpCount, 100);
 	debounce(bumpCount, 100);
 
-	vi.advanceTimersByTime(100);
+	advanceTimersByTime(100);
 
 	expect(count).toStrictEqual(1);
 
 	debounce(bumpCount, 100);
 
-	vi.advanceTimersByTime(100);
+	advanceTimersByTime(100);
 
 	debounce(bumpCount, 200);
 
-	vi.advanceTimersByTime(100);
+	advanceTimersByTime(100);
 
 	expect(count).toStrictEqual(2);
 
-	vi.advanceTimersByTime(100);
+	advanceTimersByTime(100);
 
 	expect(count).toStrictEqual(3);
 
 	debounce(bumpCount, 100, 3);
 
-	vi.advanceTimersByTime(100);
+	advanceTimersByTime(100);
 
 	expect(count).toStrictEqual(6);
 });

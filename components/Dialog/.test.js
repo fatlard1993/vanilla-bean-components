@@ -1,4 +1,4 @@
-import { findByText, findByRole, findAllByRole, fireEvent, waitForElementToBeRemoved, queryByRole } from '@testing-library/dom';
+import { findByText, findByRole, fireEvent, waitForElementToBeRemoved, queryByRole } from '@testing-library/dom';
 
 import { DomElem } from '../..';
 
@@ -10,7 +10,7 @@ describe('Dialog', () => {
 
 		new Dialog({ header, appendTo: container });
 
-		// TODO: The labelledby prop is set properly, so this *should* work, but it doesn't
+		// TODO: The labelledby prop *should* make this work, but it doesn't
 		// await findByRole(container, 'dialog', { name: header });
 
 		await findByRole(container, 'dialog');

@@ -2,5 +2,5 @@
 new Link({
 	textContent: 'textContent',
 	href: '#/targetUrl',
-})
+});
 ```

@@ -10,5 +10,5 @@ new Calendar({
 			duration: 6e6,
 		},
 	],
-})
+});
 ```

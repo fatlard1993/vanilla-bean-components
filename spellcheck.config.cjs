@@ -1,3 +1,4 @@
+/* eslint-disable spellcheck/spell-checker */
 module.exports = {
 	comments: true,
 	strings: true,
@@ -116,8 +117,10 @@ module.exports = {
 		'pointercancel',
 		'pointerout',
 		'pointerleave',
+		'fixup',
+		'mjs',
 	],
-	skipIfMatch: ['\\d+v[wh]'],
+	skipIfMatch: [String.raw`\d+v[wh]`],
 	skipWordIfMatch: [],
 	minLength: 1,
 };

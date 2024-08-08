@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unused-modules */
 export const observeElementConnection = ({ parent, target, onConnected, onDisconnected }) => {
 	const observer = new MutationObserver(mutationList => {
 		for (const mutation of mutationList) {

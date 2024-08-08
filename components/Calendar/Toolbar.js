@@ -1,4 +1,3 @@
-/* eslint-disable spellcheck/spell-checker */
 import { styled, capitalize } from '../../utils';
 import { DomElem } from '../DomElem';
 import { Button } from '../Button';

@@ -4,5 +4,5 @@ new Button({
 	textContent: 'textContent',
 	tooltip: { textContent: 'tooltip', position: 'bottom' },
 	onPointerPress: event => {},
-})
+});
 ```
