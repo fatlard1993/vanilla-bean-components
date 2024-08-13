@@ -45,6 +45,7 @@ export default class Whiteboard extends DomElem {
 			this.elem.style[key] = value;
 		} else if (key === 'lines') value.forEach(line => this.drawLine(line));
 		else if (key === 'background') this.elem.style[key] = value;
+		else if (key === 'onChange' || key === 'onDraw') this[key](value);
 		else super.setOption(key, value);
 	}
 
