@@ -62,7 +62,7 @@ export default `
 
 	${scrollbar}
 
-	input, select { ${input} }
+	input, select, textarea { ${input} }
 	${number}
 	${checkbox}
 `;
