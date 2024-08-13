@@ -4,7 +4,10 @@ import { stringifyValue } from './utils';
 export default class DemoOptions extends List {
 	constructor(options) {
 		const { component } = options;
-		const isMethod = key => typeof component[key] === 'function' || typeof component.elem[key] === 'function';
+		const isMethod = key =>
+			typeof component[key] === 'function' ||
+			typeof component.elem[key] === 'function' ||
+			typeof component.options[key] === 'function';
 
 		super({
 			...options,
@@ -29,10 +32,6 @@ export default class DemoOptions extends List {
 									thenItem: new Label('Default', new Code({ code: stringifyValue(component.defaultOptions[key]) })),
 								},
 								{
-									if: isMethod(key) && !component[`${key}_enum`],
-									thenItem: new Label('Current', new Code({ code: stringifyValue(value) })),
-								},
-								{
 									if: component[`${key}_enum`],
 									thenItem: new Label(
 										'Current',
@@ -49,7 +48,16 @@ export default class DemoOptions extends List {
 										'Current',
 										new Input({
 											tag: 'textarea',
-											value: component.options.subscriber(key),
+											style: { width: '100%' },
+											value: component.options.subscriber(key, _ => {
+												try {
+													return ['[object Object]', '[object Array]'].includes(stringifyValue(_))
+														? JSON.stringify(_, null, 2)
+														: _;
+												} catch {
+													return stringifyValue(_);
+												}
+											}),
 											onChange: ({ value: newValue }) => (component.options[key] = newValue),
 										}),
 									),
