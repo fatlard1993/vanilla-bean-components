@@ -267,8 +267,8 @@ class DlcWhiteboard extends DomElem {
 				transform-origin: 0 100%;
 				transform: rotate(-90deg);
 				position: absolute;
-				bottom: 88px;
-				left: 6px;
+				top: 400px;
+				left: 0;
 				height: 12px;
 				width: 300px;
 			`,
@@ -314,6 +314,9 @@ class DlcWhiteboard extends DomElem {
 					context.domElem.theme.colors.white,
 					context.domElem.theme.colors.black,
 				]),
+				position: 'absolute',
+				top: '416px',
+				left: '-21px',
 			})),
 			onPointerPress: event => colorPicker.show({ x: event.clientX, y: event.clientY, maxHeight: 378, maxWidth: 318 }),
 		});

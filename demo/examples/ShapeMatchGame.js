@@ -161,8 +161,8 @@ class ShapeMatchGame extends DomElem {
 				transform-origin: 0 100%;
 				transform: rotate(-90deg);
 				position: absolute;
-				bottom: 88px;
-				left: 6px;
+				top: 400px;
+				left: 0;
 				height: 12px;
 				width: 300px;
 			`,
@@ -207,6 +207,9 @@ class ShapeMatchGame extends DomElem {
 					context.domElem.theme.colors.white,
 					context.domElem.theme.colors.black,
 				]),
+				position: 'absolute',
+				top: '416px',
+				left: '-21px',
 			})),
 			onPointerPress: event => colorPicker.show({ x: event.clientX, y: event.clientY, maxHeight: 378, maxWidth: 318 }),
 		});
@@ -217,8 +220,8 @@ class ShapeMatchGame extends DomElem {
 	}
 
 	setOption(key, value) {
-		if (key === 'score') this._score.content(`Score: ${value}`);
-		else if (key === 'time') this._time.content(`Time Remaining: ${(value / 1000).toFixed(1)}s`);
+		if (key === 'score') this._score.options.content = `Score: ${value}`;
+		else if (key === 'time') this._time.options.content = `Time Remaining: ${(value / 1000).toFixed(1)}s`;
 		else if (key === 'paused') this[value ? 'pause' : 'play']();
 		else super.setOption(key, value);
 	}
@@ -237,7 +240,7 @@ class ShapeMatchGame extends DomElem {
 			if (this.options.time <= 0) this.options.paused = true;
 		}, 100);
 
-		this._playPause.content('Pause');
+		this._playPause.options.content = 'Pause';
 		this._whiteboard.options.readOnly = false;
 	}
 
@@ -245,8 +248,8 @@ class ShapeMatchGame extends DomElem {
 		clearInterval(this.timer);
 		clearTimeout(this.shapeTimeout);
 
-		this._playPause.content('Play');
-		this._time.content(this.options.time === 3e4 ? '' : `Paused: ${(this.options.time / 1000).toFixed(1)}s`);
+		this._playPause.options.content = 'Play';
+		this._time.options.content = this.options.time === 3e4 ? '' : `Paused: ${(this.options.time / 1000).toFixed(1)}s`;
 		this._whiteboard.options.readOnly = true;
 	}
 

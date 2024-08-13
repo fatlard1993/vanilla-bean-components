@@ -27,6 +27,7 @@ export default class Demo extends DemoView {
 				],
 			],
 			value: 'value',
+			placeholder: 'placeholder',
 			appendTo: this.demoWrapper,
 		});
 

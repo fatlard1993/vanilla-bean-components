@@ -119,6 +119,7 @@ module.exports = {
 		'pointerleave',
 		'fixup',
 		'mjs',
+		'fieldset',
 	],
 	skipIfMatch: [String.raw`\d+v[wh]`],
 	skipWordIfMatch: [],
