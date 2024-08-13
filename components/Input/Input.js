@@ -99,7 +99,7 @@ class Input extends DomElem {
 		if (key === 'height' && this.tag === 'textarea') {
 			if (value === 'auto') {
 				this.__updateAutoHeight = () => {
-					this.elem.style.height = `${(this.elem.value?.match(/\n/g) || '').length + 2}em`;
+					this.elem.style.height = `calc((${((this.elem.value?.match(/\n/g) || '').length + 1) * 1.25}em + 16px)`;
 				};
 
 				this.__updateAutoHeight();
