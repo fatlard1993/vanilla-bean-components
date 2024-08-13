@@ -12,13 +12,18 @@ const LabelText = styled(
 	`,
 );
 
+const defaultOptions = { collapsible: true };
+
 class Label extends TooltipWrapper {
+	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
+
 	constructor(options = {}, ...children) {
 		if (typeof options === 'string') options = { label: options };
 
 		super(
 			{
 				for: children[0],
+				...defaultOptions,
 				...options,
 				styles: (theme, domElem) => `
 					position: relative;
@@ -35,15 +40,28 @@ class Label extends TooltipWrapper {
 						transition: all 0.5s;
 					}
 
-					--aug-border-bg: linear-gradient(-66deg, ${theme.colors
-						.lighter(theme.colors.teal)
-						.setAlpha(0.5)}, ${theme.colors.blue.setAlpha(0.5)});
-					--aug-border-all: 2px;
-					--aug-tl1: 12px;
-					--aug-tr-extend1: 42%;
-					--aug-tr1: 12px;
-					--aug-bl1: 6px;
-					--aug-br1: 6px;
+					${
+						domElem.options.inline
+							? `
+								label {
+									display: inline-block;
+									vertical-align: top;
+									margin-top: 3px;
+								}
+							`
+							: `
+								--aug-border-bg: linear-gradient(-66deg, ${theme.colors
+									.lighter(theme.colors.teal)
+									.setAlpha(0.5)}, ${theme.colors.blue.setAlpha(0.5)});
+								--aug-border-all: 2px;
+								--aug-tl1: 12px;
+								--aug-tr-extend1: 42%;
+								--aug-tr1: 12px;
+								--aug-bl1: 6px;
+								--aug-br1: 6px;
+							`
+					}
+
 
 					> *:not(label):not(.tooltip) {
 						margin-top: 6px;
@@ -75,7 +93,7 @@ class Label extends TooltipWrapper {
 			...children,
 		);
 
-		this.elem.setAttribute('data-augmented-ui', 'tl-clip tr-2-clip-x br-clip bl-clip border');
+		if (!options.inline) this.elem.setAttribute('data-augmented-ui', 'tl-clip tr-2-clip-x br-clip bl-clip border');
 	}
 
 	render() {
@@ -83,25 +101,36 @@ class Label extends TooltipWrapper {
 			tag: 'label',
 			prependTo: this,
 			styles: theme => `
-				cursor: pointer;
 				margin: 0;
 
-				&:before {
-					${theme.fonts.fontAwesomeSolid}
+				${
+					this.options.collapsible
+						? `
+							cursor: pointer;
 
-					content: "";
-					opacity: 0.5;
-					font-size: 14px;
-					padding-right: 6px;
-					color: ${theme.colors.white};
+							&:before {
+								${theme.fonts.fontAwesomeSolid}
 
-					transition: opacity 0.8s, color 1s;
+								content: "";
+								opacity: 0.5;
+								font-size: 14px;
+								padding-right: 6px;
+								color: ${theme.colors.white};
+
+								transition: opacity 0.8s, color 1s;
+							}
+						`
+						: 'margin-left: 6px;'
 				}
 			`,
-			onPointerPress: () => this[this.hasClass('collapsed') ? 'removeClass' : 'addClass']('collapsed'),
+			onPointerPress: this.options.collapsible
+				? () => this[this.hasClass('collapsed') ? 'removeClass' : 'addClass']('collapsed')
+				: undefined,
 		});
 
 		super.render();
+
+		if (this.options.inline?.after) this._labelText.appendTo(this);
 	}
 
 	setOption(key, value) {

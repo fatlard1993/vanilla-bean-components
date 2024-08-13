@@ -3,6 +3,8 @@ new Label({
 	label: 'label',
 	tooltip: 'tooltip',
 	for: 'targetId',
-	collapsed: true,
+	collapsible: true,
+	collapsed: false,
+	inline: false,
 });
 ```
