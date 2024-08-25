@@ -1,7 +1,7 @@
 /* eslint-disable spellcheck/spell-checker */
 import { TinyColor, random as randomColor } from '@ctrl/tinycolor';
 
-import { debounce, styled } from '../../utils';
+import { debounce, throttle, convertRange, styled } from '../../utils';
 import context from '../context';
 import { DomElem } from '../DomElem';
 import { Input } from '../Input';
@@ -127,8 +127,8 @@ class ColorPicker extends Input {
 		this.textInput = new Input({
 			type: 'text',
 			value: this.options.subscriber('value', value => this.hslString || value),
-			onChange: ({ value }) => this.change(value),
-			onKeyUp: debounce(({ target: { value } }) => this.change(value), 700),
+			onChange: ({ value }) => (this.options.value = value),
+			onKeyUp: debounce(({ target: { value } }) => (this.options.value = value), 700),
 			prependTo: this.elem,
 		});
 
@@ -191,7 +191,7 @@ class ColorPicker extends Input {
 								background: ${color};
 								color: ${colors.mostReadable(color, [colors.white, colors.black])};
 							`,
-					onPointerPress: () => this.change(color),
+					onPointerPress: () => (this.options.value = color),
 				});
 			});
 		}
@@ -200,40 +200,31 @@ class ColorPicker extends Input {
 	}
 
 	setOption(key, value) {
-		if (key === 'value') this.set(value === 'random' ? randomColor().toHslString() : value);
-		else super.setOption(key, value);
-	}
+		if (key === 'value') {
+			if (!value) return;
 
-	set(value) {
-		if (!value) return;
+			const color = value === 'random' ? randomColor() : new TinyColor(value);
+			const {
+				h = this.hue,
+				s = this.saturation,
+				l = this.lightness ?? 0.5,
+			} = typeof value === 'object' ? value : color.toHsv();
+			const hslString =
+				typeof value === 'object'
+					? `hsl(${Math.round(value.h)}, ${Math.round(value.s * 100)}%, ${Math.round(value.l * 100)}%)`
+					: color.toHslString();
 
-		const color = value === 'random' ? randomColor() : new TinyColor(value);
-		const { h, s, l } = typeof value === 'object' ? value : color.toHsv();
-		const hslString =
-			typeof value === 'object'
-				? `hsl(${Math.round(value.h)}, ${Math.round(value.s * 100)}%, ${Math.round(value.l * 100)}%)`
-				: color.toHslString();
+			this.hslString = hslString;
+			this.hue = h;
+			this.saturation = s;
+			this.lightness = l;
 
-		this.hslString = hslString;
-		this.hue = h;
-		this.saturation = s;
-		this.lightness = l;
+			this.elem.style.backgroundColor = hslString;
 
-		this.elem.style.backgroundColor = hslString;
+			this.pickerArea.elem.style.backgroundColor = `hsl(${h}, 100%, 50%)`;
 
-		this.pickerArea.elem.style.backgroundColor = `hsl(${h}, 100%, 50%)`;
-
-		return { value: hslString, color, h, s, l };
-	}
-
-	change(value) {
-		if (!value) {
-			this.options.onChange.call(this, { value: '' });
-
-			return;
-		}
-
-		this.options.onChange.call(this, this.set(value));
+			this.emit('change', color);
+		} else super.setOption(key, value);
 	}
 
 	normalizePosition(event, parent, offsetX, offsetY) {
@@ -261,9 +252,6 @@ class ColorPicker extends Input {
 	pickerMove(event) {
 		event.preventDefault();
 
-		if (this.runningAnimation) return;
-		this.runningAnimation = true;
-
 		const indicatorOffsetX = this.pickerIndicator.elem.clientWidth / 2;
 		const indicatorOffsetY = this.pickerIndicator.elem.clientHeight / 2;
 		const position = this.normalizePosition(event, this.pickerArea.elem, indicatorOffsetX, indicatorOffsetY);
@@ -273,23 +261,16 @@ class ColorPicker extends Input {
 		position.x -= indicatorOffsetX;
 		position.y -= indicatorOffsetY;
 
-		const newS = position.x / pickerAreaWidth;
-		const newL = (pickerAreaHeight - position.y) / pickerAreaHeight;
+		const newS = convertRange(position.x, [0, pickerAreaWidth], [0, 1]);
+		const newL = convertRange(position.y + position.x, [0, pickerAreaHeight + pickerAreaWidth], [1, 0]);
 
-		requestAnimationFrame(() => {
-			this.pickerIndicator.elem.style.transform = `translate3d(${position.x}px, ${position.y}px, 0)`;
+		this.pickerIndicator.elem.style.transform = `translate3d(${position.x}px, ${position.y}px, 0)`;
 
-			this.change({ h: this.hue, s: newS, l: newL });
-
-			this.runningAnimation = false;
-		});
+		this.options.value = { h: this.hue, s: newS, l: newL };
 	}
 
 	hueMove(event) {
 		event.preventDefault();
-
-		if (this.runningAnimation) return;
-		this.runningAnimation = true;
 
 		const indicatorOffset = this.hueIndicator.elem.clientWidth / 2;
 		const position = this.normalizePosition(event, this.hueArea.elem, indicatorOffset, indicatorOffset);
@@ -297,17 +278,13 @@ class ColorPicker extends Input {
 
 		position.x -= indicatorOffset;
 
-		const newHue = Math.round((position.x / hueAreaWidth) * 360);
+		const newHue = convertRange(position.x, [0, hueAreaWidth], [0, 360]);
 
-		requestAnimationFrame(() => {
-			this.hueIndicator.elem.style.transform = `translate3d(${position.x - indicatorOffset / 2}px, 0, 0)`;
+		this.hueIndicator.elem.style.transform = `translate3d(${position.x - indicatorOffset / 2}px, 0, 0)`;
 
-			this.change({ h: newHue, s: this.saturation, l: this.lightness });
+		this.options.value = { h: newHue, s: this.saturation, l: this.lightness };
 
-			this.pickerArea.elem.style.backgroundColor = `hsl(${newHue}, 100%, 50%)`;
-
-			this.runningAnimation = false;
-		});
+		this.pickerArea.elem.style.backgroundColor = `hsl(${newHue}, 100%, 50%)`;
 	}
 
 	onPointerDown(event) {
@@ -315,20 +292,21 @@ class ColorPicker extends Input {
 
 		if (event.target === this.pickerArea.elem || event.target === this.hueArea.elem) {
 			const onMove = this[`${event.target === this.hueArea.elem ? 'hue' : 'picker'}Move`].bind(this);
+			const onMoveThrottled = throttle(onMove, 60);
 
 			const onDrop = () => {
 				document.removeEventListener('mouseup', onDrop);
-				document.removeEventListener('mousemove', onMove);
+				document.removeEventListener('mousemove', onMoveThrottled);
 				document.removeEventListener('touchend', onDrop);
 				document.removeEventListener('touchcancel', onDrop);
-				document.removeEventListener('touchmove', onMove);
+				document.removeEventListener('touchmove', onMoveThrottled);
 			};
 
 			document.addEventListener('mouseup', onDrop);
-			document.addEventListener('mousemove', onMove);
+			document.addEventListener('mousemove', onMoveThrottled);
 			document.addEventListener('touchend', onDrop);
 			document.addEventListener('touchcancel', onDrop);
-			document.addEventListener('touchmove', onMove);
+			document.addEventListener('touchmove', onMoveThrottled);
 
 			onMove(event);
 		}
