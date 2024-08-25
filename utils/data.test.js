@@ -1,4 +1,4 @@
-import { debounce, getCustomProperties, conditionalList, orderBy } from './data';
+import { debounce, throttle, delay, convertRange, getCustomProperties, conditionalList, orderBy } from './data';
 
 test.skip('debounce', () => {
 	const useFakeTimers = () => {};
@@ -36,6 +36,22 @@ test.skip('debounce', () => {
 	advanceTimersByTime(100);
 
 	expect(count).toStrictEqual(6);
+});
+
+test.skip('throttle', () => {
+	throttle();
+});
+
+test.skip('delay', () => {
+	delay();
+});
+
+test('convertRange', () => {
+	expect(convertRange(2, [0, 3], [0, 9])).toStrictEqual(6);
+
+	expect(convertRange(10, [0, 10], [10, 0])).toStrictEqual(0);
+
+	expect(convertRange(4.2, [-100, 100], [199, -199])).toStrictEqual(-8.358000000000004);
 });
 
 test('getCustomProperties', () => {

@@ -13,7 +13,12 @@ export const debounce = (callback, delay = 400) => {
 	};
 };
 
-export const throttle = (callback, delay) => {
+/**
+ * Throttle a function
+ * @param {Function} callback - The function to throttled
+ * @param {Number} delay - The number of ms to delay the running of the function
+ */
+export const throttle = (callback, delay = 400) => {
 	let previousCall = Date.now();
 
 	return function () {
@@ -26,7 +31,19 @@ export const throttle = (callback, delay) => {
 	};
 };
 
+/**
+ * async delay
+ * @param {Number} delay - The number of ms to await
+ */
 export const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+/**
+ * Convert a number from one range to another
+ * @param {Number} value - The number to convert
+ * @param {Array} sourceRange - The range the value originates from
+ * @param {Array} value - The range to convert the value into
+ */
+export const convertRange = (value, sourceRange, targetRange) => ((value - sourceRange[0]) * (targetRange[1] - targetRange[0])) / (sourceRange[1] - sourceRange[0]) + targetRange[0];
 
 /**
  * Retrieve a list of non-native properties from a javascript object
