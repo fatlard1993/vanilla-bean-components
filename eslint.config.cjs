@@ -84,7 +84,7 @@ module.exports = [
 		languageOptions: {
 			globals: {
 				...globals.browser,
-				process: true,
+				process: false,
 			},
 		},
 	},
@@ -108,7 +108,7 @@ module.exports = [
 		languageOptions: {
 			globals: {
 				...globals.node,
-				Bun: true,
+				Bun: false,
 			},
 		},
 		rules: {
@@ -121,12 +121,12 @@ module.exports = [
 			globals: {
 				...globals.browser,
 				...globals.node,
-				Bun: true,
-				container: true,
-				expect: true,
-				describe: true,
-				test: true,
+				...globals.jest,
+				Bun: false,
+				container: false,
+				mock: true,
 				spyOn: true,
+				setSystemTime: true,
 			},
 		},
 		plugins: {
