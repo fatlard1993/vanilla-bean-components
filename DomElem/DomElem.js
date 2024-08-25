@@ -153,8 +153,8 @@ class DomElem extends EventTarget {
 				this.elemObserver = observeElementConnection({
 					parent: this.parentElem || document,
 					target: this.elem,
-					onConnected: event => this.dispatchEvent(new CustomEvent('connected', { detail: event })),
-					onDisconnected: event => this.dispatchEvent(new CustomEvent('disconnected', { detail: event })),
+					onConnected: event => this.emit('connected', event),
+					onDisconnected: event => this.emit('disconnected', event),
 				});
 			}
 
@@ -166,6 +166,10 @@ class DomElem extends EventTarget {
 
 			return true;
 		}
+	}
+
+	emit(eventType, detail) {
+		this.dispatchEvent(new CustomEvent(eventType, { detail }));
 	}
 
 	setOptions(options) {

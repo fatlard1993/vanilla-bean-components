@@ -129,6 +129,7 @@ Class instance property `options` is built on Context. All `set` operations run 
 Not all DomElem methods make sense to use with options:
 
 - render()
+- emit(eventType, detail)
 - setOption(key, value)
   - _This method is used internally to synchronize options property changes and not intended to be called directly_
 - setOptions(options)

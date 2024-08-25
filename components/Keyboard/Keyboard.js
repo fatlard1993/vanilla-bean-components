@@ -83,19 +83,12 @@ class Keyboard extends DomElem {
 					key,
 					keyDefinition,
 					appendTo: row,
-					onPointerDown: event =>
-						this.dispatchEvent(new CustomEvent('keyDown', this.makeEventPayload({ event, key, keyDefinition }))),
-					onPointerUp: event =>
-						this.dispatchEvent(new CustomEvent('keyUp', this.makeEventPayload({ event, key, keyDefinition }))),
-					onPointerPress: event =>
-						this.dispatchEvent(new CustomEvent('keyPress', this.makeEventPayload({ event, key, keyDefinition }))),
+					onPointerDown: event => this.emit('keyDown', { event, key: keyDefinition?.key || key, target: event.target?._domElem }),
+					onPointerUp: event => this.emit('keyUp', { event, key: keyDefinition?.key || key, target: event.target?._domElem }),
+					onPointerPress: event => this.emit('keyPress', { event, key: keyDefinition?.key || key, target: event.target?._domElem }),
 				});
 			});
 		});
-	}
-
-	makeEventPayload({ event, key, keyDefinition }) {
-		return { detail: { event, key: keyDefinition?.key || key, target: event.target?._domElem } };
 	}
 
 	onKeyDown(callback) {

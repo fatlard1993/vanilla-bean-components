@@ -88,11 +88,7 @@ export default class Whiteboard extends DomElem {
 
 				if (this.line.length === 0) this.drawEvent(event, true);
 
-				this.dispatchEvent(
-					new CustomEvent('change', {
-						detail: { event, color: this.options.color, width: this.options.lineWidth, line: this.line },
-					}),
-				);
+				this.emit('change', { event, color: this.options.color, width: this.options.lineWidth, line: this.line });
 			};
 
 			this.elem.addEventListener('mouseup', onDrop);
@@ -126,9 +122,7 @@ export default class Whiteboard extends DomElem {
 		this.canvas.stroke();
 		if (cap) this.canvas.closePath();
 
-		this.dispatchEvent(
-			new CustomEvent('draw', { detail: { event, cap, from: { x: this.x, y: this.y }, to: { x, y } } }),
-		);
+		this.emit('draw', { event, cap, from: { x: this.x, y: this.y }, to: { x, y } });
 
 		this.x = x;
 		this.y = y;
