@@ -127,8 +127,8 @@ class ColorPicker extends Input {
 		this.textInput = new Input({
 			type: 'text',
 			value: this.options.subscriber('value', value => this.hslString || value),
-			onChange: ({ value }) => (this.options.value = value),
-			onKeyUp: debounce(({ target: { value } }) => (this.options.value = value), 700),
+			onChange: ({ value }) => this.change(value),
+			onKeyUp: debounce(({ target: { value } }) => this.change(value), 700),
 			prependTo: this.elem,
 		});
 
@@ -191,7 +191,7 @@ class ColorPicker extends Input {
 								background: ${color};
 								color: ${colors.mostReadable(color, [colors.white, colors.black])};
 							`,
-					onPointerPress: () => (this.options.value = color),
+					onPointerPress: () => this.change(color),
 				});
 			});
 		}
@@ -199,22 +199,35 @@ class ColorPicker extends Input {
 		super.render();
 	}
 
+	change(value) {
+		this.options.value = this.parseValue(value).hslString;
+
+		this.elem.dispatchEvent(new CustomEvent('change', { detail: { value } }));
+	}
+
+	parseValue(value) {
+		const color = value === 'random' ? randomColor() : new TinyColor(value);
+		const {
+			h = this.hue,
+			s = this.saturation,
+			l = this.lightness ?? 0.5,
+		} = typeof value === 'object' ? value : color.toHsv();
+		const hslString =
+			typeof value === 'object'
+				? `hsl(${Math.round(h)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%)`
+				: color.toHslString();
+
+		return { h, s, l, color, hslString };
+	}
+
 	setOption(key, value) {
 		if (key === 'value') {
 			if (!value) return;
 
-			const color = value === 'random' ? randomColor() : new TinyColor(value);
-			const {
-				h = this.hue,
-				s = this.saturation,
-				l = this.lightness ?? 0.5,
-			} = typeof value === 'object' ? value : color.toHsv();
-			const hslString =
-				typeof value === 'object'
-					? `hsl(${Math.round(value.h)}, ${Math.round(value.s * 100)}%, ${Math.round(value.l * 100)}%)`
-					: color.toHslString();
+			const { h, s, l, color, hslString } = this.parseValue(value);
 
 			this.hslString = hslString;
+			this.color = color;
 			this.hue = h;
 			this.saturation = s;
 			this.lightness = l;
@@ -222,8 +235,6 @@ class ColorPicker extends Input {
 			this.elem.style.backgroundColor = hslString;
 
 			this.pickerArea.elem.style.backgroundColor = `hsl(${h}, 100%, 50%)`;
-
-			this.elem.dispatchEvent(new CustomEvent('change', { detail: { value: hslString } }));
 		} else super.setOption(key, value);
 	}
 
@@ -266,7 +277,7 @@ class ColorPicker extends Input {
 
 		this.pickerIndicator.elem.style.transform = `translate3d(${position.x}px, ${position.y}px, 0)`;
 
-		this.options.value = { h: this.hue, s: newS, l: newL };
+		this.change({ h: this.hue, s: newS, l: newL });
 	}
 
 	hueMove(event) {
@@ -282,9 +293,7 @@ class ColorPicker extends Input {
 
 		this.hueIndicator.elem.style.transform = `translate3d(${position.x - indicatorOffset / 2}px, 0, 0)`;
 
-		this.options.value = { h: newHue, s: this.saturation, l: this.lightness };
-
-		this.pickerArea.elem.style.backgroundColor = `hsl(${newHue}, 100%, 50%)`;
+		this.change({ h: newHue, s: this.saturation, l: this.lightness });
 	}
 
 	onPointerDown(event) {
