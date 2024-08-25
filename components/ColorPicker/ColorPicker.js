@@ -223,7 +223,7 @@ class ColorPicker extends Input {
 
 			this.pickerArea.elem.style.backgroundColor = `hsl(${h}, 100%, 50%)`;
 
-			this.emit('change', color);
+			this.elem.dispatchEvent(new CustomEvent('change', { detail: { value: hslString } }));
 		} else super.setOption(key, value);
 	}
 
