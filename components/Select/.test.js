@@ -8,7 +8,6 @@ describe('Select', () => {
 		new Select({
 			options: ['one', '2', { label: 'Three', value: 3 }, 'FOUR'],
 			value: 3,
-			onChange: console.log,
 			appendTo: container,
 		});
 

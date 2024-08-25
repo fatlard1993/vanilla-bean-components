@@ -5,8 +5,6 @@ test('isMac => true', () => {
 
 	windowSpy.mockImplementation(() => ({ navigator: { platform: 'macOS' } }));
 
-	console.log(window.navigator);
-
 	expect(isMac()).toStrictEqual(true);
 });
 
@@ -14,8 +12,6 @@ test('isMac => false', () => {
 	const windowSpy = spyOn(window, 'window', 'get');
 
 	windowSpy.mockImplementation(() => ({ navigator: { platform: 'Linux' } }));
-
-	console.log(window.navigator);
 
 	expect(isMac()).toStrictEqual(false);
 });
