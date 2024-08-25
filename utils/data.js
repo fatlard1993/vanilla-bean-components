@@ -43,7 +43,8 @@ export const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
  * @param {Array} sourceRange - The range the value originates from
  * @param {Array} value - The range to convert the value into
  */
-export const convertRange = (value, sourceRange, targetRange) => ((value - sourceRange[0]) * (targetRange[1] - targetRange[0])) / (sourceRange[1] - sourceRange[0]) + targetRange[0];
+export const convertRange = (value, sourceRange, targetRange) =>
+	((value - sourceRange[0]) * (targetRange[1] - targetRange[0])) / (sourceRange[1] - sourceRange[0]) + targetRange[0];
 
 /**
  * Retrieve a list of non-native properties from a javascript object
