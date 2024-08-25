@@ -12,26 +12,36 @@ export default class Form extends DomElem {
 		const form = this;
 
 		this.inputElements = Object.fromEntries(
-			this.options.inputs.map(({ key, label, collapsed, Component = Input, onChange = () => {}, ...inputOptions }) => {
-				const input = new Component({
-					appendTo: this.elem,
-					value: this.options.data[key],
-					...(Component !== DomElem && {
-						onChange: function (event) {
-							form.options.data[key] = this.options.value = event.value;
-							this.validate?.();
-							onChange(event);
-						},
-					}),
-					...inputOptions,
-				});
+			this.options.inputs.map(
+				({
+					key,
+					label,
+					collapsed,
+					Component = Input,
+					onChange = () => {},
+					parse = value => value,
+					...inputOptions
+				}) => {
+					const input = new Component({
+						appendTo: this.elem,
+						value: this.options.data[key],
+						...(Component !== DomElem && {
+							onChange: function (event) {
+								form.options.data[key] = this.options.value = parse(event.value, input);
+								this.validate?.();
+								onChange(event);
+							},
+						}),
+						...inputOptions,
+					});
 
-				form.options.data[key] = input.options.value;
+					form.options.data[key] = input.options.value;
 
-				this.append(new Label({ label: label || capitalize(fromCamelCase(key), true), collapsed }, input));
+					this.append(new Label({ label: label || capitalize(fromCamelCase(key), true), collapsed }, input));
 
-				return [key, input];
-			}),
+					return [key, input];
+				},
+			),
 		);
 	}
 
