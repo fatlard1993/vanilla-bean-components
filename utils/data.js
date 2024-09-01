@@ -1,7 +1,7 @@
 /**
  * Debounce a function
  * @param {Function} callback - The function to debounced
- * @param {Number} delay - The number of ms to delay the running of the function
+ * @param {Number} delay - The number of ms after the last invocation to delay running the function
  */
 export const debounce = (callback, delay = 400) => {
 	let timerId;
@@ -16,7 +16,7 @@ export const debounce = (callback, delay = 400) => {
 /**
  * Throttle a function
  * @param {Function} callback - The function to throttled
- * @param {Number} delay - The number of ms to delay the running of the function
+ * @param {Number} delay - The number of ms allowed between invocations of the function
  */
 export const throttle = (callback, delay = 400) => {
 	let previousCall = Date.now();
