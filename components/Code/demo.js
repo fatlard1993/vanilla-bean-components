@@ -1,4 +1,6 @@
 import DemoView, { DemoWrapper } from '../../demo/DemoView';
+
+import { removeExcessIndentation } from '../../DomElem/utils/string';
 import { Code } from '.';
 
 export default class Demo extends DemoView {
@@ -7,7 +9,7 @@ export default class Demo extends DemoView {
 
 		this.component = new Code({
 			style: { margin: '0 auto' },
-			code: `
+			code: removeExcessIndentation(`
 				import DemoView from '../../demo/DemoView';
 				import Code from '.';
 
@@ -23,7 +25,7 @@ export default class Demo extends DemoView {
 						super({ component, ...options });
 					}
 				}
-			`,
+			`),
 			appendTo: this.demoWrapper,
 		});
 

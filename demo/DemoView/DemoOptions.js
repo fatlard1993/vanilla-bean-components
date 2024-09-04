@@ -1,5 +1,7 @@
-import { Code, List, Select, Input, Label, conditionalList } from '../..';
+import { DomElem, Code, List, Select, Input, Label, conditionalList, styled } from '../..';
 import { stringifyValue } from './utils';
+
+const CodeForLabel = styled(Code, () => `display: block;`);
 
 export default class DemoOptions extends List {
 	constructor(options) {
@@ -22,14 +24,17 @@ export default class DemoOptions extends List {
 								{
 									alwaysItem: new Label(
 										'Type',
-										new Code({
+										new CodeForLabel({
 											code: stringifyValue(typeof value === 'object' ? value : typeof value),
 										}),
 									),
 								},
 								{
 									if: !isMethod(key) && component.defaultOptions[key],
-									thenItem: new Label('Default', new Code({ code: stringifyValue(component.defaultOptions[key]) })),
+									thenItem: new Label(
+										'Default',
+										new CodeForLabel({ code: stringifyValue(component.defaultOptions[key]) }),
+									),
 								},
 								{
 									if: component[`${key}_enum`],
@@ -47,12 +52,23 @@ export default class DemoOptions extends List {
 									thenItem: new Label(
 										'Current',
 										new Input({
-											tag: 'textarea',
+											tag: typeof value === 'object' || value?.includes?.('\n') ? 'textarea' : 'input',
+											syntaxHighlighting: typeof value !== 'string',
 											style: { width: '100%' },
 											value: component.options.subscriber(key, _ => {
 												try {
 													return ['[object Object]', '[object Array]'].includes(stringifyValue(_))
-														? JSON.stringify(_, null, 2)
+														? JSON.stringify(
+																_,
+																(_key, _value) => {
+																	if (_value?.isDomElem || _value?.prototype instanceof DomElem)
+																		return '[object DomElem]';
+																	if (typeof _value === 'function') return _value.toString();
+
+																	return _value;
+																},
+																2,
+															)
 														: _;
 												} catch {
 													return stringifyValue(_);

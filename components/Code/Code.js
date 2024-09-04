@@ -1,12 +1,7 @@
-import Prism from 'prismjs';
-
 import { removeExcessIndentation } from '../../utils';
 import { DomElem } from '../DomElem';
 
 const defaultOptions = { tag: 'code', language: 'javascript', multiline: 'auto' };
-
-const codeToHTML = (code, language) =>
-	Prism.highlight(removeExcessIndentation(code), Prism.languages[language], language);
 
 class Code extends DomElem {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
@@ -21,15 +16,6 @@ class Code extends DomElem {
 				...defaultOptions,
 				...options,
 				...(options.multiline ? { tag: 'pre' } : { tag: 'code' }),
-				styles: (theme, domElem) => `
-					display: ${options.multiline ? '' : 'inline-'}block;
-
-					&[class*="language-"] {
-						margin: 0;
-					}
-
-					${options.styles?.(theme, domElem) || ''}
-				`,
 			},
 			...children,
 		);
@@ -39,7 +25,7 @@ class Code extends DomElem {
 		if (this.options.multiline) {
 			this._code = new DomElem({
 				tag: 'code',
-				innerHTML: codeToHTML(this.options.code, this.options.language),
+				textContent: removeExcessIndentation(this.options.code),
 				appendTo: this.elem,
 			});
 		}
@@ -57,7 +43,7 @@ class Code extends DomElem {
 			this.removeClass(/\blanguage-\S+\b/g);
 			this.addClass(`language-${value}`);
 		} else if (key === 'code') {
-			(this.options.multiline ? this._code : this).options.innerHTML = codeToHTML(value, this.options.language);
+			(this.options.multiline ? this._code : this).options.textContent = removeExcessIndentation(value);
 		} else super.setOption(key, value);
 	}
 }

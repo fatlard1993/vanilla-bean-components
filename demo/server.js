@@ -20,7 +20,7 @@ handleBuildChange();
 const server = Bun.serve({
 	port: 9999,
 	fetch: async request => {
-		const path = new URL(request.url).pathname;
+		const path = new URL(request.url).pathname.replace('vanilla-bean-components', '..');
 
 		console.log(path);
 

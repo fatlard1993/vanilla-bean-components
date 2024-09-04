@@ -10,6 +10,7 @@
 		"./prettier.config.cjs": "./prettier.config.cjs",
 		"./spellcheck.config.cjs": "./spellcheck.config.cjs",
 		"./test-setup.js": "./test-setup.js",
+		"./FontWithASyntaxHighlighter-Regular.woff2": "./FontWithASyntaxHighlighter-Regular.woff2",
 		".": "./index.js"
 	},
 	"files": [
@@ -20,6 +21,7 @@
 		"eslint.config.cjs",
 		".prettierrc.cjs",
 		".spellcheck.cjs",
+		"./FontWithASyntaxHighlighter-Regular.woff2",
 		"!/components/**/demo.js",
 		"!/components/**/*.test.js",
 		"!/utils/**/*.test.js"
@@ -61,12 +63,10 @@
 		"augmented-ui": "^2.0.0",
 		"autoprefixer": "^10.4.20",
 		"marked": "^14.0.0",
-		"marked-highlight": "^2.1.4",
 		"moresketchy": "wbern/MoreSketchy.js",
 		"nanoid": "^5.0.7",
 		"postcss": "^8.4.41",
 		"postcss-nested": "^6.2.0",
-		"prismjs": "^1.29.0",
 		"simplify-js": "^1.2.4",
 		"source-code-pro": "^2.38.0"
 	},

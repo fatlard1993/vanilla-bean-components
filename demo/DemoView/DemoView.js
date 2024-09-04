@@ -8,6 +8,7 @@ const StyledLabel = styled(
 		width: auto;
 		margin: 0 3% 9px;
 	`,
+	{ collapsible: true },
 );
 
 export class DemoView extends View {

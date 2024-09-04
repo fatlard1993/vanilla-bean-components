@@ -12,8 +12,21 @@ new Input({
 ```js
 new Input({
 	tag: 'textarea',
-	value: 'multiline\nvalue',
-	validations: [[/.+/, 'This input is required']],
+	syntaxHighlighting: true,
+	value: '{\n\t"key": "value"\n}',
+	validations: [
+		[
+			_ => {
+				try {
+					JSON.parse(_);
+					return true;
+				} catch {
+					return false;
+				}
+			},
+			'This input must be valid JSON',
+		],
+	],
 	onKeyUp: event => {},
 	onInput: event => {},
 	onChange: event => {},

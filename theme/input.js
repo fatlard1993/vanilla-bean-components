@@ -58,4 +58,9 @@ export default `
 		color: ${colors.black};
 		background-color: ${colors.darker(colors.gray)};
 	}
+
+	&:not(.syntaxHighlighting).validationErrors {
+		background-color: ${colors.dark(colors.red)};
+		color: ${colors.white};
+	}
 `;

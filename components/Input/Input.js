@@ -1,15 +1,5 @@
-import { styled } from '../../utils';
 import { DomElem } from '../DomElem';
-
-export const InputValidationError = styled(
-	DomElem,
-	({ colors }) => `
-		background-color: ${colors.red};
-		padding: 6px;
-		margin: 3px;
-		border-radius: 3px;
-	`,
-);
+import { updateValidationErrors, insertTabCharacter, adjustIndentation } from './utils';
 
 const type_enum = Object.freeze([
 	'button',
@@ -44,38 +34,6 @@ const defaultOptions = {
 	height: 'auto',
 };
 
-export const updateValidationErrors = ({ elem, validations, value }) => {
-	if (!validations?.length) return;
-
-	const errors = [];
-
-	validations.forEach(([validation, message]) => {
-		const isValid = validation instanceof RegExp ? validation.test(value) : validation(value);
-
-		const resolvedMessage = typeof message == 'function' ? message(value) : message;
-
-		const existingValidationError = document.evaluate(
-			`..//div[text()='${resolvedMessage}']`,
-			elem,
-			null,
-			XPathResult.FIRST_ORDERED_NODE_TYPE,
-		).singleNodeValue;
-
-		if (!isValid) errors.push(resolvedMessage);
-
-		if (existingValidationError) {
-			existingValidationError.style.display = isValid ? 'none' : 'block';
-		} else if (!isValid) {
-			const validationError = new InputValidationError({ content: resolvedMessage });
-
-			// Insert directly before the input element in case there is a label or other stacked elements
-			elem.parentElement.insertBefore(validationError.elem, elem);
-		}
-	});
-
-	return errors.length > 0 ? errors : undefined;
-};
-
 const dataTypeToInputType = { number: 'number', boolean: 'checkbox', string: 'text' };
 
 class Input extends DomElem {
@@ -95,11 +53,29 @@ class Input extends DomElem {
 		this.initialValue = this.options.value;
 	}
 
+	render() {
+		super.render();
+
+		if (this.tag === 'textarea' && this.options.syntaxHighlighting) {
+			this.elem.addEventListener('keydown', function (event) {
+				if (event.key == 'Tab') {
+					event.preventDefault();
+
+					this.selectionStart === this.selectionEnd
+						? insertTabCharacter(this)
+						: adjustIndentation({ textarea: this, action: event.shiftKey ? 'remove' : 'add' });
+				}
+			});
+		}
+	}
+
 	setOption(key, value) {
 		if (key === 'height' && this.tag === 'textarea') {
 			if (value === 'auto') {
 				this.__updateAutoHeight = () => {
-					this.elem.style.height = `calc((${((this.elem.value?.match(/\n/g) || '').length + 1) * 1.25}em + 16px)`;
+					this.elem.style.height = this.options.syntaxHighlighting
+						? `calc((${((this.elem.value?.match(/\n/g) || '').length + 1) * 1.19}em + 10px)`
+						: `calc((${((this.elem.value?.match(/\n/g) || '').length + 1) * 1.25}em + 16px)`;
 				};
 
 				this.__updateAutoHeight();
@@ -111,6 +87,7 @@ class Input extends DomElem {
 				this.elem.style.height = typeof value === 'number' ? `${value + 1}em` : value;
 			}
 		} else if (key === 'value' && this.options.type === 'checkbox') this.elem.checked = value;
+		else if (key === 'syntaxHighlighting') this[value ? 'addClass' : 'removeClass']('syntaxHighlighting');
 		else super.setOption(key, value);
 
 		if (this.rendered && key === 'value') this.validate();
@@ -121,11 +98,15 @@ class Input extends DomElem {
 	}
 
 	validate({ validations, value } = {}) {
-		return updateValidationErrors({
+		const errors = updateValidationErrors({
 			elem: this.elem,
 			validations: validations ?? this.options.validations,
 			value: value ?? this.options.value,
 		});
+
+		this[errors ? 'addClass' : 'removeClass']('validationErrors');
+
+		return errors;
 	}
 }
 

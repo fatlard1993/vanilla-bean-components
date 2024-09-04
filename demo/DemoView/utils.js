@@ -1,5 +1,8 @@
 import { removeExcessIndentation } from '../../utils';
 
+// Fix RegExp stringify-ability
+RegExp.prototype.toJSON = RegExp.prototype.toString;
+
 export const stringifyValue = value => {
 	if (typeof value === 'string') return value;
 

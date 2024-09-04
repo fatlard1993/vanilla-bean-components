@@ -1,3 +1,5 @@
+import colors from './colors';
+
 const fontAwesome = `
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-font-smoothing: antialiased;
@@ -11,6 +13,14 @@ const fontAwesome = `
 `;
 
 export default {
+	code: `
+		font-family: "FontWithASyntaxHighlighter", monospace;
+		font-palette: --vbc-code-theme;
+		padding: 3px;
+		width: fit-content;
+		color: ${colors.light(colors.red)}; /* default color */
+		background-color: ${colors.black};
+	`,
 	fontAwesome,
 	fontAwesomeBrands: `
 		${fontAwesome}

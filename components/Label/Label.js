@@ -12,7 +12,7 @@ const LabelText = styled(
 	`,
 );
 
-const defaultOptions = { collapsible: true };
+const defaultOptions = { collapsible: false };
 
 class Label extends TooltipWrapper {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };

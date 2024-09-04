@@ -120,6 +120,10 @@ module.exports = {
 		'fixup',
 		'mjs',
 		'fieldset',
+		'woff',
+		'hotpink',
+		'lightblue',
+		'vbc'
 	],
 	skipIfMatch: [String.raw`\d+v[wh]`],
 	skipWordIfMatch: [],
