@@ -123,7 +123,10 @@ module.exports = {
 		'woff',
 		'hotpink',
 		'lightblue',
-		'vbc'
+		'vbc',
+		'iframe',
+		'srcdoc',
+		'resize',
 	],
 	skipIfMatch: [String.raw`\d+v[wh]`],
 	skipWordIfMatch: [],

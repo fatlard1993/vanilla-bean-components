@@ -29,6 +29,7 @@ import CalculatorExample from './examples/Calculator';
 import CounterExample from './examples/Counter';
 import DlcWhiteboardExample from './examples/DlcWhiteboard';
 import MultiWidgetExample from './examples/MultiWidget';
+import PlaygroundExample from './examples/Playground';
 import ShapeMatchGameExample from './examples/ShapeMatchGame';
 import StopwatchExample from './examples/Stopwatch';
 import TodoExample from './examples/Todo';
@@ -65,6 +66,7 @@ export default {
 	['/examples/Counter']: CounterExample,
 	['/examples/DlcWhiteboard']: DlcWhiteboardExample,
 	['/examples/MultiWidget']: MultiWidgetExample,
+	['/examples/Playground']: PlaygroundExample,
 	['/examples/ShapeMatchGame']: ShapeMatchGameExample,
 	['/examples/Stopwatch']: StopwatchExample,
 	['/examples/Todo']: TodoExample,
