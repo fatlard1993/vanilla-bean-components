@@ -61,7 +61,7 @@ class Input extends DomElem {
 				if (event.key == 'Tab') {
 					event.preventDefault();
 
-					this.selectionStart === this.selectionEnd
+					this.selectionStart === this.selectionEnd && !event.shiftKey
 						? insertTabCharacter(this)
 						: adjustIndentation({ textarea: this, action: event.shiftKey ? 'remove' : 'add' });
 				}
@@ -88,6 +88,10 @@ class Input extends DomElem {
 			}
 		} else if (key === 'value' && this.options.type === 'checkbox') this.elem.checked = value;
 		else if (key === 'syntaxHighlighting') this[value ? 'addClass' : 'removeClass']('syntaxHighlighting');
+		else if (key === 'language' && this.options.syntaxHighlighting){
+			this.removeClass(/\blanguage-\S+\b/g);
+			this.addClass(`language-${value}`);
+		}
 		else super.setOption(key, value);
 
 		if (this.rendered && key === 'value') this.validate();

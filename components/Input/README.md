@@ -13,6 +13,7 @@ new Input({
 new Input({
 	tag: 'textarea',
 	syntaxHighlighting: true,
+	language: 'json',
 	value: '{\n\t"key": "value"\n}',
 	validations: [
 		[

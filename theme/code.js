@@ -10,7 +10,7 @@ export default `
 		;
 	}
 
-	@font-palette-values --vbc-code-theme {
+	@font-palette-values --vbc-javascript-theme {
 		font-family: 'FontWithASyntaxHighlighter';
 		override-colors:
 			0 ${colors.lighter(colors.purple)}, /* keywords, {} */
@@ -25,6 +25,51 @@ export default `
 		;
 	}
 
+	@font-palette-values --vbc-json-theme {
+		font-family: 'FontWithASyntaxHighlighter';
+		override-colors:
+			0 ${colors.lighter(colors.purple)}, /* keywords, {} */
+			1 ${colors.light(colors.red)}, /* comments */
+			2 ${colors.light(colors.green)}, /* literals */
+			3 ${colors.light(colors.orange)}, /* numbers */
+			4 ${colors.lighter(colors.blue)}, /* functions, [] */
+			5 ${colors.white}, /* others */
+			6 ${colors.black}, /* not in use */
+			7 ${colors.light(colors.green)}, /* inside quotes, css properties, few chars */
+			8 ${colors.green} /* few chars */
+		;
+	}
+
+	@font-palette-values --vbc-html-theme {
+		font-family: 'FontWithASyntaxHighlighter';
+		override-colors:
+			0 ${colors.lighter(colors.red)}, /* keywords */
+			1 ${colors.light(colors.gray)}, /* comments */
+			2 ${colors.light(colors.red)}, /* literals */
+			3 ${colors.light(colors.orange)}, /* numbers */
+			4 ${colors.lighter(colors.blue)}, /* functions, [] */
+			5 ${colors.pink}, /* others */
+			6 ${colors.black}, /* not in use */
+			7 ${colors.light(colors.green)}, /* inside quotes, few chars */
+			8 ${colors.light(colors.red)} /* quotes, tags */
+		;
+	}
+
+	@font-palette-values --vbc-css-theme {
+		font-family: 'FontWithASyntaxHighlighter';
+		override-colors:
+			0 ${colors.lighter(colors.purple)}, /* keywords, {} */
+			1 ${colors.light(colors.gray)}, /* comments */
+			2 ${colors.light(colors.orange)}, /* literals */
+			3 ${colors.light(colors.green)}, /* numbers */
+			4 ${colors.lighter(colors.blue)}, /* functions, [] */
+			5 ${colors.white}, /* others */
+			6 ${colors.black}, /* not in use */
+			7 ${colors.light(colors.green)}, /* inside quotes, css properties, few chars */
+			8 ${colors.light(colors.green)} /* few chars */
+		;
+	}
+
 	pre[class*="language-"] {
 		background-color: ${colors.black};
 		display: inline-block;
@@ -33,5 +78,20 @@ export default `
 
 	code, textarea.syntaxHighlighting, input.syntaxHighlighting {
 		${fonts.code}
+
+		&[class*="language-html"] {
+			font-palette: --vbc-html-theme;
+			color: ${colors.white};
+		}
+
+		&[class*="language-css"] {
+			font-palette: --vbc-css-theme;
+			color: ${colors.light(colors.green)};
+		}
+
+		&[class*="language-json"] {
+			font-palette: --vbc-json-theme;
+			color: ${colors.white};
+		}
 	}
 `;

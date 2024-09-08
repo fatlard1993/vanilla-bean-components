@@ -15,7 +15,7 @@ const fontAwesome = `
 export default {
 	code: `
 		font-family: "FontWithASyntaxHighlighter", monospace;
-		font-palette: --vbc-code-theme;
+		font-palette: --vbc-javascript-theme;
 		padding: 3px;
 		width: fit-content;
 		color: ${colors.light(colors.red)}; /* default color */
