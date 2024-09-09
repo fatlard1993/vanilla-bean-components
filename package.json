@@ -37,7 +37,6 @@
 	],
 	"scripts": {
 		"start": "bun run dev",
-		"demo": "bun run dev",
 		"dev": "bun run build:index ; bun --hot demo/server.js",
 		"build": "bun build demo/index.js --outdir demo/build --define 'process.env.AUTOPREFIXER_GRID=\"undefined\"'",
 		"build:index": "bun run devTools/updateComponentIndex.js ; bun run devTools/updateDemoViewIndex.js",
@@ -45,9 +44,7 @@
 		"create:component": "bun run devTools/createComponent.js",
 		"lint": "bun --bun eslint",
 		"lint:fix": "bun --bun eslint --fix",
-		"pretty": "bun --bun prettier --check .",
-		"pretty:fix": "bun --bun prettier --write .",
-		"fix": "bun run lint:fix ; bun run pretty:fix"
+		"format": "bun run lint:fix && bun --bun prettier --write ."
 	},
 	"repository": {
 		"type": "git",

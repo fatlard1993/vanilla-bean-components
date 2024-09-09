@@ -35,7 +35,7 @@ Projects with similar goals or results:
 
 A [demo app](./demo/README.md) is included, this offers good examples of library usage and a working visual reference tool for the components.
 
-`bun run demo`
+`bun start`
 
 ![demo](./img/demo.png)
 
