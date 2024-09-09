@@ -129,7 +129,7 @@ export const request = async (url, options = {}) => {
 			response.unsubscribe = subscriptions.get(id)?.[isRefetch]?.unsubscribe;
 			response.refetch = async overrides => await request.call(this, url, { isRefetch, ...options, ...overrides });
 
-			onRefetch(response);
+			if (subscriptions.get(id)[isRefetch]) onRefetch(response);
 		} else {
 			const subscriptionId = nanoid(5);
 			const unsubscribe = () => {
