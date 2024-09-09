@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+
+changedFiles=$(echo `git diff --name-only --cached --pretty -r`)
+changedComponents=$(echo $changedFiles | grep -o "components/")
+changedUtils=$(echo $changedFiles | grep -o "utils/")
+changedDomElem=$(echo $changedFiles | grep -Eo "^DomElem/|\sDomElem")
+
+echo $changedFiles
+echo $changedComponents
+
+if [ "$changedComponents" != "" ]; then
+	bun test components || exit 1
+fi
+
+if [ "$changedUtils" != "" ]; then
+	bun test utils || exit 1
+fi
+
+if [ "$changedDomElem" != "" ]; then
+	bun test DomElem || exit 1
+fi
+
+bun run format || exit 1
