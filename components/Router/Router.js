@@ -17,8 +17,6 @@ class Router extends DomElem {
 			},
 			...children,
 		);
-
-		window.addEventListener('popstate', () => this.renderView());
 	}
 
 	get path() {
@@ -62,6 +60,14 @@ class Router extends DomElem {
 
 	render() {
 		super.render();
+
+		const reRenderView = () => this.renderView();
+
+		window.addEventListener('popstate', reRenderView);
+
+		this.options.onDisconnected = () => {
+			window.removeEventListener('popstate', reRenderView);
+		};
 
 		this.renderView();
 	}
