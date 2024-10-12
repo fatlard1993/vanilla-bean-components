@@ -6,6 +6,7 @@ class Key extends Button {
 			{
 				...options,
 				styles: (theme, domElem) => `
+					user-select: none;
 					display: inline-block;
 					border: none;
 					padding: 0;
