@@ -1,4 +1,4 @@
-import { styled } from '../../utils';
+import { styled, tactileResponse } from '../../utils';
 import { DomElem } from '../DomElem';
 import Key from './Key';
 
@@ -14,6 +14,7 @@ class Keyboard extends DomElem {
 		super(
 			{
 				layout: 'simple',
+				tactileResponse: true,
 				keyDefinitions: {
 					simple: { text: 'ABC' },
 					number: { text: '123' },
@@ -83,12 +84,30 @@ class Keyboard extends DomElem {
 					key,
 					keyDefinition,
 					appendTo: row,
-					onPointerDown: event =>
-						this.emit('keyDown', { event, key: keyDefinition?.key || key, target: event.target?._domElem }),
+					onPointerDown: event => {
+						if (this.options.tactileResponse) tactileResponse();
+
+						this.emit('keyDown', {
+							event,
+							key: keyDefinition?.key || key,
+							keyDefinition,
+							target: event.target?._domElem,
+						});
+					},
 					onPointerUp: event =>
-						this.emit('keyUp', { event, key: keyDefinition?.key || key, target: event.target?._domElem }),
+						this.emit('keyUp', {
+							event,
+							key: keyDefinition?.key || key,
+							keyDefinition,
+							target: event.target?._domElem,
+						}),
 					onPointerPress: event =>
-						this.emit('keyPress', { event, key: keyDefinition?.key || key, target: event.target?._domElem }),
+						this.emit('keyPress', {
+							event,
+							key: keyDefinition?.key || key,
+							keyDefinition,
+							target: event.target?._domElem,
+						}),
 				});
 			});
 		});
