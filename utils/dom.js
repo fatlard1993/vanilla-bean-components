@@ -28,3 +28,10 @@ export const readClipboard = async () => {
 
 	return await window.navigator.clipboard.readText();
 };
+
+export const tactileResponse = () => {
+	if (!navigator.vibrate) return;
+
+	// eslint-disable-next-line compat/compat
+	navigator.vibrate(30);
+};
