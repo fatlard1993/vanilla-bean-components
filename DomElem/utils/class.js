@@ -4,7 +4,9 @@
  */
 export const buildClassList = (...classNames) => [
 	...new Set(
-		classNames.flat(Number.Infinity).filter(className => typeof className === 'string' && className.length > 0),
+		classNames
+			.flat(Number.POSITIVE_INFINITY)
+			.filter(className => typeof className === 'string' && className.length > 0),
 	),
 ];
 
