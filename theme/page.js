@@ -11,8 +11,8 @@ export default `
 	body {
 		display: flex;
 		position: relative;
-		width: 100vw;
-		height: 100vh;
+		width: 100%;
+		height: 100%;
 		box-sizing: border-box;
 		overflow: hidden;
 		line-height: normal;
@@ -29,6 +29,11 @@ export default `
 			font-family: 'Source Code Pro', monospace;
 			line-height: normal;
 		}
+	}
+
+	#app {
+		width: 100%;
+		height: 100%;
 	}
 
 	h1 {
