@@ -2,7 +2,6 @@
 import { TinyColor, random as randomColor } from '@ctrl/tinycolor';
 
 import { debounce, throttle, convertRange, styled } from '../../utils';
-import context from '../context';
 import { DomElem } from '../DomElem';
 import { Input } from '../Input';
 import { Button } from '../Button';
@@ -117,10 +116,11 @@ class ColorPicker extends Input {
 			...children,
 		);
 
+		this.pointers = {};
+
 		this.elem.setAttribute('data-augmented-ui', 'tl-clip tr-2-clip-y br-2-clip-y bl-clip border');
 
-		document.addEventListener('mousedown', this.onPointerDown.bind(this));
-		document.addEventListener('touchstart', this.onPointerDown.bind(this));
+		this.elem.addEventListener('pointerdown', this.interactionInit.bind(this));
 	}
 
 	render() {
@@ -202,7 +202,7 @@ class ColorPicker extends Input {
 	change(value) {
 		this.options.value = this.parseValue(value).hslString;
 
-		this.elem.dispatchEvent(new CustomEvent('change', { detail: { value } }));
+		this.elem.dispatchEvent(new CustomEvent('change', { detail: { value: this.options.value } }));
 	}
 
 	parseValue(value) {
@@ -238,11 +238,12 @@ class ColorPicker extends Input {
 		} else super.setOption(key, value);
 	}
 
+	getPosition({ clientX, clientY }) {
+		return { x: clientX, y: clientY };
+	}
+
 	normalizePosition(event, parent, offsetX, offsetY) {
-		const position = {
-			x: event.targetTouches ? event.targetTouches[0].pageX : event.clientX,
-			y: event.targetTouches ? event.targetTouches[0].pageY : event.clientY,
-		};
+		const position = this.getPosition(event);
 		const boundingRect = parent.getBoundingClientRect();
 
 		// Account for parent element position
@@ -260,8 +261,54 @@ class ColorPicker extends Input {
 		return position;
 	}
 
+	interactionInit(event) {
+		event.preventDefault();
+
+		const { pointerId } = event;
+
+		if (!this.pointers[pointerId]) this.pointers[pointerId] = {};
+
+		this.activePointerCount = Object.values(this.pointers).filter(_ => !!_).length;
+
+		if (this.pointerInteracting) return;
+
+		this.pointerInteracting = true;
+		this.pointers[pointerId].initiator = true;
+
+		const move = throttle(this[`${event.target === this.hueArea.elem ? 'hue' : 'picker'}Move`].bind(this), 60);
+		const removePointer = event => {
+			event.preventDefault();
+
+			if (!this.pointers[event.pointerId]) return;
+
+			move(event);
+
+			delete this.pointers[event.pointerId];
+
+			this.activePointerCount = Object.values(this.pointers).filter(_ => !!_).length;
+
+			if (this.activePointerCount === 0) {
+				this.pointerInteracting = false;
+
+				document.removeEventListener('pointermove', move);
+				document.removeEventListener('pointerup', removePointer);
+				document.removeEventListener('pointerleave', removePointer);
+				document.removeEventListener('pointercancel', removePointer);
+			}
+		};
+
+		document.addEventListener('pointermove', move);
+		document.addEventListener('pointerup', removePointer);
+		document.addEventListener('pointerleave', removePointer);
+		document.addEventListener('pointercancel', removePointer);
+	}
+
 	pickerMove(event) {
 		event.preventDefault();
+
+		const { pointerId } = event;
+
+		if (!this.pointers[pointerId] || !this.pointers[pointerId].initiator || this.activePointerCount > 2) return;
 
 		const indicatorOffsetX = this.pickerIndicator.elem.clientWidth / 2;
 		const indicatorOffsetY = this.pickerIndicator.elem.clientHeight / 2;
@@ -283,6 +330,10 @@ class ColorPicker extends Input {
 	hueMove(event) {
 		event.preventDefault();
 
+		const { pointerId } = event;
+
+		if (!this.pointers[pointerId] || !this.pointers[pointerId].initiator || this.activePointerCount > 2) return;
+
 		const indicatorOffset = this.hueIndicator.elem.clientWidth / 2;
 		const position = this.normalizePosition(event, this.hueArea.elem, indicatorOffset, indicatorOffset);
 		const hueAreaWidth = this.hueArea.elem.clientWidth;
@@ -294,31 +345,6 @@ class ColorPicker extends Input {
 		this.hueIndicator.elem.style.transform = `translate3d(${position.x - indicatorOffset / 2}px, 0, 0)`;
 
 		this.change({ h: newHue, s: this.saturation, l: this.lightness });
-	}
-
-	onPointerDown(event) {
-		if (context.domElem.isTouchDevice && !event.targetTouches) return;
-
-		if (event.target === this.pickerArea.elem || event.target === this.hueArea.elem) {
-			const onMove = this[`${event.target === this.hueArea.elem ? 'hue' : 'picker'}Move`].bind(this);
-			const onMoveThrottled = throttle(onMove, 60);
-
-			const onDrop = () => {
-				document.removeEventListener('mouseup', onDrop);
-				document.removeEventListener('mousemove', onMoveThrottled);
-				document.removeEventListener('touchend', onDrop);
-				document.removeEventListener('touchcancel', onDrop);
-				document.removeEventListener('touchmove', onMoveThrottled);
-			};
-
-			document.addEventListener('mouseup', onDrop);
-			document.addEventListener('mousemove', onMoveThrottled);
-			document.addEventListener('touchend', onDrop);
-			document.addEventListener('touchcancel', onDrop);
-			document.addEventListener('touchmove', onMoveThrottled);
-
-			onMove(event);
-		}
 	}
 }
 

@@ -18,10 +18,12 @@ export default class Demo extends DemoView {
 			color: JSON.parse(localStorage.getItem('last_whiteboard_line_color') || '"#000"'),
 			lineWidth: JSON.parse(localStorage.getItem('last_whiteboard_line_size') || 3),
 			lines: JSON.parse(localStorage.getItem('last_whiteboard_lines') || '[]'),
-			onChange: ({ detail }) => {
+			onLine: ({ detail }) => {
 				console.log(detail);
 
-				this.component.options.lines = [...this.component.options.lines, detail];
+				const { color, width, line } = detail;
+
+				this.component.options.lines = [...this.component.options.lines, { color, width, line }];
 
 				localStorage.setItem('last_whiteboard_lines', JSON.stringify(this.component.options.lines));
 			},

@@ -1,6 +1,5 @@
 import { throttle } from '../../utils/data';
 import { DomElem } from '../DomElem';
-import context from '../context';
 
 const defaultOptions = {
 	tag: 'canvas',
@@ -10,6 +9,7 @@ const defaultOptions = {
 	width: '200px',
 	height: '200px',
 	readOnly: false,
+	registeredEvents: new Set(['line', 'draw']),
 };
 
 export default class Whiteboard extends DomElem {
@@ -22,6 +22,8 @@ export default class Whiteboard extends DomElem {
 				...options,
 				styles: (theme, domElem) => `
 					cursor: crosshair;
+					touch-action: none;
+					border-radius: 3px;
 
 					${options.styles?.(theme, domElem) || ''}
 				`,
@@ -35,8 +37,9 @@ export default class Whiteboard extends DomElem {
 
 		super.render();
 
-		document.addEventListener('mousedown', this.onPointerDown.bind(this));
-		document.addEventListener('touchstart', this.onPointerDown.bind(this));
+		this.pointers = {};
+
+		this.elem.addEventListener('pointerdown', this.interactionInit.bind(this));
 	}
 
 	setOption(key, value) {
@@ -45,90 +48,91 @@ export default class Whiteboard extends DomElem {
 			this.elem.style[key] = value;
 		} else if (key === 'lines') value.forEach(line => this.drawLine(line));
 		else if (key === 'background') this.elem.style[key] = value;
-		else if (key === 'onChange' || key === 'onDraw') this[key](value);
 		else super.setOption(key, value);
 	}
 
-	normalizePosition(event, offsetX = 0, offsetY = 0) {
-		if (!event.targetTouches) return { x: event.offsetX - offsetX, y: event.offsetY - offsetY };
-
-		const rect = event.target.getBoundingClientRect();
-		const x = event.targetTouches[0].clientX - rect.x - offsetX;
-		const y = event.targetTouches[0].clientY - rect.y - offsetY;
-
-		return { x, y };
+	getPosition({ offsetX, offsetY }) {
+		return { x: offsetX.toFixed(3), y: offsetY.toFixed(3) };
 	}
 
-	onPointerDown(event) {
+	interactionInit(event) {
 		if (this.options.readOnly) return;
 
-		if (context.domElem.isTouchDevice && !event.targetTouches) return;
+		event.preventDefault();
 
-		if (event.target === this.elem) {
-			const onMove = throttle(
-				(event => {
-					if (this.options.readOnly) return;
+		const { pointerId } = event;
+		const { x, y } = this.getPosition(event);
 
-					event.preventDefault();
+		this.pointers[pointerId] = { x, y, line: [{ x, y }] };
 
-					this.drawEvent(event);
-				}).bind(this),
-				this.options.drawThrottle || Math.min(Math.max(this.options.lineWidth + 3, 24), 6),
-			);
+		this.activePointerCount = Object.values(this.pointers).filter(_ => !!_).length;
 
-			const onDrop = event => {
-				this.elem.removeEventListener('mouseup', onDrop);
-				this.elem.removeEventListener('mouseout', onDrop);
-				this.elem.removeEventListener('mousemove', onMove);
-				this.elem.removeEventListener('touchend', onDrop);
-				this.elem.removeEventListener('touchcancel', onDrop);
-				this.elem.removeEventListener('touchmove', onMove);
+		if (this.pointerInteracting) return;
 
-				this.canvas.closePath();
+		this.pointers[pointerId].initiator = true;
+		this.pointerInteracting = true;
 
-				if (this.line.length === 0) this.drawEvent(event, true);
+		const move = throttle(
+			(event => {
+				if (this.options.readOnly || !this.pointers[event.pointerId]) return;
 
-				this.emit('change', { event, color: this.options.color, width: this.options.lineWidth, line: this.line });
-			};
+				event.preventDefault();
 
-			this.elem.addEventListener('mouseup', onDrop);
-			this.elem.addEventListener('mouseout', onDrop);
-			this.elem.addEventListener('mousemove', onMove);
-			this.elem.addEventListener('touchend', onDrop);
-			this.elem.addEventListener('touchcancel', onDrop);
-			this.elem.addEventListener('touchmove', onMove);
+				this.drawEvent.call(this, event);
+			}).bind(this),
+			this.options.drawThrottle || Math.min(Math.max(this.options.lineWidth + 3, 24), 6),
+		);
+		const removePointer = event => {
+			if (!this.pointers[event.pointerId]) return;
 
-			const { x, y } = this.normalizePosition(event);
+			event.preventDefault();
 
-			this.x = x;
-			this.y = y;
-			this.line = [];
-		}
+			this.emit('line', {
+				event,
+				color: this.options.color,
+				width: this.options.lineWidth,
+				line: this.pointers[pointerId].line,
+			});
+
+			if (this.pointers[pointerId].line.length === 0) this.drawEvent(event, true);
+
+			delete this.pointers[event.pointerId];
+			this.activePointerCount = Object.values(this.pointers).filter(_ => !!_).length;
+
+			if (this.activePointerCount === 0) {
+				this.pointerInteracting = false;
+
+				document.removeEventListener('pointermove', move);
+				document.removeEventListener('pointerup', removePointer);
+				document.removeEventListener('pointerleave', removePointer);
+				document.removeEventListener('pointercancel', removePointer);
+			}
+		};
+
+		document.addEventListener('pointermove', move);
+		document.addEventListener('pointerup', removePointer);
+		document.addEventListener('pointerleave', removePointer);
+		document.addEventListener('pointercancel', removePointer);
 	}
 
-	drawEvent(event, cap) {
-		const { x, y } = this.normalizePosition(event);
+	drawEvent(event, cap = false) {
+		const { pointerId } = event;
 
-		this.line.push({ x, y });
+		const to = this.getPosition(event);
+		const { x, y } = this.pointers[pointerId];
+		const from = { x, y };
 
-		this.canvas.strokeStyle = this.options.color;
-		this.canvas.lineWidth = this.options.lineWidth;
-		this.canvas.lineJoin = 'round';
-		this.canvas.lineCap = 'round';
+		this.drawLine({ color: this.options.color, width: this.options.lineWidth, line: [from, to], cap });
 
-		this.canvas.beginPath();
-		this.canvas.moveTo(this.x, this.y);
-		this.canvas.lineTo(x, y);
-		this.canvas.stroke();
-		if (cap) this.canvas.closePath();
+		this.pointers[pointerId].line.push(to);
 
-		this.emit('draw', { event, cap, from: { x: this.x, y: this.y }, to: { x, y } });
+		this.emit('draw', { event, cap, from, to });
 
-		this.x = x;
-		this.y = y;
+		this.pointers[pointerId].x = to.x;
+		this.pointers[pointerId].y = to.y;
 	}
 
-	drawLine({ color, width, line }) {
+	drawLine({ color, width, line, cap = true }) {
 		if (line.length === 0) return;
 
 		this.canvas.strokeStyle = color;
@@ -140,19 +144,7 @@ export default class Whiteboard extends DomElem {
 		this.canvas.moveTo(line[0].x, line[0].y);
 		line.forEach(({ x, y }) => this.canvas.lineTo(x, y));
 		this.canvas.stroke();
-		this.canvas.closePath();
-	}
-
-	onDraw(callback) {
-		this.addEventListener('draw', callback);
-
-		return () => this.removeEventListener('draw', callback);
-	}
-
-	onChange(callback) {
-		this.addEventListener('change', callback);
-
-		return () => this.removeEventListener('change', callback);
+		if (cap) this.canvas.closePath();
 	}
 
 	empty() {
