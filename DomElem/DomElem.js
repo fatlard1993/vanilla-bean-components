@@ -28,6 +28,7 @@ class DomElem extends EventTarget {
 	defaultOptions = {
 		tag: 'div',
 		autoRender: true,
+		registeredEvents: new Set([]),
 		knownAttributes: new Set(['role', 'name']),
 		priorityOptions: new Set(['onConnected', 'textContent', 'content', 'appendTo', 'prependTo', 'value']),
 	};
@@ -45,11 +46,12 @@ class DomElem extends EventTarget {
 	constructor(options = {}, ...children) {
 		super();
 
-		const { tag, autoRender, knownAttributes, priorityOptions, ...optionsWithoutConfig } = {
+		const { tag, autoRender, registeredEvents, knownAttributes, priorityOptions, ...optionsWithoutConfig } = {
 			...this.defaultOptions,
 			...options,
 		};
 
+		this.__registeredEvents = registeredEvents;
 		this.__knownAttributes = knownAttributes;
 		this.__priorityOptions = priorityOptions;
 
@@ -160,6 +162,14 @@ class DomElem extends EventTarget {
 
 			this.elemObserver.observe(this.parentElem || document, { childList: true, subtree: true });
 
+			this.addEventListener(targetEvent, callback);
+
+			this.cleanup[id] = () => this.removeEventListener(targetEvent, callback);
+
+			return true;
+		}
+
+		if (this.__registeredEvents.has(targetEvent)) {
 			this.addEventListener(targetEvent, callback);
 
 			this.cleanup[id] = () => this.removeEventListener(targetEvent, callback);
