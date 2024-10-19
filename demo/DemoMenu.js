@@ -40,7 +40,7 @@ const LinkContainer = styled(
 export default class DemoMenu extends DomElem {
 	constructor(options = {}) {
 		super({
-			collapsed: false,
+			collapsed: document.body.clientWidth < 780,
 			...options,
 			styles: (theme, domElem) => `
 				display: flex;
@@ -105,11 +105,22 @@ export default class DemoMenu extends DomElem {
 					textContent: name.startsWith('/examples/') ? name.replace('/examples/', '') : name.slice(1),
 					href,
 					addClass: href === window.location.hash ? 'disabled' : '',
+					...(document.body.clientWidth < 780 && {
+						onPointerPress: () => {
+							this.options.collapsed = true;
+							window.location.hash = name;
+						},
+					}),
 				}),
 			);
 		});
 
 		super.render();
+	}
+
+	setOption(key, value) {
+		if (key === 'collapsed') this[value ? 'addClass' : 'removeClass']('collapsed');
+		else super.setOption(key, value);
 	}
 
 	filterLinks(filter) {

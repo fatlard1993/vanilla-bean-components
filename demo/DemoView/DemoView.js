@@ -45,7 +45,10 @@ export class DemoView extends View {
 			);
 
 			if (readme.response.ok) {
-				new StyledLabel({ label: 'README', appendTo: this }, new DomElem({ innerHTML: readme.body.parsed }));
+				new StyledLabel(
+					{ label: 'README', appendTo: this },
+					new DomElem({ style: { overflow: 'auto' }, innerHTML: readme.body.parsed }),
+				);
 			}
 
 			if (componentAncestors.length > 0) {
