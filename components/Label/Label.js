@@ -29,7 +29,7 @@ class Label extends TooltipWrapper {
 					position: relative;
 					display: inline-block;
 					font-size: 1em;
-					width: 95%;
+					width: calc(100% - 24px);
 					margin: 0 0 9px;
 					padding: 6px 12px 9px 12px;
 					background-color: ${theme.colors.white.setAlpha(0.06)};
