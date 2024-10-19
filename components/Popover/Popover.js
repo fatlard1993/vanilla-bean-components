@@ -39,8 +39,14 @@ export default class Popover extends Icon {
 	edgeAwarePlacement({ x, y, maxHeight = 132, maxWidth = 264, padding = 24, visualParent }) {
 		if (!visualParent) visualParent = this.options.visualParent || this.options.appendTo;
 
-		const pastRight = x + maxWidth + padding >= visualParent.clientWidth;
+		let pastRight = x + maxWidth + padding >= visualParent.clientWidth;
+		const pastLeft = x - maxWidth + padding <= 0;
 		const pastBottom = y + maxHeight + padding >= visualParent.clientHeight;
+
+		if (pastLeft && pastRight) {
+			x = padding;
+			pastRight = false;
+		}
 
 		this.elem.style.maxWidth = `${maxWidth}px`;
 		this.elem.style.maxHeight = `${maxHeight}px`;
