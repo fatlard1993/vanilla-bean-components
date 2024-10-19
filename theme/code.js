@@ -74,6 +74,7 @@ export default `
 		background-color: ${colors.black};
 		display: inline-block;
 		padding: 12px;
+		border-radius: 3px;
 	}
 
 	code, textarea.syntaxHighlighting, input.syntaxHighlighting {
