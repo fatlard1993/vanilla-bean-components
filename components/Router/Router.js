@@ -73,11 +73,15 @@ class Router extends DomElem {
 	}
 
 	renderView(route = this.route || this.options.defaultPath) {
+		if (this.currentRoute === route) return;
+
 		this.options.onRenderView?.(route);
 
 		this.empty();
 
 		if (!this.path) return (this.path = route);
+
+		this.currentRoute = route;
 
 		if (this.options.views[route]) {
 			this.view = new this.options.views[route]({ appendTo: this.elem, ...this.parseRouteParameters() });
