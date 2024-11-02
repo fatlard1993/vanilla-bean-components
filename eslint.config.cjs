@@ -64,6 +64,7 @@ module.exports = [
 			'unicorn/numeric-separators-style': 'off',
 			'unicorn/prefer-switch': 'off',
 			'unicorn/prefer-dom-node-dataset': 'off',
+			'unicorn/prefer-global-this': 'off',
 
 			// TODO This rule doesn't work after updating to eslint 9
 			// https://github.com/import-js/eslint-plugin-import/pull/2829
