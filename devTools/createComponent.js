@@ -2,12 +2,27 @@ import fs from 'fs';
 
 import { capitalize } from '../utils/string';
 
+const options = process.argv[3] ? JSON.parse(process.argv[3]) : {};
+
 const name = capitalize(process.argv[2]);
 const componentFolder = `components/${name}`;
 
 if (fs.existsSync(componentFolder)) throw new Error(`Component '${name}' already exists`);
 
 fs.mkdirSync(componentFolder);
+
+const demoOptions = Object.entries(options)
+	.map(
+		([key, value]) =>
+			`${key}: ${
+				typeof value === 'object'
+					? JSON.stringify(value)
+							.replaceAll(/"(\w+)":/g, ` $1: `)
+							.replaceAll('"', `'`)
+					: value
+			},`,
+	)
+	.join('\n');
 
 const testFile = `import { ${name} } from '.';
 
@@ -27,6 +42,7 @@ export default class Demo extends DemoView {
 
 		this.component = new ${name}({
 			appendTo: this.demoWrapper,
+			${demoOptions}
 		});
 
 		super.render();
@@ -36,8 +52,8 @@ export default class Demo extends DemoView {
 
 const readMeFile = `\`\`\`javascript
 new ${name}({
-
-})
+	${demoOptions}
+});
 \`\`\`
 `;
 
@@ -69,3 +85,4 @@ await Bun.write(`${componentFolder}/README.md`, readMeFile);
 await Bun.write(`${componentFolder}/index.js`, `export { default as ${name} } from './${name}';`);
 
 Bun.spawn(['bun', 'run', 'build:index']);
+Bun.spawn(['bun', 'run', 'format']);
