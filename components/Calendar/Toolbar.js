@@ -52,6 +52,7 @@ class Toolbar extends DomElem {
 				action =>
 					new Button({
 						textContent: { next: '>', today: 'Today', previous: '<' }[action],
+						'aria-label': action,
 						onPointerPress: () => {
 							this.calendar[action]();
 						},

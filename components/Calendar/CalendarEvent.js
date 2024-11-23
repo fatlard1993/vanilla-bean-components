@@ -16,10 +16,9 @@ const StyledEvent = styled(
 );
 
 export default class CalendarEvent {
-	constructor(data, calendar) {
+	constructor(data) {
 		if (typeof data !== 'object') return false;
 
-		this.calendar = calendar;
 		this.options = data;
 
 		this.at = new Date(data.at);
@@ -40,7 +39,7 @@ export default class CalendarEvent {
 		return this;
 	}
 
-	render(type, container) {
+	render(type, container, calendar) {
 		const formattedTime = formatTime(this.at);
 
 		this.eventElem = new StyledEvent({
@@ -56,7 +55,7 @@ export default class CalendarEvent {
 			],
 			appendTo: container,
 			onPointerPress: ({ target }) => {
-				this.calendar.emit('selectEvent', { target, index: this.options.index });
+				calendar.emit('selectEvent', { target, index: this.options.index });
 			},
 		});
 

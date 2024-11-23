@@ -103,8 +103,8 @@ const DayNowIndicator = styled(
 	`,
 );
 
-const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const MONTHS = [
+export const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+export const MONTHS = [
 	'January',
 	'February',
 	'March',
@@ -123,9 +123,9 @@ class Calendar extends DomElem {
 	constructor(options = {}, ...children) {
 		super(
 			{
-				...options,
 				view: 'month',
-				events: [],
+				...options,
+				events: (options.events || []).map(eventItem => new CalendarEvent(eventItem)),
 				styles: (theme, domElem) => `
 					user-select: none;
 					height: ${domElem.options.height || '420px'};
@@ -259,7 +259,7 @@ class Calendar extends DomElem {
 		let smallestGap = -1;
 
 		events.forEach(event => {
-			const elem = event.render(this.options.view, eventContainer.elem);
+			const elem = event.render(this.options.view, eventContainer.elem, this);
 			event.elem = elem;
 			event.ratio = 100;
 			elem.style.left = '0';
@@ -342,7 +342,7 @@ class Calendar extends DomElem {
 				},
 			});
 
-			for (let y = 0; y < events.length; ++y) events[y].render(this.options.view, weekdayCell.elem);
+			for (let y = 0; y < events.length; ++y) events[y].render(this.options.view, weekdayCell.elem, this);
 
 			cDay = new Date(t + dayMs);
 		}
@@ -437,7 +437,7 @@ class Calendar extends DomElem {
 				if (dayX <= 0 || dayX > month.numberOfDays) td.addClass('not-in-month');
 
 				this.eventsAt(fullDate).forEach(calendarEvent => {
-					if (calendarEvent.render) calendarEvent.render(this.options.view, eventContainer.elem);
+					if (calendarEvent.render) calendarEvent.render(this.options.view, eventContainer.elem, this);
 				});
 			}
 		}
