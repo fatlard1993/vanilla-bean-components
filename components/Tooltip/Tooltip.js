@@ -23,6 +23,12 @@ class Tooltip extends Popover {
 					margin: auto;
 					background-color: ${theme.colors.white};
 					color: ${theme.colors.black};
+					opacity: 0;
+					animation-name: fadeIn, visible;
+					animation-timing-function: ease-in, ease-out;
+					animation-iteration-count: 1, infinite;
+					animation-duration: 0.2s, 1s;
+					animation-delay: 1s, 1.2s;
 
 					&:before {
 						padding: 0 6px 0 3px;
@@ -70,6 +76,24 @@ class Tooltip extends Popover {
 					&.bottomRight {
 						left: calc(100% - 9px);
 						top: calc(100% - 9px);
+					}
+
+					@keyframes fadeIn {
+						from {
+							opacity: 0;
+						}
+						to {
+							opacity: 1;
+						}
+					}
+
+					@keyframes visible {
+						from {
+							opacity: 1;
+						}
+						to {
+							opacity: 1;
+						}
 					}
 
 					${options.styles?.(theme, domElem) || ''}
