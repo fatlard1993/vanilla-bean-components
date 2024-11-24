@@ -23,6 +23,7 @@ class Icon extends DomElem {
 
 			if (value) {
 				this.addClass(
+					'icon',
 					...['support', this.options[key === 'icon' ? 'animation' : 'icon'], value]
 						.filter(_ => !!_)
 						.map(_ => `fa-${_}`),

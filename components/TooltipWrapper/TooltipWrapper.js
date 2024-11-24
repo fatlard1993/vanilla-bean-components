@@ -47,6 +47,8 @@ class TooltipWrapper extends Icon {
 					appendTo: this.elem,
 					...tooltipOptions,
 				});
+
+				this.addClass('tooltip');
 			}
 		} else super.setOption(key, value);
 	}
