@@ -2,6 +2,7 @@ import code from './code';
 import colors from './colors';
 import input, { number, checkbox } from './input';
 import scrollbar from './scrollbar';
+import table from './table';
 
 export default `
 	html {
@@ -70,4 +71,6 @@ export default `
 	input, select, textarea { ${input} }
 	${number}
 	${checkbox}
+
+	table { ${table} }
 `;

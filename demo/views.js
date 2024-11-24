@@ -18,6 +18,7 @@ import PopoverDemo from '../components/Popover/demo.js';
 import RadioButtonDemo from '../components/RadioButton/demo.js';
 import RouterDemo from '../components/Router/demo.js';
 import SelectDemo from '../components/Select/demo.js';
+import TableDemo from '../components/Table/demo.js';
 import TagListDemo from '../components/TagList/demo.js';
 import TooltipDemo from '../components/Tooltip/demo.js';
 import TooltipWrapperDemo from '../components/TooltipWrapper/demo.js';
@@ -55,6 +56,7 @@ export default {
 	['/RadioButton']: RadioButtonDemo,
 	['/Router']: RouterDemo,
 	['/Select']: SelectDemo,
+	['/Table']: TableDemo,
 	['/TagList']: TagListDemo,
 	['/Tooltip']: TooltipDemo,
 	['/TooltipWrapper']: TooltipWrapperDemo,

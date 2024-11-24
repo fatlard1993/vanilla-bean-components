@@ -29,7 +29,7 @@ class DomElem extends EventTarget {
 		tag: 'div',
 		autoRender: true,
 		registeredEvents: new Set([]),
-		knownAttributes: new Set(['role', 'name']),
+		knownAttributes: new Set(['role', 'name', 'colspan']),
 		priorityOptions: new Set(['onConnected', 'textContent', 'content', 'appendTo', 'prependTo', 'value']),
 	};
 

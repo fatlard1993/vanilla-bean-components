@@ -18,6 +18,7 @@ export * from './Popover';
 export * from './RadioButton';
 export * from './Router';
 export * from './Select';
+export * from './Table';
 export * from './TagList';
 export * from './Tooltip';
 export * from './TooltipWrapper';
