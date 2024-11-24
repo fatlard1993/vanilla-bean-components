@@ -1,3 +1,4 @@
+import button from './button';
 import code from './code';
 import colors from './colors';
 import input, { number, checkbox } from './input';
@@ -71,6 +72,8 @@ export default `
 	input, select, textarea { ${input} }
 	${number}
 	${checkbox}
+
+	button { ${button} }
 
 	table { ${table} }
 `;

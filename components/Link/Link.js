@@ -1,8 +1,8 @@
-import { Button } from '../Button';
+import { TooltipWrapper } from '../TooltipWrapper';
 
-const defaultOptions = { tag: 'a', tooltip: { icon: 'link', style: { fontSize: '12px' } } };
+const defaultOptions = { tag: 'a', variant: 'button', tooltip: { icon: 'link', style: { fontSize: '12px' } } };
 
-class Link extends Button {
+class Link extends TooltipWrapper {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
 	constructor(options = {}, ...children) {
@@ -13,16 +13,18 @@ class Link extends Button {
 				onPointerDown: event => event.stopPropagation(),
 				onPointerUp: event => event.stopPropagation(),
 				styles: (theme, domElem) => `
-				&.disabled {
-					pointer-events: none;
+					${domElem.options.variant === 'button' ? theme.button : ''}
 
-					&:hover .tooltip {
-						display: none;
+					&.disabled {
+						pointer-events: none;
+
+						&:hover .tooltip {
+							display: none;
+						}
 					}
-				}
 
-				${options.styles?.(theme, domElem) || ''}
-			`,
+					${options.styles?.(theme, domElem) || ''}
+				`,
 			},
 			...children,
 		);
