@@ -71,10 +71,23 @@ export default `
 	}
 
 	pre[class*="language-"] {
+		position: relative;
 		background-color: ${colors.black};
 		display: inline-block;
 		padding: 12px;
 		border-radius: 3px;
+
+		button {
+			position: absolute;
+			top: 18px;
+			right: 12px;
+			opacity: 0.5;
+
+			&:hover, &:focus {
+				opacity: 0.8;
+				top: 17px;
+			}
+		}
 	}
 
 	code, textarea.syntaxHighlighting, input.syntaxHighlighting {

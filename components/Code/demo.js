@@ -26,6 +26,7 @@ export default class Demo extends DemoView {
 					}
 				}
 			`),
+			copyButton: true,
 			appendTo: this.demoWrapper,
 		});
 

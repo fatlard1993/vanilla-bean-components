@@ -1,5 +1,7 @@
-import { removeExcessIndentation } from '../../utils';
+import { removeExcessIndentation, copyToClipboard } from '../../utils';
 import { DomElem } from '../DomElem';
+import { Button } from '../Button';
+import { Notify } from '../Notify';
 
 const defaultOptions = { tag: 'code', language: 'javascript', multiline: 'auto' };
 
@@ -29,6 +31,23 @@ class Code extends DomElem {
 				appendTo: this.elem,
 			});
 		}
+
+		if (this.options.copyButton)
+			this.append(
+				new Button({
+					icon: 'copy',
+					tooltip: 'Copy to clipboard',
+					onPointerPress: () => {
+						const clipboardWriteSuccess = copyToClipboard(this.options.code);
+
+						if (clipboardWriteSuccess) {
+							const { right: x, top: y } = this.elem.getBoundingClientRect();
+
+							new Notify({ content: 'Copied text to clipboard!', timeout: 1000, x, y });
+						}
+					},
+				}),
+			);
 
 		super.render();
 	}
