@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid';
+import { debounce } from '../utils/data';
 
 const clients = {};
 
@@ -12,7 +13,7 @@ const handleBuildChange = () => {
 		socket.send('hotReload');
 	});
 
-	reader.read().then(handleBuildChange).catch(console.error);
+	reader.read().then(debounce(handleBuildChange)).catch(console.error);
 };
 
 handleBuildChange();
