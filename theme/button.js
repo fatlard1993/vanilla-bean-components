@@ -90,7 +90,7 @@ export default `
 		outline: 2px dashed ${colors.red};
 	}
 
-	&:empty {
+	&:empty, &.icon {
 		width: 30px;
 		height: 30px;
 		padding: 3px 0 8px 0;
