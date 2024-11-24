@@ -77,6 +77,8 @@ class Tooltip extends Popover {
 			},
 			...children,
 		);
+
+		this.addClass('tooltip');
 	}
 
 	setOption(key, value) {
