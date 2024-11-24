@@ -15,6 +15,11 @@ class Button extends TooltipWrapper {
 
 					${options.styles?.(theme, domElem) || ''}
 				`,
+				onKeyUp: event => {
+					if (event.code === 'Space' || event.code === 'Enter') {
+						this.options.onPointerPress(event);
+					}
+				},
 			},
 			...children,
 		);
