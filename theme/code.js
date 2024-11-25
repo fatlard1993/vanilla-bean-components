@@ -78,14 +78,14 @@ export default `
 		border-radius: 3px;
 
 		button {
-			position: absolute;
-			top: 18px;
-			right: 12px;
+			position: absolute !important;
+			top: -12px;
+			right: -18px;
 			opacity: 0.5;
 
 			&:hover, &:focus {
 				opacity: 0.8;
-				top: 17px;
+				top: -17px;
 			}
 		}
 	}
