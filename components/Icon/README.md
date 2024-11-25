@@ -5,4 +5,4 @@ new Icon({
 });
 ```
 
-[FontAwesome Icon Docs](https://fontawesome.com/search?m=free&s=solid%2Cregular%2Cbrands)
+[FontAwesome Icon Docs](https://fontawesome.com/v6/search?o=r&m=free)
