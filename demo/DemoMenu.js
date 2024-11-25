@@ -11,6 +11,7 @@ const MenuLink = styled(
 		flex: 1 0 auto;
 		min-width: 78px;
 	`,
+	{ variant: 'button' },
 );
 
 const LinkHeading = styled(

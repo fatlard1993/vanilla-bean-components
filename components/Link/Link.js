@@ -1,6 +1,6 @@
 import { TooltipWrapper } from '../TooltipWrapper';
 
-const defaultOptions = { tag: 'a', variant: 'button', tooltip: { icon: 'link', style: { fontSize: '12px' } } };
+const defaultOptions = { tag: 'a', variant: 'link', tooltip: { icon: 'link', style: { fontSize: '12px' } } };
 
 class Link extends TooltipWrapper {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
@@ -13,7 +13,9 @@ class Link extends TooltipWrapper {
 				onPointerDown: event => event.stopPropagation(),
 				onPointerUp: event => event.stopPropagation(),
 				styles: (theme, domElem) => `
-					${domElem.options.variant === 'button' ? theme.button : ''}
+					&.variant-button {
+						${theme.button}
+					}
 
 					&.disabled {
 						pointer-events: none;
@@ -28,6 +30,13 @@ class Link extends TooltipWrapper {
 			},
 			...children,
 		);
+	}
+
+	setOption(key, value) {
+		if (key === 'variant') {
+			this.removeClass(/\bvariant-\S+\b/g);
+			this.addClass(`variant-${value}`);
+		} else super.setOption(key, value);
 	}
 }
 

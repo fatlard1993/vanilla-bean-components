@@ -58,6 +58,7 @@ export class DemoView extends View {
 						({ constructor: { name } }) =>
 							new Link({
 								textContent: name.replace(/\d$/, ''),
+								variant: 'button',
 								href:
 									name === 'EventTarget'
 										? 'https://developer.mozilla.org/en-US/docs/Web/API/EventTarget'
