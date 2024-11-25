@@ -1,4 +1,5 @@
 import DemoView, { DemoWrapper } from '../../demo/DemoView';
+import theme from '../../theme';
 import { Table } from '.';
 
 export default class Demo extends DemoView {
@@ -12,7 +13,7 @@ export default class Demo extends DemoView {
 				{ foo: false, unused: 2, bar: 'two', baz: 'amazing' },
 			],
 			columns: [
-				{ key: 'foo', label: 'Food for Thought', tag: 'th' },
+				{ key: 'foo', content: 'Food for Thought', style: { color: theme.colors.red } },
 				'bar',
 				{ key: 'baz', content: 'A cool custom label' },
 			],
