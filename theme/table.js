@@ -1,10 +1,12 @@
 import colors from './colors';
 
 export default `
+	position: relative;
 	border-collapse: collapse;
 
 	thead {
 		background-color: ${colors.gray.darken(38)};
+		text-align: left;
 	}
 
 	tbody {
@@ -20,11 +22,11 @@ export default `
 	}
 
 	thead, tbody > tr:not(:last-of-type) {
-		border-bottom: 1px solid ${colors.gray};
+		border-bottom: 1px solid ${colors.darker(colors.gray)};
 	}
 
 	tfoot {
-		border-top: 1px solid ${colors.gray};
+		border-top: 1px solid ${colors.darker(colors.gray)};
 		color: ${colors.lighter(colors.gray)};
 	}
 
@@ -33,7 +35,7 @@ export default `
 	}
 
 	th:not(:first-of-type), td:not(:first-of-type) {
-		border-left: 1px solid ${colors.gray};
+		border-left: 1px solid ${colors.darker(colors.gray)};
 	}
 
 	th {
