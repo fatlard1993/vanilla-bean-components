@@ -1,5 +1,5 @@
 import DemoView, { DemoWrapper } from '../../demo/DemoView';
-import { DomElem } from '../DomElem';
+import { Input } from '../Input';
 import { Label } from '.';
 
 export default class Demo extends DemoView {
@@ -10,9 +10,10 @@ export default class Demo extends DemoView {
 			{
 				label: 'label',
 				tooltip: 'tooltip',
+				variant: 'overlay',
 				appendTo: this.demoWrapper,
 			},
-			new DomElem({ textContent: 'Child Element' }),
+			new Input({ value: '' }),
 		);
 
 		super.render();

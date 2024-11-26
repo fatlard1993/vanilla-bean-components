@@ -32,6 +32,7 @@ const defaultOptions = {
 	autocapitalize: 'off',
 	autocorrect: 'off',
 	height: 'auto',
+	placeholder: '',
 };
 
 const dataTypeToInputType = { number: 'number', boolean: 'checkbox', string: 'text' };

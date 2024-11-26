@@ -12,10 +12,13 @@ const LabelText = styled(
 	`,
 );
 
-const defaultOptions = { collapsible: false };
+const variant_enum = Object.freeze(['overlay', 'collapsible', 'inline', 'inline-after', 'simple']);
+
+const defaultOptions = { variant: 'simple' };
 
 class Label extends TooltipWrapper {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
+	variant_enum = variant_enum;
 
 	constructor(options = {}, ...children) {
 		if (typeof options === 'string') options = { label: options };
@@ -40,72 +43,64 @@ class Label extends TooltipWrapper {
 						transition: all 0.5s;
 					}
 
-					${
-						domElem.options.inline
-							? `
-								label {
-									display: inline-block;
-									vertical-align: top;
-									margin-top: 3px;
+					&.variant-overlay:not(:focus-within):has(input:placeholder-shown) {
+						label {
+							pointer-events: none;
+							position: absolute;
+							top: 16px;
+							left: 21px;
+							color: ${theme.colors.gray};
+						}
+					}
+
+					&.variant-inline, &.variant-inline-after {
+						display: flex;
+
+						label {
+							display: inline-block;
+							vertical-align: top;
+							margin-top: 3px;
+							margin-right: 9px;
+							line-height: 2;
+						}
+
+						input:not([type=checkbox]), textarea, select {
+							flex: 1;
+						}
+					}
+
+					&.variant-collapsible {
+						--aug-border-bg: linear-gradient(-66deg, ${theme.colors
+							.lighter(theme.colors.teal)
+							.setAlpha(0.5)}, ${theme.colors.blue.setAlpha(0.5)});
+						--aug-border-all: 2px;
+						--aug-tl1: 12px;
+						--aug-tr-extend1: 42%;
+						--aug-tr1: 12px;
+						--aug-bl1: 6px;
+						--aug-br1: 6px;
+
+						&.collapsed {
+							width: 50%;
+
+							--aug-tr-extend1: 0%;
+
+							> label {
+								color: ${theme.colors.superWhite};
+
+								&:before {
+									content: "" !important;
+									opacity: 1;
+									color: ${theme.colors.lightest(theme.colors.blue)};
 								}
-							`
-							: `
-								--aug-border-bg: linear-gradient(-66deg, ${theme.colors
-									.lighter(theme.colors.teal)
-									.setAlpha(0.5)}, ${theme.colors.blue.setAlpha(0.5)});
-								--aug-border-all: 2px;
-								--aug-tl1: 12px;
-								--aug-tr-extend1: 42%;
-								--aug-tr1: 12px;
-								--aug-bl1: 6px;
-								--aug-br1: 6px;
-							`
-					}
+							}
 
-
-					> *:not(label):not(.tooltip) {
-						margin-top: 6px;
-					}
-
-					&.collapsed {
-						width: 50%;
-
-						--aug-tr-extend1: 0%;
-
-						> label {
-							color: ${theme.colors.superWhite};
-
-							&:before {
-								content: "" !important;
-								opacity: 1;
-								color: ${theme.colors.lightest(theme.colors.blue)};
+							> *:not(label) {
+								display: none !important;
 							}
 						}
 
-						> *:not(label) {
-							display: none !important;
-						}
-					}
-
-					${options.styles?.(theme, domElem) || ''}
-				`,
-			},
-			...children,
-		);
-
-		if (!options.inline) this.elem.setAttribute('data-augmented-ui', 'tl-clip tr-2-clip-x br-clip bl-clip border');
-	}
-
-	render() {
-		this._labelText = new LabelText({
-			tag: 'label',
-			prependTo: this,
-			styles: theme => `
-				margin: 0;
-
-				${
-					this.options.collapsible
-						? `
+						label {
 							cursor: pointer;
 
 							&:before {
@@ -119,24 +114,50 @@ class Label extends TooltipWrapper {
 
 								transition: opacity 0.8s, color 1s;
 							}
-						`
-						: 'margin-left: 6px;'
-				}
+						}
+					}
+
+					> *:not(label):not(.tooltip) {
+						margin-top: 6px;
+					}
+
+
+					${options.styles?.(theme, domElem) || ''}
+				`,
+			},
+			...children,
+		);
+	}
+
+	render() {
+		this._labelText = new LabelText({
+			tag: 'label',
+			[this.options.variant === 'inline-after' ? 'appendTo' : 'prependTo']: this,
+			styles: () => `
+				margin: 0;
 			`,
-			onPointerPress: this.options.collapsible
-				? () => this[this.hasClass('collapsed') ? 'removeClass' : 'addClass']('collapsed')
-				: undefined,
+			onPointerPress: () => {
+				if (this.options.variant === 'collapsible') {
+					this[this.hasClass('collapsed') ? 'removeClass' : 'addClass']('collapsed');
+				}
+			},
 		});
 
 		super.render();
-
-		if (this.options.inline?.after) this._labelText.appendTo(this);
 	}
 
 	setOption(key, value) {
 		if (key === 'label') this._labelText.options.content = value;
 		else if (key === 'collapsed') this[value ? 'addClass' : 'removeClass']('collapsed');
-		else if (key === 'for') {
+		else if (key === 'variant') {
+			this.removeClass(/\bvariant-\S+\b/g);
+			this.addClass(`variant-${value}`);
+
+			this.elem.setAttribute(
+				'data-augmented-ui',
+				value === 'collapsible' ? 'tl-clip tr-2-clip-x br-clip bl-clip border' : '',
+			);
+		} else if (key === 'for') {
 			let forId = typeof value === 'string' ? value : value?.id || value?.elem?.id;
 
 			if (!forId && value?.isDomElem) {

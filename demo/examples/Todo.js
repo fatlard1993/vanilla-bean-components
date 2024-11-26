@@ -61,7 +61,7 @@ class TodoListItem extends DomElem {
 		});
 
 		this.content([
-			new Label({ label: this.options.subscriber('label'), inline: { after: true } }, this._checkbox),
+			new Label({ label: this.options.subscriber('label'), variant: 'inline-after' }, this._checkbox),
 			this._edit,
 			this._trash,
 		]);
