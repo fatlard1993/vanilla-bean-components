@@ -37,18 +37,28 @@ export default class DemoOptions extends List {
 									),
 								},
 								{
-									if: component[`${key}_enum`],
+									if: component[`${key}_enum`] || typeof value === 'boolean',
 									thenItem: new Label(
 										'Current',
 										new Select({
 											value: component.options.subscriber(key),
-											options: component[`${key}_enum`],
-											onChange: ({ value: newValue }) => (component.options[key] = newValue),
+											options: component[`${key}_enum`] || [
+												{ label: 'True', value: true },
+												{ label: 'False', value: false },
+											],
+											onChange:
+												typeof value === 'boolean'
+													? ({ value: newValue }) => (component.options[key] = newValue === 'true')
+													: ({ value: newValue }) => (component.options[key] = newValue),
 										}),
 									),
 								},
 								{
-									if: !isMethod(key) && !component[`${key}_enum`],
+									if:
+										!isMethod(key) &&
+										!component[`${key}_enum`] &&
+										typeof value !== 'boolean' &&
+										stringifyValue(value) !== '[object DomElem]',
 									thenItem: new Label(
 										'Current',
 										new Input({
