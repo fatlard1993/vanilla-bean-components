@@ -28,6 +28,7 @@ import BlogExample from './examples/Blog';
 import BombGameExample from './examples/BombGame';
 import CalculatorExample from './examples/Calculator';
 import CounterExample from './examples/Counter';
+import DataTableExample from './examples/DataTable';
 import DlcWhiteboardExample from './examples/DlcWhiteboard';
 import MultiWidgetExample from './examples/MultiWidget';
 import PlaygroundExample from './examples/Playground';
@@ -66,6 +67,7 @@ export default {
 	['/examples/BombGame']: BombGameExample,
 	['/examples/Calculator']: CalculatorExample,
 	['/examples/Counter']: CounterExample,
+	['/examples/DataTable']: DataTableExample,
 	['/examples/DlcWhiteboard']: DlcWhiteboardExample,
 	['/examples/MultiWidget']: MultiWidgetExample,
 	['/examples/Playground']: PlaygroundExample,
