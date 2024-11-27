@@ -1,29 +1,31 @@
 import { nanoid } from 'nanoid';
-import { debounce } from '../utils/data';
 
 const clients = {};
 
-const buildProcess = Bun.spawn(['bun', 'run', 'build:dev']);
-const reader = buildProcess.stdout.getReader();
-
-const handleBuildChange = () => {
+const reloadClients = () => {
 	Object.entries(clients).forEach(([clientId, socket]) => {
 		console.log(`Reloading ${clientId}`);
 
 		socket.send('hotReload');
 	});
-
-	reader.read().then(debounce(handleBuildChange)).catch(console.error);
 };
 
-handleBuildChange();
+const spawnBuild = async () => {
+	const buildProcess = Bun.spawn(['bun', 'run', 'build:dev']);
+
+	for await (const chunk of buildProcess.stdout) {
+		const line = new TextDecoder().decode(chunk);
+
+		console.log(line);
+
+		if (line === 'build.success\n') reloadClients();
+	}
+};
 
 const server = Bun.serve({
 	port: 9999,
 	fetch: async request => {
 		const path = new URL(request.url).pathname.replace('vanilla-bean-components', '..');
-
-		console.log(path);
 
 		if (request.method === 'GET' && path === '/') return new Response(Bun.file('demo/index.html'));
 
@@ -34,7 +36,7 @@ const server = Bun.serve({
 		}
 
 		if (path.endsWith('.md') && (await Bun.file(path.slice(1)).exists())) {
-			return Response.json(await import(`..${path}`));
+			return Response.json((await import(`..${path}`))?.default);
 		}
 
 		let file = Bun.file(`demo/build${path}`);
@@ -55,3 +57,5 @@ const server = Bun.serve({
 });
 
 console.log(`Listening on ${server.hostname}:${server.port}`);
+
+await spawnBuild();

@@ -1,7 +1,3 @@
 ```js
-new RadioButton({
-	options: ['one', { label: 'two', value: 2 }, 'three'],
-	value: 2,
-	onChange: event => {},
-});
+[[import ./demo.js]]/^(\t*).+component = new.+\(\s*{(.|\n)+?\1}?\);/gm
 ```

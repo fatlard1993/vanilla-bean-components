@@ -6,13 +6,13 @@ DomElem is the product of a research project aiming to solve frontend developmen
 
 ## Usage
 
-```javascript
+```js
 new DomElem(options, ...children);
 ```
 
 ### One-Off Elements
 
-```javascript
+```js
 const input = new DomElem({
 	tag: 'input',
 	value: 'Some text',
@@ -31,7 +31,7 @@ new DomElem({
 
 ### Extended Components
 
-```javascript
+```js
 class Button extends DomElem {
 	constructor(options = {}, ...children) {
 		super(
@@ -57,7 +57,7 @@ class Button extends DomElem {
 
 ### Styled Components
 
-```javascript
+```js
 const FocusedContent = styled(
 	DomElem,
 	({ colors }) => `
@@ -69,7 +69,7 @@ const FocusedContent = styled(
 
 ### Context
 
-```javascript
+```js
 const context = new Context({
 	myCustomState: 'aString',
 });

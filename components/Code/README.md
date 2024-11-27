@@ -1,8 +1,3 @@
 ```js
-new Code({
-	code: `console.log('Hello World')`,
-	multiline: 'auto',
-	language: 'javascript',
-	copyButton: true,
-});
+[[import ./demo.js]]/^(\t*).+component = new.+\(\s*{(.|\n)+?\1}?\);/gm
 ```

@@ -33,7 +33,7 @@ This is the main entrypoint for your app.
 
 Not _strictly necessary_, but the `Page` component is designed to represent the top-level component by combining `autoRender: 'onload'`, touch detection, along with some top-level & global styles.
 
-```javascript
+```js
 new Page({ appendTo: document.body, content });
 ```
 

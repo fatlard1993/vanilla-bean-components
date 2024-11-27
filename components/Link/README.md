@@ -1,7 +1,3 @@
 ```js
-new Link({
-	textContent: 'textContent',
-	href: '#/targetUrl',
-	variant: 'button',
-});
+[[import ./demo.js]]/^(\t*).+component = new.+\(\s*{(.|\n)+?\1}?\);/gm
 ```

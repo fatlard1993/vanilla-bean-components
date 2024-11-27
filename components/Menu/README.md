@@ -1,10 +1,3 @@
 ```js
-new Menu({
-	items: [
-		{ textContent: 'one', style: { textTransform: 'uppercase' } },
-		'two',
-		{ textContent: 'three', styles: ({ colors }) => `color: ${colors.red};` },
-	],
-	onSelect: event => {},
-});
+[[import ./demo.js]]/^(\t*).+component = new.+\(\s*{(.|\n)+?\1}?\);/gm
 ```

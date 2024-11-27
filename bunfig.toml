@@ -1,4 +1,4 @@
-preload = ["./plugins/markdownLoader.js"]
+preload = ["./plugins/loadPlugins.js"]
 
 [install]
 registry = "https://registry.npmjs.org"

@@ -1,9 +1,3 @@
 ```js
-new Dialog({
-	header: 'header',
-	size: 'small',
-	body: 'content',
-	buttons: ['noop', 'dismiss'],
-	onButtonPress: ({ button, closeDialog }) => {},
-});
+[[import ./demo.js]]/^(\t*).+component = new.+\(\s*{(.|\n)+?\1}?\);/gm
 ```

@@ -1,6 +1,3 @@
 ```js
-new TooltipWrapper({
-	textContent: 'textContent',
-	tooltip: 'tooltip textContent',
-});
+[[import ./demo.js]]/^(\t*).+component = new.+\(\s*{(.|\n)+?\1}?\);/gm
 ```

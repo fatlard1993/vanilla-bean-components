@@ -133,6 +133,7 @@ module.exports = {
 		'tbody',
 		'tfoot',
 		'colspan',
+		'unlink',
 	],
 	skipIfMatch: [String.raw`\d+v[wh]`],
 	skipWordIfMatch: [],

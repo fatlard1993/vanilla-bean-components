@@ -1,8 +1,3 @@
 ```js
-new Button({
-	icon: 'icons',
-	textContent: 'textContent',
-	tooltip: { textContent: 'tooltip', position: 'bottom' },
-	onPointerPress: event => {},
-});
+[[import ./demo.js]]/^(\t*).+component = new.+\(\s*{(.|\n)+?\1}?\);/gm
 ```

@@ -63,7 +63,7 @@ Examples are a great way to get a feel for building with this pattern:
 
 All the components are based on [DomElem](./DomElem/README.md), so check that out for more details. But heres one way to use it:
 
-```javascript
+```js
 const input = new DomElem({
 	tag: 'input',
 	value: 'Some text',
@@ -90,7 +90,7 @@ The theme defines common/global/constant styles. The theme is loaded through con
 
 styles()
 
-```javascript
+```js
 new DomElem({
 	styles: theme => `
 		color: ${theme.colors.red};
@@ -100,7 +100,7 @@ new DomElem({
 
 styled
 
-```javascript
+```js
 const RedOne = styled(
 	DomElem,
 	theme => `
@@ -111,7 +111,7 @@ const RedOne = styled(
 
 context
 
-```javascript
+```js
 import { context } from 'vanilla-bean-components';
 
 console.log(context.domElem.theme);

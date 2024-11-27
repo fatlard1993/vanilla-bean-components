@@ -1,10 +1,3 @@
 ```js
-new Label({
-	label: 'label',
-	tooltip: 'tooltip',
-	for: 'targetId',
-	collapsible: true,
-	collapsed: false,
-	inline: false,
-});
+[[import ./demo.js]]/^(\t*).+component = new.+\(\s*{(.|\n)+?\1}?\);/gm
 ```

@@ -1,10 +1,3 @@
 ```js
-new Page(
-	{
-		appendTo: document.body,
-	},
-	toolbar,
-	view,
-	footer,
-);
+[[import ./demo.js]]/^(\t*).+component = new.+\(\s*{(.|\n)+?\1}?\);/gm
 ```

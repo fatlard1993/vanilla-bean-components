@@ -1,9 +1,5 @@
 ```js
-new ColorPicker({
-	value: 'random',
-	swatches: ['random', '#FF0000', 'green', 'rgb(0, 0, 255)'],
-	onChange: event => {},
-});
+[[import ./demo.js]]/^(\t*).+component = new.+\(\s*{(.|\n)+?\1}?\);/gm
 ```
 
 [TinyColor Docs](https://github.com/scttcper/tinycolor)

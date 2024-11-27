@@ -1,6 +1,3 @@
 ```js
-new TagList({
-	tags: ['one', '2', 'three'],
-	readOnly: true,
-});
+[[import ./demo.js]]/^(\t*).+component = new.+\(\s*{(.|\n)+?\1}?\);/gm
 ```

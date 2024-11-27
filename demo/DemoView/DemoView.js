@@ -39,15 +39,13 @@ export class DemoView extends View {
 				);
 
 			const readme = await GET(
-				this.component.constructor.name === 'VanillaBeanDomElem'
-					? 'DomElem/README.md'
-					: `components/${this.component.constructor.name.replace(/\d$/, '')}/README.md`,
+				`components/${this.component.constructor.name.replace(/\d$/, '').replace('VanillaBean', '')}/README.md`,
 			);
 
 			if (readme.response.ok) {
 				new StyledLabel(
 					{ label: 'README', appendTo: this },
-					new DomElem({ style: { overflow: 'auto' }, innerHTML: readme.body.parsed }),
+					new DomElem({ style: { overflow: 'auto' }, innerHTML: readme.body }),
 				);
 			}
 

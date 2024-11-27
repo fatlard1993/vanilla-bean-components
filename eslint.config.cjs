@@ -65,12 +65,13 @@ module.exports = [
 			'unicorn/prefer-switch': 'off',
 			'unicorn/prefer-dom-node-dataset': 'off',
 			'unicorn/prefer-global-this': 'off',
+			'unicorn/import-style': 'off',
 
 			// TODO This rule doesn't work after updating to eslint 9
 			// https://github.com/import-js/eslint-plugin-import/pull/2829
 			// 'import/no-unused-modules': [1, { unusedExports: true }],
 
-			'import/no-unresolved': [1, { ignore: ['bun', 'bun:test'] }],
+			'import/no-unresolved': [1, { ignore: ['bun', 'bun:test', String.raw`\.asText$`] }],
 			'import/no-useless-path-segments': 'error',
 			'import/first': 'warn',
 			'import/order': 'warn',
@@ -105,7 +106,7 @@ module.exports = [
 		},
 	},
 	{
-		files: ['demo/server.js', 'devTools/*'],
+		files: ['demo/server.js', 'devTools/*', 'plugins/*'],
 		languageOptions: {
 			globals: {
 				...globals.node,

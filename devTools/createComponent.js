@@ -50,10 +50,8 @@ export default class Demo extends DemoView {
 }
 `;
 
-const readMeFile = `\`\`\`javascript
-new ${name}({
-	${demoOptions}
-});
+const readMeFile = `\`\`\`js
+[[import ./demo.js]]/^(\\t*).+component = new.+\\(\\s*{(.|\\n)+?\\1}?\\);/gm
 \`\`\`
 `;
 
