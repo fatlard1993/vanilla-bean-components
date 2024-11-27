@@ -20,7 +20,7 @@ const build = async () => {
 };
 
 const developmentMode = process.argv[2] === '--dev';
-const watcherIgnore = /.asText$|^demo\/build|^\.|^img\/|^docs\/|^devTools\//;
+const watcherIgnore = /\.asText$|^demo\/build|^\.|^img\/|^docs\/|^devTools\//;
 
 if (developmentMode) {
 	console.log(`Initializing watcher`);
