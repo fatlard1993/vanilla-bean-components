@@ -7,9 +7,9 @@ export const removeExcessIndentation = string => {
 	if (!string.includes('\t')) return string;
 	if (!string.includes('\n')) return string.replace(/^\t+/, '');
 
-	const lines = string.split('\n').filter(line => !/^\t*$/.test(line));
+	const lines = string.split('\n');
 
 	const minIndentation = lines.map(line => line.match(/^\t+/) || []).reduce((a, b) => (a.length <= b.length ? a : b));
 
-	return lines.join('\n').replaceAll(new RegExp(minIndentation, 'g'), '');
+	return lines.join('\n').replaceAll(new RegExp(`^${minIndentation}`, 'gm'), '');
 };

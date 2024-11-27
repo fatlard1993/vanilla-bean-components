@@ -4,16 +4,6 @@ test('removeExcessIndentation', () => {
 	expect(removeExcessIndentation('\t\t\t\t\t\t\ttest')).toStrictEqual('test');
 
 	expect(
-		removeExcessIndentation(`
-			test
-		`),
-	).toStrictEqual('test');
-
-	expect(
-		removeExcessIndentation(`
-			test {
-				indented!
-			}
-		`),
-	).toStrictEqual('test {\n\tindented!\n}');
+		removeExcessIndentation(`\t\t{\n\t\t\t\tkey: value,\n\t\t}`),
+	).toStrictEqual('{\n\t\tkey: value,\n}');
 });
