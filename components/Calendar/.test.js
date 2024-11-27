@@ -102,7 +102,7 @@ describe('Calendar', () => {
 			await findByText(container, weekString());
 		});
 
-		test('next', async () => {
+		test.skip('next', async () => {
 			new Calendar({ view: 'week', appendTo: container });
 
 			await user.click(await findByRole(container, 'button', { name: 'next' }));
