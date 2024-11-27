@@ -1,6 +1,7 @@
 import button from './button';
 import code from './code';
 import colors from './colors';
+import fonts from './fonts';
 import input, { number, checkbox } from './input';
 import scrollbar from './scrollbar';
 import table from './table';
@@ -76,4 +77,9 @@ export default `
 	button { ${button} }
 
 	table { ${table} }
+
+	.fa-support:before {
+		${fonts.fontAwesomeSolid}
+		content: var(--fa);
+	}
 `;
