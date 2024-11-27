@@ -1,6 +1,7 @@
 import button from './button';
 import code from './code';
 import colors from './colors';
+import dialog from './dialog';
 import fonts from './fonts';
 import input, { number, checkbox } from './input';
 import scrollbar from './scrollbar';
@@ -75,6 +76,8 @@ export default `
 	${checkbox}
 
 	button { ${button} }
+
+	dialog { ${dialog} }
 
 	table { ${table} }
 

@@ -67,49 +67,6 @@ class Dialog extends DomElem {
 			{
 				...defaultOptions,
 				...options,
-				styles: (theme, domElem) => `
-					display: none;
-					background-color: ${theme.colors.darkest(theme.colors.gray)};
-					color: ${theme.colors.white};
-					border-radius: 3px;
-					flex-direction: column;
-					padding: 6px;
-					margin: 0 auto;
-					border: 2px solid ${theme.colors.dark(theme.colors.blue)};
-					top: 50%;
-					transform: translateY(-50%);
-
-					--aug-border-bg: linear-gradient(-12deg, ${theme.colors.light(theme.colors.teal)}, ${theme.colors.light(
-						theme.colors.blue,
-					)});
-					--aug-border-all: 2px;
-					--aug-tl1: 24px;
-					--aug-tr-extend1: 42%;
-					--aug-tr1: 24px;
-					--aug-bl-extend2: 32px;
-					--aug-br1: 12px;
-
-					/* Default size: small */
-					width: 420px;
-					height: 210px;
-
-					&.standard {
-						width: 840px;
-						height: 420px;
-					}
-
-					&.large {
-						width: 90vw;
-						height: 90vh;
-					}
-
-					&::backdrop {
-						background-color: ${theme.colors.blackish(theme.colors.blue).setAlpha(0.9)};
-						backdrop-filter: blur(3px);
-					}
-
-					${options.styles?.(theme, domElem) || ''}
-				`,
 			},
 			...children,
 		);
