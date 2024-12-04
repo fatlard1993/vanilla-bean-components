@@ -1,9 +1,11 @@
 import { TooltipWrapper } from '../TooltipWrapper';
 
 const defaultOptions = { tag: 'a', variant: 'link', tooltip: { icon: 'link', style: { fontSize: '12px' } } };
+const variant_enum = Object.freeze(['link', 'button']);
 
 class Link extends TooltipWrapper {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
+	variant_enum = variant_enum;
 
 	constructor(options = {}, ...children) {
 		super(
@@ -12,21 +14,6 @@ class Link extends TooltipWrapper {
 				...options,
 				onPointerDown: event => event.stopPropagation(),
 				onPointerUp: event => event.stopPropagation(),
-				styles: (theme, domElem) => `
-					&.variant-button {
-						${theme.button}
-					}
-
-					&.disabled {
-						pointer-events: none;
-
-						&:hover .tooltip {
-							display: none;
-						}
-					}
-
-					${options.styles?.(theme, domElem) || ''}
-				`,
 			},
 			...children,
 		);

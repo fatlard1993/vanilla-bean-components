@@ -58,6 +58,18 @@ export default `
 		&:visited {
 			color: ${colors.light(colors.purple)};
 		}
+
+		&.variant-button {
+			${button}
+		}
+
+		&.disabled {
+			pointer-events: none;
+
+			&:hover .tooltip {
+				display: none;
+			}
+		}
 	}
 
 	@viewport {
