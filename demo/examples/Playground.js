@@ -55,7 +55,7 @@ export class Playground extends DomElem {
 			tag: 'iframe',
 			styles: () => `
 				flex: 1;
-				margin: 12px;
+				margin: 0 12px 12px;
 			`,
 			appendTo: this.right,
 		});
