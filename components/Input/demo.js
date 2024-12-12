@@ -1,5 +1,5 @@
 import DemoView, { DemoWrapper } from '../../demo/DemoView';
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 import { Input } from '.';
 
 export default class Demo extends DemoView {
@@ -31,7 +31,7 @@ export default class Demo extends DemoView {
 			appendTo: this.demoWrapper,
 		});
 
-		new DomElem({
+		new Component({
 			tag: 'p',
 			textContent: this.component.options.subscriber(
 				'value',

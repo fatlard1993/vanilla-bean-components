@@ -1,11 +1,12 @@
 import { capitalize, orderBy } from '../../utils';
 import theme from '../../theme';
+import { Elem } from '../Elem';
+import { Component } from '../Component';
 import { Icon } from '../Icon';
-import { DomElem } from '../DomElem';
 
 const defaultOptions = { tag: 'table' };
 
-class Table extends DomElem {
+class Table extends Component {
 	constructor(options = {}, ...children) {
 		super(
 			{
@@ -34,19 +35,19 @@ class Table extends DomElem {
 			this.options.onSort(this.options.sortProperty, value);
 		} else if (key === 'data' || key === 'selection') {
 			if (this.thead) this.thead.empty();
-			else this.thead = new DomElem({ tag: 'thead', appendTo: this });
+			else this.thead = new Elem({ tag: 'thead', appendTo: this });
 
 			if (this.tbody) this.tbody.empty();
-			else this.tbody = new DomElem({ tag: 'tbody', appendTo: this });
+			else this.tbody = new Elem({ tag: 'tbody', appendTo: this });
 
 			if (this.tfoot) this.tfoot.empty();
-			else this.tfoot = new DomElem({ tag: 'tfoot', appendTo: this });
+			else this.tfoot = new Elem({ tag: 'tfoot', appendTo: this });
 
 			this.thead.append(
-				new DomElem(
+				new Component(
 					{ tag: 'tr' },
 					this.options.columns.map(column => {
-						const th = new DomElem({ tag: 'th', ...column });
+						const th = new Component({ tag: 'th', ...column });
 
 						if (column.sort) {
 							new Icon({
@@ -84,11 +85,11 @@ class Table extends DomElem {
 			this.tbody.append(
 				this.options.data.map(
 					rowData =>
-						new DomElem(
+						new Component(
 							{ tag: 'tr' },
 							this.options.columns.map(
 								column =>
-									new DomElem(
+									new Component(
 										{
 											tag: 'td',
 											...(typeof column.dataColumn === 'function'
@@ -104,9 +105,9 @@ class Table extends DomElem {
 
 			if (this.options.footer) {
 				this.tfoot.append(
-					new DomElem(
+					new Component(
 						{ tag: 'tr' },
-						this.options.footer.map(footData => new DomElem({ tag: 'td', ...footData })),
+						this.options.footer.map(footData => new Component({ tag: 'td', ...footData })),
 					),
 				);
 			}

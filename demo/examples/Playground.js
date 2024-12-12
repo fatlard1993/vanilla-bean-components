@@ -1,4 +1,4 @@
-import { DomElem, Input, Label, styled } from '../..';
+import { Component, Input, Label, styled } from '../..';
 
 import DemoView, { DemoWrapper } from '../DemoView';
 
@@ -23,7 +23,7 @@ const CodeInput = styled(
 	},
 );
 
-export class Playground extends DomElem {
+export class Playground extends Component {
 	constructor(options = {}) {
 		const database = JSON.parse(localStorage.getItem('playground_db')) || {
 			html: '<div>wow!</div>',
@@ -42,8 +42,8 @@ export class Playground extends DomElem {
 	}
 
 	render() {
-		this.left = new DomElem({ appendTo: this });
-		this.right = new DomElem({
+		this.left = new Component({ appendTo: this });
+		this.right = new Component({
 			styles: () => `
 				display: flex;
 				flex: 1;
@@ -51,7 +51,7 @@ export class Playground extends DomElem {
 			appendTo: this,
 		});
 
-		this.output = new DomElem({
+		this.output = new Component({
 			tag: 'iframe',
 			styles: () => `
 				flex: 1;

@@ -1,5 +1,5 @@
 import { styled } from '../../utils';
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 import { Input } from '../Input';
 import { Button } from '../Button';
 
@@ -23,7 +23,7 @@ const TagListIconButton = styled(
 
 const defaultOptions = { readOnly: false };
 
-class TagList extends DomElem {
+class TagList extends Component {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
 	constructor(options = {}, ...children) {
@@ -31,7 +31,7 @@ class TagList extends DomElem {
 			{
 				...options,
 				tag: 'ul',
-				styles: (theme, domElem) => `
+				styles: (theme, component) => `
 					margin: 1% auto;
 					border-radius: 3px;
 					box-sizing: border-box;
@@ -52,7 +52,7 @@ class TagList extends DomElem {
 						margin: 0;
 					}
 
-					${options.styles?.(theme, domElem) || ''}
+					${options.styles?.(theme, component) || ''}
 				`,
 			},
 			...children,

@@ -1,9 +1,9 @@
-import { DomElem, Keyboard, styled } from '../..';
+import { Component, Keyboard, styled } from '../..';
 
 import DemoView, { DemoWrapper } from '../DemoView';
 
 const CalculatorDisplay = styled(
-	DomElem,
+	Component,
 	({ colors }) => `
 		font-size: 24px;
 		background: ${colors.black};
@@ -31,7 +31,7 @@ const StyledKeyboard = styled(
 	`,
 );
 
-export class Calculator extends DomElem {
+export class Calculator extends Component {
 	constructor(options = {}) {
 		super({
 			result: 0,

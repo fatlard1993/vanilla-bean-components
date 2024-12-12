@@ -1,18 +1,18 @@
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 import { routeToRegex } from './utils';
 
-class Router extends DomElem {
+class Router extends Component {
 	constructor(options = {}, ...children) {
 		super(
 			{
 				defaultPath: Object.keys(options.views)[0],
 				...options,
-				styles: (theme, domElem) => `
+				styles: (theme, component) => `
 					display: flex;
 					flex: 1;
 					overflow: hidden;
 
-					${options.styles?.(theme, domElem) || ''}
+					${options.styles?.(theme, component) || ''}
 				`,
 			},
 			...children,

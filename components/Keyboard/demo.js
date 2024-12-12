@@ -1,12 +1,12 @@
 import DemoView, { DemoWrapper } from '../../demo/DemoView';
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 import { Keyboard } from '.';
 
 export default class Demo extends DemoView {
 	render() {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
-		const output = new DomElem({
+		const output = new Component({
 			appendTo: this.demoWrapper,
 		});
 
@@ -16,7 +16,7 @@ export default class Demo extends DemoView {
 			// onKeyUp: console.log,
 			onKeyPress: event => {
 				const { key } = event.detail;
-				const shiftKey = event.target.elem.querySelector('button.shift')?._domElem;
+				const shiftKey = event.target.elem.querySelector('button.shift')?._component;
 
 				if (key === 'number' || key === 'simple') this.component.setLayout(key);
 				else if (key === 'backspace') output.elem.textContent = output.elem.textContent.slice(0, -1);

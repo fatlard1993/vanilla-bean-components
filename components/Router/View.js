@@ -1,8 +1,8 @@
 import { styled } from '../../utils';
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 
 const View = styled(
-	DomElem,
+	Component,
 	() => `
 		height: 100%;
 		display: flex;

@@ -1,4 +1,4 @@
-import { Context } from './context';
+import Context from './Context';
 
 test('Context > Must provide first-tier access to properties', () => {
 	expect(new Context({ x: ['one', 'two'] }).x).toStrictEqual(['one', 'two']);

@@ -1,10 +1,10 @@
 /* eslint-disable spellcheck/spell-checker */
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 import { Button } from '../Button';
 
 const defaultOptions = { readOnly: false };
 
-class Tag extends DomElem {
+class Tag extends Component {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
 	constructor(options = {}, ...children) {
@@ -18,7 +18,7 @@ class Tag extends DomElem {
 		super(
 			{
 				...options,
-				styles: (theme, domElem) => `
+				styles: (theme, component) => `
 					border: 1px solid ${theme.colors.white};
 					padding: 9px;
 					margin: 3px;
@@ -43,7 +43,7 @@ class Tag extends DomElem {
 						min-width: 260px;
 					}
 
-					${options.styles?.(theme, domElem) || ''}
+					${options.styles?.(theme, component) || ''}
 				`,
 				tag: 'li',
 				appendTo: options.appendTo,

@@ -4,7 +4,7 @@ import { marked } from 'marked';
 
 import { customAlphabet } from 'nanoid';
 
-import { removeExcessIndentation } from '../DomElem/utils/string';
+import { removeExcessIndentation } from '../Component/utils/string';
 
 // eslint-disable-next-line spellcheck/spell-checker
 const idGen = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-', 10);

@@ -1,6 +1,6 @@
 # vanilla-bean-components
 
-> Class based JS components based on [DomElem](./DomElem/README.md). A pattern focused on improving the development experience surrounding the component concept.
+> Class based JS components. A pattern focused on improving frontend development experience utilizing a component concept.
 
 > This is a personal project and is currently under active development, everything is subject to change. Its current state reflects my current opinions as much as time allows within the confines of work and life responsibilities.
 
@@ -26,7 +26,7 @@ Projects with similar goals or results:
 ## Result
 
 - A Proxy based observable state utility
-- A css in js solution leveraging postcss
+- A runtime css in js solution leveraging postcss
 - A Class interface wrapping an HTMLElement, observable state, and a handful of common utilities for interaction and manipulation
 - A bunch of re-usable Components for common interfaces
 - A demo server and suite of demos and examples to illustrate the usage and benefits of the pattern
@@ -61,24 +61,7 @@ Examples are a great way to get a feel for building with this pattern:
 
 ### Components
 
-All the components are based on [DomElem](./DomElem/README.md), so check that out for more details. But heres one way to use it:
-
-```js
-const input = new DomElem({
-	tag: 'input',
-	value: 'Some text',
-	onChange: ({ value: newValue }) => {
-		input.options.value = newValue;
-	},
-	appendTo: document.body,
-});
-
-new DomElem({
-	tag: 'p',
-	textContent: input.options.subscriber('value', value => `The current value is: ${value}`),
-	appendTo: document.body,
-});
-```
+The [Elem](./Elem/README.md) and [Component](./Component/README.md) classes implement the core common concepts I've discovered while building out these components
 
 ### Theme
 
@@ -91,7 +74,7 @@ The theme defines common/global/constant styles. The theme is loaded through con
 styles()
 
 ```js
-new DomElem({
+new Component({
 	styles: theme => `
 		color: ${theme.colors.red};
 	`,
@@ -102,7 +85,7 @@ styled
 
 ```js
 const RedOne = styled(
-	DomElem,
+	Component,
 	theme => `
 		color: ${theme.colors.red};
 	`,
@@ -114,7 +97,7 @@ context
 ```js
 import { context } from 'vanilla-bean-components';
 
-console.log(context.domElem.theme);
+console.log(context.component.theme);
 ```
 
 #### Colors

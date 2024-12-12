@@ -1,5 +1,5 @@
 /* eslint-disable spellcheck/spell-checker */
-import { DomElem, Label, Link, View, styled, GET } from '../..';
+import { Elem, Label, Link, View, styled, GET } from '../..';
 import DemoOptions from './DemoOptions';
 
 const StyledLabel = styled(
@@ -15,7 +15,7 @@ export class DemoView extends View {
 	constructor(options = {}) {
 		super({
 			...options,
-			styles: (theme, domElem) => `
+			styles: (theme, component) => `
 				display: flex;
 				flex-direction: column;
 				overflow-y: auto;
@@ -25,18 +25,16 @@ export class DemoView extends View {
 					white-space: pre;
 				}
 
-				${options.styles?.(theme, domElem) || ''}
+				${options.styles?.(theme, component) || ''}
 			`,
 		});
 	}
 
 	async render() {
 		if (this.component) {
-			const componentAncestors = this.component
-				.ancestry()
-				.filter(
-					({ constructor: { name } }) => name !== this.component.constructor.name && name !== 'VanillaBeanDomElem',
-				);
+			const componentAncestors = (this.component.ancestry?.() || []).filter(
+				({ constructor: { name } }) => name !== this.component.constructor.name && !name.startsWith('VanillaBean'),
+			);
 
 			const readme = await GET(
 				`components/${this.component.constructor.name.replace(/\d$/, '').replace('VanillaBean', '')}/README.md`,
@@ -45,7 +43,7 @@ export class DemoView extends View {
 			if (readme.response.ok) {
 				new StyledLabel(
 					{ label: 'README', appendTo: this },
-					new DomElem({ style: { overflow: 'auto' }, innerHTML: readme.body }),
+					new Elem({ style: { overflow: 'auto' }, innerHTML: readme.body }),
 				);
 			}
 

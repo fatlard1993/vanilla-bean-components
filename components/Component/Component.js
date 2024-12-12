@@ -1,6 +1,7 @@
-import { DomElem } from '../../DomElem';
+import { Component } from '../../Component';
 
-class VanillaBeanDomElem extends DomElem {
+/** @type {Component} */
+class VanillaBeanComponent extends Component {
 	constructor(options = {}, ...children) {
 		super(options, ...children);
 
@@ -16,4 +17,4 @@ class VanillaBeanDomElem extends DomElem {
 	}
 }
 
-export default VanillaBeanDomElem;
+export default VanillaBeanComponent;

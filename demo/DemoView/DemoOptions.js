@@ -1,4 +1,4 @@
-import { DomElem, Code, List, Select, Input, Label, conditionalList, styled } from '../..';
+import { Component, Code, List, Select, Input, Label, conditionalList, styled } from '../..';
 import { stringifyValue } from './utils';
 
 const CodeForLabel = styled(Code, () => `display: block;`);
@@ -30,10 +30,10 @@ export default class DemoOptions extends List {
 									),
 								},
 								{
-									if: !isMethod(key) && component.defaultOptions[key],
+									if: !isMethod(key) && component.defaultOptions?.[key],
 									thenItem: new Label(
 										'Default',
-										new CodeForLabel({ code: stringifyValue(component.defaultOptions[key]) }),
+										new CodeForLabel({ code: stringifyValue(component.defaultOptions?.[key]) }),
 									),
 								},
 								{
@@ -41,7 +41,7 @@ export default class DemoOptions extends List {
 									thenItem: new Label(
 										'Current',
 										new Select({
-											value: component.options.subscriber(key),
+											value: component.options.subscriber?.(key) ?? value,
 											options: component[`${key}_enum`] || [
 												{ label: 'True', value: true },
 												{ label: 'False', value: false },
@@ -58,32 +58,33 @@ export default class DemoOptions extends List {
 										!isMethod(key) &&
 										!component[`${key}_enum`] &&
 										typeof value !== 'boolean' &&
-										stringifyValue(value) !== '[object DomElem]',
+										stringifyValue(value) !== '[object Component]',
 									thenItem: new Label(
 										'Current',
 										new Input({
 											tag: typeof value === 'object' || value?.includes?.('\n') ? 'textarea' : 'input',
 											syntaxHighlighting: typeof value !== 'string',
 											style: { width: '100%' },
-											value: component.options.subscriber(key, _ => {
-												try {
-													return ['[object Object]', '[object Array]'].includes(stringifyValue(_))
-														? JSON.stringify(
-																_,
-																(_key, _value) => {
-																	if (_value?.isDomElem || _value?.prototype instanceof DomElem)
-																		return '[object DomElem]';
-																	if (typeof _value === 'function') return _value.toString();
+											value:
+												component.options.subscriber?.(key, _ => {
+													try {
+														return ['[object Object]', '[object Array]'].includes(stringifyValue(_))
+															? JSON.stringify(
+																	_,
+																	(_key, _value) => {
+																		if (_value?._component || _value?.prototype instanceof Component)
+																			return '[object Component]';
+																		if (typeof _value === 'function') return _value.toString();
 
-																	return _value;
-																},
-																2,
-															)
-														: _;
-												} catch {
-													return stringifyValue(_);
-												}
-											}),
+																		return _value;
+																	},
+																	2,
+																)
+															: _;
+													} catch {
+														return stringifyValue(_);
+													}
+												}) ?? value,
 											onChange: ({ value: newValue }) => (component.options[key] = newValue),
 										}),
 									),

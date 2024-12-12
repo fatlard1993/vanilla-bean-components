@@ -1,14 +1,14 @@
-import { DomElem, Button } from '../..';
+import { Elem, Component, Button } from '../..';
 
 import DemoView, { DemoWrapper } from '../DemoView';
 
-export class Stopwatch extends DomElem {
+export class Stopwatch extends Component {
 	constructor(options = {}) {
 		super({ tag: 'span', time: 0, interval: 10, running: false, ...options });
 	}
 
 	render() {
-		this._time = new DomElem({ tag: 'span' });
+		this._time = new Elem({ tag: 'span' });
 
 		const start = new Button({ content: 'Start', onPointerPress: () => this.start() });
 		const stop = new Button({ content: 'Stop', onPointerPress: () => this.stop() });

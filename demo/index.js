@@ -1,5 +1,5 @@
 import process from 'process';
-import { DomElem, Page, Router, View } from '..';
+import { Elem, Page, Router, View } from '..';
 
 import DemoMenu from './DemoMenu';
 import views from './views';
@@ -10,12 +10,12 @@ const menu = new DemoMenu();
 
 class NotFound extends View {
 	render() {
-		new DomElem({
-			styles: () => `
-				margin: 6px auto;
-				padding: 6px 12px;
-				text-align: center;
-			`,
+		new Elem({
+			style: {
+				margin: '6px auto',
+				padding: '6px 12px',
+				textAlign: 'center',
+			},
 			textContent: `Could not find route "${this.options.route}"`,
 			appendTo: this,
 		});

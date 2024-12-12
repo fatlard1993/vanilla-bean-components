@@ -1,6 +1,6 @@
 /// <reference lib="dom" />
 
-import { DomElem } from '..';
+import { Component } from '..';
 
 import { styled, appendStyles } from './styles';
 
@@ -19,9 +19,8 @@ test('appendStyles', () => {
 test('styled', () => {
 	const styles = () => 'display: flex;';
 	const options = { test: 'test' };
-	const StyledElem = new (styled(DomElem, styles, options))();
+	const StyledElem = new (styled(Component, styles, options))();
 
-	expect(StyledElem.isDomElem).toStrictEqual(true);
 	expect(StyledElem.options.styles()).toContain(styles());
 	expect(StyledElem.options.test).toStrictEqual(options.test);
 });

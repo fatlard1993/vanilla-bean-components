@@ -55,11 +55,11 @@ const readMeFile = `\`\`\`js
 \`\`\`
 `;
 
-const componentFile = `import { DomElem } from '../DomElem';
+const componentFile = `import { Component } from '../Component';
 
 const defaultOptions = { tag: 'div' };
 
-class ${name} extends DomElem {
+class ${name} extends Component {
 	constructor(options = {}, ...children) {
 		super({ ...defaultOptions, ...options }, ...children);
 	}

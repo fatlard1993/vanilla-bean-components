@@ -15,7 +15,7 @@ export default class Popover extends Icon {
 					if (autoOpen) setTimeout(() => this.show(), 200);
 				},
 				...options,
-				styles: (theme, domElem) => `
+				styles: (theme, component) => `
 					position: absolute;
 					background-color: ${theme.colors.darkest(theme.colors.gray)};
 					color: ${theme.colors.white};
@@ -24,7 +24,7 @@ export default class Popover extends Icon {
 					border: 1px solid ${theme.colors.lightest(theme.colors.gray)};
 					margin: 0;
 
-					${options.styles?.(theme, domElem) || ''}
+					${options.styles?.(theme, component) || ''}
 				`,
 			},
 			...children,

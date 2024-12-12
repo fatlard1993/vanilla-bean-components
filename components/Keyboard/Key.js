@@ -5,7 +5,7 @@ class Key extends Button {
 		super(
 			{
 				...options,
-				styles: (theme, domElem) => `
+				styles: (theme, component) => `
 					user-select: none;
 					display: inline-block;
 					border: none;
@@ -20,7 +20,7 @@ class Key extends Button {
 						unit => `&.u${unit.toString().replace('.', '_')} { flex: ${unit}; }`,
 					)}
 
-					${options.styles?.(theme, domElem) || ''}
+					${options.styles?.(theme, component) || ''}
 				`,
 			},
 			...children,

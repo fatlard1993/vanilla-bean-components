@@ -1,6 +1,6 @@
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 
-class Icon extends DomElem {
+class Icon extends Component {
 	setOption(key, value) {
 		if (key === 'icon' || key === 'animation') {
 			this.removeClass(/\bfa-\S+?\b/g);

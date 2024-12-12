@@ -1,9 +1,9 @@
 import { fromCamelCase, capitalize } from '../../utils';
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 import { Input } from '../Input';
 import { Label } from '../Label';
 
-export default class Form extends DomElem {
+export default class Form extends Component {
 	render() {
 		this.options.style = { ...this.options.style, overflow: 'hidden auto' };
 
@@ -17,15 +17,15 @@ export default class Form extends DomElem {
 					key,
 					label,
 					collapsed,
-					Component = Input,
+					InputComponent = Input,
 					onChange = () => {},
 					parse = value => value,
 					...inputOptions
 				}) => {
-					const input = new Component({
+					const input = new InputComponent({
 						appendTo: this.elem,
 						value: this.options.data[key],
-						...(Component !== DomElem && {
+						...(InputComponent !== Component && {
 							onChange: function (event) {
 								form.options.data[key] = this.options.value = parse(event.value, input);
 								this.validate?.();

@@ -1,4 +1,5 @@
-export * from '../DomElem/utils';
+export * from '../Context';
+export * from '../Component/utils';
 
 export * from './api';
 export * from './color';

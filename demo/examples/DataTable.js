@@ -1,4 +1,4 @@
-import { DomElem, Input, Button, Popover, Menu, Icon, Table, delay, orderBy, randInt } from '../..';
+import { Component, Input, Button, Popover, Menu, Icon, Table, delay, orderBy, randInt } from '../..';
 
 import DemoView, { DemoWrapper } from '../DemoView';
 
@@ -26,13 +26,13 @@ class Loader extends Icon {
 			icon: 'spinner',
 			animation: 'spin-pulse',
 			...options,
-			styles: (theme, domElem) => `
+			styles: (theme, component) => `
 				font-size: 66px;
 				display: flex;
 				justify-content: center;
 				color: ${theme.colors.blue};
 
-				${options.styles?.(theme, domElem) || ''}
+				${options.styles?.(theme, component) || ''}
 			`,
 		});
 	}
@@ -54,7 +54,7 @@ export default class Example extends DemoView {
 			sortDirection,
 			selection: {},
 			onSort: async (property, direction) => {
-				const temporaryModalLoader = new DomElem(
+				const temporaryModalLoader = new Component(
 					{
 						appendTo: table,
 						styles: theme => `

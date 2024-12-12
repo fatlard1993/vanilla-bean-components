@@ -1,15 +1,15 @@
-import { DomElem, Button } from '../..';
+import { Component, Button } from '../..';
 
 import DemoView, { DemoWrapper } from '../DemoView';
 
-export class Counter extends DomElem {
+export class Counter extends Component {
 	constructor(options = {}) {
 		super({ tag: 'span', count: 0, ...options });
 	}
 
 	setOption(key, value) {
 		if (key === 'count') {
-			const counter = new DomElem({ tag: 'span', content: `❤ ${value} ` });
+			const counter = new Component({ tag: 'span', content: `❤ ${value} ` });
 			const plus = new Button({ content: '👍', onPointerPress: () => ++this.options.count });
 			const minus = new Button({ content: '👎', onPointerPress: () => --this.options.count });
 

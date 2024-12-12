@@ -2,14 +2,14 @@
 import { TinyColor, random as randomColor } from '@ctrl/tinycolor';
 
 import { debounce, throttle, convertRange, styled } from '../../utils';
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 import { Input } from '../Input';
 import { Button } from '../Button';
 
 import { saturation, hue } from './svg';
 
 const PickerArea = styled(
-	DomElem,
+	Component,
 	({ colors }) => `
 		position: relative;
 		width: 150px;
@@ -24,7 +24,7 @@ const PickerArea = styled(
 );
 
 const PickerIndicator = styled(
-	DomElem,
+	Component,
 	({ colors }) => `
 		position: absolute;
 		top: -6px;
@@ -40,7 +40,7 @@ const PickerIndicator = styled(
 );
 
 const HueArea = styled(
-	DomElem,
+	Component,
 	({ colors }) => `
 		position: relative;
 		width: 150px;
@@ -55,7 +55,7 @@ const HueArea = styled(
 );
 
 const HueIndicator = styled(
-	DomElem,
+	Component,
 	({ colors }) => `
 		position: absolute;
 		width: 10px;
@@ -90,7 +90,7 @@ class ColorPicker extends Input {
 		super(
 			{
 				...options,
-				styles: (theme, domElem) => `
+				styles: (theme, component) => `
 					background-color: ${theme.colors.light(theme.colors.gray)};
 					padding: 18px 18px 12px;
 					border-radius: 5px;
@@ -110,7 +110,7 @@ class ColorPicker extends Input {
 						width: 90%;
 					}
 
-					${options.styles?.(theme, domElem) || ''}
+					${options.styles?.(theme, component) || ''}
 				`,
 			},
 			...children,

@@ -1,4 +1,4 @@
-import { Context } from './utils';
+import Context from '../Context';
 
 const context = new Context({
 	theme: {},

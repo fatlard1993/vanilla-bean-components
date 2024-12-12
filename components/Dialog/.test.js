@@ -1,6 +1,6 @@
 import { findByText, findByRole, fireEvent, waitForElementToBeRemoved, queryByRole } from '@testing-library/dom';
 
-import { DomElem } from '../..';
+import { Component } from '../..';
 
 import { Dialog } from '.';
 
@@ -33,7 +33,7 @@ describe('Dialog', () => {
 	});
 
 	test('must support an element header', async () => {
-		const header = new DomElem({ tag: 'p', textContent: 'header' });
+		const header = new Component({ tag: 'p', textContent: 'header' });
 
 		new Dialog({ header, appendTo: container });
 
@@ -41,7 +41,7 @@ describe('Dialog', () => {
 	});
 
 	test('must support an element body', async () => {
-		const body = new DomElem({ tag: 'p', textContent: 'body' });
+		const body = new Component({ tag: 'p', textContent: 'body' });
 
 		new Dialog({ body, appendTo: container });
 
@@ -49,7 +49,7 @@ describe('Dialog', () => {
 	});
 
 	test('must support an element footer', async () => {
-		const footer = new DomElem({ tag: 'p', textContent: 'footer' });
+		const footer = new Component({ tag: 'p', textContent: 'footer' });
 
 		new Dialog({ footer, appendTo: container });
 

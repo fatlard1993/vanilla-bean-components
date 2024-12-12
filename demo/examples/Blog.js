@@ -1,4 +1,4 @@
-import { DomElem, Icon, delay } from '../..';
+import { Component, Icon, delay } from '../..';
 
 import DemoView, { DemoWrapper } from '../DemoView';
 
@@ -17,19 +17,19 @@ class Loader extends Icon {
 			icon: 'spinner',
 			animation: 'spin-pulse',
 			...options,
-			styles: (theme, domElem) => `
+			styles: (theme, component) => `
 				font-size: 66px;
 				display: flex;
 				justify-content: center;
 				color: ${theme.colors.blue};
 
-				${options.styles?.(theme, domElem) || ''}
+				${options.styles?.(theme, component) || ''}
 			`,
 		});
 	}
 }
 
-class PostHeading extends DomElem {
+class PostHeading extends Component {
 	constructor(content) {
 		super({
 			tag: 'h2',
@@ -43,7 +43,7 @@ class PostHeading extends DomElem {
 	}
 }
 
-class PostBody extends DomElem {
+class PostBody extends Component {
 	constructor(content) {
 		super({
 			tag: 'p',
@@ -55,23 +55,23 @@ class PostBody extends DomElem {
 	}
 }
 
-class Post extends DomElem {
+class Post extends Component {
 	constructor(options) {
 		super({
 			tag: 'p',
 			content: [new PostHeading(options.heading), new PostBody(options.body)],
 			...options,
-			styles: (theme, domElem) => `
+			styles: (theme, component) => `
 				padding: 12px;
 				border: 1px solid ${theme.colors.blue};
 
-				${options.styles?.(theme, domElem) || ''}
+				${options.styles?.(theme, component) || ''}
 			`,
 		});
 	}
 }
 
-class Blog extends DomElem {
+class Blog extends Component {
 	setOption(key, value) {
 		if (key === 'posts') this.content(value.map(post => new Post(post)));
 		else super.setOption(key, value);

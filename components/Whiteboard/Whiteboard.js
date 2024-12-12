@@ -1,5 +1,5 @@
 import { throttle } from '../../utils/data';
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 
 const defaultOptions = {
 	tag: 'canvas',
@@ -12,7 +12,7 @@ const defaultOptions = {
 	registeredEvents: new Set(['line', 'draw']),
 };
 
-export default class Whiteboard extends DomElem {
+export default class Whiteboard extends Component {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
 	constructor(options = {}, ...children) {
@@ -20,12 +20,12 @@ export default class Whiteboard extends DomElem {
 			{
 				...defaultOptions,
 				...options,
-				styles: (theme, domElem) => `
+				styles: (theme, component) => `
 					cursor: crosshair;
 					touch-action: none;
 					border-radius: 3px;
 
-					${options.styles?.(theme, domElem) || ''}
+					${options.styles?.(theme, component) || ''}
 				`,
 			},
 			...children,

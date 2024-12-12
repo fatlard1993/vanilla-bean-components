@@ -1,4 +1,4 @@
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 import { updateValidationErrors, insertTabCharacter, adjustIndentation } from './utils';
 
 const type_enum = Object.freeze([
@@ -37,7 +37,7 @@ const defaultOptions = {
 
 const dataTypeToInputType = { number: 'number', boolean: 'checkbox', string: 'text' };
 
-class Input extends DomElem {
+class Input extends Component {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 	type_enum = type_enum;
 

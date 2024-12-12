@@ -1,8 +1,10 @@
 import { customAlphabet } from 'nanoid';
 
-import { processStyles, appendStyles, buildClassList, Context } from './utils';
-import context from './context';
+import Context from '../Context';
+import Elem from '../Elem';
+import { processStyles, appendStyles } from './utils';
 import { observeElementConnection } from './utils/elem';
+import context from './context';
 
 // eslint-disable-next-line spellcheck/spell-checker
 const classId = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-', 10);
@@ -21,50 +23,51 @@ const commonEvents = new Set([
 	'contextmenu',
 ]);
 
-/** DomElem - A general purpose base element building block */
-class DomElem extends EventTarget {
-	isDomElem = true;
+const defaultOptions = {
+	tag: 'div',
+	autoRender: true,
+	registeredEvents: new Set([]),
+	knownAttributes: new Set(['role', 'name', 'colspan']),
+	priorityOptions: new Set(['onConnected', 'textContent', 'content', 'appendTo', 'prependTo', 'value']),
+};
 
-	defaultOptions = {
-		tag: 'div',
-		autoRender: true,
-		registeredEvents: new Set([]),
-		knownAttributes: new Set(['role', 'name', 'colspan']),
-		priorityOptions: new Set(['onConnected', 'textContent', 'content', 'appendTo', 'prependTo', 'value']),
-	};
+/** Component - A general purpose component building block */
+class Component extends Elem {
+	defaultOptions = defaultOptions;
 
 	/**
-	 * Create a DomElem component
+	 * Create a Component
 	 * @param {Object} options - The options for initializing the component
 	 * @param {String} options.tag - The HTML tag
 	 * @param {Boolean} options.autoRender - Automatically render the component when constructed
 	 * @param {Set} options.knownAttributes - Options to send to elem.setAttribute
 	 * @param {Set} options.priorityOptions - Options to process first when processing a whole options object
-	 * @param {Object} options.style - Style properties to set in the resulting HTMLElement
+	 * @param {Object} options.style - Style properties to set in the HTMLElement
+	 * @param {Object} options.attributes - HTML attributes to set in the HTMLElement
 	 * @param {...children} children - Child elements to add to append option
 	 */
 	constructor(options = {}, ...children) {
-		super();
-
 		const { tag, autoRender, registeredEvents, knownAttributes, priorityOptions, ...optionsWithoutConfig } = {
-			...this.defaultOptions,
+			...defaultOptions,
 			...options,
 		};
+
+		super({ tag });
 
 		this.__registeredEvents = registeredEvents;
 		this.__knownAttributes = knownAttributes;
 		this.__priorityOptions = priorityOptions;
 
-		this.options = new Context({ ...optionsWithoutConfig, append: [optionsWithoutConfig.append, ...children] });
+		this.options = new Context({
+			...optionsWithoutConfig,
+			...(children.length > 0 ? { append: [optionsWithoutConfig.append, ...children] } : {}),
+		});
 
 		this.options.addEventListener('set', ({ detail: { key, value } }) => this.setOption(key, value));
 
 		this.classId = Object.freeze(classId());
 
-		this.tag = tag;
-		this.elem = document.createElement(tag);
-		this.elem._domElem = this;
-		this.cleanup = {};
+		this.elem._component = this;
 
 		this.addClass(this.classId);
 
@@ -73,6 +76,10 @@ class DomElem extends EventTarget {
 			if (document.readyState === 'complete') this.render();
 			else window.addEventListener('load', () => this.render());
 		} else if (autoRender === 'animationFrame') requestAnimationFrame(() => this.render());
+	}
+
+	toString() {
+		return '[object Component]';
 	}
 
 	render() {
@@ -107,7 +114,7 @@ class DomElem extends EventTarget {
 		} else if (typeof this[key] === 'function') this[key].call(this, value);
 		else if (this.hasOwnProperty(key)) this[key] = value;
 		else if (typeof this.elem[key] === 'function') {
-			if (value?.isDomElem) value = value.elem;
+			if (value?.elem) value = value.elem;
 
 			this.elem[key].call(this.elem, value);
 		} else if (typeof value === 'function') this[key] = value;
@@ -119,16 +126,51 @@ class DomElem extends EventTarget {
 	}
 
 	get parent() {
-		return this.parentElem?._domElem;
+		return this.parentElem?._component;
+	}
+
+	get children() {
+		return Array.from(this.elem.children).flatMap(({ _component }) => [_component]);
+	}
+
+	addCleanup(id, cleanupFunction) {
+		if (!this.cleanup) {
+			this.cleanup = {};
+
+			this.on({ targetEvent: 'disconnected', callback: () => this.processCleanup(this.cleanup, true) });
+		}
+
+		this.cleanup[id] = cleanupFunction;
+	}
+
+	processCleanup(cleanup = this.cleanup || {}, rootCleanup = false) {
+		if (rootCleanup) {
+			const cleanups = [];
+			const collectCleanups = children => {
+				children.forEach(child => {
+					if (!child) return;
+
+					if (child.cleanup) cleanups.push(child);
+
+					collectCleanups(child.children);
+				});
+			};
+
+			collectCleanups(this.children);
+
+			cleanups.forEach(child => child.processCleanup());
+		}
+
+		Object.values(cleanup).forEach(cleanupFunction => cleanupFunction());
 	}
 
 	on({ targetEvent, id = targetEvent, callback }) {
-		this.cleanup[id]?.();
+		this.cleanup?.[id]?.();
 
 		if (commonEvents.has(targetEvent)) {
 			this.elem.addEventListener(targetEvent, callback);
 
-			this.cleanup[id] = () => this.elem.removeEventListener(targetEvent, callback);
+			this.addCleanup(id, () => this.elem.removeEventListener(targetEvent, callback));
 
 			return true;
 		}
@@ -145,7 +187,7 @@ class DomElem extends EventTarget {
 
 			this.elem.addEventListener(targetEvent, _callback);
 
-			this.cleanup[id] = () => this.elem.removeEventListener(targetEvent, _callback);
+			this.addCleanup(id, () => this.elem.removeEventListener(targetEvent, _callback));
 
 			return true;
 		}
@@ -164,7 +206,7 @@ class DomElem extends EventTarget {
 
 			this.addEventListener(targetEvent, callback);
 
-			this.cleanup[id] = () => this.removeEventListener(targetEvent, callback);
+			this.addCleanup(id, () => this.removeEventListener(targetEvent, callback));
 
 			return true;
 		}
@@ -172,7 +214,7 @@ class DomElem extends EventTarget {
 		if (this.__registeredEvents.has(targetEvent)) {
 			this.addEventListener(targetEvent, callback);
 
-			this.cleanup[id] = () => this.removeEventListener(targetEvent, callback);
+			this.addCleanup(id, () => this.removeEventListener(targetEvent, callback));
 
 			return true;
 		}
@@ -182,108 +224,22 @@ class DomElem extends EventTarget {
 		this.dispatchEvent(new CustomEvent(eventType, { detail }));
 	}
 
-	setOptions(options) {
-		Object.entries(options).forEach(([name, value]) => (this.options[name] = value));
-
-		return this;
-	}
-
-	setStyle(style) {
-		Object.entries(style).forEach(([key, value]) => (this.elem.style[key] = value));
-
-		return this;
-	}
-
-	setAttributes(attributes) {
-		Object.entries(attributes).forEach(([key, value]) => this.elem.setAttribute(key, value));
-
-		return this;
-	}
-
-	hasClass(...classes) {
-		return classes.flat(Number.POSITIVE_INFINITY).every(className => {
-			const classRegex = className instanceof RegExp ? className : new RegExp(`\\b${className}\\b`, 'g');
-
-			return classRegex.test(this.elem.className);
-		});
-	}
-
-	addClass(...classes) {
-		this.elem.classList.add(...buildClassList(classes));
-
-		return this;
-	}
-
-	removeClass(...classes) {
-		classes.flat(Number.POSITIVE_INFINITY).forEach(className => {
-			const classRegex = className instanceof RegExp ? className : new RegExp(`\\b${className}\\b`, 'g');
-
-			if (classRegex.test(this.elem.className)) {
-				this.elem.className = this.elem.className.replaceAll(classRegex, '');
-			}
-		});
-
-		return this;
-	}
-
-	toString() {
-		return '[object DomElem]';
-	}
-
-	empty() {
-		this.elem.replaceChildren();
-	}
-
-	content(content) {
-		if (typeof content === 'string') this.elem.textContent = content;
-		else {
-			this.empty();
-			this.append(content);
-		}
-	}
-
-	appendTo(parentElem) {
-		if (parentElem?.append) parentElem.append(this.elem);
-	}
-
-	prependTo(parentElem) {
-		if (parentElem.firstChild) parentElem.insertBefore(this.elem, parentElem.firstChild);
-		else parentElem.append(this.elem);
-	}
-
-	append(...children) {
-		[children].flat(Number.POSITIVE_INFINITY).forEach(child => {
-			if (!child) return;
-
-			if (child?.isDomElem) child = child.elem;
-
-			this.elem.append(child);
-		});
-
-		return this;
-	}
-
-	prepend(...children) {
-		[children].flat(Number.POSITIVE_INFINITY).forEach(child => {
-			if (!child) return;
-
-			if (child?.isDomElem) child = child.elem;
-
-			if (this.elem.firstChild) this.elem.insertBefore(child, this.elem.firstChild);
-			else this.elem.append(child);
-		});
-
-		return this;
-	}
-
 	styles(styles) {
+		if (!styles) return;
+
 		processStyles({ styles, theme: context.theme, context: this, scope: `body ${this.tag}.${this.classId}` }).then(
-			css => appendStyles(css),
+			css => {
+				if (!css) return;
+
+				appendStyles(css, this.classId);
+
+				this.addCleanup(this.classId, () => document.getElementById(this.classId)?.remove());
+			},
 		);
 	}
 
 	onHover(callback = () => {}) {
-		this.cleanup.onHover?.();
+		this.cleanup?.onHover?.();
 		callback = callback.bind(this);
 
 		const pointerEnter = event => {
@@ -301,17 +257,17 @@ class DomElem extends EventTarget {
 		this.elem.addEventListener('pointercancel', pointerLeave);
 		this.elem.addEventListener('pointerout', pointerLeave);
 
-		this.cleanup.onHover = () => {
+		this.addCleanup('onHover', () => {
 			this.elem.removeEventListener('pointerenter', pointerEnter);
 			this.elem.removeEventListener('pointerleave', pointerLeave);
 			this.elem.removeEventListener('pointercancel', pointerLeave);
 			this.elem.removeEventListener('pointerout', pointerLeave);
 			this.elem.removeEventListener('pointermove', callback, true);
-		};
+		});
 	}
 
 	onPointerPress(callback = () => {}) {
-		this.cleanup.onPointerPress?.();
+		this.cleanup?.onPointerPress?.();
 		callback = callback.bind(this);
 
 		const cleanupPointerDown = () => {
@@ -330,12 +286,12 @@ class DomElem extends EventTarget {
 
 		this.elem.addEventListener('pointerdown', pointerDown);
 
-		this.cleanup.onPointerPress = () => {
+		this.addCleanup('onPointerPress', () => {
 			this.elem.removeEventListener('pointerdown', pointerDown);
 
 			cleanupPointerDown();
-		};
+		});
 	}
 }
 
-export default DomElem;
+export default Component;

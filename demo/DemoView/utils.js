@@ -12,7 +12,8 @@ export const stringifyValue = value => {
 			if (value === undefined) return 'undefined';
 			if (_value instanceof Set) return '[object Set]';
 			if (Array.isArray(_value)) return '[object Array]';
-			if (_value?.isDomElem) return '[object DomElem]';
+			if (_value?._component) return '[object Component]';
+			if (_value?.elem) return '[object Elem]';
 			if (typeof _value?.toString === 'function') return _value.toString();
 			return _value;
 		},

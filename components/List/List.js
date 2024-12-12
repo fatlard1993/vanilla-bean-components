@@ -1,13 +1,13 @@
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 import { TooltipWrapper } from '../TooltipWrapper';
 
-class List extends DomElem {
+class List extends Component {
 	constructor(options = {}, ...children) {
 		super(
 			{
 				...options,
 				tag: 'ul',
-				styles: (theme, domElem) => `
+				styles: (theme, component) => `
 					margin: 6px 0;
 					padding-left: 32px;
 
@@ -26,7 +26,7 @@ class List extends DomElem {
 						}
 					}
 
-					${options.styles?.(theme, domElem) || ''}
+					${options.styles?.(theme, component) || ''}
 				`,
 			},
 			...children,
@@ -37,7 +37,7 @@ class List extends DomElem {
 		if (key === 'items') {
 			this.content(
 				value.map(item => {
-					const isContent = typeof item === 'string' || item?.isDomElem || Array.isArray(item);
+					const isContent = typeof item === 'string' || item?.elem || Array.isArray(item);
 					const listItem = new TooltipWrapper({ tag: 'li' });
 
 					if (this.options.ListItemComponent) {

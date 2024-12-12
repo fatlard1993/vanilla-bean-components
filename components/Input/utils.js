@@ -1,8 +1,8 @@
 import { styled } from '../../utils';
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 
 export const InputValidationError = styled(
-	DomElem,
+	Component,
 	({ colors }) => `
 		background-color: ${colors.red};
 		padding: 6px;

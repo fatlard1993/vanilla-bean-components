@@ -1,5 +1,5 @@
 import {
-	DomElem,
+	Component,
 	Button,
 	Whiteboard,
 	Popover,
@@ -37,7 +37,7 @@ class Achievement extends Notify {
 	}
 }
 
-class DlcListItem extends DomElem {
+class DlcListItem extends Component {
 	render() {
 		this._buy = new Button({
 			icon: 'cart-shopping',
@@ -91,12 +91,12 @@ class DlcListItem extends DomElem {
 	}
 }
 
-class DlcWhiteboard extends DomElem {
+class DlcWhiteboard extends Component {
 	constructor() {
 		const database = JSON.parse(localStorage.getItem('dlc_whiteboard_db')) || {
 			ink: 3,
-			color: context.domElem.theme.colors.black.toString(),
-			background: context.domElem.theme.colors.white.toString(),
+			color: context.component.theme.colors.black.toString(),
+			background: context.component.theme.colors.white.toString(),
 			lineWidth: 3,
 			maxLineWidth: 6,
 			credits: 10,
@@ -116,7 +116,7 @@ class DlcWhiteboard extends DomElem {
 	}
 
 	render() {
-		this._credits = new DomElem();
+		this._credits = new Component();
 		this._openStore = new Button({
 			textContent: 'Open DLC Store',
 			onPointerPress: () =>
@@ -261,7 +261,7 @@ class DlcWhiteboard extends DomElem {
 				}
 			},
 		});
-		this._inkwell = new DomElem({
+		this._inkwell = new Component({
 			tag: 'progress',
 			styles: () => `
 				transform-origin: 0 100%;
@@ -310,9 +310,9 @@ class DlcWhiteboard extends DomElem {
 			icon: 'paintbrush',
 			style: this.options.subscriber('color', backgroundColor => ({
 				backgroundColor,
-				color: context.domElem.theme.colors.mostReadable(backgroundColor, [
-					context.domElem.theme.colors.white,
-					context.domElem.theme.colors.black,
+				color: context.component.theme.colors.mostReadable(backgroundColor, [
+					context.component.theme.colors.white,
+					context.component.theme.colors.black,
 				]),
 				position: 'absolute',
 				top: '416px',

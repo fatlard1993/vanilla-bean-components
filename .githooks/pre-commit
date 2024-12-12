@@ -3,7 +3,9 @@
 changedFiles=$(echo `git diff --name-only --cached --pretty -r`)
 changedComponents=$(echo $changedFiles | grep -o "components/")
 changedUtils=$(echo $changedFiles | grep -o "utils/")
-changedDomElem=$(echo $changedFiles | grep -Eo "^DomElem/|\sDomElem")
+changedElem=$(echo $changedFiles | grep -Eo "Elem/")
+changedComponent=$(echo $changedFiles | grep -Eo "Component/")
+changedContext=$(echo $changedFiles | grep -Eo "Context/")
 
 echo $changedFiles
 echo $changedComponents
@@ -16,8 +18,16 @@ if [ "$changedUtils" != "" ]; then
 	bun test utils || exit 1
 fi
 
-if [ "$changedDomElem" != "" ]; then
-	bun test DomElem || exit 1
+if [ "$changedElem" != "" ]; then
+	bun test Elem || exit 1
+fi
+
+if [ "$changedComponent" != "" ]; then
+	bun test Component || exit 1
+fi
+
+if [ "$changedContext" != "" ]; then
+	bun test Context || exit 1
 fi
 
 bun run format || exit 1

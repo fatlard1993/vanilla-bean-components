@@ -1,23 +1,23 @@
 import { styled, capitalize } from '../../utils';
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 import { Button } from '../Button';
 
 const Title = styled(
-	DomElem,
+	Component,
 	() => `
 		text-align: center;
 	`,
 );
 
 const Left = styled(
-	DomElem,
+	Component,
 	() => `
 		margin-left: 6px;
 	`,
 );
 
 const Right = styled(
-	DomElem,
+	Component,
 	() => `
 		margin-right: 6px;
 	`,
@@ -25,16 +25,16 @@ const Right = styled(
 
 const VIEWS = ['day', 'week', 'month'];
 
-class Toolbar extends DomElem {
+class Toolbar extends Component {
 	constructor({ calendar, ...options } = {}, ...children) {
 		super(
 			{
 				...options,
-				styles: (theme, domElem) => `
+				styles: (theme, component) => `
 					display: flex;
 					justify-content: space-between;
 
-					${options.styles?.(theme, domElem) || ''}
+					${options.styles?.(theme, component) || ''}
 				`,
 			},
 			...children,

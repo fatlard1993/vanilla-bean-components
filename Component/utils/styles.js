@@ -4,13 +4,13 @@ import plugin_nested from 'postcss-nested';
 import { removeExcessIndentation } from './string';
 
 /**
- * Overlay a DomElem base class with a styles function
- * @param {Class} domElem - The DomElem base class to overlay
+ * Overlay a Component base class with a styles function
+ * @param {Class} component - The Component base class to overlay
  * @param {Function} styles - The styles to embed
- * @return {Class} The overlaid DomElem class
+ * @return {Class} The overlaid Component class
  */
-export const styled = (domElem, styles = () => '', options) => {
-	return class StyledElem extends domElem {
+export const styled = (component, styles = () => '', options) => {
+	return class StyledElem extends component {
 		constructor({ styles: overlayStyles = () => '', ...overlayOptions } = {}, ...children) {
 			super(
 				{

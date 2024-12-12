@@ -16,7 +16,7 @@ export default class Notify extends Popover {
 			state: 'manual',
 			...options,
 			icon,
-			styles: (theme, domElem) => `
+			styles: (theme, component) => `
 				&:before {
 					${theme.fonts.fontAwesomeSolid};
 
@@ -61,7 +61,7 @@ export default class Notify extends Popover {
 					}
 				}
 
-				${options.styles?.(theme, domElem) || ''}
+				${options.styles?.(theme, component) || ''}
 			`,
 		});
 

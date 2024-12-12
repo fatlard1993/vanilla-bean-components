@@ -1,11 +1,11 @@
-import { DomElem, Button, Icon, randInt } from '../..';
+import { Elem, Component, Button, Icon, randInt } from '../..';
 
 import DemoView, { DemoWrapper } from '../DemoView';
 
 // Higher numbers are easier (Suggestion: Easy: 1000 | Medium: 700 | Hard: 500)
 const DIFFICULTY = 700;
 
-class BombGame extends DomElem {
+class BombGame extends Component {
 	constructor() {
 		super({
 			styles: () => `
@@ -17,13 +17,13 @@ class BombGame extends DomElem {
 	}
 
 	render() {
-		this._score = new DomElem();
-		this._time = new DomElem();
+		this._score = new Elem();
+		this._time = new Elem();
 		this._playPause = new Button(
 			{ onPointerPress: () => (this.options.paused = !(this.options.paused ?? true)) },
 			'Play',
 		);
-		this._minefield = new DomElem({
+		this._minefield = new Component({
 			styles: ({ colors }) => `
 				position: relative;
 				flex: 1;

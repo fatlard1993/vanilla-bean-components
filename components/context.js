@@ -1,12 +1,12 @@
-import { context as domElem } from '../DomElem';
+import { context as component } from '../Component';
 
-import { Context } from '../utils';
+import Context from '../Context';
 import theme from '../theme';
 
-domElem.theme = theme;
+component.theme = theme;
 
 const context = new Context({
-	domElem,
+	component,
 });
 
 export default context;

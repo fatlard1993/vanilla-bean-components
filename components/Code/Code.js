@@ -1,11 +1,12 @@
-import { removeExcessIndentation, copyToClipboard } from '../../utils';
-import { DomElem } from '../DomElem';
+import { copyToClipboard } from '../../utils';
+import { Elem } from '../Elem';
+import { Component } from '../Component';
 import { Button } from '../Button';
 import { Notify } from '../Notify';
 
 const defaultOptions = { tag: 'code', language: 'javascript', multiline: 'auto' };
 
-class Code extends DomElem {
+class Code extends Component {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
 	constructor(options = {}, ...children) {
@@ -25,9 +26,9 @@ class Code extends DomElem {
 
 	render() {
 		if (this.options.multiline) {
-			this._code = new DomElem({
+			this._code = new Elem({
 				tag: 'code',
-				textContent: removeExcessIndentation(this.options.code),
+				textContent: this.options.code,
 				appendTo: this.elem,
 			});
 		}
@@ -62,7 +63,7 @@ class Code extends DomElem {
 			this.removeClass(/\blanguage-\S+\b/g);
 			this.addClass(`language-${value}`);
 		} else if (key === 'code') {
-			(this.options.multiline ? this._code : this).options.textContent = removeExcessIndentation(value);
+			(this.options.multiline ? this._code : this).elem.textContent = value;
 		} else super.setOption(key, value);
 	}
 }

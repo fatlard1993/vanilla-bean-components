@@ -5,7 +5,7 @@ class Menu extends List {
 		super(
 			{
 				...options,
-				styles: (theme, domElem) => `
+				styles: (theme, component) => `
 					margin: 0;
 					padding: 0;
 					list-style: none;
@@ -24,7 +24,7 @@ class Menu extends List {
 						}
 					}
 
-					${options.styles?.(theme, domElem) || ''}
+					${options.styles?.(theme, component) || ''}
 				`,
 				items: (options.items || []).map(item => ({
 					onPointerPress: options.onSelect,

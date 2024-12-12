@@ -2,7 +2,8 @@ import { TinyColor, random as randomColor } from '@ctrl/tinycolor';
 import Sketchy from 'moresketchy';
 
 import {
-	DomElem,
+	Elem,
+	Component,
 	Button,
 	Whiteboard,
 	Popover,
@@ -90,7 +91,7 @@ const randomShape = ({
 	return { color, width, position, size, line: [...points, points[0]] };
 };
 
-class ShapeMatchGame extends DomElem {
+class ShapeMatchGame extends Component {
 	constructor() {
 		super({
 			inkLevel: 100,
@@ -106,8 +107,8 @@ class ShapeMatchGame extends DomElem {
 	}
 
 	render() {
-		this._score = new DomElem();
-		this._time = new DomElem();
+		this._score = new Elem();
+		this._time = new Elem();
 		this._playPause = new Button(
 			{ onPointerPress: () => (this.options.paused = !(this.options.paused ?? true)) },
 			'Play',
@@ -116,7 +117,7 @@ class ShapeMatchGame extends DomElem {
 			width: `${CANVAS_SIZE}px`,
 			height: `${CANVAS_SIZE}px`,
 			color: this.options.subscriber('color'),
-			background: context.domElem.theme.colors.white,
+			background: context.component.theme.colors.white,
 			lineWidth: this.options.subscriber('lineWidth'),
 			readOnly: this.options.subscriber('inkLevel', inkLevel => inkLevel <= 0),
 			style: { margin: '12px auto' },
@@ -155,7 +156,7 @@ class ShapeMatchGame extends DomElem {
 				this.newShape();
 			},
 		});
-		this._inkwell = new DomElem({
+		this._inkwell = new Component({
 			tag: 'progress',
 			styles: () => `
 				transform-origin: 0 100%;
@@ -203,9 +204,9 @@ class ShapeMatchGame extends DomElem {
 			icon: 'paintbrush',
 			style: this.options.subscriber('color', backgroundColor => ({
 				backgroundColor,
-				color: context.domElem.theme.colors.mostReadable(backgroundColor, [
-					context.domElem.theme.colors.white,
-					context.domElem.theme.colors.black,
+				color: context.component.theme.colors.mostReadable(backgroundColor, [
+					context.component.theme.colors.white,
+					context.component.theme.colors.black,
 				]),
 				position: 'absolute',
 				top: '416px',
@@ -258,9 +259,9 @@ class ShapeMatchGame extends DomElem {
 
 		this._whiteboard.empty();
 
-		this._whiteboard.options.background = context.domElem.theme.colors.mostReadable(this.shape.color, [
-			context.domElem.theme.colors.white,
-			context.domElem.theme.colors.black,
+		this._whiteboard.options.background = context.component.theme.colors.mostReadable(this.shape.color, [
+			context.component.theme.colors.white,
+			context.component.theme.colors.black,
 		]);
 
 		this._whiteboard.options.readOnly = true;

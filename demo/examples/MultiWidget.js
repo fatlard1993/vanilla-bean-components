@@ -1,4 +1,4 @@
-import { DomElem, Button, Select } from '../..';
+import { Component, Button, Select } from '../..';
 
 import DemoView, { DemoWrapper } from '../DemoView';
 import context from '../../components/context';
@@ -7,7 +7,7 @@ import { Counter } from './Counter';
 import { Calculator } from './Calculator';
 import { Stopwatch } from './Stopwatch';
 
-class MultiWidget extends DomElem {
+class MultiWidget extends Component {
 	render() {
 		super.render();
 
@@ -16,11 +16,11 @@ class MultiWidget extends DomElem {
 			value: '',
 			options: [{ disabled: true, label: 'Add Widget', value: '' }, 'Counter', 'Calculator', 'Stopwatch'],
 			onChange: ({ value }) => {
-				const widget = new DomElem(
+				const widget = new Component(
 					{
 						style: {
 							position: 'relative',
-							backgroundColor: context.domElem.theme.colors.white.setAlpha(0.06),
+							backgroundColor: context.component.theme.colors.white.setAlpha(0.06),
 							margin: '12px',
 							padding: '6px',
 							minHeight: '38px',

@@ -1,7 +1,7 @@
 import { Icon } from '../Icon';
 import { Tooltip } from '../Tooltip';
 
-/** A DomElem with support for a tooltip */
+/** A Component with support for a tooltip */
 class TooltipWrapper extends Icon {
 	/**
 	 * @param {Object} options - The options for initializing the component
@@ -11,7 +11,7 @@ class TooltipWrapper extends Icon {
 		super(
 			{
 				...options,
-				styles: (theme, domElem) => `
+				styles: (theme, component) => `
 				${
 					options.tooltip
 						? `
@@ -30,7 +30,7 @@ class TooltipWrapper extends Icon {
 						: ''
 				}
 
-				${options.styles?.(theme, domElem) || ''}
+				${options.styles?.(theme, component) || ''}
 			`,
 			},
 			...children,

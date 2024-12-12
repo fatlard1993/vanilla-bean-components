@@ -13,7 +13,7 @@ class Tooltip extends Popover {
 				...defaultOptions,
 				...options,
 				autoOpen: false,
-				styles: (theme, domElem) => `
+				styles: (theme, component) => `
 					display: none;
 					position: absolute;
 					padding: 3px;
@@ -96,7 +96,7 @@ class Tooltip extends Popover {
 						}
 					}
 
-					${options.styles?.(theme, domElem) || ''}
+					${options.styles?.(theme, component) || ''}
 				`,
 			},
 			...children,

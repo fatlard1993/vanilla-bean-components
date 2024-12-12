@@ -1,12 +1,12 @@
 /* eslint-disable spellcheck/spell-checker */
 import { styled } from '../../utils';
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 import { getDaysInMonth, toNth } from './utils';
 import CalendarEvent from './CalendarEvent';
 import Toolbar from './Toolbar';
 
 const CalendarWrapper = styled(
-	DomElem,
+	Component,
 	() => `
 		position: relative;
 		overflow: auto;
@@ -16,7 +16,7 @@ const CalendarWrapper = styled(
 );
 
 const MonthCalendar = styled(
-	DomElem,
+	Component,
 	() => `
 		width: 100%;
 		height: 100%;
@@ -31,7 +31,7 @@ const MonthCalendar = styled(
 );
 
 const MonthDayCell = styled(
-	DomElem,
+	Component,
 	({ colors }) => `
 		position: relative;
 		border-collapse: collapse;
@@ -67,7 +67,7 @@ const MonthDayCell = styled(
 );
 
 const WeekDayCell = styled(
-	DomElem,
+	Component,
 	({ colors }) => `
 		cursor: pointer;
 		background-color: ${colors.lighter(colors.gray)};
@@ -92,7 +92,7 @@ const WeekDayCell = styled(
 );
 
 const DayNowIndicator = styled(
-	DomElem,
+	Component,
 	({ colors }) => `
 		position: absolute;
 		width: 105%;
@@ -119,16 +119,16 @@ export const MONTHS = [
 	'December',
 ];
 
-class Calendar extends DomElem {
+class Calendar extends Component {
 	constructor(options = {}, ...children) {
 		super(
 			{
 				view: 'month',
 				...options,
 				events: (options.events || []).map(eventItem => new CalendarEvent(eventItem)),
-				styles: (theme, domElem) => `
+				styles: (theme, component) => `
 					user-select: none;
-					height: ${domElem.options.height || '420px'};
+					height: ${component.options.height || '420px'};
 					display: flex;
 					flex-direction: column;
 					gap: 6px;
@@ -185,7 +185,7 @@ class Calendar extends DomElem {
 						}
 					}
 
-					${options.styles?.(theme, domElem) || ''}
+					${options.styles?.(theme, component) || ''}
 				`,
 			},
 			...children,
@@ -223,21 +223,21 @@ class Calendar extends DomElem {
 			this.options.day,
 		)}, ${this.options.year}`;
 
-		const eventContainer = new DomElem({ addClass: 'event-container', appendTo: this.wrapper });
+		const eventContainer = new Component({ addClass: 'event-container', appendTo: this.wrapper });
 		const events = this.eventsAt(`${this.options.year}/${this.options.month + 1}/${this.options.day}`);
 		const minGap = 30;
 		const gapsPerHour = Math.ceil(60 / minGap);
 
 		for (let x = 0; x < 24; ++x) {
 			for (let y = 0; y < gapsPerHour; ++y) {
-				const minutesBlock = new DomElem({
+				const minutesBlock = new Component({
 					addClass: 'time-block',
 					appendTo: this.wrapper,
 					onPointerPress: event => {
 						this.emit('selectTime', event);
 					},
 				});
-				const timeSpan = new DomElem({ tag: 'span', addClass: 'time', appendTo: minutesBlock });
+				const timeSpan = new Component({ tag: 'span', addClass: 'time', appendTo: minutesBlock });
 
 				const mins = y * minGap;
 				let h = x;
@@ -333,7 +333,7 @@ class Calendar extends DomElem {
 				appendTo: this.wrapper,
 			});
 
-			new DomElem({
+			new Component({
 				textContent: `${DAYS[w]}, ${MONTHS[m]} ${d}${toNth(d)}`,
 				addClass: 'day-title',
 				appendTo: weekdayCell,
@@ -401,18 +401,18 @@ class Calendar extends DomElem {
 		const isCurrentMonth = now.getMonth() === this.options.month && now.getFullYear() === this.options.year;
 		const currentDay = now.getDate();
 		const table = new MonthCalendar({ tag: 'table', appendTo: this.wrapper });
-		const titleRow = new DomElem({ tag: 'tr', addClass: 'title', appendTo: table });
+		const titleRow = new Component({ tag: 'tr', addClass: 'title', appendTo: table });
 		let dayX = -month.firstDay;
 
-		for (let day = 0; day < 7; ++day) new DomElem({ tag: 'td', textContent: DAYS[day], appendTo: titleRow });
+		for (let day = 0; day < 7; ++day) new Component({ tag: 'td', textContent: DAYS[day], appendTo: titleRow });
 
 		for (let row = 0; row < 6; ++row) {
-			const tr = new DomElem({ tag: 'tr', appendTo: table });
+			const tr = new Component({ tag: 'tr', appendTo: table });
 
 			for (let col = 0; col < 7; ++col) {
 				const date = new Date(this.options.year, this.options.month, ++dayX);
 				const fullDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
-				const eventContainer = new DomElem({ addClass: 'event-container' });
+				const eventContainer = new Component({ addClass: 'event-container' });
 				const td = new MonthDayCell({
 					tag: 'td',
 					addClass: isCurrentMonth && currentDay === dayX ? 'today' : undefined,
@@ -422,7 +422,7 @@ class Calendar extends DomElem {
 						this.emit('selectDay', { target: event.target, fullDate });
 					},
 					append: [
-						new DomElem({
+						new Component({
 							tag: 'span',
 							textContent: date.getDate(),
 							addClass: 'day-title',
@@ -661,27 +661,6 @@ class Calendar extends DomElem {
 
 			this.render();
 		}
-
-		return this;
-	}
-
-	on(event, callback) {
-		this.hooks[event] = this.hooks[event] || [];
-		this.hooks[event].push(callback);
-
-		return this;
-	}
-
-	emit(event, extra) {
-		const events = this.hooks?.[event];
-
-		if (!events) {
-			return this;
-		}
-
-		events.forEach(event => {
-			event.call(this, extra);
-		});
 
 		return this;
 	}

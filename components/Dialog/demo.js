@@ -1,5 +1,5 @@
 import DemoView, { DemoWrapper } from '../../demo/DemoView';
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 import { Button } from '../Button';
 import { Dialog } from '.';
 
@@ -11,7 +11,7 @@ export default class Demo extends DemoView {
 			header: 'header',
 			size: 'small',
 			body: [
-				new DomElem({
+				new Component({
 					style: { color: 'green' },
 					textContent: 'body',
 				}),

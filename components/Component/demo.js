@@ -1,13 +1,13 @@
 import DemoView, { DemoWrapper } from '../../demo/DemoView';
-import { DomElem } from '.';
+import { Component } from '.';
 
 export default class Demo extends DemoView {
 	render() {
 		this.demoWrapper = new DemoWrapper({ appendTo: this });
 
-		this.component = new DomElem({
+		this.component = new Component({
 			tag: 'p',
-			textContent: 'A general purpose base element building block',
+			textContent: 'A general purpose component building block',
 			appendTo: this.demoWrapper,
 		});
 

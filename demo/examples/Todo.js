@@ -1,18 +1,18 @@
-import { DomElem, List, Input, Button, Popover, Label } from '../..';
+import { Component, List, Input, Button, Popover, Label } from '../..';
 
 import DemoView, { DemoWrapper } from '../DemoView';
 
-class TodoListItem extends DomElem {
+class TodoListItem extends Component {
 	constructor(options = {}, ...children) {
 		super(
 			{
 				...options,
-				styles: (theme, domElem) => `
+				styles: (theme, component) => `
 					label {
 						${options.checked ? 'text-decoration: line-through;' : ''}
 					}
 
-					${options.styles?.(theme, domElem) || ''}
+					${options.styles?.(theme, component) || ''}
 				`,
 			},
 			...children,
@@ -70,7 +70,7 @@ class TodoListItem extends DomElem {
 	}
 }
 
-class Todo extends DomElem {
+class Todo extends Component {
 	constructor(options = {}) {
 		super({ items: JSON.parse(localStorage.getItem('todo_items') || '[]'), ...options });
 	}
@@ -93,7 +93,7 @@ class Todo extends DomElem {
 		});
 
 		this.content([
-			new DomElem(
+			new Component(
 				{ tag: 'fieldset', style: { border: 'none', padding: 0, margin: 0, position: 'relative' } },
 				this._input,
 				this._add,

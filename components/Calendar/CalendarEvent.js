@@ -1,9 +1,10 @@
 import { styled } from '../../utils';
-import { DomElem } from '../DomElem';
+import { Elem } from '../Elem';
+import { Component } from '../Component';
 import { formatDuration, formatTime } from './utils';
 
 const StyledEvent = styled(
-	DomElem,
+	Component,
 	({ colors }) => `
 		cursor: pointer;
 		color: ${colors.black};
@@ -47,11 +48,11 @@ export default class CalendarEvent {
 			className: 'event',
 			style: { backgroundColor: this.color },
 			append: [
-				new DomElem({
+				new Elem({
 					className: 'time',
 					textContent: `${formattedTime}${this.duration ? formatDuration(this.duration, ', ') : ''}`,
 				}),
-				new DomElem({ className: 'label', textContent: this.label }),
+				new Elem({ className: 'label', textContent: this.label }),
 			],
 			appendTo: container,
 			onPointerPress: ({ target }) => {

@@ -1,4 +1,4 @@
-import { DomElem, Button, Link, Input } from '../components';
+import { Component, Button, Link, Input } from '../components';
 
 import { debounce, styled } from '../utils';
 
@@ -15,7 +15,7 @@ const MenuLink = styled(
 );
 
 const LinkHeading = styled(
-	DomElem,
+	Component,
 	() => `
 		text-align: center;
 		border-bottom: 1px solid;
@@ -29,7 +29,7 @@ const LinkHeading = styled(
 );
 
 const LinkContainer = styled(
-	DomElem,
+	Component,
 	() => `
 		display: flex;
 		flex-wrap: wrap;
@@ -38,12 +38,12 @@ const LinkContainer = styled(
 	`,
 );
 
-export default class DemoMenu extends DomElem {
+export default class DemoMenu extends Component {
 	constructor(options = {}) {
 		super({
 			collapsed: document.body.clientWidth < 780,
 			...options,
-			styles: (theme, domElem) => `
+			styles: (theme, component) => `
 				display: flex;
 				flex-wrap: wrap;
 				padding: 12px 24px;
@@ -58,7 +58,7 @@ export default class DemoMenu extends DomElem {
 					}
 				}
 
-				${options.styles?.(theme, domElem) || ''}
+				${options.styles?.(theme, component) || ''}
 			`,
 		});
 	}

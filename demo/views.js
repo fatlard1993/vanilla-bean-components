@@ -2,8 +2,9 @@ import ButtonDemo from '../components/Button/demo.js';
 import CalendarDemo from '../components/Calendar/demo.js';
 import CodeDemo from '../components/Code/demo.js';
 import ColorPickerDemo from '../components/ColorPicker/demo.js';
+import ComponentDemo from '../components/Component/demo.js';
 import DialogDemo from '../components/Dialog/demo.js';
-import DomElemDemo from '../components/DomElem/demo.js';
+import ElemDemo from '../components/Elem/demo.js';
 import FormDemo from '../components/Form/demo.js';
 import IconDemo from '../components/Icon/demo.js';
 import InputDemo from '../components/Input/demo.js';
@@ -41,8 +42,9 @@ export default {
 	['/Calendar']: CalendarDemo,
 	['/Code']: CodeDemo,
 	['/ColorPicker']: ColorPickerDemo,
+	['/Component']: ComponentDemo,
 	['/Dialog']: DialogDemo,
-	['/DomElem']: DomElemDemo,
+	['/Elem']: ElemDemo,
 	['/Form']: FormDemo,
 	['/Icon']: IconDemo,
 	['/Input']: InputDemo,

@@ -1,8 +1,8 @@
 /* eslint-disable spellcheck/spell-checker */
-import { DomElem, styled } from '../..';
+import { Component, styled } from '../..';
 
 export const DemoWrapper = styled(
-	DomElem,
+	Component,
 	({ colors }) => `
 		position: relative;
 		margin: 3% 6%;

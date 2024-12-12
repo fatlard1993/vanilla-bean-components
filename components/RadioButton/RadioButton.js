@@ -1,8 +1,8 @@
 import { styled } from '../../utils';
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 
 const RadioButtonLabel = styled(
-	DomElem,
+	Component,
 	({ colors }) => `
 		line-height: 1.1;
 		display: grid;
@@ -22,7 +22,7 @@ const RadioButtonLabel = styled(
 );
 
 const RadioButtonInput = styled(
-	DomElem,
+	Component,
 	({ colors }) => `
 		/* Remove most all native input styles */
 		appearance: none;
@@ -56,7 +56,7 @@ const RadioButtonInput = styled(
 	`,
 );
 
-class RadioButton extends DomElem {
+class RadioButton extends Component {
 	setOption(key, value) {
 		if (key === 'options') {
 			this.empty();

@@ -1,15 +1,15 @@
 import { styled, tactileResponse } from '../../utils';
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 import Key from './Key';
 
 const KeyRow = styled(
-	DomElem,
+	Component,
 	() => `
 		display: flex;
 	`,
 );
 
-class Keyboard extends DomElem {
+class Keyboard extends Component {
 	constructor(options = {}, ...children) {
 		super(
 			{
@@ -91,7 +91,7 @@ class Keyboard extends DomElem {
 							event,
 							key: keyDefinition?.key || key,
 							keyDefinition,
-							target: event.target?._domElem,
+							target: event.target?._component,
 						});
 					},
 					onPointerUp: event =>
@@ -99,14 +99,14 @@ class Keyboard extends DomElem {
 							event,
 							key: keyDefinition?.key || key,
 							keyDefinition,
-							target: event.target?._domElem,
+							target: event.target?._component,
 						}),
 					onPointerPress: event =>
 						this.emit('keyPress', {
 							event,
 							key: keyDefinition?.key || key,
 							keyDefinition,
-							target: event.target?._domElem,
+							target: event.target?._component,
 						}),
 				});
 			});

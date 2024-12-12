@@ -1,4 +1,4 @@
-import { DomElem } from '../DomElem';
+import { Elem } from '../Elem';
 import { Input } from '../Input';
 
 const defaultOptions = {
@@ -22,7 +22,7 @@ class Select extends Input {
 			this.append(
 				value.map(
 					option =>
-						new DomElem({
+						new Elem({
 							tag: 'option',
 							...(typeof option === 'object' ? option : { label: option, value: option }),
 						}),

@@ -1,6 +1,6 @@
 # Getting Started With vanilla-bean-components
 
-It will help to have a decent understanding of [DomElem](../DomElem/README.md) before starting this. Being that this is primarily a development pattern, I'll simply recommend what I currently do. Feel free to stray from the path wherever makes sense for your use-case.
+It will help to have a decent understanding of the [Elem](../Elem/README.md) and [Component](../Component/README.md) classes before starting this. Being that this is primarily a development pattern, I'll simply recommend what I currently do. Feel free to stray from the path wherever makes sense for your use-case.
 
 ## HTML
 

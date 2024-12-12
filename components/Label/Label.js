@@ -1,10 +1,10 @@
 /* eslint-disable spellcheck/spell-checker */
 import { styled } from '../../utils';
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 import { TooltipWrapper } from '../TooltipWrapper';
 
 const LabelText = styled(
-	DomElem,
+	Component,
 	theme => `
 		display: block;
 		margin: 12px 0;
@@ -28,7 +28,7 @@ class Label extends TooltipWrapper {
 				for: children[0],
 				...defaultOptions,
 				...options,
-				styles: (theme, domElem) => `
+				styles: (theme, component) => `
 					position: relative;
 					display: inline-block;
 					font-size: 1em;
@@ -122,7 +122,7 @@ class Label extends TooltipWrapper {
 					}
 
 
-					${options.styles?.(theme, domElem) || ''}
+					${options.styles?.(theme, component) || ''}
 				`,
 			},
 			...children,
@@ -160,7 +160,7 @@ class Label extends TooltipWrapper {
 		} else if (key === 'for') {
 			let forId = typeof value === 'string' ? value : value?.id || value?.elem?.id;
 
-			if (!forId && value?.isDomElem) {
+			if (!forId && value?._component) {
 				forId = value.elem.id = value.classId;
 			}
 

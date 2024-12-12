@@ -1,5 +1,5 @@
 import DemoView, { DemoWrapper } from '../../demo/DemoView';
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 import { Router } from '.';
 
 export default class Demo extends DemoView {
@@ -8,7 +8,7 @@ export default class Demo extends DemoView {
 
 		this.component = new Router({ views: {} });
 
-		new DomElem({
+		new Component({
 			textContent: 'A basic hash based view router',
 			appendTo: this.demoWrapper,
 		});

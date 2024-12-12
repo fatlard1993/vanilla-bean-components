@@ -1,9 +1,9 @@
 import { styled } from '../../utils';
-import { DomElem } from '../DomElem';
+import { Component } from '../Component';
 import { Button } from '../Button';
 
 const DialogHeader = styled(
-	DomElem,
+	Component,
 	() => `
 		width: 50%;
 		text-align: center;
@@ -14,7 +14,7 @@ const DialogHeader = styled(
 );
 
 const DialogContent = styled(
-	DomElem,
+	Component,
 	({ colors }) => `
 		flex: 1;
 		padding: 6px 6px 6px 21px;
@@ -37,7 +37,7 @@ const DialogContent = styled(
 );
 
 const DialogFooter = styled(
-	DomElem,
+	Component,
 	({ colors }) => `
 		height: 40px;
 		border-top: 2px solid ${colors.lighter(colors.teal)};
@@ -58,7 +58,7 @@ const DialogButton = styled(
 const size_enum = Object.freeze(['small', 'standard', 'large']);
 const defaultOptions = { tag: 'dialog', openOnRender: 16, modal: true, appendTo: document.body };
 
-class Dialog extends DomElem {
+class Dialog extends Component {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 	size_enum = size_enum;
 
