@@ -1,9 +1,30 @@
 import { styled } from '../../utils';
-import { Component } from '../Component';
-import { Input } from '../Input';
 import { Button } from '../Button';
+import { Input } from '../Input';
 
 import Tag from './Tag';
+
+const StyledComponent = styled.Component`
+	margin: 1% auto;
+	border-radius: 3px;
+	box-sizing: border-box;
+	min-height: 1em;
+	padding: 0;
+
+	&:after {
+		content: '';
+		clear: both;
+		display: table;
+	}
+
+	&.readOnly {
+		pointer-events: none;
+		border: none;
+		background: none;
+		width: 100%;
+		margin: 0;
+	}
+`;
 
 const TagListTextInput = styled(
 	Input,
@@ -23,40 +44,11 @@ const TagListIconButton = styled(
 
 const defaultOptions = { readOnly: false };
 
-class TagList extends Component {
+class TagList extends StyledComponent {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
 	constructor(options = {}, ...children) {
-		super(
-			{
-				...options,
-				tag: 'ul',
-				styles: (theme, component) => `
-					margin: 1% auto;
-					border-radius: 3px;
-					box-sizing: border-box;
-					min-height: 1em;
-					padding: 0;
-
-					&:after {
-						content: '';
-						clear: both;
-						display: table;
-					}
-
-					&.readOnly {
-						pointer-events: none;
-						border: none;
-						background: none;
-						width: 100%;
-						margin: 0;
-					}
-
-					${options.styles?.(theme, component) || ''}
-				`,
-			},
-			...children,
-		);
+		super({ ...options, tag: 'ul' }, ...children);
 	}
 
 	render() {

@@ -17,10 +17,21 @@ test('appendStyles', () => {
 });
 
 test('styled', () => {
-	const styles = () => 'display: flex;';
+	const css = 'display: flex;';
 	const options = { test: 'test' };
-	const StyledElem = new (styled(Component, styles, options))();
+	const styledElem = new (styled(Component, () => css, options))();
 
-	expect(StyledElem.options.styles()).toContain(styles());
-	expect(StyledElem.options.test).toStrictEqual(options.test);
+	expect(styledElem.options.test).toStrictEqual(options.test);
+
+	requestAnimationFrame(() => expect(document.getElementsByTagName('style')[1].innerHTML).toContain(css));
+});
+
+test('styled.Component', () => {
+	const css = 'display: flex;';
+	const options = { test: 'test' };
+	const styledElem = new (styled.Component(() => css, options))();
+
+	expect(styledElem.options.test).toStrictEqual(options.test);
+
+	requestAnimationFrame(() => expect(document.getElementsByTagName('style')[2].innerHTML).toContain(css));
 });

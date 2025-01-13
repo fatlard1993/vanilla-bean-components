@@ -10,6 +10,4 @@ components.forEach(file => {
 	result += `export * from './${match[2]}';\n`;
 });
 
-result += "\nexport { default as context } from './context';\n";
-
 await Bun.write('components/index.js', result);

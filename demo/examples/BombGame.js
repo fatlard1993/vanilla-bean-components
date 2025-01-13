@@ -1,18 +1,39 @@
-import { Elem, Component, Button, Icon, randInt } from '../..';
+import { Elem, Component, Button, randInt, styled, Icon } from '../..';
 
 import DemoView, { DemoWrapper } from '../DemoView';
 
 // Higher numbers are easier (Suggestion: Easy: 1000 | Medium: 700 | Hard: 500)
 const DIFFICULTY = 700;
 
+const Bomb = styled(
+	Icon,
+	() => `
+		position: absolute;
+		display: none;
+		justify-content: center;
+		align-items: center;
+
+		&.set {
+			display: flex;
+		}
+
+		&.explode {
+			font-size: 66px !important;
+			color: ${({ colors }) => colors.red};
+			transition: color 300ms;
+			pointer-events: none;
+		}
+	`,
+);
+
 class BombGame extends Component {
 	constructor() {
 		super({
-			styles: () => `
-				height: 100%;
-				display: flex;
-				flex-direction: column;
-			`,
+			style: {
+				height: '100%',
+				display: 'flex',
+				flexDirection: 'column',
+			},
 		});
 	}
 
@@ -24,30 +45,13 @@ class BombGame extends Component {
 			'Play',
 		);
 		this._minefield = new Component({
-			styles: ({ colors }) => `
-				position: relative;
-				flex: 1;
-				background-color: ${colors.black};
-			`,
+			styles: ({ colors }) => ({
+				position: 'relative',
+				flex: 1,
+				backgroundColor: colors.black,
+			}),
 		});
-		this._bomb = new Icon({
-			styles: ({ colors }) => `
-				position: absolute;
-				display: none;
-				justify-content: center;
-				align-items: center;
-
-				&.set {
-					display: flex;
-				}
-
-				&.explode {
-					font-size: 66px !important;
-					color: ${colors.red};
-					transition: color 300ms;
-					pointer-events: none;
-				}
-			`,
+		this._bomb = new Bomb({
 			icon: 'bomb',
 			animation: 'shake',
 			appendTo: this._minefield,

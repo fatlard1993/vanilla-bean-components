@@ -7,13 +7,12 @@ class Router extends Component {
 			{
 				defaultPath: Object.keys(options.views)[0],
 				...options,
-				styles: (theme, component) => `
-					display: flex;
-					flex: 1;
-					overflow: hidden;
-
-					${options.styles?.(theme, component) || ''}
-				`,
+				style: {
+					display: 'flex',
+					flex: 1,
+					overflow: 'hidden',
+					...options.style,
+				},
 			},
 			...children,
 		);

@@ -20,13 +20,12 @@ export default class Whiteboard extends Component {
 			{
 				...defaultOptions,
 				...options,
-				styles: (theme, component) => `
-					cursor: crosshair;
-					touch-action: none;
-					border-radius: 3px;
-
-					${options.styles?.(theme, component) || ''}
-				`,
+				style: {
+					cursor: 'crosshair',
+					touchAction: 'none',
+					borderRadius: '3px',
+					...options.style,
+				},
 			},
 			...children,
 		);

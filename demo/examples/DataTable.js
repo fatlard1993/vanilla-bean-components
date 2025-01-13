@@ -26,14 +26,12 @@ class Loader extends Icon {
 			icon: 'spinner',
 			animation: 'spin-pulse',
 			...options,
-			styles: (theme, component) => `
-				font-size: 66px;
-				display: flex;
-				justify-content: center;
-				color: ${theme.colors.blue};
-
-				${options.styles?.(theme, component) || ''}
-			`,
+			styles: ({ colors }) => ({
+				fontSize: '66px',
+				display: 'flex',
+				justifyContent: 'center',
+				color: colors.blue,
+			}),
 		});
 	}
 }
@@ -57,14 +55,14 @@ export default class Example extends DemoView {
 				const temporaryModalLoader = new Component(
 					{
 						appendTo: table,
-						styles: theme => `
-							position: absolute;
-							top: 0;
-							background: ${theme.colors.black};
-							opacity: 0.8;
-							width: 100%;
-							height: 100%;
-						`,
+						styles: ({ colors }) => ({
+							position: 'absolute',
+							top: 0,
+							background: colors.black,
+							opacity: 0.8,
+							width: '100%',
+							height: '100%',
+						}),
 					},
 					new Loader({ style: { marginTop: 'calc(50% - 33px)' } }),
 				);

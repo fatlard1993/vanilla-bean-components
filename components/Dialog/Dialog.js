@@ -1,20 +1,16 @@
 import { styled } from '../../utils';
-import { Component } from '../Component';
 import { Button } from '../Button';
+import { Component } from '../Component';
 
-const DialogHeader = styled(
-	Component,
-	() => `
-		width: 50%;
-		text-align: center;
-		font-size: 1.2em;
-		line-height: 30px;
-		margin: 0;
-	`,
-);
+const DialogHeader = styled.Component`
+	width: 50%;
+	text-align: center;
+	font-size: 1.2em;
+	line-height: 30px;
+	margin: 0;
+`;
 
-const DialogContent = styled(
-	Component,
+const DialogContent = styled.Component(
 	({ colors }) => `
 		flex: 1;
 		padding: 6px 6px 6px 21px;
@@ -36,16 +32,13 @@ const DialogContent = styled(
 	`,
 );
 
-const DialogFooter = styled(
-	Component,
-	({ colors }) => `
-		height: 40px;
-		border-top: 2px solid ${colors.lighter(colors.teal)};
-		display: flex;
-		flex-direction: row;
-		margin-right: -4px;
-	`,
-);
+const DialogFooter = styled.Component`
+	height: 40px;
+	border-top: 2px solid ${({ colors }) => colors.lighter(colors.teal)};
+	display: flex;
+	flex-direction: row;
+	margin-right: -4px;
+`;
 
 const DialogButton = styled(
 	Button,

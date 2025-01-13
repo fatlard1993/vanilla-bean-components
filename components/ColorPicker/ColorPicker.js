@@ -2,14 +2,36 @@
 import { TinyColor, random as randomColor } from '@ctrl/tinycolor';
 
 import { debounce, throttle, convertRange, styled } from '../../utils';
-import { Component } from '../Component';
+import theme from '../../theme';
 import { Input } from '../Input';
 import { Button } from '../Button';
-
 import { saturation, hue } from './svg';
 
-const PickerArea = styled(
-	Component,
+const StyledInput = styled(
+	Input,
+	() => `
+		background-color: ${theme.colors.light(theme.colors.gray)};
+		padding: 18px 18px 12px;
+		border-radius: 5px;
+		margin-bottom: 6px;
+		text-indent: 0;
+		border: none;
+
+		--aug-tl1: 32px;
+		--aug-tr-extend2: 42%;
+		--aug-br-extend1: 0px;
+		--aug-border-bg: linear-gradient(-66deg, ${theme.colors
+			.lighter(theme.colors.teal)
+			.setAlpha(0.5)}, ${theme.colors.blue.setAlpha(0.5)});
+
+		input {
+			margin: 18px auto 9px;
+			width: 90%;
+		}
+	`,
+);
+
+const PickerArea = styled.Component(
 	({ colors }) => `
 		position: relative;
 		width: 150px;
@@ -23,8 +45,7 @@ const PickerArea = styled(
 	`,
 );
 
-const PickerIndicator = styled(
-	Component,
+const PickerIndicator = styled.Component(
 	({ colors }) => `
 		position: absolute;
 		top: -6px;
@@ -39,8 +60,7 @@ const PickerIndicator = styled(
 	`,
 );
 
-const HueArea = styled(
-	Component,
+const HueArea = styled.Component(
 	({ colors }) => `
 		position: relative;
 		width: 150px;
@@ -54,8 +74,7 @@ const HueArea = styled(
 	`,
 );
 
-const HueIndicator = styled(
-	Component,
+const HueIndicator = styled.Component(
 	({ colors }) => `
 		position: absolute;
 		width: 10px;
@@ -72,14 +91,48 @@ const HueIndicator = styled(
 
 const ColorSwatch = styled(
 	Button,
-	() => `
+	({ colors }) => `
 		margin-top: 3px;
+
+		&.rainbow {
+			animation: rainbow 2s linear;
+			animation-iteration-count: infinite;
+			color: ${colors.black};
+
+			@keyframes rainbow {
+				100%,0%{
+					background-color: ${colors.light(colors.red)};
+				}
+				12%{
+					background-color: ${colors.light(colors.orange)};
+				}
+				25%{
+					background-color: ${colors.light(colors.yellow)};
+				}
+				37%{
+					background-color: ${colors.light(colors.green)};
+				}
+				50%{
+					background-color: ${colors.light(colors.teal)};
+				}
+				62%{
+					background-color: ${colors.light(colors.blue)};
+				}
+				75%{
+					background-color: ${colors.light(colors.purple)};
+				}
+				87%{
+					background-color: ${colors.light(colors.pink)};
+				}
+			}
+		}
 	`,
+	{ icon: 'fill-drip' },
 );
 
 const defaultOptions = { tag: 'div', value: '#666', onChange: () => {} };
 
-class ColorPicker extends Input {
+class ColorPicker extends StyledInput {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
 	constructor(options = {}, ...children) {
@@ -87,34 +140,7 @@ class ColorPicker extends Input {
 
 		if (options.value === 'random') options.value = randomColor().toHslString();
 
-		super(
-			{
-				...options,
-				styles: (theme, component) => `
-					background-color: ${theme.colors.light(theme.colors.gray)};
-					padding: 18px 18px 12px;
-					border-radius: 5px;
-					margin-bottom: 6px;
-					text-indent: 0;
-					border: none;
-
-					--aug-tl1: 32px;
-					--aug-tr-extend2: 42%;
-					--aug-br-extend1: 0px;
-					--aug-border-bg: linear-gradient(-66deg, ${theme.colors
-						.lighter(theme.colors.teal)
-						.setAlpha(0.5)}, ${theme.colors.blue.setAlpha(0.5)});
-
-					input {
-						margin: 18px auto 9px;
-						width: 90%;
-					}
-
-					${options.styles?.(theme, component) || ''}
-				`,
-			},
-			...children,
-		);
+		super(options, children);
 
 		this.pointers = {};
 
@@ -152,46 +178,16 @@ class ColorPicker extends Input {
 			this.options.swatches.forEach(color => {
 				new ColorSwatch({
 					appendTo: this.elem,
-					icon: 'fill-drip',
-					styles: ({ colors }) =>
-						color === 'random'
-							? `
-								animation: rainbow 2s linear;
-								animation-iteration-count: infinite;
-								color: ${colors.black};
 
-								@keyframes rainbow {
-									100%,0%{
-										background-color: ${colors.light(colors.red)};
-									}
-									12%{
-										background-color: ${colors.light(colors.orange)};
-									}
-									25%{
-										background-color: ${colors.light(colors.yellow)};
-									}
-									37%{
-										background-color: ${colors.light(colors.green)};
-									}
-									50%{
-										background-color: ${colors.light(colors.teal)};
-									}
-									62%{
-										background-color: ${colors.light(colors.blue)};
-									}
-									75%{
-										background-color: ${colors.light(colors.purple)};
-									}
-									87%{
-										background-color: ${colors.light(colors.pink)};
-									}
-								}
-							`
-							: `
-								background: ${color};
-								color: ${colors.mostReadable(color, [colors.white, colors.black])};
-							`,
 					onPointerPress: () => this.change(color),
+					...(color === 'random'
+						? { addClass: ['rainbow'] }
+						: {
+								style: {
+									backgroundColor: color,
+									color: theme.colors.mostReadable(color, [theme.colors.white, theme.colors.black]),
+								},
+							}),
 				});
 			});
 		}

@@ -1,7 +1,7 @@
 import { Component } from '../../Component';
 
 /** @type {Component} */
-class VanillaBeanComponent extends Component {
+export default class VanillaBeanComponent extends Component {
 	constructor(options = {}, ...children) {
 		super(options, ...children);
 
@@ -16,5 +16,3 @@ class VanillaBeanComponent extends Component {
 		return [targetClass, ...this.ancestry(Object.getPrototypeOf(targetClass))];
 	}
 }
-
-export default VanillaBeanComponent;

@@ -1,8 +1,58 @@
+import { styled } from '../../utils';
 import { Popover } from '../Popover';
 
 const type_enum = Object.freeze(['info', 'success', 'warning', 'error']);
 
-export default class Notify extends Popover {
+const StyledPopover = styled(
+	Popover,
+	({ colors, fonts }) => `
+		&:before {
+			${fonts.fontAwesomeSolid};
+
+			position: relative;
+			pointer-events: none;
+			padding: 0 9px 0 0;
+		}
+
+		&.info {
+			background-color: ${colors.blackish(colors.blue)};
+			border-color: ${colors.light(colors.blue)};
+
+			&:before {
+				color: ${colors.light(colors.blue)};
+			}
+		}
+
+		&.success {
+			background-color: ${colors.blackish(colors.green)};
+			border-color: ${colors.light(colors.green)};
+
+			&:before {
+				color: ${colors.light(colors.green)};
+			}
+		}
+
+		&.warning {
+			background-color: ${colors.blackish(colors.yellow)};
+			border-color: ${colors.light(colors.yellow)};
+
+			&:before {
+				color: ${colors.light(colors.yellow)};
+			}
+		}
+
+		&.error {
+			background-color: ${colors.blackish(colors.red)};
+			border-color: ${colors.light(colors.red)};
+
+			&:before {
+				color: ${colors.light(colors.red)};
+			}
+		}
+	`,
+);
+
+export default class Notify extends StyledPopover {
 	type_enum = type_enum;
 
 	constructor(options) {
@@ -15,58 +65,9 @@ export default class Notify extends Popover {
 			onPointerPress: () => this.elem.remove(),
 			state: 'manual',
 			...options,
+			addClass: [type, ...(options.addClass || [])],
 			icon,
-			styles: (theme, component) => `
-				&:before {
-					${theme.fonts.fontAwesomeSolid};
-
-					position: relative;
-					pointer-events: none;
-					padding: 0 9px 0 0;
-				}
-
-				&.info {
-					background-color: ${theme.colors.blackish(theme.colors.blue)};
-					border-color: ${theme.colors.light(theme.colors.blue)};
-
-					&:before {
-						color: ${theme.colors.light(theme.colors.blue)};
-					}
-				}
-
-				&.success {
-					background-color: ${theme.colors.blackish(theme.colors.green)};
-					border-color: ${theme.colors.light(theme.colors.green)};
-
-					&:before {
-						color: ${theme.colors.light(theme.colors.green)};
-					}
-				}
-
-				&.warning {
-					background-color: ${theme.colors.blackish(theme.colors.yellow)};
-					border-color: ${theme.colors.light(theme.colors.yellow)};
-
-					&:before {
-						color: ${theme.colors.light(theme.colors.yellow)};
-					}
-				}
-
-				&.error {
-					background-color: ${theme.colors.blackish(theme.colors.red)};
-					border-color: ${theme.colors.light(theme.colors.red)};
-
-					&:before {
-						color: ${theme.colors.light(theme.colors.red)};
-					}
-				}
-
-				${options.styles?.(theme, component) || ''}
-			`,
 		});
-
-		this.addClass(type);
-		// if (icon) this.addClass(`fa-${icon}`);
 
 		if (timeout) this.timeout = setTimeout(() => this.elem.remove(), timeout);
 	}

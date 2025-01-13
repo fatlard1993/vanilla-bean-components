@@ -24,5 +24,3 @@ export * from './TagList';
 export * from './Tooltip';
 export * from './TooltipWrapper';
 export * from './Whiteboard';
-
-export { default as context } from './context';

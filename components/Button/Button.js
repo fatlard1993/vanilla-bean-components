@@ -2,7 +2,7 @@ import { TooltipWrapper } from '../TooltipWrapper';
 
 const defaultOptions = { tag: 'button' };
 
-class Button extends TooltipWrapper {
+export default class Button extends TooltipWrapper {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
 	constructor(options = {}, ...children) {
@@ -20,5 +20,3 @@ class Button extends TooltipWrapper {
 		);
 	}
 }
-
-export default Button;

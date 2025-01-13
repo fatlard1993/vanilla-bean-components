@@ -37,7 +37,7 @@ const defaultOptions = {
 
 const dataTypeToInputType = { number: 'number', boolean: 'checkbox', string: 'text' };
 
-class Input extends Component {
+export default class Input extends Component {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 	type_enum = type_enum;
 
@@ -113,5 +113,3 @@ class Input extends Component {
 		return errors;
 	}
 }
-
-export default Input;

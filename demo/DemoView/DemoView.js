@@ -1,10 +1,11 @@
 /* eslint-disable spellcheck/spell-checker */
-import { Elem, Label, Link, View, styled, GET } from '../..';
+import { Elem, Link, View, styled, GET, Label } from '../..';
 import DemoOptions from './DemoOptions';
 
 const StyledLabel = styled(
 	Label,
 	() => `
+		display: block;
 		width: auto;
 		margin: 0 3% 9px;
 	`,
@@ -15,25 +16,21 @@ export class DemoView extends View {
 	constructor(options = {}) {
 		super({
 			...options,
-			styles: (theme, component) => `
-				display: flex;
-				flex-direction: column;
-				overflow-y: auto;
-				overflow-x: hidden;
-
-				li {
-					white-space: pre;
-				}
-
-				${options.styles?.(theme, component) || ''}
-			`,
+			style: {
+				display: 'flex',
+				flexDirection: 'column',
+				overflowY: 'auto',
+				overflowX: 'hidden',
+				...options.style,
+			},
 		});
 	}
 
 	async render() {
 		if (this.component) {
 			const componentAncestors = (this.component.ancestry?.() || []).filter(
-				({ constructor: { name } }) => name !== this.component.constructor.name && !name.startsWith('VanillaBean'),
+				({ constructor: { name } }) =>
+					name !== this.component.constructor.name && !name.startsWith('VanillaBean') && name !== 'StyledComponent',
 			);
 
 			const readme = await GET(

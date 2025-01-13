@@ -2,26 +2,15 @@ import { styled, capitalize } from '../../utils';
 import { Component } from '../Component';
 import { Button } from '../Button';
 
-const Title = styled(
-	Component,
-	() => `
-		text-align: center;
-	`,
-);
-
-const Left = styled(
-	Component,
-	() => `
-		margin-left: 6px;
-	`,
-);
-
-const Right = styled(
-	Component,
-	() => `
-		margin-right: 6px;
-	`,
-);
+const Title = styled.Component`
+	text-align: center;
+`;
+const Left = styled.Component`
+	margin-left: 6px;
+`;
+const Right = styled.Component`
+	margin-right: 6px;
+`;
 
 const VIEWS = ['day', 'week', 'month'];
 
@@ -30,12 +19,11 @@ class Toolbar extends Component {
 		super(
 			{
 				...options,
-				styles: (theme, component) => `
-					display: flex;
-					justify-content: space-between;
-
-					${options.styles?.(theme, component) || ''}
-				`,
+				style: {
+					display: 'flex',
+					justifyContent: 'space-between',
+					...options.style,
+				},
 			},
 			...children,
 		);

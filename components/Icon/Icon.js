@@ -1,6 +1,6 @@
 import { Component } from '../Component';
 
-class Icon extends Component {
+export default class Icon extends Component {
 	setOption(key, value) {
 		if (key === 'icon' || key === 'animation') {
 			this.removeClass(/\bfa-\S+?\b/g);
@@ -16,5 +16,3 @@ class Icon extends Component {
 		} else super.setOption(key, value);
 	}
 }
-
-export default Icon;

@@ -2,15 +2,12 @@ import { Component, Keyboard, styled } from '../..';
 
 import DemoView, { DemoWrapper } from '../DemoView';
 
-const CalculatorDisplay = styled(
-	Component,
-	({ colors }) => `
-		font-size: 24px;
-		background: ${colors.black};
-		text-align: right;
-		padding: 18px;
-	`,
-);
+const CalculatorDisplay = styled.Component`
+	font-size: 24px;
+	background: ${({ colors }) => colors.black};
+	text-align: right;
+	padding: 18px;
+`;
 
 const StyledKeyboard = styled(
 	Keyboard,
@@ -35,11 +32,12 @@ export class Calculator extends Component {
 	constructor(options = {}) {
 		super({
 			result: 0,
-			styles: () => `
-				max-width: 396px;
-				margin: 0 auto;
-			`,
 			...options,
+			style: {
+				maxWidth: '396px',
+				margin: '0 auto',
+				...options.style,
+			},
 		});
 	}
 

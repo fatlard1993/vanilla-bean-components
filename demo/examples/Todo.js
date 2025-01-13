@@ -1,22 +1,19 @@
-import { Component, List, Input, Button, Popover, Label } from '../..';
+import { Component, List, Input, Button, Popover, Label, styled } from '../..';
 
 import DemoView, { DemoWrapper } from '../DemoView';
 
-class TodoListItem extends Component {
-	constructor(options = {}, ...children) {
-		super(
-			{
-				...options,
-				styles: (theme, component) => `
-					label {
-						${options.checked ? 'text-decoration: line-through;' : ''}
-					}
+const StyledComponent = styled.Component`
+	&.checked label {
+		text-decoration: line-through;
+	}
+`;
 
-					${options.styles?.(theme, component) || ''}
-				`,
-			},
-			...children,
-		);
+class TodoListItem extends StyledComponent {
+	setOption(key, value) {
+		if (key === 'checked') {
+			this[value ? 'addClass' : 'removeClass']('checked');
+		}
+		super.setOption(key, value);
 	}
 
 	render() {

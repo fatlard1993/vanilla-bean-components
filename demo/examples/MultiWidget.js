@@ -1,7 +1,6 @@
-import { Component, Button, Select } from '../..';
+import { Component, Button, Select, theme } from '../..';
 
 import DemoView, { DemoWrapper } from '../DemoView';
-import context from '../../components/context';
 
 import { Counter } from './Counter';
 import { Calculator } from './Calculator';
@@ -20,7 +19,7 @@ class MultiWidget extends Component {
 					{
 						style: {
 							position: 'relative',
-							backgroundColor: context.component.theme.colors.white.setAlpha(0.06),
+							backgroundColor: theme.colors.white.setAlpha(0.06),
 							margin: '12px',
 							padding: '6px',
 							minHeight: '38px',

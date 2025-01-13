@@ -1,43 +1,99 @@
 /* eslint-disable spellcheck/spell-checker */
 import { styled } from '../../utils';
 import { Component } from '../Component';
-import { getDaysInMonth, toNth } from './utils';
+
 import CalendarEvent from './CalendarEvent';
 import Toolbar from './Toolbar';
+import { getDaysInMonth, toNth } from './utils';
 
-const CalendarWrapper = styled(
-	Component,
-	() => `
-		position: relative;
-		overflow: auto;
-		width: 100%;
-		flex: 1;
-	`,
-);
+const StyledComponent = styled.Component(
+	({ colors }) => `
+		user-select: none;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
 
-const MonthCalendar = styled(
-	Component,
-	() => `
-		width: 100%;
-		height: 100%;
+		&.month {
+			tr.title {
+				font-size: 1.3em;
+				height: 1.3em;
+				color: ${colors.black};
+				background-color: ${colors.lightest(colors.gray)};
 
-		td {
-			max-width: 0;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
+				td {
+					text-align: center;
+				}
+			}
+		}
+
+		&.day {
+			div.event-container {
+				position: absolute;
+				height: 100%;
+				width: 90%;
+				top: 0;
+				right: 0;
+				pointer-events: none;
+
+				div.event {
+					position: absolute;
+					pointer-events: all;
+					width: 100%;
+					text-indent: 6px;
+				}
+			}
+
+			div.time-block {
+				height: 3em;
+				cursor: pointer;
+				color: black;
+				background-color: ${colors.light(colors.gray)};
+
+				&:nth-child(odd) {
+					background-color: ${colors.lighter(colors.gray)};
+				}
+
+				&:last-of-type{
+					border-bottom: none;
+				}
+
+				span.time {
+					font-size: 12px;
+					margin: 2px;
+					pointer-events: none;
+				}
+			}
 		}
 	`,
 );
 
-const MonthDayCell = styled(
-	Component,
+const CalendarWrapper = styled.Component`
+	position: relative;
+	overflow: auto;
+	width: 100%;
+	flex: 1;
+`;
+
+const MonthCalendar = styled.Component`
+	width: 100%;
+	height: 100%;
+
+	td {
+		max-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+`;
+
+const MonthDayCell = styled.Component(
 	({ colors }) => `
 		position: relative;
 		border-collapse: collapse;
 		vertical-align: top;
 		background-color: ${colors.lighter(colors.gray)};
 		cursor: pointer;
+		padding: 3px;
 
 		span.day-title {
 			display: block;
@@ -48,8 +104,16 @@ const MonthDayCell = styled(
 			cursor: pointer;
 		}
 
-		&.today {
+		&:hover {
 			background-color: ${colors.blue};
+
+			span.day-title {
+				background-color: ${colors.white.setAlpha(0.3)};
+			}
+		}
+
+		&.today {
+			background-color: ${colors.purple};
 
 			span.day-title {
 				background-color: ${colors.white.setAlpha(0.3)};
@@ -66,8 +130,7 @@ const MonthDayCell = styled(
 	`,
 );
 
-const WeekDayCell = styled(
-	Component,
+const WeekDayCell = styled.Component(
 	({ colors }) => `
 		cursor: pointer;
 		background-color: ${colors.lighter(colors.gray)};
@@ -91,17 +154,14 @@ const WeekDayCell = styled(
 	`,
 );
 
-const DayNowIndicator = styled(
-	Component,
-	({ colors }) => `
-		position: absolute;
-		width: 105%;
-		height: 2px;
-		background-color: ${colors.red};
-		z-index: 34;
-		left: -5em;
-	`,
-);
+const DayNowIndicator = styled.Component`
+	position: absolute;
+	width: 105%;
+	height: 2px;
+	background-color: ${({ colors }) => colors.red};
+	z-index: 34;
+	left: -5em;
+`;
 
 export const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 export const MONTHS = [
@@ -119,77 +179,22 @@ export const MONTHS = [
 	'December',
 ];
 
-class Calendar extends Component {
+class Calendar extends StyledComponent {
 	constructor(options = {}, ...children) {
 		super(
 			{
 				view: 'month',
+				height: '420px',
 				...options,
 				events: (options.events || []).map(eventItem => new CalendarEvent(eventItem)),
-				styles: (theme, component) => `
-					user-select: none;
-					height: ${component.options.height || '420px'};
-					display: flex;
-					flex-direction: column;
-					gap: 6px;
-
-					&.month {
-						tr.title {
-							font-size: 1.3em;
-							height: 1.3em;
-							color: ${theme.colors.black};
-							background-color: ${theme.colors.lightest(theme.colors.gray)};
-
-							td {
-								text-align: center;
-							}
-						}
-					}
-
-					&.day {
-						div.event-container {
-							position: absolute;
-							height: 100%;
-							width: 90%;
-							top: 0;
-							right: 0;
-							pointer-events: none;
-
-							div.event {
-								position: absolute;
-								pointer-events: all;
-								width: 100%;
-								text-indent: 6px;
-							}
-						}
-
-						div.time-block {
-							height: 3em;
-							cursor: pointer;
-							color: black;
-							background-color: ${theme.colors.light(theme.colors.gray)};
-
-							&:nth-child(odd) {
-								background-color: ${theme.colors.lighter(theme.colors.gray)};
-							}
-
-							&:last-of-type{
-								border-bottom: none;
-							}
-
-							span.time {
-								font-size: 12px;
-								margin: 2px;
-								pointer-events: none;
-							}
-						}
-					}
-
-					${options.styles?.(theme, component) || ''}
-				`,
 			},
 			...children,
 		);
+	}
+
+	setOption(key, value) {
+		if (key === 'height') this.elem.style.height = value;
+		else super.setOption(key, value);
 	}
 
 	render() {

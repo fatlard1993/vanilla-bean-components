@@ -9,10 +9,10 @@ import {
 	Popover,
 	ColorPicker,
 	Input,
-	context,
 	randInt,
 	randFromArray,
 	deltaE,
+	theme,
 } from '../..';
 
 import DemoView, { DemoWrapper } from '../DemoView';
@@ -97,12 +97,12 @@ class ShapeMatchGame extends Component {
 			inkLevel: 100,
 			color: '#000',
 			lineWidth: 3,
-			styles: () => `
-				height: 100%;
-				display: flex;
-				flex-direction: column;
-				position: relative;
-			`,
+			style: {
+				height: '100%',
+				display: 'flex',
+				flexDirection: 'column',
+				position: 'relative',
+			},
 		});
 	}
 
@@ -117,7 +117,7 @@ class ShapeMatchGame extends Component {
 			width: `${CANVAS_SIZE}px`,
 			height: `${CANVAS_SIZE}px`,
 			color: this.options.subscriber('color'),
-			background: context.component.theme.colors.white,
+			background: theme.colors.white,
 			lineWidth: this.options.subscriber('lineWidth'),
 			readOnly: this.options.subscriber('inkLevel', inkLevel => inkLevel <= 0),
 			style: { margin: '12px auto' },
@@ -158,16 +158,16 @@ class ShapeMatchGame extends Component {
 		});
 		this._inkwell = new Component({
 			tag: 'progress',
-			styles: () => `
-				transform-origin: 0 100%;
-				transform: rotate(-90deg);
-				position: absolute;
-				top: 400px;
-				left: 0;
-				height: 12px;
-				width: 300px;
-			`,
-			style: this.options.subscriber('color', accentColor => ({ accentColor })),
+			style: this.options.subscriber('color', accentColor => ({
+				accentColor,
+				transformOrigin: '0 100%',
+				transform: 'rotate(-90deg)',
+				position: 'absolute',
+				top: '400px',
+				left: 0,
+				height: '12px',
+				width: '300px',
+			})),
 			max: 100,
 			value: this.options.subscriber('inkLevel'),
 		});
@@ -204,10 +204,7 @@ class ShapeMatchGame extends Component {
 			icon: 'paintbrush',
 			style: this.options.subscriber('color', backgroundColor => ({
 				backgroundColor,
-				color: context.component.theme.colors.mostReadable(backgroundColor, [
-					context.component.theme.colors.white,
-					context.component.theme.colors.black,
-				]),
+				color: theme.colors.mostReadable(backgroundColor, [theme.colors.white, theme.colors.black]),
 				position: 'absolute',
 				top: '416px',
 				left: '-21px',
@@ -259,9 +256,9 @@ class ShapeMatchGame extends Component {
 
 		this._whiteboard.empty();
 
-		this._whiteboard.options.background = context.component.theme.colors.mostReadable(this.shape.color, [
-			context.component.theme.colors.white,
-			context.component.theme.colors.black,
+		this._whiteboard.options.background = theme.colors.mostReadable(this.shape.color, [
+			theme.colors.white,
+			theme.colors.black,
 		]);
 
 		this._whiteboard.options.readOnly = true;

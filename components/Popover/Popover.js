@@ -1,8 +1,22 @@
+import { styled } from '../../utils';
 import { Icon } from '../Icon';
 
 const state_enum = Object.freeze(['auto', 'manual']);
 
-export default class Popover extends Icon {
+const StyledIcon = styled(
+	Icon,
+	({ colors }) => `
+		position: absolute;
+		background-color: ${colors.darkest(colors.gray)};
+		color: ${colors.white};
+		padding: 12px;
+		border-radius: 3px;
+		border: 1px solid ${colors.lightest(colors.gray)};
+		margin: 0;
+	`,
+);
+
+export default class Popover extends StyledIcon {
 	state_enum = state_enum;
 
 	constructor({ autoOpen = true, ...options } = {}, ...children) {
@@ -15,17 +29,6 @@ export default class Popover extends Icon {
 					if (autoOpen) setTimeout(() => this.show(), 200);
 				},
 				...options,
-				styles: (theme, component) => `
-					position: absolute;
-					background-color: ${theme.colors.darkest(theme.colors.gray)};
-					color: ${theme.colors.white};
-					padding: 12px;
-					border-radius: 3px;
-					border: 1px solid ${theme.colors.lightest(theme.colors.gray)};
-					margin: 0;
-
-					${options.styles?.(theme, component) || ''}
-				`,
 			},
 			...children,
 		);

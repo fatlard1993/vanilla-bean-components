@@ -20,6 +20,8 @@ class Elem extends EventTarget {
 			...(children.length > 0 ? { append: [optionsWithoutConfig.append, ...children] } : {}),
 		};
 
+		this.elem._elem = this;
+
 		Object.entries(this.options).forEach(([key, value]) => this.setOption(key, value));
 	}
 
@@ -36,6 +38,18 @@ class Elem extends EventTarget {
 
 			this.elem[key].call(this.elem, value);
 		} else this.elem[key] = value;
+	}
+
+	get parentElem() {
+		return this.elem?.parentElement;
+	}
+
+	get parent() {
+		return this.parentElem?._elem;
+	}
+
+	get children() {
+		return Array.from(this.elem.children).flatMap(({ _elem }) => [_elem]);
 	}
 
 	setOptions(options) {
@@ -75,7 +89,14 @@ class Elem extends EventTarget {
 	}
 
 	setStyle(style) {
-		Object.entries(style).forEach(([key, value]) => (this.elem.style[key] = value));
+		if (typeof style === 'string') return this.styles(() => style);
+		if (typeof style === 'function') return this.styles(style);
+
+		Object.entries(style).forEach(([key, value]) => {
+			if (!key || /\d/.test(key)) return;
+
+			this.elem.style[key] = value;
+		});
 
 		return this;
 	}

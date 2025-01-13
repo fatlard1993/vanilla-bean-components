@@ -1,4 +1,3 @@
-export { default as Component } from './Component';
-export { default as context } from './context';
+export { default as Component, createClassId } from './Component';
 
 export * from './utils';

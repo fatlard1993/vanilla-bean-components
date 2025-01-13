@@ -2,12 +2,9 @@ import { styled, tactileResponse } from '../../utils';
 import { Component } from '../Component';
 import Key from './Key';
 
-const KeyRow = styled(
-	Component,
-	() => `
-		display: flex;
-	`,
-);
+const KeyRow = styled.Component`
+	display: flex;
+`;
 
 class Keyboard extends Component {
 	constructor(options = {}, ...children) {

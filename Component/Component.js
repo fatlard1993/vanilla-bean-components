@@ -2,12 +2,10 @@ import { customAlphabet } from 'nanoid';
 
 import Context from '../Context';
 import Elem from '../Elem';
-import { processStyles, appendStyles } from './utils';
-import { observeElementConnection } from './utils/elem';
-import context from './context';
+import { appendStyles, postCSS, themeStyles, observeElementConnection } from './utils';
 
 // eslint-disable-next-line spellcheck/spell-checker
-const classId = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-', 10);
+export const createClassId = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-', 10);
 
 const connectionEvents = new Set(['connected', 'disconnected']);
 const inputEvents = new Set(['keydown', 'keyup', 'change', 'blur', 'input', 'search']);
@@ -39,7 +37,7 @@ class Component extends Elem {
 	 * Create a Component
 	 * @param {Object} options - The options for initializing the component
 	 * @param {String} options.tag - The HTML tag
-	 * @param {Boolean} options.autoRender - Automatically render the component when constructed
+	 * @param {Boolean | 'onload' | 'animationFrame'} options.autoRender - Control when to render the component
 	 * @param {Set} options.knownAttributes - Options to send to elem.setAttribute
 	 * @param {Set} options.priorityOptions - Options to process first when processing a whole options object
 	 * @param {Object} options.style - Style properties to set in the HTMLElement
@@ -58,23 +56,39 @@ class Component extends Elem {
 		this.__knownAttributes = knownAttributes;
 		this.__priorityOptions = priorityOptions;
 
-		this.options = new Context({
-			...optionsWithoutConfig,
-			...(children.length > 0 ? { append: [optionsWithoutConfig.append, ...children] } : {}),
-		});
-
-		this.options.addEventListener('set', ({ detail: { key, value } }) => this.setOption(key, value));
-
-		this.classId = Object.freeze(classId());
-
 		this.elem._component = this;
 
-		this.addClass(this.classId);
+		this.classId = Object.freeze(createClassId());
+
+		this.options = new Context({
+			...optionsWithoutConfig,
+			addClass: [this.classId, optionsWithoutConfig.addClass],
+			append: [optionsWithoutConfig.append, children],
+		});
+
+		const setOption = ({ detail: { key, value } }) => this.setOption(key, value);
+
+		this.options.addEventListener('set', setOption);
+
+		this.addCleanup('context', () => {
+			this.options.removeEventListener('set', setOption);
+
+			Object.keys(this.options.subscriptions).forEach(id => {
+				this.options.unsubscribe(id);
+			});
+		});
 
 		if (autoRender === true) this.render();
 		else if (autoRender === 'onload') {
 			if (document.readyState === 'complete') this.render();
-			else window.addEventListener('load', () => this.render());
+			else {
+				const render = () => this.render();
+				window.addEventListener('load', render);
+
+				this.addCleanup('autoRender_onload', () => {
+					window.removeEventListener('load', render);
+				});
+			}
 		} else if (autoRender === 'animationFrame') requestAnimationFrame(() => this.render());
 	}
 
@@ -119,10 +133,6 @@ class Component extends Elem {
 			this.elem[key].call(this.elem, value);
 		} else if (typeof value === 'function') this[key] = value;
 		else this.elem[key] = value;
-	}
-
-	get parentElem() {
-		return this.elem?.parentElement;
 	}
 
 	get parent() {
@@ -227,15 +237,17 @@ class Component extends Elem {
 	styles(styles) {
 		if (!styles) return;
 
-		processStyles({ styles, theme: context.theme, context: this, scope: `body ${this.tag}.${this.classId}` }).then(
-			css => {
-				if (!css) return;
+		const themedStyles = themeStyles({ styles, scope: `.${this.classId}` });
 
-				appendStyles(css, this.classId);
+		if (typeof themedStyles === 'object') {
+			this?.setStyle(themeStyles);
 
-				this.addCleanup(this.classId, () => document.getElementById(this.classId)?.remove());
-			},
-		);
+			return;
+		}
+
+		postCSS(themedStyles).then(css => appendStyles(css));
+
+		this.addCleanup(this.classId, () => document.getElementById(this.classId)?.remove());
 	}
 
 	onHover(callback = () => {}) {

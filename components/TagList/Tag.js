@@ -1,10 +1,38 @@
 /* eslint-disable spellcheck/spell-checker */
-import { Component } from '../Component';
+import { styled } from '../../utils';
 import { Button } from '../Button';
+
+const StyledComponent = styled.Component(
+	({ colors }) => `
+		border: 1px solid ${colors.white};
+		padding: 9px;
+		margin: 3px;
+		display: inline-block;
+		float: left;
+		border: 2px solid;
+		border-radius: 3px;
+		border-top-left-radius: 0;
+		font-size: 18px;
+		background-color: ${colors.black};
+
+		--aug-border-all: 1px;
+		--aug-tl1: 4px;
+		--aug-bl1: 4px;
+		--aug-r1: 3px;
+		--aug-r-extend1: 18px;
+
+		&.addTag {
+			display: flex;
+			flex-direction: row;
+			padding: 3px 9px;
+			min-width: 260px;
+		}
+	`,
+);
 
 const defaultOptions = { readOnly: false };
 
-class Tag extends Component {
+class Tag extends StyledComponent {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
 	constructor(options = {}, ...children) {
@@ -18,35 +46,7 @@ class Tag extends Component {
 		super(
 			{
 				...options,
-				styles: (theme, component) => `
-					border: 1px solid ${theme.colors.white};
-					padding: 9px;
-					margin: 3px;
-					display: inline-block;
-					float: left;
-					border: 2px solid;
-					border-radius: 3px;
-					border-top-left-radius: 0;
-					font-size: 18px;
-					background-color: ${theme.colors.black};
-
-					--aug-border-all: 1px;
-					--aug-tl1: 4px;
-					--aug-bl1: 4px;
-					--aug-r1: 3px;
-					--aug-r-extend1: 18px;
-
-					&.addTag {
-						display: flex;
-						flex-direction: row;
-						padding: 3px 9px;
-						min-width: 260px;
-					}
-
-					${options.styles?.(theme, component) || ''}
-				`,
 				tag: 'li',
-				appendTo: options.appendTo,
 				onPointerPress: options.readOnly ? () => {} : onPointerPress,
 			},
 			...children,

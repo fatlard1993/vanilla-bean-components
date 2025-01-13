@@ -8,16 +8,39 @@ import {
 	Label,
 	Input,
 	Dialog,
-	List,
 	Notify,
-	context,
 	conditionalList,
 	randInt,
+	theme,
+	styled,
+	List,
 } from '../..';
 
 import DemoView, { DemoWrapper } from '../DemoView';
 
 const CANVAS_SIZE = 400;
+
+const Inkwell = styled.Component`
+	transform-origin: 0 100%;
+	transform: rotate(-90deg);
+	position: absolute;
+	top: 400px;
+	left: 0;
+	height: 12px;
+	width: 300px;
+`;
+
+const DlcStoreList = styled(
+	List,
+	() => `
+		list-style: none;
+		padding: 0;
+
+		li {
+			margin: 6px 0;
+		}
+	`,
+);
 
 class Achievement extends Notify {
 	constructor({
@@ -95,8 +118,8 @@ class DlcWhiteboard extends Component {
 	constructor() {
 		const database = JSON.parse(localStorage.getItem('dlc_whiteboard_db')) || {
 			ink: 3,
-			color: context.component.theme.colors.black.toString(),
-			background: context.component.theme.colors.white.toString(),
+			color: theme.colors.black.toString(),
+			background: theme.colors.white.toString(),
 			lineWidth: 3,
 			maxLineWidth: 6,
 			credits: 10,
@@ -106,12 +129,12 @@ class DlcWhiteboard extends Component {
 
 		super({
 			...database,
-			styles: () => `
-				height: 100%;
-				display: flex;
-				flex-direction: column;
-				position: relative;
-			`,
+			style: {
+				height: '100%',
+				display: 'flex',
+				flexDirection: 'column',
+				position: 'relative',
+			},
 		});
 	}
 
@@ -122,15 +145,7 @@ class DlcWhiteboard extends Component {
 			onPointerPress: () =>
 				new Dialog({
 					header: 'DLC Store',
-					body: new List({
-						styles: () => `
-								list-style: none;
-								padding: 0;
-
-								li {
-									margin: 6px 0;
-								}
-							`,
+					body: new DlcStoreList({
 						items: conditionalList([
 							{ alwaysItem: { label: 'Ink (+10)', product: 'ink', amount: 10, price: '2' } },
 							{ alwaysItem: { label: 'Pen Sizes (+3)', product: 'maxLineWidth', amount: 3, price: '2' } },
@@ -261,17 +276,8 @@ class DlcWhiteboard extends Component {
 				}
 			},
 		});
-		this._inkwell = new Component({
+		this._inkwell = new Inkwell({
 			tag: 'progress',
-			styles: () => `
-				transform-origin: 0 100%;
-				transform: rotate(-90deg);
-				position: absolute;
-				top: 400px;
-				left: 0;
-				height: 12px;
-				width: 300px;
-			`,
 			style: this.options.subscriber('color', accentColor => ({ accentColor })),
 			max: 100,
 			value: this.options.subscriber('ink'),
@@ -310,10 +316,7 @@ class DlcWhiteboard extends Component {
 			icon: 'paintbrush',
 			style: this.options.subscriber('color', backgroundColor => ({
 				backgroundColor,
-				color: context.component.theme.colors.mostReadable(backgroundColor, [
-					context.component.theme.colors.white,
-					context.component.theme.colors.black,
-				]),
+				color: theme.colors.mostReadable(backgroundColor, [theme.colors.white, theme.colors.black]),
 				position: 'absolute',
 				top: '416px',
 				left: '-21px',

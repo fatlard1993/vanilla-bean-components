@@ -17,14 +17,12 @@ class Loader extends Icon {
 			icon: 'spinner',
 			animation: 'spin-pulse',
 			...options,
-			styles: (theme, component) => `
-				font-size: 66px;
-				display: flex;
-				justify-content: center;
-				color: ${theme.colors.blue};
-
-				${options.styles?.(theme, component) || ''}
-			`,
+			styles: ({ colors }) => ({
+				fontSize: '66px',
+				display: 'flex',
+				justifyContent: 'center',
+				color: colors.blue,
+			}),
 		});
 	}
 }
@@ -34,11 +32,11 @@ class PostHeading extends Component {
 		super({
 			tag: 'h2',
 			content,
-			styles: ({ colors }) => `
-				font-size: 3em;
-				margin: 0 0 18px 0;
-				color: ${colors.blue};
-			`,
+			styles: ({ colors }) => ({
+				fontSize: '3em',
+				margin: '0 0 18px 0',
+				color: colors.blue,
+			}),
 		});
 	}
 }
@@ -48,9 +46,7 @@ class PostBody extends Component {
 		super({
 			tag: 'p',
 			content,
-			styles: () => `
-				text-indent: 6px;
-			`,
+			style: { textIndent: '6px' },
 		});
 	}
 }
@@ -61,12 +57,10 @@ class Post extends Component {
 			tag: 'p',
 			content: [new PostHeading(options.heading), new PostBody(options.body)],
 			...options,
-			styles: (theme, component) => `
-				padding: 12px;
-				border: 1px solid ${theme.colors.blue};
-
-				${options.styles?.(theme, component) || ''}
-			`,
+			styles: ({ colors }) => ({
+				padding: '12px',
+				border: `1px solid ${colors.blue}`,
+			}),
 		});
 	}
 }

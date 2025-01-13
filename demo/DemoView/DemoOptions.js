@@ -1,7 +1,12 @@
-import { Component, Code, List, Select, Input, Label, conditionalList, styled } from '../..';
+import { Component, List, Select, Input, Label, conditionalList, styled, Code } from '../..';
 import { stringifyValue } from './utils';
 
-const CodeForLabel = styled(Code, () => `display: block;`);
+const CodeForLabel = styled(
+	Code,
+	() => `
+		display: block;
+	`,
+);
 
 export default class DemoOptions extends List {
 	constructor(options) {
@@ -13,13 +18,13 @@ export default class DemoOptions extends List {
 
 		super({
 			...options,
-			addClass: 'noStyle',
+			addClass: ['noStyle'],
 			items: Object.entries(component.options).map(
 				([key, value]) =>
 					new Label(
 						key,
 						new List({
-							addClass: 'noStyle',
+							addClass: ['noStyle'],
 							items: conditionalList([
 								{
 									alwaysItem: new Label(
@@ -30,7 +35,7 @@ export default class DemoOptions extends List {
 									),
 								},
 								{
-									if: !isMethod(key) && component.defaultOptions?.[key],
+									if: !isMethod(key) && component.defaultOptions?.[key] !== undefined,
 									thenItem: new Label(
 										'Default',
 										new CodeForLabel({ code: stringifyValue(component.defaultOptions?.[key]) }),
@@ -58,12 +63,14 @@ export default class DemoOptions extends List {
 										!isMethod(key) &&
 										!component[`${key}_enum`] &&
 										typeof value !== 'boolean' &&
-										stringifyValue(value) !== '[object Component]',
+										!stringifyValue(value).startsWith('[object HTML') &&
+										stringifyValue(value) !== '[object Component]' &&
+										stringifyValue(value) !== '[object Elem]',
 									thenItem: new Label(
 										'Current',
 										new Input({
 											tag: typeof value === 'object' || value?.includes?.('\n') ? 'textarea' : 'input',
-											syntaxHighlighting: typeof value !== 'string',
+											syntaxHighlighting: typeof value !== 'string' || key === 'code',
 											style: { width: '100%' },
 											value:
 												component.options.subscriber?.(key, _ => {

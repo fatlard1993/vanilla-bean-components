@@ -9,7 +9,7 @@ export default class Demo extends DemoView {
 			items: [
 				{ textContent: 'one', style: { textTransform: 'uppercase' } },
 				'two',
-				{ textContent: 'three', styles: ({ colors }) => `color: ${colors.red};` },
+				{ textContent: 'three', styles: ({ colors }) => ({ color: colors.blue }) },
 			],
 			appendTo: this.demoWrapper,
 		});

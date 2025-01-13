@@ -17,10 +17,7 @@ const CodeInput = styled(
 		min-width: 400px;
 		min-height: 100px;
 	`,
-	{
-		tag: 'textarea',
-		syntaxHighlighting: true,
-	},
+	{ tag: 'textarea', syntaxHighlighting: true },
 );
 
 export class Playground extends Component {
@@ -33,9 +30,7 @@ export class Playground extends Component {
 		};
 
 		super({
-			styles: () => `
-				display: flex;
-			`,
+			style: { display: 'flex' },
 			...database,
 			...options,
 		});
@@ -44,19 +39,13 @@ export class Playground extends Component {
 	render() {
 		this.left = new Component({ appendTo: this });
 		this.right = new Component({
-			styles: () => `
-				display: flex;
-				flex: 1;
-			`,
+			style: { display: 'flex', flex: 1 },
 			appendTo: this,
 		});
 
 		this.output = new Component({
 			tag: 'iframe',
-			styles: () => `
-				flex: 1;
-				margin: 0 12px 12px;
-			`,
+			style: { flex: 1, margin: '0 12px 12px' },
 			appendTo: this.right,
 		});
 

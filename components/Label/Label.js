@@ -3,12 +3,98 @@ import { styled } from '../../utils';
 import { Component } from '../Component';
 import { TooltipWrapper } from '../TooltipWrapper';
 
-const LabelText = styled(
-	Component,
-	theme => `
-		display: block;
-		margin: 12px 0;
-		color: ${theme.colors.white};
+const StyledComponent = styled(
+	TooltipWrapper,
+	({ colors, fonts }) => `
+		position: relative;
+		display: inline-block;
+		font-size: 1em;
+		width: calc(100% - 24px);
+		margin: 0 0 9px;
+		padding: 6px 12px 9px 12px;
+		background-color: ${colors.white.setAlpha(0.06)};
+		color: ${colors.white};
+		transition: all 0.5s;
+
+		&:after {
+			transition: all 0.5s;
+		}
+
+		&.variant-overlay:not(:focus-within):has(input:placeholder-shown) {
+			label {
+				pointer-events: none;
+				position: absolute;
+				top: 16px;
+				left: 21px;
+				color: ${colors.gray};
+			}
+		}
+
+		&.variant-inline, &.variant-inline-after {
+			display: flex;
+
+			label {
+				display: inline-block;
+				vertical-align: top;
+				margin-top: 3px;
+				margin-right: 9px;
+				line-height: 2;
+			}
+
+			input:not([type=checkbox]), textarea, select {
+				flex: 1;
+			}
+		}
+
+		&.variant-collapsible {
+			--aug-border-bg: linear-gradient(-66deg, ${colors.lighter(colors.teal).setAlpha(0.5)}, ${colors.blue.setAlpha(0.5)});
+			--aug-border-all: 2px;
+			--aug-tl1: 12px;
+			--aug-tr-extend1: 42%;
+			--aug-tr1: 12px;
+			--aug-bl1: 6px;
+			--aug-br1: 6px;
+
+			&.collapsed {
+				width: 50%;
+
+				--aug-tr-extend1: 0%;
+
+				> label {
+					color: ${colors.superWhite};
+
+					&:before {
+						content: "" !important;
+						opacity: 1;
+						color: ${colors.lightest(colors.blue)};
+					}
+				}
+
+				> *:not(label) {
+					display: none !important;
+				}
+			}
+
+			label {
+				cursor: pointer;
+
+				&:before {
+					${fonts.fontAwesomeSolid}
+
+					content: "";
+					opacity: 0.5;
+					font-size: 14px;
+					padding-right: 6px;
+					color: ${colors.white};
+
+					transition: opacity 0.8s, color 1s;
+				}
+			}
+		}
+
+		> *:not(label):not(.tooltip) {
+			margin-top: 6px;
+		}
 	`,
 );
 
@@ -16,7 +102,7 @@ const variant_enum = Object.freeze(['overlay', 'collapsible', 'inline', 'inline-
 
 const defaultOptions = { variant: 'simple' };
 
-class Label extends TooltipWrapper {
+class Label extends StyledComponent {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 	variant_enum = variant_enum;
 
@@ -28,114 +114,20 @@ class Label extends TooltipWrapper {
 				for: children[0],
 				...defaultOptions,
 				...options,
-				styles: (theme, component) => `
-					position: relative;
-					display: inline-block;
-					font-size: 1em;
-					width: calc(100% - 24px);
-					margin: 0 0 9px;
-					padding: 6px 12px 9px 12px;
-					background-color: ${theme.colors.white.setAlpha(0.06)};
-					color: ${theme.colors.white};
-					transition: all 0.5s;
-
-					&:after {
-						transition: all 0.5s;
-					}
-
-					&.variant-overlay:not(:focus-within):has(input:placeholder-shown) {
-						label {
-							pointer-events: none;
-							position: absolute;
-							top: 16px;
-							left: 21px;
-							color: ${theme.colors.gray};
-						}
-					}
-
-					&.variant-inline, &.variant-inline-after {
-						display: flex;
-
-						label {
-							display: inline-block;
-							vertical-align: top;
-							margin-top: 3px;
-							margin-right: 9px;
-							line-height: 2;
-						}
-
-						input:not([type=checkbox]), textarea, select {
-							flex: 1;
-						}
-					}
-
-					&.variant-collapsible {
-						--aug-border-bg: linear-gradient(-66deg, ${theme.colors
-							.lighter(theme.colors.teal)
-							.setAlpha(0.5)}, ${theme.colors.blue.setAlpha(0.5)});
-						--aug-border-all: 2px;
-						--aug-tl1: 12px;
-						--aug-tr-extend1: 42%;
-						--aug-tr1: 12px;
-						--aug-bl1: 6px;
-						--aug-br1: 6px;
-
-						&.collapsed {
-							width: 50%;
-
-							--aug-tr-extend1: 0%;
-
-							> label {
-								color: ${theme.colors.superWhite};
-
-								&:before {
-									content: "" !important;
-									opacity: 1;
-									color: ${theme.colors.lightest(theme.colors.blue)};
-								}
-							}
-
-							> *:not(label) {
-								display: none !important;
-							}
-						}
-
-						label {
-							cursor: pointer;
-
-							&:before {
-								${theme.fonts.fontAwesomeSolid}
-
-								content: "";
-								opacity: 0.5;
-								font-size: 14px;
-								padding-right: 6px;
-								color: ${theme.colors.white};
-
-								transition: opacity 0.8s, color 1s;
-							}
-						}
-					}
-
-					> *:not(label):not(.tooltip) {
-						margin-top: 6px;
-					}
-
-
-					${options.styles?.(theme, component) || ''}
-				`,
 			},
 			...children,
 		);
 	}
 
 	render() {
-		this._labelText = new LabelText({
+		this._labelText = new Component({
 			tag: 'label',
 			[this.options.variant === 'inline-after' ? 'appendTo' : 'prependTo']: this,
-			styles: () => `
-				margin: 0;
-			`,
+			styles: ({ colors }) => ({
+				display: 'block',
+				color: colors.white,
+				margin: 0,
+			}),
 			onPointerPress: () => {
 				if (this.options.variant === 'collapsible') {
 					this[this.hasClass('collapsed') ? 'removeClass' : 'addClass']('collapsed');
