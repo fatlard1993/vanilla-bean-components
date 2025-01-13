@@ -11,7 +11,7 @@ new Elem(options, ...children);
 ```js
 new Elem({
 	tag: 'p',
-	textContent: component.options.subscriber('value', value => `The current value is: ${value}`),
+	textContent: 'WOW!',
 	appendTo: document.body,
 });
 ```
@@ -46,6 +46,9 @@ Everything in a Elem can be controlled by its `options`. In addition to configur
 
 Not all Elem methods make sense to use with options:
 
+- `get parentElem`
+- `get parent`
+- `get children`
 - `setOption(key, value)`
   - _This method is used internally to synchronize options property changes and not intended to be called directly_
 - `setOptions(options)`
