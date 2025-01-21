@@ -28,8 +28,8 @@ const StyledComponent = styled(
 			label {
 				pointer-events: none;
 				position: absolute;
-				top: 15px;
-				left: 20px;
+				top: 16px;
+				left: 21px;
 				color: ${colors.gray};
 			}
 		}

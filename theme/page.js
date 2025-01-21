@@ -24,11 +24,13 @@ export default `
 		background: ${colors.black};
 		color: ${colors.white};
 		margin: 0;
+	}
 
+	* {
 		touch-action: manipulation;
 		-webkit-text-size-adjust: none;
 
-		font: 600 16px 'Source Code Pro';
+		font-size: 16px;
 		font-family: 'Source Code Pro', monospace;
 		line-height: normal;
 	}
