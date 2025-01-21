@@ -1,6 +1,6 @@
 /* eslint-disable spellcheck/spell-checker */
-import { styled } from '../../utils';
-import { Component } from '../Component';
+import { styled } from '../../styled';
+import { Component } from '../../Component';
 import { TooltipWrapper } from '../TooltipWrapper';
 
 const StyledComponent = styled(
@@ -20,12 +20,16 @@ const StyledComponent = styled(
 			transition: all 0.5s;
 		}
 
+		label {
+			display: block;
+		}
+
 		&.variant-overlay:not(:focus-within):has(input:placeholder-shown) {
 			label {
 				pointer-events: none;
 				position: absolute;
-				top: 16px;
-				left: 21px;
+				top: 15px;
+				left: 20px;
 				color: ${colors.gray};
 			}
 		}
@@ -139,8 +143,10 @@ class Label extends StyledComponent {
 	}
 
 	setOption(key, value) {
-		if (key === 'label') this._labelText.options.content = value;
-		else if (key === 'collapsed') this[value ? 'addClass' : 'removeClass']('collapsed');
+		if (key === 'label') {
+			if (typeof value === 'object') this._labelText.setOptions(value);
+			else this._labelText.options.content = value;
+		} else if (key === 'collapsed') this[value ? 'addClass' : 'removeClass']('collapsed');
 		else if (key === 'variant') {
 			this.removeClass(/\bvariant-\S+\b/g);
 			this.addClass(`variant-${value}`);

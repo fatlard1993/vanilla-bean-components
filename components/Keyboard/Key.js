@@ -1,4 +1,4 @@
-import { styled } from '../../utils';
+import { styled } from '../../styled';
 import { Button } from '../Button';
 
 const StyledButton = styled(
@@ -22,11 +22,13 @@ const StyledButton = styled(
 
 class Key extends StyledButton {
 	constructor(options = {}, ...children) {
+		const { key, text, class: keyClass, ...optionsWithoutConfig } = options;
+
 		super(
 			{
-				textContent: options.keyDefinition?.text ?? options.key,
-				...options,
-				addClass: [options.key, options.keyDefinition?.class, ...(options.addClass || [])],
+				textContent: text ?? key,
+				...optionsWithoutConfig,
+				addClass: [key, keyClass, ...(options.addClass || [])],
 			},
 			...children,
 		);

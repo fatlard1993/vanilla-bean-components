@@ -1,6 +1,7 @@
 import { Component, Input, Button, Popover, Menu, Icon, Table, delay, orderBy, randInt } from '../..';
 
-import DemoView, { DemoWrapper } from '../DemoView';
+import ExampleView from '../DemoView/ExampleView';
+import exampleCode from './DataTable.js.asText';
 
 const fetchData = async ({ sort } = {}) => {
 	console.log('Fetching data...');
@@ -36,11 +37,13 @@ class Loader extends Icon {
 	}
 }
 
-export default class Example extends DemoView {
+export default class Example extends ExampleView {
 	async render() {
+		this.options.exampleCode = exampleCode;
+
 		super.render();
 
-		const wrapper = new DemoWrapper({ appendTo: this }, new Loader());
+		new Loader({ appendTo: this.demoWrapper });
 
 		const sortProperty = 'name';
 		const sortDirection = 'asc';
@@ -116,6 +119,6 @@ export default class Example extends DemoView {
 			],
 		});
 
-		wrapper.content(table);
+		this.demoWrapper.content(table);
 	}
 }

@@ -1,11 +1,9 @@
-import { customAlphabet } from 'nanoid';
-
+import { appendStyles, postCSS, themeStyles } from '../styled';
+import { classSafeNanoid } from '../utils';
 import Context from '../Context';
-import Elem from '../Elem';
-import { appendStyles, postCSS, themeStyles, observeElementConnection } from './utils';
+import { Elem } from '../Elem';
 
-// eslint-disable-next-line spellcheck/spell-checker
-export const createClassId = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-', 10);
+import { observeElementConnection } from './observeElementConnection';
 
 const connectionEvents = new Set(['connected', 'disconnected']);
 const inputEvents = new Set(['keydown', 'keyup', 'change', 'blur', 'input', 'search']);
@@ -35,13 +33,13 @@ class Component extends Elem {
 
 	/**
 	 * Create a Component
-	 * @param {Object} options - The options for initializing the component
-	 * @param {String} options.tag - The HTML tag
-	 * @param {Boolean | 'onload' | 'animationFrame'} options.autoRender - Control when to render the component
+	 * @param {object} options - The options for initializing the component
+	 * @param {string} options.tag - The HTML tag
+	 * @param {boolean | 'onload' | 'animationFrame'} options.autoRender - Control when to render the component
 	 * @param {Set} options.knownAttributes - Options to send to elem.setAttribute
 	 * @param {Set} options.priorityOptions - Options to process first when processing a whole options object
-	 * @param {Object} options.style - Style properties to set in the HTMLElement
-	 * @param {Object} options.attributes - HTML attributes to set in the HTMLElement
+	 * @param {object} options.style - Style properties to set in the HTMLElement
+	 * @param {object} options.attributes - HTML attributes to set in the HTMLElement
 	 * @param {...children} children - Child elements to add to append option
 	 */
 	constructor(options = {}, ...children) {
@@ -58,7 +56,7 @@ class Component extends Elem {
 
 		this.elem._component = this;
 
-		this.classId = Object.freeze(createClassId());
+		this.classId = Object.freeze(classSafeNanoid());
 
 		this.options = new Context({
 			...optionsWithoutConfig,
@@ -90,6 +88,10 @@ class Component extends Elem {
 				});
 			}
 		} else if (autoRender === 'animationFrame') requestAnimationFrame(() => this.render());
+
+		if (process.env.NODE_ENV === 'development') {
+			this.addClass(...this.ancestry().map(({ constructor }) => constructor.name));
+		}
 	}
 
 	toString() {
@@ -236,6 +238,7 @@ class Component extends Elem {
 
 	styles(styles) {
 		if (!styles) return;
+		if (typeof styles === 'object') return this?.setStyle(styles);
 
 		const themedStyles = themeStyles({ styles, scope: `.${this.classId}` });
 
@@ -303,6 +306,12 @@ class Component extends Elem {
 
 			cleanupPointerDown();
 		});
+	}
+
+	ancestry(targetClass = this) {
+		if (!targetClass || targetClass?.constructor?.name === 'Object') return [];
+
+		return [targetClass, ...this.ancestry(Object.getPrototypeOf(targetClass))];
 	}
 }
 

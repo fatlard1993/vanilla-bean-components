@@ -1,5 +1,5 @@
 import { throttle } from '../../utils/data';
-import { Component } from '../Component';
+import { Component } from '../../Component';
 
 const defaultOptions = {
 	tag: 'canvas',

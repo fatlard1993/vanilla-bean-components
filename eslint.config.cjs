@@ -1,6 +1,7 @@
 const globals = require('globals');
 const { fixupConfigRules, fixupPluginRules } = require('@eslint/compat');
 const js = require('@eslint/js');
+const jsdoc = require('eslint-plugin-jsdoc');
 
 const compat = require('eslint-plugin-compat');
 const importPlugin = require('eslint-plugin-import');
@@ -14,6 +15,7 @@ module.exports = [
 		ignores: ['**/node_modules', '**/build'],
 	},
 	js.configs.recommended,
+	jsdoc.configs['flat/recommended'],
 	...fixupConfigRules(compat.configs['flat/recommended']),
 	...fixupConfigRules(unicorn.configs['flat/recommended']),
 	{
@@ -100,9 +102,10 @@ module.exports = [
 		},
 	},
 	{
-		files: ['**/demo.js', 'demo/*'],
+		files: ['**/demo.js', 'demo/*', 'demo/**/*'],
 		rules: {
 			'no-console': 'off',
+			'jsdoc/require-jsdoc': 'off',
 		},
 	},
 	{

@@ -1,5 +1,5 @@
 import DemoView, { DemoWrapper } from '../../demo/DemoView';
-import { Component } from '../Component';
+import { Component } from '../../Component';
 import { Keyboard } from '.';
 
 export default class Demo extends DemoView {

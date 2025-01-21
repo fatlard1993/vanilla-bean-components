@@ -1,5 +1,5 @@
-import { shimCSS } from '../../Component/utils/styles';
-import { Component } from '../Component';
+import { shimCSS } from '../../styled';
+import { Component } from '../../Component';
 
 shimCSS({
 	styles: ({ page }) => page,

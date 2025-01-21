@@ -1,11 +1,15 @@
-import { styled } from '../../utils';
+import { Component } from '../../Component';
+import { styled } from '../../styled';
 
-export const InputValidationError = styled.Component`
-	background-color: ${({ colors }) => colors.red};
-	padding: 6px;
-	margin: 3px;
-	border-radius: 3px;
-`;
+export const InputValidationError = styled(
+	Component,
+	({ colors }) => `
+		background-color: ${colors.red};
+		padding: 6px;
+		margin: 3px;
+		border-radius: 3px;
+	`,
+);
 
 export const updateValidationErrors = ({ elem, validations, value }) => {
 	if (!validations?.length) return;

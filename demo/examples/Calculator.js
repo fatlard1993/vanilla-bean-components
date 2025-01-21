@@ -1,13 +1,17 @@
 import { Component, Keyboard, styled } from '../..';
 
-import DemoView, { DemoWrapper } from '../DemoView';
+import ExampleView from '../DemoView/ExampleView';
+import exampleCode from './Calculator.js.asText';
 
-const CalculatorDisplay = styled.Component`
+const CalculatorDisplay = styled(
+	Component,
+	() => `
 	font-size: 24px;
 	background: ${({ colors }) => colors.black};
 	text-align: right;
 	padding: 18px;
-`;
+`,
+);
 
 const StyledKeyboard = styled(
 	Keyboard,
@@ -46,14 +50,14 @@ export class Calculator extends Component {
 		this._keypad = new StyledKeyboard({
 			layout: 'calculator',
 			keyDefinitions: {
-				clear: { class: 'fa-trash-can', text: '' },
-				backspace: { class: 'fa-left-long', text: '' },
-				'*': { class: 'fa-xmark', text: '' },
-				'%': { class: 'fa-percent', text: '' },
-				'÷': { class: 'fa-divide', text: '' },
-				'-': { class: 'fa-minus', text: '' },
-				'+': { class: 'fa-plus', text: '' },
-				'=': { class: 'fa-equals', text: '' },
+				clear: { icon: 'trash-can', text: '' },
+				backspace: { icon: 'left-long', text: '' },
+				'*': { icon: 'xmark', text: '' },
+				'%': { icon: 'percent', text: '' },
+				'÷': { icon: 'divide', text: '' },
+				'-': { icon: 'minus', text: '' },
+				'+': { icon: 'plus', text: '' },
+				'=': { icon: 'equals', text: '' },
 				0: { class: 'u2' },
 			},
 			layouts: {
@@ -86,10 +90,12 @@ export class Calculator extends Component {
 	}
 }
 
-export default class Example extends DemoView {
+export default class Example extends ExampleView {
 	render() {
+		this.options.exampleCode = exampleCode;
+
 		super.render();
 
-		new DemoWrapper({ appendTo: this }, new Calculator());
+		new Calculator({ appendTo: this.demoWrapper });
 	}
 }

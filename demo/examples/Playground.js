@@ -1,6 +1,7 @@
 import { Component, Input, Label, styled } from '../..';
 
-import DemoView, { DemoWrapper } from '../DemoView';
+import ExampleView from '../DemoView/ExampleView';
+import exampleCode from './Playground.js.asText';
 
 const StyledLabel = styled(
 	Label,
@@ -130,10 +131,12 @@ export class Playground extends Component {
 	}
 }
 
-export default class Example extends DemoView {
+export default class Example extends ExampleView {
 	render() {
+		this.options.exampleCode = exampleCode;
+
 		super.render();
 
-		new DemoWrapper({ appendTo: this }, new Playground());
+		new Playground({ appendTo: this.demoWrapper });
 	}
 }

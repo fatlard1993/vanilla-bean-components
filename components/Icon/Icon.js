@@ -1,4 +1,4 @@
-import { Component } from '../Component';
+import { Component } from '../../Component';
 
 export default class Icon extends Component {
 	setOption(key, value) {

@@ -1,12 +1,16 @@
 import { Component, List, Input, Button, Popover, Label, styled } from '../..';
 
-import DemoView, { DemoWrapper } from '../DemoView';
+import ExampleView from '../DemoView/ExampleView';
+import exampleCode from './Todo.js.asText';
 
-const StyledComponent = styled.Component`
-	&.checked label {
-		text-decoration: line-through;
-	}
-`;
+const StyledComponent = styled(
+	Component,
+	() => `
+		&.checked label {
+			text-decoration: line-through;
+		}
+	`,
+);
 
 class TodoListItem extends StyledComponent {
 	setOption(key, value) {
@@ -110,10 +114,12 @@ class Todo extends Component {
 	}
 }
 
-export default class Example extends DemoView {
+export default class Example extends ExampleView {
 	render() {
+		this.options.exampleCode = exampleCode;
+
 		super.render();
 
-		new DemoWrapper({ appendTo: this }, new Todo());
+		new Todo({ appendTo: this.demoWrapper });
 	}
 }

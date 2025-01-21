@@ -55,7 +55,7 @@ const readMeFile = `\`\`\`js
 \`\`\`
 `;
 
-const componentFile = `import { Component } from '../Component';
+const componentFile = `import { Component } from '../../Component';
 
 const defaultOptions = { tag: 'div' };
 

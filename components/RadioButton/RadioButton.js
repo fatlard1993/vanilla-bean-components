@@ -1,24 +1,28 @@
-import { styled } from '../../utils';
-import { Component } from '../Component';
+import { styled } from '../../styled';
+import { Component } from '../../Component';
 
-const RadioButtonLabel = styled.Component`
-	line-height: 1.1;
-	display: grid;
-	grid-template-columns: 1em auto;
-	gap: 0.5em;
-	width: fit-content;
-	cursor: pointer;
+const RadioButtonLabel = styled(
+	Component,
+	({ colors }) => `
+		line-height: 1.1;
+		display: grid;
+		grid-template-columns: 1em auto;
+		gap: 0.5em;
+		width: fit-content;
+		cursor: pointer;
 
-	&:focus-within {
-		color: ${({ colors }) => colors.blue};
-	}
+		&:focus-within {
+			color: ${colors.blue};
+		}
 
-	& + label {
-		margin-top: 1em;
-	}
-`;
+		& + label {
+			margin-top: 1em;
+		}
+	`,
+);
 
-const RadioButtonInput = styled.Component(
+const RadioButtonInput = styled(
+	Component,
 	({ colors }) => `
 		/* Remove most all native input styles */
 		appearance: none;

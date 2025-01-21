@@ -11,11 +11,12 @@ import {
 	Input,
 	randInt,
 	randFromArray,
-	deltaE,
+	rgbDelta,
 	theme,
 } from '../..';
 
-import DemoView, { DemoWrapper } from '../DemoView';
+import ExampleView from '../DemoView/ExampleView';
+import exampleCode from './ShapeMatchGame.js.asText';
 
 const CANVAS_SIZE = 400;
 
@@ -133,7 +134,7 @@ class ShapeMatchGame extends Component {
 				const shapeSize = findSize(line);
 				const responseTime = performance.now() - this.startTime;
 				const lineWidthDelta = Math.abs(this.shape.width - this.options.lineWidth);
-				const colorDelta = deltaE(
+				const colorDelta = rgbDelta(
 					Object.values(new TinyColor(this.shape.color).toRgb()).slice(0, -1),
 					Object.values(new TinyColor(this.options.color).toRgb()).slice(0, -1),
 				);
@@ -273,10 +274,14 @@ class ShapeMatchGame extends Component {
 	}
 }
 
-export default class Example extends DemoView {
+export default class Example extends ExampleView {
 	render() {
+		this.options.exampleCode = exampleCode;
+
 		super.render();
 
-		new DemoWrapper({ style: { height: '100%' }, appendTo: this }, new ShapeMatchGame());
+		this.demoWrapper.setStyle({ height: '100%' });
+
+		new ShapeMatchGame({ appendTo: this.demoWrapper });
 	}
 }

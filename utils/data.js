@@ -1,7 +1,8 @@
 /**
  * Debounce a function
  * @param {Function} callback - The function to debounced
- * @param {Number} delay - The number of ms after the last invocation to delay running the function
+ * @param {number} delay - The number of ms after the last invocation to delay running the function
+ * @returns {Function} The now debounce aware callback
  */
 export const debounce = (callback, delay = 400) => {
 	let timerId;
@@ -16,7 +17,8 @@ export const debounce = (callback, delay = 400) => {
 /**
  * Throttle a function
  * @param {Function} callback - The function to throttled
- * @param {Number} delay - The number of ms allowed between invocations of the function
+ * @param {number} delay - The number of ms allowed between invocations of the function
+ * @returns {Function} The now throttle aware callback
  */
 export const throttle = (callback, delay = 400) => {
 	let previousCall = Date.now();
@@ -33,23 +35,25 @@ export const throttle = (callback, delay = 400) => {
 
 /**
  * async delay
- * @param {Number} delay - The number of ms to await
+ * @param {number} ms - The number of ms to await
+ * @returns {Promise} A promise wrapped setTimeout
  */
 export const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
  * Convert a number from one range to another
- * @param {Number} value - The number to convert
+ * @param {number} value - The number to convert
  * @param {Array} sourceRange - The range the value originates from
- * @param {Array} value - The range to convert the value into
+ * @param {Array} targetRange - The range to convert the value into
+ * @returns {number} The original value converted into the target range
  */
 export const convertRange = (value, sourceRange, targetRange) =>
 	((value - sourceRange[0]) * (targetRange[1] - targetRange[0])) / (sourceRange[1] - sourceRange[0]) + targetRange[0];
 
 /**
  * Retrieve a list of non-native properties from a javascript object
- * @param {Object} object - The target Object
- * @return {Array} An array of the string property names
+ * @param {object} object - The source object
+ * @returns {[string]} An array of the string property names
  */
 export const getCustomProperties = object =>
 	[
@@ -62,6 +66,18 @@ export const getCustomProperties = object =>
 			),
 	);
 
+/**
+ * Build an array of items from a set of conditions and results
+ * @param {object[]} conditionalItems -
+ * @param {boolean} conditionalItems[].if - The condition
+ * @param {any} conditionalItems[].thenItem - The item inserted into the result if the condition is true
+ * @param {[any]} conditionalItems[].thenItems - An array of items spread into the result if the condition is true
+ * @param {any} conditionalItems[].elseItem - The item inserted into the result if the condition is false
+ * @param {[any]} conditionalItems[].elseItems - An array of items spread into the result if the condition is false
+ * @param {any} conditionalItems[].alwaysItem - The item inserted into the result regardless of the condition
+ * @param {[any]} conditionalItems[].alwaysItems - An array of items spread into the result regardless of the condition
+ * @returns {Array} The array of items who's conditions resolved truthy
+ */
 export const conditionalList = conditionalItems =>
 	conditionalItems
 		.filter(
@@ -84,6 +100,13 @@ export const conditionalList = conditionalItems =>
 			return [];
 		});
 
+/**
+ * Build an array of items from a set of conditions and results
+ * @param {object[]} orders -
+ * @param {string} orders[].property - The property to sort
+ * @param {'asc'|'desc'} orders[].direction - The direction to sort the property by
+ * @returns {Function} A JS Array.sort function primed sort your data by the preceding order configurations
+ */
 export const orderBy = orders => (a, b) => {
 	const sortDirection = { asc: -1, desc: 1 };
 	const sortCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });

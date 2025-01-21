@@ -1,3 +1,3 @@
-export { default as Component, createClassId } from './Component';
+export { default as Component } from './Component';
 
-export * from './utils';
+export * from './observeElementConnection';

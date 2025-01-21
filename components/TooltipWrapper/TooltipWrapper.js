@@ -1,4 +1,4 @@
-import { styled } from '../../utils';
+import { styled } from '../../styled';
 import { Icon } from '../Icon';
 import { Tooltip } from '../Tooltip';
 
@@ -23,14 +23,6 @@ const StyledIcon = styled(
 
 /** A Component with support for a tooltip */
 export default class TooltipWrapper extends StyledIcon {
-	/**
-	 * @param {Object} options - The options for initializing the component
-	 * @param {(String|Object)} options.tooltip - The content used for the tooltip element
-	 */
-	constructor(options = {}, ...children) {
-		super(options, children);
-	}
-
 	setOption(key, value) {
 		if (key === 'tooltip') {
 			const tooltipOptions = typeof value === 'object' ? value : { textContent: value };

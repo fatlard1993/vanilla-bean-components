@@ -1,1 +1,1 @@
-export { default } from './Elem';
+export { default as Elem } from './Elem';

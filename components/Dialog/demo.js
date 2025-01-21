@@ -1,5 +1,5 @@
 import DemoView, { DemoWrapper } from '../../demo/DemoView';
-import { Component } from '../Component';
+import { Component } from '../../Component';
 import { Button } from '../Button';
 import { Dialog } from '.';
 

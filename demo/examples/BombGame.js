@@ -1,6 +1,7 @@
 import { Elem, Component, Button, randInt, styled, Icon } from '../..';
 
-import DemoView, { DemoWrapper } from '../DemoView';
+import ExampleView from '../DemoView/ExampleView';
+import exampleCode from './BombGame.js.asText';
 
 // Higher numbers are easier (Suggestion: Easy: 1000 | Medium: 700 | Hard: 500)
 const DIFFICULTY = 700;
@@ -27,12 +28,14 @@ const Bomb = styled(
 );
 
 class BombGame extends Component {
-	constructor() {
+	constructor(options = {}) {
 		super({
+			...options,
 			style: {
 				height: '100%',
 				display: 'flex',
 				flexDirection: 'column',
+				...options.style,
 			},
 		});
 	}
@@ -144,10 +147,14 @@ class BombGame extends Component {
 	}
 }
 
-export default class Example extends DemoView {
+export default class Example extends ExampleView {
 	render() {
+		this.options.exampleCode = exampleCode;
+
 		super.render();
 
-		new DemoWrapper({ style: { height: '100%' }, appendTo: this }, new BombGame());
+		this.demoWrapper.setStyle({ height: '100%' });
+
+		new BombGame({ appendTo: this.demoWrapper });
 	}
 }

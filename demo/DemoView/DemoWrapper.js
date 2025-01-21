@@ -1,7 +1,8 @@
 /* eslint-disable spellcheck/spell-checker */
-import { styled } from '../..';
+import { Component, styled } from '../..';
 
-export const DemoWrapper = styled.Component(
+export const DemoWrapper = styled(
+	Component,
 	({ colors }) => `
 		position: relative;
 		margin: 3% 6%;

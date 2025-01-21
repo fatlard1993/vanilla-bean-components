@@ -1,6 +1,6 @@
 import { copyToClipboard } from '../../utils';
-import { Elem } from '../Elem';
-import { Component } from '../Component';
+import { Elem } from '../../Elem';
+import { Component } from '../../Component';
 import { Button } from '../Button';
 import { Notify } from '../Notify';
 

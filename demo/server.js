@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid';
+import { parseMarkdown } from '../plugins/markdownLoader';
 
 const clients = {};
 
@@ -25,7 +26,7 @@ const spawnBuild = async () => {
 const server = Bun.serve({
 	port: 9999,
 	fetch: async request => {
-		const path = new URL(request.url).pathname.replace('vanilla-bean-components', '..');
+		const path = new URL(request.url).pathname.replace(/^\/img/, '/../img').replace('vanilla-bean-components', '..');
 
 		if (request.method === 'GET' && path === '/') return new Response(Bun.file('demo/index.html'));
 
@@ -35,7 +36,21 @@ const server = Bun.serve({
 			return success ? undefined : new Response('WebSocket upgrade error', { status: 400 });
 		}
 
+		console.log(path);
+
+		if (path.endsWith('markdown/README.md')) {
+			let response = await fetch(
+				'https://raw.githubusercontent.com/lifeparticle/Markdown-Cheatsheet/refs/heads/main/README.md',
+			);
+			response = await response.text();
+			response = parseMarkdown(response);
+
+			return Response.json(response);
+		}
+
 		if (path.endsWith('.md') && (await Bun.file(path.slice(1)).exists())) {
+			console.log('Load Markdown', { path });
+
 			return Response.json((await import(`..${path}`))?.default);
 		}
 

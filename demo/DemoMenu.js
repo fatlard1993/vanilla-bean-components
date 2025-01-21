@@ -1,54 +1,29 @@
-import { Button, Input, Link } from '../components';
-
-import { debounce, styled } from '../utils';
+import { Component } from '../Component';
+import { Button, Menu } from '../components';
+import { Elem } from '../Elem';
+import { styled } from '../styled';
+import { capitalize, fromCamelCase, toCamelCase } from '../utils';
 
 import views from './views';
 
-const StyledComponent = styled.Component`
-	display: flex;
-	flex-wrap: wrap;
-	padding: 12px 24px;
-	background-color: ${({ colors }) => colors.darkest(colors.gray)};
+const StyledComponent = styled(
+	Component,
+	({ colors }) => `
+		display: flex;
+		flex-wrap: wrap;
+		padding: 12px 24px;
+		background-color: ${colors.darkest(colors.gray)};
 
-	&.collapsed {
-		height: 36px;
-		overflow: hidden;
+		&.collapsed {
+			height: 36px;
+			overflow: hidden;
 
-		h2 {
-			opacity: 0;
+			h2 {
+				opacity: 0;
+			}
 		}
-	}
-`;
-
-const MenuLink = styled(
-	Link,
-	() => `
-		margin: 0;
-		flex: 1 0 auto;
-		min-width: 78px;
 	`,
-	{ variant: 'button' },
 );
-
-const LinkHeading = styled.Component(
-	() => `
-		text-align: center;
-		border-bottom: 1px solid;
-		padding: 6px 0;
-		width: 50%;
-		margin: 0 auto;
-		flex-basis: 100%;
-		font-size: 18px;
-	`,
-	{ tag: 'h2' },
-);
-
-const LinkContainer = styled.Component`
-	display: flex;
-	flex-wrap: wrap;
-	gap: 6px;
-	margin-top: 6px;
-`;
 
 export default class DemoMenu extends StyledComponent {
 	constructor(options = {}) {
@@ -61,79 +36,110 @@ export default class DemoMenu extends StyledComponent {
 	render() {
 		this._links = [];
 
-		const debouncedFilter = debounce(this.filterLinks.bind(this), 700);
-
-		this.collapseButton = new Button({
-			icon: 'angle-up',
-			tooltip: this.options.subscriber('collapsed', collapsed => ({
-				position: 'bottomRight',
-				textContent: collapsed ? 'Expand' : 'Collapse',
-			})),
-			appendTo: this,
-			onPointerPress: () => {
-				this.options.collapsed = !this.options.collapsed;
-
-				this.collapseButton.options.icon = this.options.collapsed ? 'angle-down' : 'angle-up';
-
-				this[this.options.collapsed ? 'addClass' : 'removeClass']('collapsed');
-			},
-		});
-
-		new Input({
-			type: 'search',
-			style: { flex: 1 },
-			appendTo: this,
-			onKeyUp: ({ value }) => debouncedFilter(value),
-			onSearch: ({ value }) => this.filterLinks(value),
-		});
-
-		new LinkHeading({ appendTo: this }, 'Component Demos');
-		const demos = new LinkContainer({ appendTo: this });
-		new LinkHeading({ appendTo: this }, 'Examples');
-		const examples = new LinkContainer({ appendTo: this });
+		const menuItems = {
+			documentation: [],
+			componentDemos: [],
+			examples: [],
+		};
 
 		Object.keys(views).forEach(name => {
 			const href = `#${name}`;
+			let parent = 'componentDemos';
 
-			this._links.push(
-				new MenuLink({
-					appendTo: name.startsWith('/examples/') ? examples : demos,
-					textContent: name.startsWith('/examples/') ? name.replace('/examples/', '') : name.slice(1),
-					href,
-					addClass: href === window.location.hash ? 'disabled' : '',
-					...(document.body.clientWidth < 780 && {
-						onPointerPress: () => {
-							this.options.collapsed = true;
-							window.location.hash = name;
+			if (name.startsWith('/examples/')) parent = 'examples';
+			else if (name.startsWith('/documentation/')) parent = 'documentation';
+
+			menuItems[parent].push({
+				style: { padding: '0', border: 'none' },
+				append: [
+					new Component({
+						tag: 'a',
+						textContent: /^\/\w+\//.test(name) ? name.replace(/^\/\w+\//, '') : name.slice(1),
+						href,
+						style: {
+							textDecoration: 'none',
+							color: 'inherit',
+							padding: '6px 6px 9px 6px',
+							borderBottom: '1px solid #999',
+							display: 'block',
 						},
 					}),
-				}),
-			);
+				],
+			});
+		});
+
+		this.menu = new Menu({
+			items: Object.keys(menuItems).map(item => capitalize(fromCamelCase(item, ' '), true)),
+			onSelect: ({ target, clientX, clientY }) => {
+				console.log(toCamelCase(target.textContent));
+
+				this.subMenu.setStyle({
+					display: 'block',
+					top: clientY + 6 + 'px',
+					left: clientX + 6 + 'px',
+				});
+
+				this.subMenu.options.items = menuItems[toCamelCase(target.textContent)];
+			},
+			style: {
+				position: 'absolute',
+				zIndex: 1,
+				display: 'none',
+				backgroundColor: '#333',
+				borderRadius: '3px',
+				boxShadow: '3px 3px 9px #222',
+			},
+			appendTo: this,
+		});
+
+		this.subMenu = new Menu({
+			style: {
+				position: 'absolute',
+				zIndex: 1,
+				display: 'none',
+				backgroundColor: '#333',
+				borderRadius: '3px',
+				boxShadow: '3px 3px 9px #222',
+				maxHeight: '50%',
+				overflow: 'auto',
+			},
+			appendTo: this,
+		});
+
+		this.menuButton = new Button({
+			icon: 'bars',
+			tooltip: {
+				position: 'bottomRight',
+				textContent: 'Menu',
+			},
+			appendTo: this,
+			onPointerPress: ({ clientX, clientY }) => {
+				const newMenuDisplay = this.menu.elem.style.display === 'block' ? 'none' : 'block';
+
+				this.menu.setStyle({
+					display: newMenuDisplay,
+					top: clientY + 6 + 'px',
+					left: clientX + 6 + 'px',
+				});
+
+				if (newMenuDisplay === 'none') this.subMenu.setStyle({ display: newMenuDisplay });
+			},
+		});
+
+		const title = new Elem({
+			tag: 'h1',
+			content: window.location.hash.slice(2),
+			style: { margin: '0 0 0 12px', fontSize: '24px' },
+			appendTo: this,
+		});
+
+		window.addEventListener('hashchange', () => {
+			title.elem.textContent = window.location.hash.slice(2);
+
+			this.menu.setStyle({ display: 'none' });
+			this.subMenu.setStyle({ display: 'none' });
 		});
 
 		super.render();
-	}
-
-	setOption(key, value) {
-		if (key === 'collapsed') this[value ? 'addClass' : 'removeClass']('collapsed');
-		else super.setOption(key, value);
-	}
-
-	filterLinks(filter) {
-		this.removeClass('collapsed');
-		this.collapseButton.options.icon = 'angle-up';
-
-		this._links.forEach(link => {
-			link.elem.style.display = link.elem.textContent.toLowerCase().includes(filter.toLowerCase()) ? '' : 'none';
-		});
-	}
-
-	updateSelection(route) {
-		if (!this._links) return;
-
-		this._links.forEach(link => {
-			if (link.options.href === `#${route}`) link.addClass('disabled');
-			else if (link.hasClass('disabled')) link.removeClass('disabled');
-		});
 	}
 }

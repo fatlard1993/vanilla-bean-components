@@ -1,10 +1,12 @@
+/* This file is automatically managed (bun build:index) (updateDemoViewIndex.js), do not edit by hand */
+
+import { styled } from '../styled/styled.js';
+
 import ButtonDemo from '../components/Button/demo.js';
 import CalendarDemo from '../components/Calendar/demo.js';
 import CodeDemo from '../components/Code/demo.js';
 import ColorPickerDemo from '../components/ColorPicker/demo.js';
-import ComponentDemo from '../components/Component/demo.js';
 import DialogDemo from '../components/Dialog/demo.js';
-import ElemDemo from '../components/Elem/demo.js';
 import FormDemo from '../components/Form/demo.js';
 import IconDemo from '../components/Icon/demo.js';
 import InputDemo from '../components/Input/demo.js';
@@ -37,14 +39,23 @@ import ShapeMatchGameExample from './examples/ShapeMatchGame';
 import StopwatchExample from './examples/Stopwatch';
 import TodoExample from './examples/Todo';
 
+import DocumentationView from './DemoView/DocumentationView.js';
+
+const MarkdownDocumentation = styled(DocumentationView, () => '', { folderName: 'markdown' });
+const ComponentDocumentation = styled(DocumentationView, () => '', { folderName: 'Component' });
+const ContextDocumentation = styled(DocumentationView, () => '', { folderName: 'Context' });
+const demoDocumentation = styled(DocumentationView, () => '', { folderName: 'demo' });
+const ElemDocumentation = styled(DocumentationView, () => '', { folderName: 'Elem' });
+const requestDocumentation = styled(DocumentationView, () => '', { folderName: 'request' });
+const styledDocumentation = styled(DocumentationView, () => '', { folderName: 'styled' });
+const themeDocumentation = styled(DocumentationView, () => '', { folderName: 'theme' });
+
 export default {
 	['/Button']: ButtonDemo,
 	['/Calendar']: CalendarDemo,
 	['/Code']: CodeDemo,
 	['/ColorPicker']: ColorPickerDemo,
-	['/Component']: ComponentDemo,
 	['/Dialog']: DialogDemo,
-	['/Elem']: ElemDemo,
 	['/Form']: FormDemo,
 	['/Icon']: IconDemo,
 	['/Input']: InputDemo,
@@ -76,4 +87,13 @@ export default {
 	['/examples/ShapeMatchGame']: ShapeMatchGameExample,
 	['/examples/Stopwatch']: StopwatchExample,
 	['/examples/Todo']: TodoExample,
+
+	['/documentation/markdown']: MarkdownDocumentation,
+	['/documentation/Component']: ComponentDocumentation,
+	['/documentation/Context']: ContextDocumentation,
+	['/documentation/demo']: demoDocumentation,
+	['/documentation/Elem']: ElemDocumentation,
+	['/documentation/request']: requestDocumentation,
+	['/documentation/styled']: styledDocumentation,
+	['/documentation/theme']: themeDocumentation,
 };

@@ -1,33 +1,43 @@
 #!/usr/bin/env sh
 
 changedFiles=$(echo `git diff --name-only --cached --pretty -r`)
-changedComponents=$(echo $changedFiles | grep -o "components/")
-changedUtils=$(echo $changedFiles | grep -o "utils/")
-changedElem=$(echo $changedFiles | grep -Eo "Elem/")
+
 changedComponent=$(echo $changedFiles | grep -Eo "Component/")
+changedComponents=$(echo $changedFiles | grep -o "components/")
 changedContext=$(echo $changedFiles | grep -Eo "Context/")
+changedElem=$(echo $changedFiles | grep -Eo "Elem/")
+changedRequest=$(echo $changedFiles | grep -Eo "request/")
+changedStyled=$(echo $changedFiles | grep -Eo "styled/")
+changedUtils=$(echo $changedFiles | grep -o "utils/")
 
 echo $changedFiles
-echo $changedComponents
+
+if [ "$changedComponent" != "" ]; then
+	bun test Component || exit 1
+fi
 
 if [ "$changedComponents" != "" ]; then
 	bun test components || exit 1
 fi
 
-if [ "$changedUtils" != "" ]; then
-	bun test utils || exit 1
+if [ "$changedContext" != "" ]; then
+	bun test Context || exit 1
 fi
 
 if [ "$changedElem" != "" ]; then
 	bun test Elem || exit 1
 fi
 
-if [ "$changedComponent" != "" ]; then
-	bun test Component || exit 1
+if [ "$changedRequest" != "" ]; then
+	bun test request || exit 1
 fi
 
-if [ "$changedContext" != "" ]; then
-	bun test Context || exit 1
+if [ "$changedStyled" != "" ]; then
+	bun test styled || exit 1
+fi
+
+if [ "$changedUtils" != "" ]; then
+	bun test utils || exit 1
 fi
 
 bun run format || exit 1

@@ -5,9 +5,12 @@ import DemoOptions from './DemoOptions';
 const StyledLabel = styled(
 	Label,
 	() => `
-		display: block;
 		width: auto;
 		margin: 0 3% 9px;
+
+		label {
+			display: block;
+		}
 	`,
 	{ collapsible: true },
 );

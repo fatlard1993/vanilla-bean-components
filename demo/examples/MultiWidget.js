@@ -1,6 +1,7 @@
 import { Component, Button, Select, theme } from '../..';
 
-import DemoView, { DemoWrapper } from '../DemoView';
+import ExampleView from '../DemoView/ExampleView';
+import exampleCode from './MultiWidget.js.asText';
 
 import { Counter } from './Counter';
 import { Calculator } from './Calculator';
@@ -41,10 +42,12 @@ class MultiWidget extends Component {
 	}
 }
 
-export default class Example extends DemoView {
+export default class Example extends ExampleView {
 	render() {
+		this.options.exampleCode = exampleCode;
+
 		super.render();
 
-		new DemoWrapper({ appendTo: this }, new MultiWidget());
+		new MultiWidget({ appendTo: this.demoWrapper });
 	}
 }

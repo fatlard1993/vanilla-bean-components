@@ -76,6 +76,7 @@ export default `
 		display: inline-block;
 		padding: 12px;
 		border-radius: 3px;
+		text-decoration: inherit;
 
 		button {
 			position: absolute !important;
@@ -90,7 +91,7 @@ export default `
 		}
 	}
 
-	code, textarea.syntaxHighlighting, input.syntaxHighlighting {
+	code, textarea.syntaxHighlighting, input.syntaxHighlighting, pre[lang] {
 		${fonts.code}
 
 		&[class*="language-html"] {

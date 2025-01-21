@@ -1,8 +1,8 @@
 # Demo Server
 
-The demo server is intended to provide a storybook-like experience for evaluating and referencing component features, props, and behaviors.
+The demo server provides documentation demos and examples for evaluating and referencing component features, props, and behaviors.
 
-![demo](../img/demo.png)
+<img src="../img/demo.png" alt="demo" width="100%"/>
 
 ## Start
 
@@ -12,6 +12,6 @@ The demo server is intended to provide a storybook-like experience for evaluatin
 
 ## Development
 
-The demo server is also capable of being run in "dev mode" with hot reloads making it a great place to work on the components.
-
 `bun run dev`
+
+The demo server is also a great place to work on the components when run in "dev mode"; which adds hot reloading, component names as class names, and some additional log outputs.

@@ -1,17 +1,17 @@
 /// <reference lib="dom" />
 
-import { getElemIndex, isDescendantOf } from './elem';
+import { getElementIndex, isDescendantOf } from './element';
 
-test('getElemIndex', async () => {
+test('getElementIndex', async () => {
 	const testElem1 = document.createElement('div');
 	document.body.append(testElem1);
 
 	const testElem2 = document.createElement('div');
 	document.body.append(testElem2);
 
-	expect(getElemIndex(testElem1), 0);
+	expect(getElementIndex(testElem1), 0);
 
-	expect(getElemIndex(testElem2), 1);
+	expect(getElementIndex(testElem2), 1);
 });
 
 test('isDescendantOf', async () => {

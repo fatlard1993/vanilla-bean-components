@@ -1,6 +1,7 @@
 import { Elem, Component, Button } from '../..';
 
-import DemoView, { DemoWrapper } from '../DemoView';
+import ExampleView from '../DemoView/ExampleView';
+import exampleCode from './Stopwatch.js.asText';
 
 export class Stopwatch extends Component {
 	constructor(options = {}) {
@@ -37,10 +38,12 @@ export class Stopwatch extends Component {
 	}
 }
 
-export default class Example extends DemoView {
+export default class Example extends ExampleView {
 	render() {
+		this.options.exampleCode = exampleCode;
+
 		super.render();
 
-		new DemoWrapper({ appendTo: this }, new Stopwatch());
+		new Stopwatch({ appendTo: this.demoWrapper });
 	}
 }

@@ -16,19 +16,23 @@ import {
 	List,
 } from '../..';
 
-import DemoView, { DemoWrapper } from '../DemoView';
+import ExampleView from '../DemoView/ExampleView';
+import exampleCode from './DlcWhiteboard.js.asText';
 
 const CANVAS_SIZE = 400;
 
-const Inkwell = styled.Component`
-	transform-origin: 0 100%;
-	transform: rotate(-90deg);
-	position: absolute;
-	top: 400px;
-	left: 0;
-	height: 12px;
-	width: 300px;
-`;
+const Inkwell = styled(
+	Component,
+	() => `
+		transform-origin: 0 100%;
+		transform: rotate(-90deg);
+		position: absolute;
+		top: 400px;
+		left: 0;
+		height: 12px;
+		width: 300px;
+	`,
+);
 
 const DlcStoreList = styled(
 	List,
@@ -343,10 +347,14 @@ class DlcWhiteboard extends Component {
 	}
 }
 
-export default class Example extends DemoView {
+export default class Example extends ExampleView {
 	render() {
+		this.options.exampleCode = exampleCode;
+
 		super.render();
 
-		new DemoWrapper({ style: { height: '100%' }, appendTo: this }, new DlcWhiteboard());
+		this.demoWrapper.setStyle({ height: '100%' });
+
+		new DlcWhiteboard({ appendTo: this.demoWrapper });
 	}
 }

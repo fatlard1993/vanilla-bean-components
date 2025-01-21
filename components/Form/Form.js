@@ -1,5 +1,5 @@
 import { fromCamelCase, capitalize } from '../../utils';
-import { Component } from '../Component';
+import { Component } from '../../Component';
 import { Input } from '../Input';
 import { Label } from '../Label';
 

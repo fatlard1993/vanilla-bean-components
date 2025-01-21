@@ -1,30 +1,34 @@
-import { styled } from '../../utils';
+import { Component } from '../../Component';
+import { styled } from '../../styled';
 import { Button } from '../Button';
 import { Input } from '../Input';
 
 import Tag from './Tag';
 
-const StyledComponent = styled.Component`
-	margin: 1% auto;
-	border-radius: 3px;
-	box-sizing: border-box;
-	min-height: 1em;
-	padding: 0;
+const StyledComponent = styled(
+	Component,
+	() => `
+		margin: 1% auto;
+		border-radius: 3px;
+		box-sizing: border-box;
+		min-height: 1em;
+		padding: 0;
 
-	&:after {
-		content: '';
-		clear: both;
-		display: table;
-	}
+		&:after {
+			content: '';
+			clear: both;
+			display: table;
+		}
 
-	&.readOnly {
-		pointer-events: none;
-		border: none;
-		background: none;
-		width: 100%;
-		margin: 0;
-	}
-`;
+		&.readOnly {
+			pointer-events: none;
+			border: none;
+			background: none;
+			width: 100%;
+			margin: 0;
+		}
+	`,
+);
 
 const TagListTextInput = styled(
 	Input,

@@ -1,11 +1,10 @@
 export * from '../Context';
-export * from '../Component/utils';
 
-export * from './api';
+export * from './browser';
+export * from './class';
 export * from './color';
 export * from './data';
-export * from './dom';
-export * from './elem';
+export * from './element';
 export * from './rand';
 export * from './string';
 export * from '../components/Router/utils';

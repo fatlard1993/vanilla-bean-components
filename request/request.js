@@ -1,33 +1,17 @@
 import { nanoid } from 'nanoid';
 
-export const cacheOptions = {
-	enabled: true,
-	staleTime: 60 * 1000,
-};
+import { hydrateUrl } from './hydrateUrl';
 
 export const cache = new Map();
 export const subscriptions = new Map();
 
-/** @type {(url: String, parameters: Object) => String */
-export const hydrateUrl = (url, parameters = {}) => {
-	let hydratedUrl = url;
-
-	Object.entries(parameters)
-		.filter(([, value]) => typeof value === 'string' && value.length > 0)
-		.forEach(([key, value]) => {
-			hydratedUrl = hydratedUrl.replace(`:${key}`, encodeURIComponent(value));
-		});
-
-	return hydratedUrl;
-};
-
-/** @typedef {(url: String, options: { invalidateAfter: Number, invalidates: Array, cache: Boolean, isRefetch: Boolean, onRefetch: Function, enabled: Boolean, urlParameters: Object, searchParameters: Object }) => Object Request */
+/** @typedef {(url: string, options: {invalidateAfter: number, invalidates: Array, cache: boolean, isRefetch: boolean, onRefetch: Function, enabled: boolean, urlParameters: object, searchParameters: object}) => object} Request */
 /** @type {Request} */
 export const request = async (url, options = {}) => {
 	const {
-		invalidateAfter = cacheOptions.staleTime,
+		invalidateAfter = 60 * 1000,
 		invalidates,
-		cache: useCache = invalidates ? false : cacheOptions.enabled,
+		cache: useCache = invalidates ? false : true,
 		isRefetch,
 		onRefetch,
 		enabled = true,
@@ -71,6 +55,29 @@ export const request = async (url, options = {}) => {
 		contentType,
 		body: await (contentType && contentType.includes('application/json') ? response.json() : response.text()),
 		success,
+		subscribe: callback => {
+			const subscriptionId = nanoid(5);
+			const unsubscribe = () => {
+				const newSubscription = subscriptions.get(id);
+				delete newSubscription[subscriptionId];
+
+				subscriptions.set(id, newSubscription);
+			};
+			const refetch = async overrides =>
+				await request.call(this, url, { isRefetch: subscriptionId, ...options, ...overrides });
+
+			const subscription = {
+				[subscriptionId]: {
+					onRefetch: callback,
+					unsubscribe,
+				},
+			};
+
+			if (!subscriptions.has(id)) subscriptions.set(id, { refetch, ...subscription });
+			else subscriptions.set(id, { ...subscriptions.get(id), ...subscription });
+
+			return { subscriptionId, unsubscribe, refetch };
+		},
 	};
 
 	if (success && invalidates) {
@@ -131,25 +138,7 @@ export const request = async (url, options = {}) => {
 
 			if (subscriptions.get(id)[isRefetch]) onRefetch(response);
 		} else {
-			const subscriptionId = nanoid(5);
-			const unsubscribe = () => {
-				const newSubscription = subscriptions.get(id);
-				delete newSubscription[subscriptionId];
-
-				subscriptions.set(id, newSubscription);
-			};
-			const refetch = async overrides =>
-				await request.call(this, url, { isRefetch: subscriptionId, ...options, ...overrides });
-
-			const subscription = {
-				[subscriptionId]: {
-					onRefetch,
-					unsubscribe,
-				},
-			};
-
-			if (!subscriptions.has(id)) subscriptions.set(id, { refetch, ...subscription });
-			else subscriptions.set(id, { ...subscriptions.get(id), ...subscription });
+			const { subscriptionId, unsubscribe, refetch } = response.subscribe(onRefetch);
 
 			response.subscriptionId = subscriptionId;
 			response.unsubscribe = unsubscribe;

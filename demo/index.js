@@ -26,7 +26,7 @@ class NotFound extends View {
 
 new Page({
 	appendTo: document.body,
-	append: [menu, new Router({ views, notFound: NotFound, onRenderView: route => menu.updateSelection(route) })],
+	append: [menu, new Router({ views, notFound: NotFound })],
 });
 
 const socket = new WebSocket(`ws://${window.location.host}/ws`);

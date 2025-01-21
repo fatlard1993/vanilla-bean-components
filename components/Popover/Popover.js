@@ -1,4 +1,4 @@
-import { styled } from '../../utils';
+import { styled } from '../../styled';
 import { Icon } from '../Icon';
 
 const state_enum = Object.freeze(['auto', 'manual']);

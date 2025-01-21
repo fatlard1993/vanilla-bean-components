@@ -1,6 +1,7 @@
 import { Component, Button } from '../..';
 
-import DemoView, { DemoWrapper } from '../DemoView';
+import ExampleView from '../DemoView/ExampleView';
+import exampleCode from './Counter.js.asText';
 
 export class Counter extends Component {
 	constructor(options = {}) {
@@ -18,10 +19,12 @@ export class Counter extends Component {
 	}
 }
 
-export default class Example extends DemoView {
+export default class Example extends ExampleView {
 	render() {
+		this.options.exampleCode = exampleCode;
+
 		super.render();
 
-		new DemoWrapper({ appendTo: this }, new Counter());
+		new Counter({ appendTo: this.demoWrapper });
 	}
 }

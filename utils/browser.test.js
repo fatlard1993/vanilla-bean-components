@@ -1,4 +1,4 @@
-import { copyToClipboard, isMac, readClipboard } from './dom';
+import { copyToClipboard, isMac, readClipboard } from './browser';
 
 test('isMac => true', () => {
 	const windowSpy = spyOn(window, 'window', 'get');

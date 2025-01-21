@@ -1,8 +1,10 @@
 /* eslint-disable spellcheck/spell-checker */
-import { styled } from '../../utils';
+import { Component } from '../../Component';
+import { styled } from '../../styled';
 import { Button } from '../Button';
 
-const StyledComponent = styled.Component(
+const StyledComponent = styled(
+	Component,
 	({ colors }) => `
 		border: 1px solid ${colors.white};
 		padding: 9px;

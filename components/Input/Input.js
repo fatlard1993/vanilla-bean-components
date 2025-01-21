@@ -1,4 +1,4 @@
-import { Component } from '../Component';
+import { Component } from '../../Component';
 import { updateValidationErrors, insertTabCharacter, adjustIndentation } from './utils';
 
 const type_enum = Object.freeze([

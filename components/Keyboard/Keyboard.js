@@ -1,10 +1,14 @@
-import { styled, tactileResponse } from '../../utils';
-import { Component } from '../Component';
+import { tactileResponse } from '../../utils';
+import { styled } from '../../styled';
+import { Component } from '../../Component';
 import Key from './Key';
 
-const KeyRow = styled.Component`
-	display: flex;
-`;
+const KeyRow = styled(
+	Component,
+	() => `
+		display: flex;
+	`,
+);
 
 class Keyboard extends Component {
 	constructor(options = {}, ...children) {
@@ -79,7 +83,7 @@ class Keyboard extends Component {
 
 				new Key({
 					key,
-					keyDefinition,
+					...keyDefinition,
 					appendTo: row,
 					onPointerDown: event => {
 						if (this.options.tactileResponse) tactileResponse();

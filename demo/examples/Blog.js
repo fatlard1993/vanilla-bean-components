@@ -1,6 +1,7 @@
 import { Component, Icon, delay } from '../..';
 
-import DemoView, { DemoWrapper } from '../DemoView';
+import ExampleView from '../DemoView/ExampleView';
+import exampleCode from './Blog.js.asText';
 
 const fetchPosts = async () => {
 	await delay(2000);
@@ -72,14 +73,16 @@ class Blog extends Component {
 	}
 }
 
-export default class Example extends DemoView {
+export default class Example extends ExampleView {
 	async render() {
+		this.options.exampleCode = exampleCode;
+
 		super.render();
 
-		const wrapper = new DemoWrapper({ appendTo: this }, new Loader());
+		new Loader({ appendTo: this.demoWrapper });
 
 		const posts = await fetchPosts();
 
-		wrapper.content(new Blog({ posts }));
+		this.demoWrapper.content(new Blog({ posts }));
 	}
 }

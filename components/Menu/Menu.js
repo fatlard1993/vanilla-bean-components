@@ -1,4 +1,4 @@
-import { styled } from '../../utils';
+import { styled } from '../../styled';
 import { List } from '../List';
 
 const StyledList = styled(
@@ -16,8 +16,9 @@ const StyledList = styled(
 				border-bottom: 1px solid ${colors.light(colors.gray)};
 			}
 
-			&:hover {
-				color: ${colors.light(colors.blue)};
+			&:hover, &:focus, &:focus-visible, a:hover, a:focus, a:focus-visible  {
+				outline: none;
+				color: ${colors.light(colors.blue)} !important;
 				border-color: ${colors.light(colors.blue)};
 			}
 		}

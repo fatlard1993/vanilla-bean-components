@@ -1,7 +1,9 @@
 /* eslint-disable spellcheck/spell-checker */
 import { TinyColor, random as randomColor } from '@ctrl/tinycolor';
 
-import { debounce, throttle, convertRange, styled } from '../../utils';
+import { debounce, throttle, convertRange } from '../../utils';
+import { Component } from '../../Component';
+import { styled } from '../../styled';
 import theme from '../../theme';
 import { Input } from '../Input';
 import { Button } from '../Button';
@@ -31,7 +33,8 @@ const StyledInput = styled(
 	`,
 );
 
-const PickerArea = styled.Component(
+const PickerArea = styled(
+	Component,
 	({ colors }) => `
 		position: relative;
 		width: 150px;
@@ -45,7 +48,8 @@ const PickerArea = styled.Component(
 	`,
 );
 
-const PickerIndicator = styled.Component(
+const PickerIndicator = styled(
+	Component,
 	({ colors }) => `
 		position: absolute;
 		top: -6px;
@@ -60,7 +64,8 @@ const PickerIndicator = styled.Component(
 	`,
 );
 
-const HueArea = styled.Component(
+const HueArea = styled(
+	Component,
 	({ colors }) => `
 		position: relative;
 		width: 150px;
@@ -74,7 +79,8 @@ const HueArea = styled.Component(
 	`,
 );
 
-const HueIndicator = styled.Component(
+const HueIndicator = styled(
+	Component,
 	({ colors }) => `
 		position: absolute;
 		width: 10px;

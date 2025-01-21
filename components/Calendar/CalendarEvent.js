@@ -1,8 +1,10 @@
-import { styled } from '../../utils';
-import { Elem } from '../Elem';
+import { Component } from '../../Component';
+import { Elem } from '../../Elem';
+import { styled } from '../../styled';
 import { formatDuration, formatTime } from './utils';
 
-const StyledEvent = styled.Component(
+const StyledEvent = styled(
+	Component,
 	({ colors }) => `
 		cursor: pointer;
 		color: ${colors.black};

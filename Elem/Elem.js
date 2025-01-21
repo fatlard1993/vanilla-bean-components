@@ -1,13 +1,13 @@
-import { buildClassList } from '../Component/utils';
+import { buildClassList } from '../utils';
 
 /** Elem - A bare-bones general purpose element building block */
 class Elem extends EventTarget {
 	/**
 	 * Create an Element
-	 * @param {Object} options - The options for initializing the component
-	 * @param {String} options.tag - The HTML tag
-	 * @param {Object} options.style - Style properties to set in the HTMLElement
-	 * @param {Object} options.attributes - HTML attributes to set in the HTMLElement
+	 * @param {object} options - The options for initializing the component
+	 * @param {string} options.tag - The HTML tag
+	 * @param {object} options.style - Style properties to set in the HTMLElement
+	 * @param {object} options.attributes - HTML attributes to set in the HTMLElement
 	 * @param {...children} children - Child elements to add to append option
 	 */
 	constructor({ tag = 'div', ...optionsWithoutConfig } = {}, ...children) {

@@ -1,20 +1,24 @@
-import { styled } from '../../utils';
+import { Component } from '../../Component';
+import { styled } from '../../styled';
 import { TooltipWrapper } from '../TooltipWrapper';
 
-const StyledComponent = styled.Component`
-	margin: 6px 0;
-	padding-left: 32px;
+const StyledComponent = styled(
+	Component,
+	() => `
+		margin: 6px 0;
+		padding-left: 32px;
 
-	&.noStyle {
-		padding-left: 0;
-		list-style: none;
+		&.noStyle {
+			padding-left: 0;
+			list-style: none;
 
-		li {
-			line-height: 1;
-			text-indent: 0;
+			li {
+				line-height: 1;
+				text-indent: 0;
+			}
 		}
-	}
-`;
+	`,
+);
 
 const ListItem = styled(
 	TooltipWrapper,

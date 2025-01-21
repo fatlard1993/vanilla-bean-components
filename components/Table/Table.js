@@ -1,7 +1,7 @@
 import { capitalize, orderBy } from '../../utils';
 import theme from '../../theme';
-import { Elem } from '../Elem';
-import { Component } from '../Component';
+import { Elem } from '../../Elem';
+import { Component } from '../../Component';
 import { Icon } from '../Icon';
 
 const defaultOptions = { tag: 'table' };

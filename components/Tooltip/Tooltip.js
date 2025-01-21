@@ -1,4 +1,4 @@
-import { styled } from '../../utils';
+import { styled } from '../../styled';
 import { Popover } from '../Popover';
 
 const defaultOptions = { position: 'topRight' };

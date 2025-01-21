@@ -1,10 +1,10 @@
+/* This file is automatically managed (bun build:index) (updateComponentIndex.js), do not edit by hand */
+
 export * from './Button';
 export * from './Calendar';
 export * from './Code';
 export * from './ColorPicker';
-export * from './Component';
 export * from './Dialog';
-export * from './Elem';
 export * from './Form';
 export * from './Icon';
 export * from './Input';

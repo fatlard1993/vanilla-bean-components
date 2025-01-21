@@ -1,12 +1,13 @@
 /* eslint-disable spellcheck/spell-checker */
-import { styled } from '../../utils';
-import { Component } from '../Component';
+import { styled } from '../../styled';
+import { Component } from '../../Component';
 
 import CalendarEvent from './CalendarEvent';
 import Toolbar from './Toolbar';
 import { getDaysInMonth, toNth } from './utils';
 
-const StyledComponent = styled.Component(
+const StyledComponent = styled(
+	Component,
 	({ colors }) => `
 		user-select: none;
 		display: flex;
@@ -67,26 +68,33 @@ const StyledComponent = styled.Component(
 	`,
 );
 
-const CalendarWrapper = styled.Component`
-	position: relative;
-	overflow: auto;
-	width: 100%;
-	flex: 1;
-`;
+const CalendarWrapper = styled(
+	Component,
+	() => `
+		position: relative;
+		overflow: auto;
+		width: 100%;
+		flex: 1;
+	`,
+);
 
-const MonthCalendar = styled.Component`
-	width: 100%;
-	height: 100%;
+const MonthCalendar = styled(
+	Component,
+	() => `
+		width: 100%;
+		height: 100%;
 
-	td {
-		max-width: 0;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-`;
+		td {
+			max-width: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+	`,
+);
 
-const MonthDayCell = styled.Component(
+const MonthDayCell = styled(
+	Component,
 	({ colors }) => `
 		position: relative;
 		border-collapse: collapse;
@@ -130,7 +138,8 @@ const MonthDayCell = styled.Component(
 	`,
 );
 
-const WeekDayCell = styled.Component(
+const WeekDayCell = styled(
+	Component,
 	({ colors }) => `
 		cursor: pointer;
 		background-color: ${colors.lighter(colors.gray)};
@@ -154,14 +163,17 @@ const WeekDayCell = styled.Component(
 	`,
 );
 
-const DayNowIndicator = styled.Component`
-	position: absolute;
-	width: 105%;
-	height: 2px;
-	background-color: ${({ colors }) => colors.red};
-	z-index: 34;
-	left: -5em;
-`;
+const DayNowIndicator = styled(
+	Component,
+	({ colors }) => `
+		position: absolute;
+		width: 105%;
+		height: 2px;
+		background-color: ${colors.red};
+		z-index: 34;
+		left: -5em;
+	`,
+);
 
 export const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 export const MONTHS = [

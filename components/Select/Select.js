@@ -1,4 +1,4 @@
-import { Elem } from '../Elem';
+import { Elem } from '../../Elem';
 import { Input } from '../Input';
 
 const defaultOptions = {
