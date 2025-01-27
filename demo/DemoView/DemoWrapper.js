@@ -9,10 +9,13 @@ export const DemoWrapper = styled(
 		padding: 5%;
 		background: ${colors.darkest(colors.gray)};
 
+		--aug-clip-tl1: initial;
+		--aug-clip-br1: initial;
+		--aug-border: initial;
 		--aug-border-bg: linear-gradient(-12deg, ${colors.light(colors.teal)}, ${colors.light(colors.blue)});
 		--aug-border-all: 2px;
 		--aug-tl1: 24px;
 		--aug-br1: 6px;
 	`,
-	{ attributes: { 'data-augmented-ui': 'tl-clip br-clip border' } },
+	{ augmentedUI: true },
 );

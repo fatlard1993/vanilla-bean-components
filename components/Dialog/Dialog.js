@@ -1,49 +1,205 @@
+/* eslint-disable spellcheck/spell-checker */
 import { styled } from '../../styled';
 import { Button } from '../Button';
 import { Component } from '../../Component';
+import { Elem } from '../../Elem';
 
-const DialogHeader = styled(
-	Component,
-	() => `
-		width: 50%;
-		text-align: center;
-		font-size: 1.2em;
-		line-height: 30px;
-		margin: 0;
-	`,
-);
-
-const DialogContent = styled(
+const StyledDialog = styled(
 	Component,
 	({ colors }) => `
-		flex: 1;
-		padding: 6px 6px 6px 21px;
-		overflow: hidden auto;
+		background-color: transparent;
+		color: ${colors.white};
+		flex-direction: column;
+		padding: 6px;
+		margin: 0 auto;
+		border: none;
+		top: 50%;
+		transform: translateY(-50%);
+		opacity: 0;
+		transition: display 0.6s allow-discrete, overlay 0.6s allow-discrete;
+		animation: fadeOut 0.6s ease-out forwards;
 
-		&::before {
-			content: "";
-			display: block;
-			position: absolute;
-			background: repeating-linear-gradient(43deg, transparent, transparent 7px, ${colors.lightest(
-				colors.teal,
-			)} 7px, ${colors.lightest(colors.teal)} 14px );
-			width: 9px;
-			height: 56px;
-			bottom: 64px;
-			left: 9px;
-			opacity: 0.8;
+		--aug-border-bg: linear-gradient(-12deg, ${colors.light(colors.teal)}, ${colors.light(colors.blue)});
+		--aug-border-all: 2px;
+		--aug-tl1: 24px;
+		--aug-tr-extend1: 42%;
+		--aug-tr1: 24px;
+		--aug-bl-extend2: 32px;
+		--aug-br1: 12px;
+
+		&[open] {
+			display: flex;
+			animation: fadeIn 0.6s ease-out forwards;
 		}
-	`,
-);
 
-const DialogFooter = styled(
-	Component,
-	({ colors }) => `
-		height: 40px;
-		border-top: 2px solid ${colors.lighter(colors.teal)};
-		display: flex;
-		flex-direction: row;
-		margin-right: -4px;
+		.header {
+			width: 50%;
+			text-align: center;
+			font-size: 1.2em;
+			line-height: 30px;
+			margin: 0;
+		}
+
+		.content {
+			flex: 1;
+			padding: 6px 6px 6px 21px;
+			overflow: hidden auto;
+
+			&:before {
+				content: "";
+				display: block;
+				position: absolute;
+				background: repeating-linear-gradient(43deg, transparent, transparent 7px, ${colors.lightest(colors.teal)} 7px, ${colors.lightest(colors.teal)} 14px );
+				width: 9px;
+				height: 56px;
+				bottom: 64px;
+				left: 9px;
+				opacity: 0.8;
+			}
+		}
+
+		.footer {
+			height: 40px;
+			border-top: 2px solid ${colors.lighter(colors.teal)};
+			display: flex;
+			flex-direction: row;
+			margin-right: -4px;
+		}
+
+		&.size-small {
+			width: 420px;
+			height: 210px;
+		}
+
+		&.size-standard {
+			width: 840px;
+			height: 420px;
+		}
+
+		&.size-large {
+			width: 90vw;
+			height: 90vh;
+		}
+
+		&::backdrop {
+			background-color: ${colors.black.setAlpha(0.9)};
+			backdrop-filter: blur(3px);
+		}
+
+		&.variant-info {
+			--aug-border-bg: linear-gradient(-12deg, ${colors.blue}, ${colors.light(colors.blue)});
+
+			.header {
+				color: ${colors.blue};
+			}
+
+			.content:before {
+				background: repeating-linear-gradient(43deg, transparent, transparent 7px, ${colors.blue} 7px, ${colors.light(colors.blue)} 14px );
+			}
+
+			.footer {
+				border-color: ${colors.blue};
+
+				button {
+					background-color: ${colors.blue};
+				}
+			}
+		}
+
+		&.variant-success {
+			--aug-border-bg: linear-gradient(-12deg, ${colors.green}, ${colors.light(colors.green)});
+
+			.header {
+				color: ${colors.green};
+			}
+
+			.content:before {
+				background: repeating-linear-gradient(43deg, transparent, transparent 7px, ${colors.green} 7px, ${colors.light(colors.green)} 14px );
+			}
+
+			.footer {
+				border-color: ${colors.green};
+
+				button {
+					background-color: ${colors.green};
+				}
+			}
+		}
+
+		&.variant-warning {
+			--aug-border-bg: linear-gradient(-12deg, ${colors.yellow}, ${colors.light(colors.yellow)});
+
+			.header {
+				color: ${colors.yellow};
+			}
+
+			.content:before {
+				background: repeating-linear-gradient(43deg, transparent, transparent 7px, ${colors.light(colors.yellow)} 7px, ${colors.lighter(colors.yellow)} 14px );
+			}
+
+			.footer {
+				border-color: ${colors.yellow};
+
+				button {
+					background-color: ${colors.yellow};
+				}
+			}
+		}
+
+		&.variant-error {
+			--aug-border-bg: linear-gradient(-12deg, ${colors.red}, ${colors.light(colors.red)});
+
+			.header {
+				color: ${colors.red};
+			}
+
+			.content:before {
+				background: repeating-linear-gradient(43deg, transparent, transparent 7px, ${colors.red} 7px, ${colors.light(colors.red)} 14px );
+			}
+
+			.footer {
+				border-color: ${colors.red};
+
+				button {
+					background-color: ${colors.red};
+				}
+			}
+		}
+
+		@keyframes fadeIn {
+			0% {
+				opacity: 0;
+				width: 150px;
+				height: 120px;
+			}
+			30% {
+				height: revert-layer;
+			}
+			50% {
+				opacity: 1;
+			}
+			100% {
+				opacity: 1;
+				width: revert-layer;
+				height: revert-layer;
+			}
+		}
+
+		@keyframes fadeOut {
+			0% {
+				opacity: 1;
+				width: revert-layer;
+				height: revert-layer;
+			}
+			60% {
+				opacity: 0.1;
+			}
+			100% {
+				opacity: 0;
+				width: 150px;
+				height: 120px;
+			}
+		}
 	`,
 );
 
@@ -56,45 +212,49 @@ const DialogButton = styled(
 );
 
 const size_enum = Object.freeze(['small', 'standard', 'large']);
-const defaultOptions = { tag: 'dialog', openOnRender: 16, modal: true, appendTo: document.body };
+const variant_enum = Object.freeze(['info', 'success', 'warning', 'error']);
 
-class Dialog extends Component {
-	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
+const defaultOptions = {
+	tag: 'dialog',
+	size: 'small',
+	openOnRender: 16,
+	modal: true,
+	appendTo: document.body,
+	registeredEvents: new Set(['close']),
+
+	augmentedUI: 'tl-clip tr-2-clip-x br-clip bl-2-clip-y border',
+};
+
+class Dialog extends StyledDialog {
+	variant_enum = variant_enum;
 	size_enum = size_enum;
 
-	constructor(options = {}, ...children) {
-		super(
-			{
-				...defaultOptions,
-				...options,
-			},
-			...children,
-		);
+	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
-		// eslint-disable-next-line spellcheck/spell-checker
-		this.elem.setAttribute('data-augmented-ui', 'tl-clip tr-2-clip-x br-clip bl-2-clip-y border');
+	constructor(options = {}, ...children) {
+		super({ ...defaultOptions, ...options }, children);
 
 		this.options['aria-labelledby'] = this.classId;
-
-		this.elem.addEventListener('close', this.elem.remove);
 	}
 
 	render() {
 		if (!this._header) {
-			this._header = new DialogHeader({
+			this._header = new Elem({
 				tag: 'h2',
 				id: this.classId,
+				addClass: ['header'],
 				append: this.options.header,
 				appendTo: this,
 			});
 		}
 
 		if (!this._body) {
-			this._body = new DialogContent({ content: this.options.body, appendTo: this });
+			this._body = new Elem({ content: this.options.body, addClass: ['content'], appendTo: this });
 		}
 
 		if (!this._footer) {
-			this._footer = new DialogFooter({
+			this._footer = new Elem({
+				addClass: ['footer'],
 				append:
 					this.options.footer ||
 					(this.options.buttons || []).map(
@@ -127,22 +287,31 @@ class Dialog extends Component {
 		if (key === 'openOnRender' || key === 'modal') return;
 
 		if (key === 'size') {
-			if (!size_enum.includes(value)) {
+			if (value && !size_enum.includes(value)) {
 				throw new Error(
 					`"${value}" is not a valid size. The size must be one of the following values: ${size_enum.join(', ')}`,
 				);
 			}
 
-			this.removeClass(...size_enum);
-			this.addClass(value);
+			this.removeClass(/\bsize-\S+\b/g);
+
+			if (value) this.addClass(`size-${value}`);
+		} else if (key === 'variant') {
+			if (value && !variant_enum.includes(value)) {
+				throw new Error(
+					`"${value}" is not a valid variant. The variant must be one of the following values: ${variant_enum.join(', ')}`,
+				);
+			}
+
+			this.removeClass(/\bvariant-\S+\b/g);
+
+			if (value) this.addClass(`variant-${value}`);
 		} else if (key === 'body') {
 			this._body.options.content = value;
 		} else super.setOption(key, value);
 	}
 
 	open(modal = this.options.modal) {
-		this.elem.style.display = 'flex';
-
 		try {
 			this.elem[modal ? 'showModal' : 'show']();
 		} catch (error) {
@@ -154,7 +323,6 @@ class Dialog extends Component {
 	}
 
 	close(returnValue) {
-		this.elem.style.display = 'none';
 		this.elem.close(returnValue);
 	}
 }

@@ -125,7 +125,10 @@ class Component extends Elem {
 
 		if (key === 'style') this.setStyle(value);
 		else if (key === 'attributes') this.setAttributes(value);
-		else if (this.__knownAttributes.has(key) || key.startsWith('aria-')) {
+		else if (key === 'augmentedUI') {
+			if (value) this.elem.setAttribute('data-augmented-ui', typeof value === 'string' ? value : '');
+			else this.elem.removeAttribute('data-augmented-ui');
+		} else if (this.__knownAttributes.has(key) || key.startsWith('aria-')) {
 			this.elem.setAttribute(key, value);
 		} else if (typeof this[key] === 'function') this[key].call(this, value);
 		else if (this.hasOwnProperty(key)) this[key] = value;
@@ -179,7 +182,7 @@ class Component extends Elem {
 	on({ targetEvent, id = targetEvent, callback }) {
 		this.cleanup?.[id]?.();
 
-		if (commonEvents.has(targetEvent)) {
+		if (commonEvents.has(targetEvent) || this.__registeredEvents.has(targetEvent)) {
 			this.elem.addEventListener(targetEvent, callback);
 
 			this.addCleanup(id, () => this.elem.removeEventListener(targetEvent, callback));
@@ -223,13 +226,7 @@ class Component extends Elem {
 			return true;
 		}
 
-		if (this.__registeredEvents.has(targetEvent)) {
-			this.addEventListener(targetEvent, callback);
-
-			this.addCleanup(id, () => this.removeEventListener(targetEvent, callback));
-
-			return true;
-		}
+		return false;
 	}
 
 	emit(eventType, detail) {

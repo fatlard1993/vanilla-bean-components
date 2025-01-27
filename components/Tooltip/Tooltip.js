@@ -1,14 +1,9 @@
 import { styled } from '../../styled';
 import { Popover } from '../Popover';
 
-const defaultOptions = { position: 'topRight' };
-
-const position_enum = ['center', 'top', 'bottom', 'left', 'right', 'topLeft', 'topRight', 'bottomLeft', 'bottomRight'];
-
 const StyledPopover = styled(
 	Popover,
 	({ colors }) => `
-		display: none;
 		position: absolute;
 		padding: 3px;
 		z-index: 1;
@@ -18,11 +13,10 @@ const StyledPopover = styled(
 		background-color: ${colors.white};
 		color: ${colors.black};
 		opacity: 0;
-		animation-name: fadeIn, visible;
-		animation-timing-function: ease-in, ease-out;
-		animation-iteration-count: 1, infinite;
-		animation-duration: 0.2s, 1s;
-		animation-delay: 1s, 1.2s;
+
+		&:popover-open {
+			animation: fadeIn 0.2s ease-in forwards 1s;
+		}
 
 		&:before {
 			padding: 0 6px 0 3px;
@@ -80,19 +74,15 @@ const StyledPopover = styled(
 				opacity: 1;
 			}
 		}
-
-		@keyframes visible {
-			from {
-				opacity: 1;
-			}
-			to {
-				opacity: 1;
-			}
-		}
 	`,
 );
 
+const defaultOptions = { position: 'topRight', autoOpen: false };
+
+const position_enum = ['center', 'top', 'bottom', 'left', 'right', 'topLeft', 'topRight', 'bottomLeft', 'bottomRight'];
+
 class Tooltip extends StyledPopover {
+	position_enum = position_enum;
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
 	constructor(options = {}, ...children) {
@@ -100,10 +90,9 @@ class Tooltip extends StyledPopover {
 			{
 				...defaultOptions,
 				...options,
-				autoOpen: false,
 				addClass: ['tooltip', ...(options.addClass || [])],
 			},
-			...children,
+			children,
 		);
 	}
 

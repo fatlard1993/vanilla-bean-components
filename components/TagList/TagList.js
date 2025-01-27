@@ -2,6 +2,7 @@ import { Component } from '../../Component';
 import { styled } from '../../styled';
 import { Button } from '../Button';
 import { Input } from '../Input';
+import { Popover } from '../Popover';
 
 import Tag from './Tag';
 
@@ -62,6 +63,8 @@ class TagList extends StyledComponent {
 			this.tagInput = new TagListTextInput({
 				placeholder: 'New Tag',
 				onKeyUp: () => {
+					this.addButtonPopover[this.tagInput.elem.value.length > 0 ? 'show' : 'hide']();
+
 					this.addTag.elem.style.width = `${Math.max(
 						260,
 						this.tagInput.elem.value.length *
@@ -69,6 +72,32 @@ class TagList extends StyledComponent {
 					)}px`;
 				},
 			});
+
+			const { top, left } = this.elem.getBoundingClientRect();
+			this.addButtonPopover = new Popover(
+				{
+					autoOpen: false,
+					y: top - 6,
+					x: left - 6,
+					style: { overflow: 'visible', background: 'none', border: 'none' },
+				},
+				new Button({
+					icon: 'plus',
+					onPointerPress: () => {
+						const tags = Array.from(this.elem.children).map(elem => elem.textContent);
+
+						if (this.tagInput.elem.value.length === 0 || tags.includes(this.tagInput.elem.value)) return;
+
+						const newTag = new Tag({ textContent: this.tagInput.elem.value });
+
+						this.elem.insertBefore(newTag.elem, this.addTag.elem);
+
+						this.tagInput.elem.value = '';
+
+						this.tagInput.elem.focus();
+					},
+				}),
+			);
 
 			this.addButton = new TagListIconButton({
 				icon: 'plus',
@@ -87,11 +116,14 @@ class TagList extends StyledComponent {
 				},
 			});
 
-			this.addTag = new Tag({
-				readOnly: true,
-				addClass: 'addTag',
-				append: [this.tagInput, this.addButton],
-			});
+			this.addTag = new Tag(
+				{
+					readOnly: true,
+					addClass: 'addTag',
+				},
+				this.tagInput,
+				this.addButtonPopover,
+			);
 		}
 
 		this.append([

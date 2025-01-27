@@ -11,20 +11,20 @@ import { saturation, hue } from './svg';
 
 const StyledInput = styled(
 	Input,
-	() => `
-		background-color: ${theme.colors.light(theme.colors.gray)};
+	({ colors }) => `
+		background-color: ${colors.light(colors.gray)};
 		padding: 18px 18px 12px;
 		border-radius: 5px;
 		margin-bottom: 6px;
 		text-indent: 0;
 		border: none;
 
-		--aug-tl1: 32px;
-		--aug-tr-extend2: 42%;
-		--aug-br-extend1: 0px;
-		--aug-border-bg: linear-gradient(-66deg, ${theme.colors
-			.lighter(theme.colors.teal)
-			.setAlpha(0.5)}, ${theme.colors.blue.setAlpha(0.5)});
+		--aug-clip-tl1: initial;
+		--aug-clip-tr1: initial;
+		--aug-clip-bl1: initial;
+		--aug-clip-br1: initial;
+		--aug-border: initial;
+		--aug-border-bg: radial-gradient(circle at left bottom, ${colors.white} 30px, ${colors} 30px), radial-gradient(circle at right bottom, ${colors.white} 30px, ${colors} 30px), radial-gradient(circle at right top, ${colors.white} 30px, ${colors} 30px), radial-gradient(circle at left top, ${colors.white} 30px, ${colors} 30px);
 
 		input {
 			margin: 18px auto 9px;
@@ -136,7 +136,7 @@ const ColorSwatch = styled(
 	{ icon: 'fill-drip' },
 );
 
-const defaultOptions = { tag: 'div', value: '#666', onChange: () => {} };
+const defaultOptions = { tag: 'div', value: '#666', onChange: () => {}, augmentedUI: true };
 
 class ColorPicker extends StyledInput {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
@@ -149,8 +149,6 @@ class ColorPicker extends StyledInput {
 		super(options, children);
 
 		this.pointers = {};
-
-		this.elem.setAttribute('data-augmented-ui', 'tl-clip tr-2-clip-y br-2-clip-y bl-clip border');
 
 		this.elem.addEventListener('pointerdown', this.interactionInit.bind(this));
 	}

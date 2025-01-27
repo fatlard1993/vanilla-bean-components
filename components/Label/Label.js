@@ -3,7 +3,7 @@ import { styled } from '../../styled';
 import { Component } from '../../Component';
 import { TooltipWrapper } from '../TooltipWrapper';
 
-const StyledComponent = styled(
+const StyledLabel = styled(
 	TooltipWrapper,
 	({ colors, fonts }) => `
 		position: relative;
@@ -106,7 +106,7 @@ const variant_enum = Object.freeze(['overlay', 'collapsible', 'inline', 'inline-
 
 const defaultOptions = { variant: 'simple' };
 
-class Label extends StyledComponent {
+class Label extends StyledLabel {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 	variant_enum = variant_enum;
 
@@ -151,10 +151,7 @@ class Label extends StyledComponent {
 			this.removeClass(/\bvariant-\S+\b/g);
 			this.addClass(`variant-${value}`);
 
-			this.elem.setAttribute(
-				'data-augmented-ui',
-				value === 'collapsible' ? 'tl-clip tr-2-clip-x br-clip bl-clip border' : '',
-			);
+			this.options.augmentedUI = value === 'collapsible' ? 'tl-clip tr-2-clip-x br-clip bl-clip border' : false;
 		} else if (key === 'for') {
 			let forId = typeof value === 'string' ? value : value?.id || value?.elem?.id;
 

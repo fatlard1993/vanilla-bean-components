@@ -10,6 +10,7 @@ export default class Demo extends DemoView {
 		this.component = new Dialog({
 			header: 'header',
 			size: 'small',
+			variant: null,
 			body: [
 				new Component({
 					style: { color: 'green' },
@@ -24,6 +25,7 @@ export default class Demo extends DemoView {
 
 				closeDialog();
 			},
+			appendTo: this.demoWrapper,
 		});
 
 		new Button({
