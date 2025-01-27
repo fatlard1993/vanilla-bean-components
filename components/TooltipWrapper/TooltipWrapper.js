@@ -12,10 +12,6 @@ const StyledIcon = styled(
 			&:hover {
 				overflow: visible;
 				vertical-align: top;
-
-				.tooltip {
-					display: block;
-				}
 			}
 		}
 	`,
@@ -35,6 +31,16 @@ export default class TooltipWrapper extends StyledIcon {
 				});
 
 				this.addClass('hasTooltip');
+
+				this.on({
+					targetEvent: 'pointerover',
+					callback: ({ clientX, clientY }) => this._tooltip.show({ x: clientX, y: clientY }),
+				});
+
+				this.on({
+					targetEvent: 'pointerout',
+					callback: () => this._tooltip.hide(),
+				});
 			}
 		} else super.setOption(key, value);
 	}

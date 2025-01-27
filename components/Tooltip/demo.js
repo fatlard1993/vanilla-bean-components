@@ -9,7 +9,7 @@ export default class Demo extends DemoView {
 			textContent: 'My Custom Tooltip',
 			icon: 'icons',
 			position: 'center',
-			style: { display: 'inline-block', position: 'relative', opacity: 1 },
+			style: { display: 'inline-block', position: 'relative', opacity: 1, animation: 'none' },
 			appendTo: this.demoWrapper,
 		});
 

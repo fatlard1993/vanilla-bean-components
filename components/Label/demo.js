@@ -9,7 +9,7 @@ export default class Demo extends DemoView {
 		this.component = new Label(
 			{
 				label: 'label',
-				tooltip: 'tooltip',
+				tooltip: 'Here is some tooltip text!',
 				variant: 'overlay',
 				appendTo: this.demoWrapper,
 			},

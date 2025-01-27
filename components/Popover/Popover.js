@@ -22,7 +22,7 @@ export default class Popover extends StyledIcon {
 	constructor({ autoOpen = true, ...options } = {}, ...children) {
 		super(
 			{
-				visualParent: document.body,
+				viewport: document.documentElement,
 				appendTo: document.body,
 				state: 'auto',
 				onConnected: () => {
@@ -30,7 +30,7 @@ export default class Popover extends StyledIcon {
 				},
 				...options,
 			},
-			...children,
+			children,
 		);
 
 		this.elem.id = this.classId;
@@ -39,12 +39,20 @@ export default class Popover extends StyledIcon {
 		if (this.options.x !== undefined && this.options.y !== undefined) this.edgeAwarePlacement(this.options);
 	}
 
-	edgeAwarePlacement({ x, y, maxHeight = 132, maxWidth = 264, padding = 24, visualParent }) {
-		if (!visualParent) visualParent = this.options.visualParent || this.options.appendTo;
+	edgeAwarePlacement({
+		x,
+		y,
+		maxHeight = 132,
+		maxWidth = 264,
+		padding = 24,
+		viewport = this.options.viewport || this.options.appendTo,
+	}) {
+		const { left, bottom, right } = (viewport?.elem ?? viewport).getBoundingClientRect();
 
-		let pastRight = x + maxWidth + padding >= visualParent.clientWidth;
-		const pastLeft = x - maxWidth + padding <= 0;
-		const pastBottom = y + maxHeight + padding >= visualParent.clientHeight;
+		let pastRight = x + maxWidth + padding >= right;
+		const pastLeft = x - maxWidth + padding <= left;
+		const pastBottom = y + maxHeight + padding >= bottom;
+		// const pastTop = y - maxHeight + padding <= top;
 
 		if (pastLeft && pastRight) {
 			x = padding;
@@ -54,9 +62,9 @@ export default class Popover extends StyledIcon {
 		this.elem.style.maxWidth = `${maxWidth}px`;
 		this.elem.style.maxHeight = `${maxHeight}px`;
 		this.elem.style.top = pastBottom ? 'unset' : `${y}px`;
-		this.elem.style.bottom = pastBottom ? `${visualParent.clientHeight - y}px` : 'unset';
+		this.elem.style.bottom = pastBottom ? `${document.documentElement.clientHeight + 18 - y}px` : 'unset';
 		this.elem.style.left = pastRight ? 'unset' : `${x}px`;
-		this.elem.style.right = pastRight ? `${visualParent.clientWidth - x}px` : 'unset';
+		this.elem.style.right = pastRight ? `${document.documentElement.clientWidth + 18 - x}px` : 'unset';
 	}
 
 	show(options) {

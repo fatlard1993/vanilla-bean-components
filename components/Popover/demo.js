@@ -25,13 +25,14 @@ export default class Demo extends DemoView {
 			autoOpen: false,
 			content: 'Some content for our popover',
 			appendTo: this.demoWrapper,
+			viewport: this.demoWrapper,
 		});
 
 		super.render();
 
 		new Label({
 			appendTo: this.demoWrapper,
-			label: { content: 'Hover Me', style: { pointerEvents: 'none' } },
+			label: { content: 'Hover Me', style: { pointerEvents: 'none', height: '100px' } },
 			onHover: event => this.component.show({ x: event.clientX + 10, y: event.clientY + 10 }),
 			onPointerLeave: () => this.component.hide(),
 		});
