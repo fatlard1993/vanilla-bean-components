@@ -22,7 +22,7 @@ export default class DemoOptions extends List {
 			items: Object.entries(component.options).map(
 				([key, value]) =>
 					new Label(
-						key,
+						{ label: key, variant: 'collapsible', collapsed: true },
 						new List({
 							addClass: ['noStyle'],
 							items: conditionalList([
