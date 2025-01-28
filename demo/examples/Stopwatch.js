@@ -20,13 +20,13 @@ export class Stopwatch extends Component {
 		super.render();
 	}
 
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'time') this._time.content(`${value}ms `);
 		else if (key === 'running') this[value ? 'start' : 'stop']();
 		else if (key === 'interval' && this.options.running) {
 			this.stop();
 			this.start(value);
-		} else super.setOption(key, value);
+		} else super._setOption(key, value);
 	}
 
 	start(interval = this.options.interval) {

@@ -70,7 +70,7 @@ export default class Input extends Component {
 		}
 	}
 
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'height' && this.tag === 'textarea') {
 			if (value === 'auto') {
 				this.__updateAutoHeight = () => {
@@ -92,7 +92,7 @@ export default class Input extends Component {
 		else if (key === 'language' && this.options.syntaxHighlighting) {
 			this.removeClass(/\blanguage-\S+\b/g);
 			this.addClass(`language-${value}`);
-		} else super.setOption(key, value);
+		} else super._setOption(key, value);
 
 		if (this.rendered && key === 'value') this.validate();
 	}

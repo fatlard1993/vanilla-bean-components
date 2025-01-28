@@ -13,11 +13,11 @@ const StyledComponent = styled(
 );
 
 class TodoListItem extends StyledComponent {
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'checked') {
 			this[value ? 'addClass' : 'removeClass']('checked');
 		}
-		super.setOption(key, value);
+		super._setOption(key, value);
 	}
 
 	render() {
@@ -105,12 +105,12 @@ class Todo extends Component {
 		super.render();
 	}
 
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'items') {
 			localStorage.setItem('todo_items', JSON.stringify(value));
 		}
 
-		super.setOption(key, value);
+		super._setOption(key, value);
 	}
 }
 

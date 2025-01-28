@@ -1,9 +1,11 @@
 import { Code, Label } from '../../components';
-import DemoView, { DemoWrapper } from '.';
+import DemoView from '.';
 
 export default class ExampleView extends DemoView {
 	async render() {
-		this.demoWrapper = new DemoWrapper({ appendTo: this });
+		this.elem.style.overflow = 'auto';
+
+		super.render();
 
 		if (this.options.exampleCode) {
 			new Label(
@@ -15,7 +17,5 @@ export default class ExampleView extends DemoView {
 				}),
 			);
 		}
-
-		super.render();
 	}
 }

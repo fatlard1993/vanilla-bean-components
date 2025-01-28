@@ -50,7 +50,11 @@ export default class DemoMenu extends StyledComponent {
 			else if (name.startsWith('/documentation/')) parent = 'documentation';
 
 			menuItems[parent].push({
-				style: { padding: '0', border: 'none' },
+				styles: ({ colors }) => ({
+					padding: '0',
+					border: 'none',
+					...(window.location.hash === href ? { background: colors.black, cursor: 'default' } : {}),
+				}),
 				append: [
 					new Component({
 						tag: 'a',
@@ -71,12 +75,10 @@ export default class DemoMenu extends StyledComponent {
 		this.menu = new Menu({
 			items: Object.keys(menuItems).map(item => capitalize(fromCamelCase(item, ' '), true)),
 			onSelect: ({ target, clientX, clientY }) => {
-				console.log(toCamelCase(target.textContent));
-
 				this.subMenu.setStyle({
 					display: 'block',
-					top: clientY + 6 + 'px',
-					left: clientX + 6 + 'px',
+					top: `${clientY + 6}px`,
+					left: `${clientX + 6}px`,
 				});
 
 				this.subMenu.options.items = menuItems[toCamelCase(target.textContent)];

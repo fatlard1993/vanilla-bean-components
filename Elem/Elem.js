@@ -22,14 +22,20 @@ class Elem extends EventTarget {
 
 		this.elem._elem = this;
 
-		Object.entries(this.options).forEach(([key, value]) => this.setOption(key, value));
+		Object.entries(this.options).forEach(([key, value]) => this._setOption(key, value));
 	}
 
 	toString() {
 		return '[object Elem]';
 	}
 
-	setOption(key, value) {
+	/**
+	 * Pseudo-protected method - setOption - Handles the behavior of a changing option where applicable
+	 * (called by Elem constructor, not intended for direct invocation)
+	 * @param {string} key - The option key
+	 * @param {any} value - The new option value
+	 */
+	_setOption(key, value) {
 		if (key === 'style') this.setStyle(value);
 		else if (key === 'attributes') this.setAttributes(value);
 		else if (typeof this[key] === 'function') this[key].call(this, value);

@@ -341,9 +341,9 @@ class DlcWhiteboard extends Component {
 		super.render();
 	}
 
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'credits') this._credits.content(`Credits: ${value}`);
-		else super.setOption(key, value);
+		else super._setOption(key, value);
 	}
 }
 

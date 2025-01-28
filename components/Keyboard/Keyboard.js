@@ -51,10 +51,10 @@ class Keyboard extends Component {
 		this.setLayout(this.options.layout);
 	}
 
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'layouts' || key === 'keyDefinitions') return;
 		else if (key === 'layout') this.setLayout(value);
-		else super.setOption(key, value);
+		else super._setOption(key, value);
 	}
 
 	// todo native keyboard events https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/KeyboardEvent

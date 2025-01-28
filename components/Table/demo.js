@@ -1,13 +1,10 @@
-import DemoView, { DemoWrapper } from '../../demo/DemoView';
+import DemoView from '../../demo/DemoView';
 import theme from '../../theme';
 import { Table } from '.';
 
 export default class Demo extends DemoView {
 	render() {
-		this.demoWrapper = new DemoWrapper({ appendTo: this });
-
 		this.component = new Table({
-			appendTo: this.demoWrapper,
 			data: [
 				{ foo: true, bar: 'one', baz: 'wow' },
 				{ foo: false, unused: 2, bar: 'two', baz: 'amazing' },

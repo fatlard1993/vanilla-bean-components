@@ -149,8 +149,6 @@ class ColorPicker extends StyledInput {
 		super(options, children);
 
 		this.pointers = {};
-
-		this.elem.addEventListener('pointerdown', this.interactionInit.bind(this));
 	}
 
 	render() {
@@ -165,6 +163,7 @@ class ColorPicker extends StyledInput {
 		this.hueArea = new HueArea({
 			innerHTML: hue,
 			prependTo: this.elem,
+			onPointerDown: this.interactionInit.bind(this),
 		});
 		this.hueIndicator = new HueIndicator({
 			appendTo: this.hueArea,
@@ -173,6 +172,7 @@ class ColorPicker extends StyledInput {
 		this.pickerArea = new PickerArea({
 			innerHTML: saturation,
 			prependTo: this.elem,
+			onPointerDown: this.interactionInit.bind(this),
 		});
 		this.pickerIndicator = new PickerIndicator({
 			appendTo: this.pickerArea,
@@ -220,7 +220,7 @@ class ColorPicker extends StyledInput {
 		return { h, s, l, color, hslString };
 	}
 
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'value') {
 			if (!value) return;
 
@@ -235,7 +235,7 @@ class ColorPicker extends StyledInput {
 			this.elem.style.backgroundColor = hslString;
 
 			this.pickerArea.elem.style.backgroundColor = `hsl(${h}, 100%, 50%)`;
-		} else super.setOption(key, value);
+		} else super._setOption(key, value);
 	}
 
 	getPosition({ clientX, clientY }) {

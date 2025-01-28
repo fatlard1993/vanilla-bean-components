@@ -9,7 +9,6 @@ const StyledLabel = styled(
 		display: block;
 		width: auto;
 	`,
-	{ collapsible: true },
 );
 
 const CodeInput = styled(
@@ -107,7 +106,7 @@ export class Playground extends Component {
 		super.render();
 	}
 
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'html' || key === 'js' || key === 'css') {
 			this.updateOutput({ html: this.options.html, js: this.options.js, css: this.options.css, [key]: value });
 		} else if (key === 'width')
@@ -115,7 +114,7 @@ export class Playground extends Component {
 				'playground_db',
 				JSON.stringify({ html: this.options.html, js: this.options.js, css: this.options.css, [key]: value }),
 			);
-		else super.setOption(key, value);
+		else super._setOption(key, value);
 	}
 
 	updateOutput({ html, js, css }) {

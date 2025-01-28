@@ -8,14 +8,14 @@ export class Counter extends Component {
 		super({ tag: 'span', count: 0, ...options });
 	}
 
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'count') {
 			const counter = new Component({ tag: 'span', content: `❤ ${value} ` });
 			const plus = new Button({ content: '👍', onPointerPress: () => ++this.options.count });
 			const minus = new Button({ content: '👎', onPointerPress: () => --this.options.count });
 
 			this.content([counter, plus, minus]);
-		} else super.setOption(key, value);
+		} else super._setOption(key, value);
 	}
 }
 

@@ -66,11 +66,11 @@ class BombGame extends Component {
 		super.render();
 	}
 
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'score') this._score.content(`Score: ${value}`);
 		else if (key === 'time') this._time.content(`Time Remaining: ${(value / 1000).toFixed(1)}s`);
 		else if (key === 'paused') this[value ? 'pause' : 'play']();
-		else super.setOption(key, value);
+		else super._setOption(key, value);
 	}
 
 	play() {

@@ -1,6 +1,6 @@
 import { appendStyles, postCSS, themeStyles } from '../styled';
 import { classSafeNanoid } from '../utils';
-import Context from '../Context';
+import { Context } from '../Context';
 import { Elem } from '../Elem';
 
 import { observeElementConnection } from './observeElementConnection';
@@ -64,7 +64,7 @@ class Component extends Elem {
 			append: [optionsWithoutConfig.append, children],
 		});
 
-		const setOption = ({ detail: { key, value } }) => this.setOption(key, value);
+		const setOption = ({ detail: { key, value } }) => this._setOption(key, value);
 
 		this.options.addEventListener('set', setOption);
 
@@ -110,13 +110,19 @@ class Component extends Elem {
 				return [...options, option];
 			}, []);
 
-			sortedOptions.forEach(([key, value]) => this.setOption(key, value));
+			sortedOptions.forEach(([key, value]) => this._setOption(key, value));
 		} else this.options = {};
 
 		this.rendered = true;
 	}
 
-	setOption(key, value) {
+	/**
+	 * Pseudo-protected method - setOption - Handles the behavior of a changing option where applicable
+	 * (called by options Context, not intended for direct invocation)
+	 * @param {string} key - The option key
+	 * @param {any} value - The new option value
+	 */
+	_setOption(key, value) {
 		if (key.startsWith('on')) {
 			const targetEvent = key.replace(/^on/, '').toLowerCase();
 
@@ -240,7 +246,7 @@ class Component extends Elem {
 		const themedStyles = themeStyles({ styles, scope: `.${this.classId}` });
 
 		if (typeof themedStyles === 'object') {
-			this?.setStyle(themeStyles);
+			this?.setStyle(themedStyles);
 
 			return;
 		}

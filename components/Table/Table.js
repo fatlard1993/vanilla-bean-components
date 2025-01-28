@@ -28,7 +28,7 @@ class Table extends Component {
 		super.render();
 	}
 
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'sort' && this.rendered) {
 			this.options.onSort(value, this.options.sortDirection);
 		} else if (key === 'sortDirection' && this.rendered) {
@@ -111,7 +111,7 @@ class Table extends Component {
 					),
 				);
 			}
-		} else super.setOption(key, value);
+		} else super._setOption(key, value);
 	}
 }
 

@@ -53,7 +53,7 @@ class Code extends Component {
 		super.render();
 	}
 
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'language') {
 			if (this.options.multiline) {
 				this._code.removeClass(/\blanguage-\S+\b/g);
@@ -64,7 +64,7 @@ class Code extends Component {
 			this.addClass(`language-${value}`);
 		} else if (key === 'code') {
 			(this.options.multiline ? this._code : this).elem.textContent = value;
-		} else super.setOption(key, value);
+		} else super._setOption(key, value);
 	}
 }
 

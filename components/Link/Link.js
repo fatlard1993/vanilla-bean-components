@@ -19,11 +19,11 @@ class Link extends TooltipWrapper {
 		);
 	}
 
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'variant') {
 			this.removeClass(/\bvariant-\S+\b/g);
 			this.addClass(`variant-${value}`);
-		} else super.setOption(key, value);
+		} else super._setOption(key, value);
 	}
 }
 

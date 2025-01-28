@@ -19,7 +19,7 @@ const StyledIcon = styled(
 
 /** A Component with support for a tooltip */
 export default class TooltipWrapper extends StyledIcon {
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'tooltip') {
 			const tooltipOptions = typeof value === 'object' ? value : { textContent: value };
 
@@ -42,6 +42,6 @@ export default class TooltipWrapper extends StyledIcon {
 					callback: () => this._tooltip.hide(),
 				});
 			}
-		} else super.setOption(key, value);
+		} else super._setOption(key, value);
 	}
 }

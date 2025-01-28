@@ -67,9 +67,9 @@ class Post extends Component {
 }
 
 class Blog extends Component {
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'posts') this.content(value.map(post => new Post(post)));
-		else super.setOption(key, value);
+		else super._setOption(key, value);
 	}
 }
 

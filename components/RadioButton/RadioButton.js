@@ -57,7 +57,7 @@ const RadioButtonInput = styled(
 );
 
 class RadioButton extends Component {
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'options') {
 			this.empty();
 
@@ -81,7 +81,7 @@ class RadioButton extends Component {
 						}),
 				),
 			);
-		} else super.setOption(key, value);
+		} else super._setOption(key, value);
 	}
 }
 

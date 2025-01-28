@@ -1,12 +1,10 @@
-import DemoView, { DemoWrapper } from '../../demo/DemoView';
+import DemoView from '../../demo/DemoView';
 import { Component } from '../../Component';
 import { Button } from '../Button';
 import { Dialog } from '.';
 
 export default class Demo extends DemoView {
 	render() {
-		this.demoWrapper = new DemoWrapper({ appendTo: this });
-
 		this.component = new Dialog({
 			header: 'header',
 			size: 'small',
@@ -25,15 +23,14 @@ export default class Demo extends DemoView {
 
 				closeDialog();
 			},
-			appendTo: this.demoWrapper,
 		});
+
+		super.render();
 
 		new Button({
 			appendTo: this.demoWrapper,
 			textContent: 'Open',
 			onPointerPress: () => this.component.open(),
 		});
-
-		super.render();
 	}
 }

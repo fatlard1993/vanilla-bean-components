@@ -33,15 +33,12 @@ describe('${name}', () => {
 });
 `;
 
-const demoFile = `import DemoView, { DemoWrapper } from '../../demo/DemoView';
+const demoFile = `import DemoView from '../../demo/DemoView';
 import { ${name} } from '.';
 
 export default class Demo extends DemoView {
 	render() {
-		this.demoWrapper = new DemoWrapper({ appendTo: this });
-
 		this.component = new ${name}({
-			appendTo: this.demoWrapper,
 			${demoOptions}
 		});
 
@@ -68,8 +65,8 @@ class ${name} extends Component {
 		super.render();
 	}
 
-	setOption(key, value) {
-		super.setOption(key, value);
+	_setOption(key, value) {
+		super._setOption(key, value);
 	}
 }
 

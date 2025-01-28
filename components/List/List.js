@@ -39,7 +39,7 @@ export default class List extends StyledComponent {
 		);
 	}
 
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'items') {
 			this.content(
 				value.map(item => {
@@ -54,6 +54,6 @@ export default class List extends StyledComponent {
 					return listItem;
 				}),
 			);
-		} else super.setOption(key, value);
+		} else super._setOption(key, value);
 	}
 }

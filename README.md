@@ -2,6 +2,13 @@
 
 > Class based JS components. A pattern focused on improving frontend development experience utilizing a component concept.
 
+- A Proxy-based observable state utility
+- A fetch-based API request/mutation utility with cache & subscriptions
+- A runtime, hydrate-able, CSS in JS solution that leverages postcss
+- A Class interface wrapping an HTMLElement, with observable state, and a handful of common utilities for interaction and manipulation
+- A bunch of re-usable Components for common UI patterns
+- A demo server with a suite of demos and examples to illustrate the usage and benefits of the pattern
+
 This library is comprised of 6 major pieces:
 
 - [Context](./context/README.md)
@@ -17,7 +24,7 @@ The [demo app](./demo/README.md) offers good examples of library usage and a vis
 
 `bun start`
 
-<img src="../img/demo.png" alt="demo" width="100%"/>
+<img src="img/demo.png" alt="demo" width="100%"/>
 
 ## Usage
 
@@ -47,11 +54,3 @@ Projects with similar goals or results:
 ### My Opinions
 
 > Obviously my personal experience and use-cases color my opinion, which in turn results in deviation from the paths others have forged. Those working opinions are [here](./docs/ETHOS.md) if you're interested.
-
-### Result
-
-- A Proxy based observable state utility
-- A runtime css in js solution leveraging postcss
-- A Class interface wrapping an HTMLElement, observable state, and a handful of common utilities for interaction and manipulation
-- A bunch of re-usable Components for common interfaces
-- A demo server and suite of demos and examples to illustrate the usage and benefits of the pattern

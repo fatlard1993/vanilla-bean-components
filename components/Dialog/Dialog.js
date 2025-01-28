@@ -283,7 +283,7 @@ class Dialog extends StyledDialog {
 		}
 	}
 
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'openOnRender' || key === 'modal') return;
 
 		if (key === 'size') {
@@ -308,7 +308,7 @@ class Dialog extends StyledDialog {
 			if (value) this.addClass(`variant-${value}`);
 		} else if (key === 'body') {
 			this._body.options.content = value;
-		} else super.setOption(key, value);
+		} else super._setOption(key, value);
 	}
 
 	open(modal = this.options.modal) {

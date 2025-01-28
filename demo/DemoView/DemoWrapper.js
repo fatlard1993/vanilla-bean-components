@@ -8,6 +8,7 @@ export const DemoWrapper = styled(
 		margin: 3% 6%;
 		padding: 5%;
 		background: ${colors.darkest(colors.gray)};
+		transition: padding 0.2s;
 
 		--aug-clip-tl1: initial;
 		--aug-clip-br1: initial;
@@ -16,6 +17,14 @@ export const DemoWrapper = styled(
 		--aug-border-all: 2px;
 		--aug-tl1: 24px;
 		--aug-br1: 6px;
+
+		&.hidden {
+			padding: 21px;
+
+			*:not(button:first-of-type) {
+				display: none;
+			}
+		}
 	`,
 	{ augmentedUI: true },
 );

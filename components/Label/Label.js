@@ -142,7 +142,7 @@ class Label extends StyledLabel {
 		super.render();
 	}
 
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'label') {
 			if (typeof value === 'object') this._labelText.setOptions(value);
 			else this._labelText.options.content = value;
@@ -160,7 +160,7 @@ class Label extends StyledLabel {
 			}
 
 			this._labelText.elem.htmlFor = forId;
-		} else super.setOption(key, value);
+		} else super._setOption(key, value);
 	}
 }
 

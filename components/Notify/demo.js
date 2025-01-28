@@ -1,11 +1,9 @@
-import DemoView, { DemoWrapper } from '../../demo/DemoView';
+import DemoView from '../../demo/DemoView';
 import { Button } from '../Button';
 import { Notify } from '.';
 
 export default class Demo extends DemoView {
 	render() {
-		this.demoWrapper = new DemoWrapper({ appendTo: this });
-
 		this.component = new Notify({
 			type: 'info',
 			textContent: 'textContent',

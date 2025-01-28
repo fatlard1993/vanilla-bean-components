@@ -1,11 +1,9 @@
-import DemoView, { DemoWrapper } from '../../demo/DemoView';
+import DemoView from '../../demo/DemoView';
 import { Component } from '../../Component';
 import { Input } from '.';
 
 export default class Demo extends DemoView {
 	render() {
-		this.demoWrapper = new DemoWrapper({ appendTo: this });
-
 		this.component = new Input({
 			type: 'text',
 			onKeyUp: event => {
@@ -28,8 +26,9 @@ export default class Demo extends DemoView {
 			],
 			value: 'value',
 			placeholder: 'placeholder',
-			appendTo: this.demoWrapper,
 		});
+
+		super.render();
 
 		new Component({
 			tag: 'p',
@@ -39,7 +38,5 @@ export default class Demo extends DemoView {
 			),
 			appendTo: this.demoWrapper,
 		});
-
-		super.render();
 	}
 }

@@ -204,9 +204,9 @@ class Calendar extends StyledComponent {
 		);
 	}
 
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'height') this.elem.style.height = value;
-		else super.setOption(key, value);
+		else super._setOption(key, value);
 	}
 
 	render() {

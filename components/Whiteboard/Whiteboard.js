@@ -41,13 +41,13 @@ export default class Whiteboard extends Component {
 		this.elem.addEventListener('pointerdown', this.interactionInit.bind(this));
 	}
 
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'width' || key === 'height') {
 			this.elem[key] = Number.parseInt(value);
 			this.elem.style[key] = value;
 		} else if (key === 'lines') value.forEach(line => this.drawLine(line));
 		else if (key === 'background') this.elem.style[key] = value;
-		else super.setOption(key, value);
+		else super._setOption(key, value);
 	}
 
 	getPosition({ offsetX, offsetY }) {

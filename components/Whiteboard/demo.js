@@ -1,4 +1,4 @@
-import DemoView, { DemoWrapper } from '../../demo/DemoView';
+import DemoView from '../../demo/DemoView';
 
 import theme from '../../theme';
 import { Button } from '../Button';
@@ -29,6 +29,8 @@ export default class Demo extends DemoView {
 			},
 		});
 
+		super.render();
+
 		const colorPicker = new Popover(
 			{
 				style: { background: 'none', border: 'none', padding: 0, margin: '-6px' },
@@ -57,7 +59,7 @@ export default class Demo extends DemoView {
 			),
 		);
 
-		const colorSwatch = new Button({
+		new Button({
 			icon: 'paintbrush',
 			style: this.component.options.subscriber('color', backgroundColor => ({
 				backgroundColor,
@@ -67,7 +69,7 @@ export default class Demo extends DemoView {
 			onPointerPress: event => colorPicker.show({ x: event.clientX, y: event.clientY, maxHeight: 378, maxWidth: 318 }),
 		});
 
-		const trash = new Button({
+		new Button({
 			icon: 'trash-can',
 			style: { backgroundColor: theme.colors.red },
 			appendTo: this.demoWrapper,
@@ -77,9 +79,5 @@ export default class Demo extends DemoView {
 				this.component.empty();
 			},
 		});
-
-		this.demoWrapper = new DemoWrapper({ appendTo: this, content: [this.component, colorSwatch, trash] });
-
-		super.render();
 	}
 }

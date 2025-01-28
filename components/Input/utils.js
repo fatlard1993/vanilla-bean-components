@@ -23,7 +23,7 @@ export const updateValidationErrors = ({ elem, validations, value }) => {
 
 		const existingValidationError = document.evaluate(
 			`..//div[text()='${resolvedMessage}']`,
-			elem,
+			elem.parentElement,
 			null,
 			XPathResult.FIRST_ORDERED_NODE_TYPE,
 		).singleNodeValue;

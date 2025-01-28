@@ -96,7 +96,7 @@ class Tooltip extends StyledPopover {
 		);
 	}
 
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'position') {
 			if (!position_enum.includes(value)) {
 				throw new Error(
@@ -108,7 +108,7 @@ class Tooltip extends StyledPopover {
 
 			this.removeClass(...position_enum);
 			this.addClass(value);
-		} else super.setOption(key, value);
+		} else super._setOption(key, value);
 	}
 }
 

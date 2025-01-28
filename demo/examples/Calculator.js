@@ -84,9 +84,9 @@ export class Calculator extends Component {
 		super.render();
 	}
 
-	setOption(key, value) {
+	_setOption(key, value) {
 		if (key === 'result') this._display.content(`${value}`);
-		else super.setOption(key, value);
+		else super._setOption(key, value);
 	}
 }
 
