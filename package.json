@@ -39,14 +39,15 @@
 		"prepare": "bun run prepare:githooks && bun run build",
 		"prepare:githooks": "[ -n \"$CI\" ] && exit 0 || (git config --local core.hooksPath .githooks || echo 'Can not set git hooks')",
 		"start": "bun run dev",
-		"dev": "bun run build:index ; bun --hot demo/server.js",
-		"build": "bun run devTools/build.js",
-		"build:index": "bun run devTools/updateComponentIndex.js ; bun run devTools/updateDemoViewIndex.js",
-		"build:dev": "bun run build -- --dev",
+		"dev": "bun --hot demo/server.js",
+		"build": "bun run build:clean && bun run build:index && bun run devTools/build.js",
+		"build:index": "bun run devTools/updateComponentIndex.js && bun run devTools/updateDemoViewIndex.js",
+		"build:clean": "rm -rf ./*.asText ./demo/build",
+		"build:watch": "bun run build -- --watch",
 		"create:component": "bun run devTools/createComponent.js",
 		"lint": "bun --bun eslint",
 		"lint:fix": "bun --bun eslint --fix",
-		"format": "bun run build:index && bun run lint:fix && bun --bun prettier --write . | grep -q unchanged"
+		"format": "bun run build && bun run lint:fix && bun --bun prettier --write . | grep -q unchanged"
 	},
 	"repository": {
 		"type": "git",

@@ -4,7 +4,7 @@ import { Glob } from 'bun';
 import { orderBy } from '../utils/data';
 
 const demos = [...new Glob('components/*/demo.js').scanSync('.')].sort(orderBy([{ direction: 'asc' }]));
-const examples = [...new Glob('demo/examples/*').scanSync('.')].sort(orderBy([{ direction: 'asc' }]));
+const examples = [...new Glob('demo/examples/*.js').scanSync('.')].sort(orderBy([{ direction: 'asc' }]));
 const documentation = [...new Glob('./*/README.md').scanSync('.')].sort(orderBy([{ direction: 'asc' }]));
 
 let result = `/* This file is automatically managed (bun build:index) (${basename(process.argv[1])}), do not edit by hand */\n\n`;

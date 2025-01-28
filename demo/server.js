@@ -12,7 +12,7 @@ const reloadClients = () => {
 };
 
 const spawnBuild = async () => {
-	const buildProcess = Bun.spawn(['bun', 'run', 'build:dev']);
+	const buildProcess = Bun.spawn(['bun', 'run', 'build:watch']);
 
 	for await (const chunk of buildProcess.stdout) {
 		const line = new TextDecoder().decode(chunk);

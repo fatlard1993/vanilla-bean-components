@@ -19,10 +19,10 @@ const build = async () => {
 	return buildResults;
 };
 
-const developmentMode = process.argv[2] === '--dev';
+const enableWatcher = process.argv[2] === '--watch';
 const watcherIgnore = /\.asText$|^demo\/build|^\.|^img\/|^docs\/|^devTools\//;
 
-if (developmentMode) {
+if (enableWatcher) {
 	console.log(`Initializing watcher`);
 
 	const watcher = watch(`${import.meta.dir}/..`, { recursive: true }, (event, filename) => {
