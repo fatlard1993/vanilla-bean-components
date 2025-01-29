@@ -27,6 +27,7 @@ class NotFound extends View {
 new Page({
 	appendTo: document.body,
 	append: [menu, new Router({ views, notFound: NotFound })],
+	styleSheets: ['emoji-js/lib/emoji.css']
 });
 
 const socket = new WebSocket(`ws://${window.location.host}/ws`);

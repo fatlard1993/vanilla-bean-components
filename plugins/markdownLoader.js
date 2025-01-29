@@ -1,6 +1,7 @@
 import { dirname, resolve } from 'node:path';
 import { readFileSync } from 'node:fs';
 import { marked } from 'marked';
+import EmojiConverter from 'emoji-js';
 
 import { customAlphabet } from 'nanoid';
 
@@ -8,6 +9,10 @@ import { removeExcessIndentation } from '../utils/string';
 
 // eslint-disable-next-line spellcheck/spell-checker
 const idGen = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-', 10);
+
+const emoji = new EmojiConverter();
+emoji.replace_mode = 'unified';
+emoji.allow_native = true;
 
 const copyToClipboardButton = id =>
 	`<button class="icon fa-support fa-copy" title="Copy to clipboard" onpointerup="if (isSecureContext) window.navigator.clipboard.writeText(document.getElementById('${id}').textContent); alert('copied text to clipboard');"}></button>`;
@@ -44,7 +49,7 @@ export const parseMarkdown = (markdown, path) => {
 			`<pre class="language-$1">${copyToClipboardButton(id)}<code id=${id} class="language-$1`,
 		);
 
-	return parsed;
+	return emoji.replace_colons(parsed);
 };
 
 const loader = format => ({
