@@ -45,13 +45,10 @@ export class DemoView extends View {
 			});
 
 			const componentAncestors = (this.component.ancestry?.() || []).filter(
-				({ constructor: { name } }) =>
-					name !== this.component.constructor.name && !name.startsWith('VanillaBean') && name !== 'StyledComponent',
+				({ constructor: { name } }) => name !== this.component.constructor.name && name !== 'StyledComponent',
 			);
 
-			const readme = await GET(
-				`components/${this.component.constructor.name.replace(/\d$/, '').replace('VanillaBean', '')}/README.md`,
-			);
+			const readme = await GET(`components/${this.component.constructor.name.replace(/\d$/, '')}/README.md`);
 
 			if (readme.response.ok) {
 				new StyledLabel(
@@ -69,9 +66,11 @@ export class DemoView extends View {
 								textContent: name.replace(/\d$/, ''),
 								variant: 'button',
 								href:
-									name === 'EventTarget'
-										? 'https://developer.mozilla.org/en-US/docs/Web/API/EventTarget'
-										: `#/${name.replace(/\d$/, '')}`,
+									{
+										EventTarget: 'https://developer.mozilla.org/en-US/docs/Web/API/EventTarget',
+										Elem: '#/documentation/Elem',
+										Component: '#/documentation/Component',
+									}[name] || `#/${name.replace(/\d$/, '')}`,
 							}),
 					),
 				);
