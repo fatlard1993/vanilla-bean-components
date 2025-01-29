@@ -97,6 +97,12 @@ const IconOne = styled(
 );
 ```
 
+The fonts used here are:
+
+- [Source Code Pro](https://github.com/adobe-fonts/source-code-pro)
+- [Font Awesome](https://fontawesome.com/)
+- [Font With a Syntax Highlighter](https://blog.glyphdrawing.club/font-with-built-in-syntax-highlighting/)
+
 ## Standard HTML styles
 
 Styles for all basic page elements is also the responsibility of the theme. Maintaining page styles like this offers two main benefits:

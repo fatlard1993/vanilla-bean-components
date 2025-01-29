@@ -6,7 +6,7 @@ const build = async () => {
 	console.log('Building...');
 
 	const buildResults = await Bun.build({
-		entrypoints: ['demo/index.js'],
+		entrypoints: ['demo/index.html'],
 		outdir: 'demo/build',
 		define: {
 			'process.env.AUTOPREFIXER_GRID': 'undefined',

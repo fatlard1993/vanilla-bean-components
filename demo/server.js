@@ -28,7 +28,7 @@ const server = Bun.serve({
 	fetch: async request => {
 		const path = new URL(request.url).pathname.replace(/^\/img/, '/../img').replace('vanilla-bean-components', '..');
 
-		if (request.method === 'GET' && path === '/') return new Response(Bun.file('demo/index.html'));
+		if (request.method === 'GET' && path === '/') return new Response(Bun.file('demo/build/index.html'));
 
 		if (request.method === 'GET' && path === '/ws') {
 			const success = server.upgrade(request, { data: { clientId: nanoid() } });

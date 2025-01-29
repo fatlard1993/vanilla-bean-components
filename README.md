@@ -18,19 +18,27 @@ This library is comprised of 6 major pieces:
 - [Theme](./theme/README.md)
 - [Styled](./styled/README.md)
 
-## Demo
+## Usage
 
-The [demo app](./demo/README.md) offers good examples of library usage and a visual reference tool for the components.
+`npm install github:fatlard1993/vanilla-bean-components`
+
+```js
+import { Page } from 'vanilla-bean-components';
+
+new Page({ appendTo: document.body, content: 'Hello World' });
+```
+
+All [components](./demo/components) maintain a README, demo, and test which offer good examples of how each component can be used. Additionally, there are a set of [examples](./demo/examples) available for reference.
+
+> Read the [Getting Started](./docs/GETTING_STARTED.md) doc when you're ready to start your own project with vanilla-bean-components.
+
+### Demo
+
+The [demo app](./demo/README.md) is built on bun and vanilla-bean-components which serves a second purpose as its own full-stack, eating your own dog food, example.
 
 `bun start`
 
 <img src="img/demo.png" alt="demo" width="100%"/>
-
-## Usage
-
-All components maintain a [README](./components/Button/README.md) & [demo](./components/Button/demo.js) & [test file](./components/Button/.test.js) which offer good examples of how each component can be used. Additionally, there are a set of [examples](./demo/examples) available for reference. The entire [demo app](./demo/README.md) is built on bun and vanilla-bean-components which serves a second purpose as its own full-stack example.
-
-> Read the [Getting Started](./docs/GETTING_STARTED.md) doc when you're ready to start your own project with vanilla-bean-components.
 
 ## Disclaimer
 
@@ -54,3 +62,11 @@ Projects with similar goals or results:
 ### My Opinions
 
 > Obviously my personal experience and use-cases color my opinion, which in turn results in deviation from the paths others have forged. Those working opinions are [here](./docs/ETHOS.md) if you're interested.
+
+Library justifications:
+
+- [@ctrl/tinycolor](https://github.com/scttcper/tinycolor): Used for the colors in the theme
+- [@fortawesome/fontawesome-free](https://fontawesome.com/search): Used for all icons via the `icon` prop
+- [augmented-ui](https://augmented-ui.com/): Used to create sci-fi boxes and borders
+- [nanoid](https://github.com/ai/nanoid): Used to generate unique identifier strings for classes/ids/etc
+- [postcss](https://github.com/postcss/postcss) / [postcss-nested](https://github.com/postcss/postcss-nested) / [autoprefixer](https://github.com/postcss/autoprefixer): Used to parse css strings for `styled()` and `Component.styles()`

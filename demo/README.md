@@ -1,6 +1,6 @@
 # Demo Server
 
-The demo server provides documentation demos and examples for evaluating and referencing component features, props, and behaviors.
+The demo server provides documentation, demos, and examples for evaluating and referencing component features, props, and behaviors.
 
 <img src="../img/demo.png" alt="demo" width="100%"/>
 
