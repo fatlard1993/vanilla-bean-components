@@ -47,7 +47,8 @@
 		"create:component": "bun run devTools/createComponent.js",
 		"lint": "bun --bun eslint",
 		"lint:fix": "bun --bun eslint --fix",
-		"format": "bun run build && bun run lint:fix && bun --bun prettier --write . | grep -q unchanged"
+		"format": "bun run build && bun run lint:fix && bun --bun prettier --write . | grep -q unchanged",
+		"version": "npm version"
 	},
 	"repository": {
 		"type": "git",
