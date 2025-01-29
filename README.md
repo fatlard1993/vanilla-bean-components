@@ -20,7 +20,7 @@ This library is comprised of 6 major pieces:
 
 ## Usage
 
-`npm install github:fatlard1993/vanilla-bean-components`
+`bun install github:fatlard1993/vanilla-bean-components`
 
 ```js
 import { Page } from 'vanilla-bean-components';
