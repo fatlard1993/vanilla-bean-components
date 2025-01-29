@@ -5,8 +5,8 @@ export const DemoWrapper = styled(
 	Component,
 	({ colors }) => `
 		position: relative;
-		margin: 3% 6%;
-		padding: 5%;
+		margin: 2% 4%;
+		padding: 4%;
 		background: ${colors.darkest(colors.gray)};
 		transition: padding 0.2s;
 

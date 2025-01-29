@@ -8,8 +8,7 @@ export default class Demo extends DemoView {
 	render() {
 		this.component = new Page(
 			{
-				textContent:
-					'The entrypoint to a page built with vanilla-bean-components. Mounts its children when the dom is ready',
+				textContent: 'The top-level component; it injects style sheets and renders when the DOM is loaded',
 				style: { width: 'auto', height: 'auto' },
 				styleSheets: [{ href: nesCSS, scope: '.nes-portal' }],
 			},
@@ -19,8 +18,6 @@ export default class Demo extends DemoView {
 				new Elem({ tag: 'i', addClass: ['nes-icon', 'is-large', 'heart'] }),
 			),
 		);
-
-		this.addCleanup('PageDemo', () => document.getElementById());
 
 		super.render();
 	}

@@ -7,7 +7,7 @@ const StyledLabel = styled(
 	Label,
 	() => `
 		width: auto;
-		margin: 0 3% 9px;
+		margin: 0 1% 9px;
 
 		label {
 			display: block;
