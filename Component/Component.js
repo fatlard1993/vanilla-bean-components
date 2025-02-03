@@ -23,7 +23,7 @@ const defaultOptions = {
 	tag: 'div',
 	autoRender: true,
 	registeredEvents: new Set([]),
-	knownAttributes: new Set(['role', 'name', 'colspan']),
+	knownAttributes: new Set(['role', 'name', 'colspan', 'popover', 'popovertarget', 'popovertargetaction']),
 	priorityOptions: new Set(['onConnected', 'textContent', 'content', 'appendTo', 'prependTo', 'value']),
 };
 
