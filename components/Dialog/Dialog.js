@@ -234,14 +234,14 @@ class Dialog extends StyledDialog {
 	constructor(options = {}, ...children) {
 		super({ ...defaultOptions, ...options }, children);
 
-		this.options['aria-labelledby'] = this.classId;
+		this.options['aria-labelledby'] = this.uniqueId;
 	}
 
 	render() {
 		if (!this._header) {
 			this._header = new Elem({
 				tag: 'h2',
-				id: this.classId,
+				id: this.uniqueId,
 				addClass: ['header'],
 				append: this.options.header,
 				appendTo: this,

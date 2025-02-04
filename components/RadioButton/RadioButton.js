@@ -73,7 +73,7 @@ class RadioButton extends Component {
 									tag: 'input',
 									type: 'radio',
 									value: option?.value || option,
-									name: this.classId,
+									name: this.uniqueId,
 									checked: this.options.value === (option?.value || option),
 								}),
 								option?.label || option,

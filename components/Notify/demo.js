@@ -16,7 +16,7 @@ export default class Demo extends DemoView {
 		new Button({
 			appendTo: this.demoWrapper,
 			textContent: 'Show Notification',
-			attributes: { popovertarget: this.component.classId, popovertargetaction: 'show' },
+			attributes: { popovertarget: this.component.uniqueId, popovertargetaction: 'show' },
 			onPointerPress: event => {
 				console.log(event);
 				this.component.edgeAwarePlacement({ x: event.clientX + 10, y: event.clientY + 10 });

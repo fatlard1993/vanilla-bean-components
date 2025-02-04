@@ -156,7 +156,7 @@ class Label extends StyledLabel {
 			let forId = typeof value === 'string' ? value : value?.id || value?.elem?.id;
 
 			if (!forId && value?._component) {
-				forId = value.elem.id = value.classId;
+				forId = value.elem.id = value.uniqueId;
 			}
 
 			this._labelText.elem.htmlFor = forId;

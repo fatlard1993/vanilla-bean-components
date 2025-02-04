@@ -23,7 +23,7 @@ const defaultOptions = {
 	tag: 'div',
 	autoRender: true,
 	registeredEvents: new Set([]),
-	knownAttributes: new Set(['role', 'name', 'colspan', 'popover', 'popovertarget', 'popovertargetaction']),
+	knownAttributes: new Set(['role', 'name', 'colspan', 'anchor', 'popover', 'popovertarget', 'popovertargetaction']),
 	priorityOptions: new Set(['onConnected', 'textContent', 'content', 'appendTo', 'prependTo', 'value']),
 };
 
@@ -56,11 +56,11 @@ class Component extends Elem {
 
 		this.elem._component = this;
 
-		this.classId = Object.freeze(classSafeNanoid());
+		this.uniqueId = Object.freeze(classSafeNanoid());
 
 		this.options = new Context({
 			...optionsWithoutConfig,
-			addClass: [this.classId, optionsWithoutConfig.addClass],
+			addClass: [this.uniqueId, optionsWithoutConfig.addClass],
 			append: [optionsWithoutConfig.append, children],
 		});
 
@@ -129,7 +129,8 @@ class Component extends Elem {
 			if (this.on({ targetEvent, id: key, callback: value })) return;
 		}
 
-		if (key === 'style') this.setStyle(value);
+		if (key === 'uniqueId') this.elem.id = typeof value === 'string' ? value : this.uniqueId;
+		else if (key === 'style') this.setStyle(value);
 		else if (key === 'attributes') this.setAttributes(value);
 		else if (key === 'augmentedUI') {
 			if (value) this.elem.setAttribute('data-augmented-ui', typeof value === 'string' ? value : '');
@@ -198,6 +199,8 @@ class Component extends Elem {
 
 		if (inputEvents.has(targetEvent)) {
 			const _callback = event => {
+				if (targetEvent === 'change') console.log(event);
+
 				event.value =
 					event.target.type === 'checkbox'
 						? event.target.checked
@@ -243,7 +246,7 @@ class Component extends Elem {
 		if (!styles) return;
 		if (typeof styles === 'object') return this?.setStyle(styles);
 
-		const themedStyles = themeStyles({ styles, scope: `.${this.classId}` });
+		const themedStyles = themeStyles({ styles, scope: `.${this.uniqueId}` });
 
 		if (typeof themedStyles === 'object') {
 			this?.setStyle(themedStyles);
@@ -253,7 +256,7 @@ class Component extends Elem {
 
 		postCSS(themedStyles).then(css => appendStyles(css));
 
-		this.addCleanup(this.classId, () => document.getElementById(this.classId)?.remove());
+		this.addCleanup(this.uniqueId, () => document.getElementById(this.uniqueId)?.remove());
 	}
 
 	onHover(callback = () => {}) {
