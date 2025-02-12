@@ -29,3 +29,5 @@ test('isDescendantOf', async () => {
 
 	expect(isDescendantOf(testElem1, testElem2), false);
 });
+
+test.skip('getElementsContainingText', () => {});
