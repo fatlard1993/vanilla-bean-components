@@ -1,5 +1,6 @@
 import { Component } from '../../Component';
 import { styled } from '../../styled';
+import { getElementsContainingText } from '../../utils';
 
 export const InputValidationError = styled(
 	Component,
@@ -21,12 +22,11 @@ export const updateValidationErrors = ({ elem, validations, value }) => {
 
 		const resolvedMessage = typeof message == 'function' ? message(value) : message;
 
-		const existingValidationError = document.evaluate(
-			`..//div[text()='${resolvedMessage}']`,
-			elem.parentElement,
-			null,
-			XPathResult.FIRST_ORDERED_NODE_TYPE,
-		).singleNodeValue;
+		const [existingValidationError] = getElementsContainingText(resolvedMessage, {
+			xPathElement: 'div',
+			scope: elem.parentElement,
+			caseSensitive: true,
+		});
 
 		if (!isValid) errors.push(resolvedMessage);
 

@@ -17,7 +17,6 @@ export default class Form extends Component {
 			this.options.inputs.map(
 				({ key, label, InputComponent = Input, onChange = () => {}, parse = value => value, ...inputOptions }) => {
 					const input = new InputComponent({
-						appendTo: this.elem,
 						value: this.options.data.subscriber(key),
 						...(InputComponent !== Component && {
 							onChange: function (event) {

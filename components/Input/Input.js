@@ -1,4 +1,5 @@
 import { Component } from '../../Component';
+import { retry } from '../../utils';
 import { updateValidationErrors, insertTabCharacter, adjustIndentation } from './utils';
 
 const type_enum = Object.freeze([
@@ -94,7 +95,7 @@ export default class Input extends Component {
 			this.addClass(`language-${value}`);
 		} else super._setOption(key, value);
 
-		if (this.rendered && key === 'value') this.validate();
+		if (this.rendered && key === 'value') retry(() => this.validate(), { delay: index => 500 + 100 * index, max: 3 });
 	}
 
 	get isDirty() {
