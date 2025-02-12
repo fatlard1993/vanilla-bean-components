@@ -54,6 +54,16 @@ const server = Bun.serve({
 			return Response.json((await import(`..${path}`))?.default);
 		}
 
+		if (path.endsWith('design.excalidraw.png')) {
+			const designPath = `components/${path.slice(1)}`;
+
+			if (await Bun.file(designPath).exists()) {
+				console.log('Load excalidraw design', { path });
+
+				return new Response(Bun.file(designPath));
+			}
+		}
+
 		let file = Bun.file(`demo/build${path}`);
 
 		if (!(await file.exists())) file = Bun.file(`node_modules${path}`);

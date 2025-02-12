@@ -50,6 +50,11 @@ export default class Demo extends DemoView {
 const readMeFile = `\`\`\`js
 [[import ./demo.js]]/^(\\t*).+component = new.+\\(\\s*{(.|\\n)+?\\1}?\\);/gm
 \`\`\`
+
+## Design
+
+![design](../${name}/design.excalidraw.png)
+
 `;
 
 const componentFile = `import { Component } from '../../Component';

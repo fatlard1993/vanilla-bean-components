@@ -141,6 +141,7 @@ module.exports = {
 		'fortawesome',
 		'fontawesome',
 		'nes',
+		'excalidraw',
 	],
 	skipIfMatch: [String.raw`\d+v[wh]`],
 	skipWordIfMatch: [],
