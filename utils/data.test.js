@@ -1,4 +1,4 @@
-import { debounce, throttle, delay, convertRange, getCustomProperties, conditionalList, orderBy } from './data';
+import { debounce, throttle, delay, retry, convertRange, getCustomProperties, conditionalList, orderBy } from './data';
 
 test.skip('debounce', () => {
 	const useFakeTimers = () => {};
@@ -44,6 +44,27 @@ test.skip('throttle', () => {
 
 test.skip('delay', () => {
 	delay();
+});
+
+test('retry', async () => {
+	let count = 0;
+	const generateCallback = (failCount = 0) => {
+		count = 0;
+
+		return () => {
+			if (count >= failCount) return 'success';
+
+			++count;
+
+			throw new Error('fail');
+		};
+	};
+	const options = { max: 2, delay: 0 };
+
+	expect(await retry(generateCallback(1), options)).toEqual('success');
+	expect(await retry(generateCallback(2), options)).toEqual('success');
+
+	await expect(retry(generateCallback(3), options)).rejects.toThrow('fail');
 });
 
 test('convertRange', () => {

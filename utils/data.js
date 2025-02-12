@@ -41,6 +41,32 @@ export const throttle = (callback, delay = 400) => {
 export const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
+ * async retry with delay
+ * @param {Function} callback - The function to execute, and if it throws, to retry
+ * @param {object} options -
+ * @param {number|(index: number) => number} options.delay - The number of ms to await before executing a retry, if its a function it will provide the current retry index to calculate a dynamic sunset, Default: 500
+ * @param {number} options.max - The max number of times to retry, Default: 3
+ * @returns {any} The callback return
+ */
+export const retry = async (callback, options = {}) => {
+	const { index = 0, max = 3 } = options;
+	const delayMs = (typeof options.delay === 'function' ? options.delay(index) : options.delay) ?? 500;
+
+	try {
+		return callback();
+	} catch (error) {
+		// eslint-disable-next-line no-console
+		if (process.env.NODE_ENV === 'development') console.warn('[DEV] retry error', error);
+
+		if (index >= max) throw error;
+
+		await delay(delayMs);
+
+		return retry(callback, { ...options, index: index + 1 });
+	}
+};
+
+/**
  * Convert a number from one range to another
  * @param {number} value - The number to convert
  * @param {Array} sourceRange - The range the value originates from
