@@ -44,10 +44,12 @@ export default class List extends StyledComponent {
 			this.content(
 				value.map(item => {
 					const isContent = typeof item === 'string' || item?.elem || Array.isArray(item);
-					const listItem = new ListItem({ tag: 'li' });
+					const listItem = new ListItem({ tag: 'li', ...item?.listItemOptions });
 
 					if (this.options.ListItemComponent) {
 						listItem.content(new this.options.ListItemComponent(isContent ? { content: item } : item));
+					} else if (item.ListItemComponent) {
+						listItem.content(new item.ListItemComponent(item));
 					} else if (isContent) listItem.content(item);
 					else listItem.setOptions(item);
 
