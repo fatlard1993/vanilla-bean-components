@@ -13,9 +13,23 @@ const StyledPopover = styled(
 		background-color: ${colors.white};
 		color: ${colors.black};
 		opacity: 0;
+		transform: scaleX(0);
+		transition: opacity 0.3s, transform 0.1s, overlay 0.3s allow-discrete, display 0.3s allow-discrete;
+		transition-delay: 0.3s;
 
 		&:popover-open {
-			animation: fadeIn 0.2s ease-in forwards 1s;
+			display: inline-block;
+			opacity: 1;
+			transform: scaleX(1);
+			transition: overlay 0.6s allow-discrete, display 0.6s allow-discrete, opacity 0.6s, transform 0.6s;
+			transition-delay: 0.5s;
+		}
+
+		@starting-style {
+			&:popover-open {
+				opacity: 0;
+				transform: scaleX(-1);
+			}
 		}
 
 		&:before {
@@ -64,15 +78,6 @@ const StyledPopover = styled(
 		&.bottomRight {
 			left: calc(100% - 9px);
 			top: calc(100% - 9px);
-		}
-
-		@keyframes fadeIn {
-			from {
-				opacity: 0;
-			}
-			to {
-				opacity: 1;
-			}
 		}
 	`,
 );

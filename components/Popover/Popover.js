@@ -11,6 +11,10 @@ const StyledIcon = styled(
 		border-radius: 3px;
 		border: 1px solid ${colors.lightest(colors.gray)};
 		margin: 0;
+
+		&:popover-open {
+			display: flex;
+		}
 	`,
 );
 
