@@ -199,8 +199,6 @@ class Component extends Elem {
 
 		if (inputEvents.has(targetEvent)) {
 			const _callback = event => {
-				if (targetEvent === 'change') console.log(event);
-
 				event.value =
 					event.target.type === 'checkbox'
 						? event.target.checked
