@@ -4,7 +4,7 @@ import fonts from './fonts';
 export default `
 	display: inline-block;
 	padding: 4px 12px 8px 12px;
-	margin: 0 6px 0 0;
+	margin: 0;
 	box-sizing: border-box;
 	text-decoration: none;
 	color: ${colors.white};

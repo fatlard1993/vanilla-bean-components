@@ -22,7 +22,7 @@ export class DemoView extends View {
 		this.demoWrapperVisibilityButton = new Button({
 			icon: 'eye-slash',
 			appendTo: this.demoWrapper,
-			style: { position: 'absolute', top: '6px', right: '0' },
+			style: { position: 'absolute', top: '6px', right: '6px' },
 			onPointerPress: () => {
 				const isHidden = this.demoWrapper.hasClass('hidden');
 
@@ -65,6 +65,7 @@ export class DemoView extends View {
 							new Link({
 								textContent: name.replace(/\d$/, ''),
 								variant: 'button',
+								style: { marginRight: '6px' },
 								href:
 									{
 										EventTarget: 'https://developer.mozilla.org/en-US/docs/Web/API/EventTarget',
