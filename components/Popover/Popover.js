@@ -1,8 +1,6 @@
 import { styled } from '../../styled';
 import { Icon } from '../Icon';
 
-const state_enum = Object.freeze(['auto', 'manual']);
-
 const StyledIcon = styled(
 	Icon,
 	({ colors }) => `
@@ -16,15 +14,17 @@ const StyledIcon = styled(
 	`,
 );
 
+const defaultOptions = { uniqueId: true, state: 'manual', viewport: document.documentElement, appendTo: document.body };
+const state_enum = Object.freeze(['auto', 'manual']);
+
 export default class Popover extends StyledIcon {
+	defaultOptions = defaultOptions;
 	state_enum = state_enum;
 
 	constructor({ autoOpen = true, ...options } = {}, ...children) {
 		super(
 			{
-				viewport: document.documentElement,
-				appendTo: document.body,
-				state: 'auto',
+				...defaultOptions,
 				onConnected: () => {
 					if (autoOpen) setTimeout(() => this.show(), 200);
 				},
@@ -33,21 +33,25 @@ export default class Popover extends StyledIcon {
 			children,
 		);
 
-		this.elem.id = this.classId;
-		this.elem.popover = this.options.state;
-
 		if (this.options.x !== undefined && this.options.y !== undefined) this.edgeAwarePlacement(this.options);
+	}
+
+	_setOption(key, value) {
+		if (key === 'state') this.elem.popover = value;
+		else super._setOption(key, value);
 	}
 
 	edgeAwarePlacement({
 		x,
 		y,
-		maxHeight = 132,
-		maxWidth = 264,
+		maxHeight = this.options.maxHeight ?? 132,
+		maxWidth = this.options.maxWidth ?? 264,
 		padding = 24,
 		viewport = this.options.viewport || this.options.appendTo,
 	}) {
 		const { left, bottom, right } = (viewport?.elem ?? viewport).getBoundingClientRect();
+
+		const cursorOffset = 12;
 
 		let pastRight = x + maxWidth + padding >= right;
 		const pastLeft = x - maxWidth + padding <= left;
@@ -61,10 +65,10 @@ export default class Popover extends StyledIcon {
 
 		this.elem.style.maxWidth = `${maxWidth}px`;
 		this.elem.style.maxHeight = `${maxHeight}px`;
-		this.elem.style.top = pastBottom ? 'unset' : `${y}px`;
-		this.elem.style.bottom = pastBottom ? `${document.documentElement.clientHeight + 18 - y}px` : 'unset';
-		this.elem.style.left = pastRight ? 'unset' : `${x}px`;
-		this.elem.style.right = pastRight ? `${document.documentElement.clientWidth + 18 - x}px` : 'unset';
+		this.elem.style.top = pastBottom ? 'unset' : `${y + cursorOffset}px`;
+		this.elem.style.bottom = pastBottom ? `${document.documentElement.clientHeight + cursorOffset - y}px` : 'unset';
+		this.elem.style.left = pastRight ? 'unset' : `${x + cursorOffset}px`;
+		this.elem.style.right = pastRight ? `${document.documentElement.clientWidth + cursorOffset - x}px` : 'unset';
 	}
 
 	show(options) {
