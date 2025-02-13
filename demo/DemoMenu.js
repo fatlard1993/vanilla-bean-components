@@ -1,7 +1,8 @@
 import { Component } from '../Component';
-import { Button, Menu } from '../components';
+import { Button, Link, Menu, Popover } from '../components';
 import { Elem } from '../Elem';
 import { styled } from '../styled';
+import theme from '../theme';
 import { capitalize, fromCamelCase, toCamelCase } from '../utils';
 
 import views from './views';
@@ -50,62 +51,49 @@ export default class DemoMenu extends StyledComponent {
 			else if (name.startsWith('/documentation/')) parent = 'documentation';
 
 			menuItems[parent].push({
+				ListItemComponent: Link,
+				listItemOptions: {
+					style: {
+						border: 'none',
+						padding: '0',
+						paddingLeft: '18px',
+					},
+				},
+				textContent: /^\/\w+\//.test(name) ? name.replace(/^\/\w+\//, '') : name.slice(1),
+				href,
 				styles: ({ colors }) => ({
-					padding: '0',
-					border: 'none',
+					textDecoration: 'none',
+					color: 'inherit',
+					padding: '6px 6px 9px 6px',
+					borderBottom: '1px solid #999',
+					display: 'block',
 					...(window.location.hash === href ? { background: colors.black, cursor: 'default' } : {}),
 				}),
-				append: [
-					new Component({
-						tag: 'a',
-						textContent: /^\/\w+\//.test(name) ? name.replace(/^\/\w+\//, '') : name.slice(1),
-						href,
-						style: {
-							textDecoration: 'none',
-							color: 'inherit',
-							padding: '6px 6px 9px 6px',
-							borderBottom: '1px solid #999',
-							display: 'block',
-						},
-					}),
-				],
 			});
 		});
 
+		this.menuPopover = new Popover({ appendTo: this, style: { maxHeight: '60%' } });
+
 		this.menu = new Menu({
 			items: Object.keys(menuItems).map(item => capitalize(fromCamelCase(item, ' '), true)),
-			onSelect: ({ target, clientX, clientY }) => {
-				this.subMenu.setStyle({
-					display: 'block',
-					top: `${clientY + 6}px`,
-					left: `${clientX + 6}px`,
+			onSelect: ({ target }) => {
+				this.subMenu.options.items = menuItems[toCamelCase(target.textContent)];
+
+				this.menu.children.forEach(item => {
+					item.elem.style.backgroundColor = 'inherit';
 				});
 
-				this.subMenu.options.items = menuItems[toCamelCase(target.textContent)];
+				if (this.subMenu.options.items) target.style.backgroundColor = theme.colors.white.setAlpha(0.06);
 			},
-			style: {
-				position: 'absolute',
-				zIndex: 1,
-				display: 'none',
-				backgroundColor: '#333',
-				borderRadius: '3px',
-				boxShadow: '3px 3px 9px #222',
-			},
-			appendTo: this,
+			appendTo: this.menuPopover,
 		});
 
 		this.subMenu = new Menu({
+			appendTo: this.menuPopover,
 			style: {
-				position: 'absolute',
-				zIndex: 1,
-				display: 'none',
-				backgroundColor: '#333',
-				borderRadius: '3px',
-				boxShadow: '3px 3px 9px #222',
-				maxHeight: '50%',
-				overflow: 'auto',
+				height: '100%',
+				backgroundColor: theme.colors.white.setAlpha(0.06),
 			},
-			appendTo: this,
 		});
 
 		this.menuButton = new Button({
@@ -115,16 +103,12 @@ export default class DemoMenu extends StyledComponent {
 				textContent: 'Menu',
 			},
 			appendTo: this,
+			popovertarget: this.menuPopover.uniqueId,
 			onPointerPress: ({ clientX, clientY }) => {
-				const newMenuDisplay = this.menu.elem.style.display === 'block' ? 'none' : 'block';
-
-				this.menu.setStyle({
-					display: newMenuDisplay,
-					top: clientY + 6 + 'px',
-					left: clientX + 6 + 'px',
+				this.menuPopover.setStyle({
+					top: `${clientY + 6}px`,
+					left: `${clientX + 6}px`,
 				});
-
-				if (newMenuDisplay === 'none') this.subMenu.setStyle({ display: newMenuDisplay });
 			},
 		});
 
@@ -138,8 +122,7 @@ export default class DemoMenu extends StyledComponent {
 		window.addEventListener('hashchange', () => {
 			title.elem.textContent = window.location.hash.slice(2);
 
-			this.menu.setStyle({ display: 'none' });
-			this.subMenu.setStyle({ display: 'none' });
+			this.menuPopover.close();
 		});
 
 		super.render();

@@ -41,6 +41,11 @@ export default class List extends StyledComponent {
 
 	_setOption(key, value) {
 		if (key === 'items') {
+			if (!value) {
+				this.empty();
+				return;
+			}
+
 			this.content(
 				value.map(item => {
 					const isContent = typeof item === 'string' || item?.elem || Array.isArray(item);

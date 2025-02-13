@@ -11,9 +11,10 @@ const StyledList = styled(
 		li {
 			cursor: pointer;
 			padding: 6px 6px 9px 6px;
+			border-bottom: 1px solid ${colors.light(colors.gray)};
 
-			&:not(:last-of-type) {
-				border-bottom: 1px solid ${colors.light(colors.gray)};
+			&:last-of-type, &:last-of-type > a {
+				border-bottom: none !important;
 			}
 
 			&:hover, &:focus, &:focus-visible, a:hover, a:focus, a:focus-visible  {
@@ -25,19 +26,8 @@ const StyledList = styled(
 	`,
 );
 
-class Menu extends StyledList {
+export default class Menu extends StyledList {
 	constructor(options = {}, ...children) {
-		super(
-			{
-				...options,
-				items: (options.items || []).map(item => ({
-					onPointerPress: options.onSelect,
-					...(typeof item === 'string' ? { textContent: item } : item),
-				})),
-			},
-			...children,
-		);
+		super({ ...options, onPointerPress: options.onSelect }, children);
 	}
 }
-
-export default Menu;

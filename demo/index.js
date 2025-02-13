@@ -6,8 +6,6 @@ import views from './views';
 
 window.process = process;
 
-const menu = new DemoMenu();
-
 class NotFound extends View {
 	render() {
 		new Elem({
@@ -26,8 +24,8 @@ class NotFound extends View {
 
 new Page({
 	appendTo: document.body,
-	append: [menu, new Router({ views, notFound: NotFound })],
-	styleSheets: ['emoji-js/lib/emoji.css']
+	append: [new DemoMenu(), new Router({ views, notFound: NotFound })],
+	styleSheets: ['emoji-js/lib/emoji.css'],
 });
 
 const socket = new WebSocket(`ws://${window.location.host}/ws`);
