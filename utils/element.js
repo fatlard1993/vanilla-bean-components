@@ -22,7 +22,7 @@ export const isDescendantOf = (element, parentElement) => {
 	const isTheParent = element.parentElement === parentElement;
 
 	return !isTheParent && element.parentElement?.parentElement
-		? isDescendantOf(element.parentElement.parentElement, parentElement)
+		? isDescendantOf(element.parentElement, parentElement)
 		: isTheParent;
 };
 
