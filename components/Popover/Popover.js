@@ -84,4 +84,8 @@ export default class Popover extends StyledIcon {
 	hide() {
 		this.elem.hidePopover();
 	}
+
+	get isOpen() {
+		return this.elem.matches(':popover-open');
+	}
 }
