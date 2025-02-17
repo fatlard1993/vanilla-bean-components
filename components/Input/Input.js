@@ -95,7 +95,7 @@ export default class Input extends Component {
 			this.addClass(`language-${value}`);
 		} else super._setOption(key, value);
 
-		if (this.rendered && key === 'value') retry(() => this.validate(), { delay: index => 500 + 100 * index, max: 3 });
+		if (this.rendered && key === 'value') retry(() => this.validate(), { delay: 500, max: 1 });
 	}
 
 	get isDirty() {
