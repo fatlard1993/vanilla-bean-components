@@ -18,7 +18,8 @@ export const request = async (url, options = {}) => {
 		enabled = true,
 		urlParameters,
 		searchParameters,
-		...fetchOptions
+		method,
+		fetchOptions,
 	} = options;
 
 	let hydratedUrl = url;
@@ -89,13 +90,18 @@ export const request = async (url, options = {}) => {
 
 		if (onRefetch && isRefetch) onRefetch(cachedResult);
 
+		if (subscriptions.has(apiId)) {
+			Object.values(subscriptions.get(apiId)).forEach(({ onRefetch: listener }) => listener?.(cachedResult));
+		}
+
 		return cachedResult;
 	}
 
 	result.response = await fetch(hydratedUrl, {
 		headers: { 'Content-Type': 'application/json' },
+		...(options.body && method !== 'GET' ? { body: JSON.stringify(options.body) } : { body: null }),
 		...fetchOptions,
-		...(options.body ? { body: JSON.stringify(options.body) } : {}),
+		method,
 	});
 	result.success = result.response.status % 200 < 100;
 	result.contentType = result.response.headers.get('content-type');
