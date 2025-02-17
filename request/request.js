@@ -110,13 +110,25 @@ export const request = async (url, options = {}) => {
 		: result.response.text());
 
 	if (result.success && invalidates) {
-		cache.forEach(({ invalidate: dropCache }, _id) => {
+		cache.forEach(({ invalidate: dropCache, apiId: cacheApiId }, _id) => {
 			const isInvalidated = invalidates.some(invalidate => {
+				let _isInvalidated = false;
+
 				if (Array.isArray(_id)) {
-					return Array.isArray(invalidate) ? invalidate === _id : _id.includes(invalidate);
+					_isInvalidated = Array.isArray(invalidate) ? invalidate === _id : _id.includes(invalidate);
 				} else {
-					return Array.isArray(invalidate) ? false : _id === invalidate;
+					_isInvalidated = Array.isArray(invalidate) ? false : _id === invalidate;
 				}
+
+				if (!_isInvalidated) {
+					if (Array.isArray(cacheApiId)) {
+						_isInvalidated = Array.isArray(invalidate) ? invalidate === cacheApiId : cacheApiId.includes(invalidate);
+					} else {
+						_isInvalidated = Array.isArray(invalidate) ? false : cacheApiId === invalidate;
+					}
+				}
+
+				return _isInvalidated;
 			});
 
 			if (isInvalidated) dropCache();
@@ -139,6 +151,7 @@ export const request = async (url, options = {}) => {
 		if (cache.get(cacheId)?.timeout) clearTimeout(cache.get(cacheId).timeout);
 
 		cache.set(cacheId, {
+			apiId,
 			invalidate: result.invalidateCache,
 			result,
 			...(invalidateAfter ? { timeout: setTimeout(result.invalidateCache, invalidateAfter) } : {}),
