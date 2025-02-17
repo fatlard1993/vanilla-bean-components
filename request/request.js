@@ -9,6 +9,7 @@ export const subscriptions = new Map();
 /** @type {Request} */
 export const request = async (url, options = {}) => {
 	const {
+		apiId: apiIdOption = options.id,
 		invalidateAfter = 60 * 1000,
 		invalidates,
 		cache: useCache = invalidates ? false : true,
@@ -25,7 +26,7 @@ export const request = async (url, options = {}) => {
 	if (urlParameters) hydratedUrl = hydrateUrl(hydratedUrl, urlParameters);
 	if (searchParameters) hydratedUrl = `${hydratedUrl}?${new URLSearchParams(searchParameters)}`;
 
-	const apiId = (typeof options.apiId === 'function' ? options.apiId(options) : options.apiId) || options.method + url;
+	const apiId = (typeof apiIdOption === 'function' ? apiIdOption(options) : apiIdOption) || options.method + url;
 	const cacheId =
 		(typeof options.cacheId === 'function' ? options.cacheId(options) : options.cacheId) ||
 		options.method + hydratedUrl;
