@@ -147,6 +147,56 @@ export default `
     border-left: 6px solid ${colors.white.setAlpha(0.06)};
     margin: 0;
     padding: 1px 12px;
+
+		&.NOTE {
+			background-color: ${colors.blue.setAlpha(0.09)};
+			border-color: ${colors.blue.setAlpha(0.3)};
+
+			p:first-child {
+				font-weight: bold;
+				color: ${colors.lighter(colors.blue)};
+			}
+		}
+
+		&.TIP {
+			background-color: ${colors.green.setAlpha(0.09)};
+			border-color: ${colors.green.setAlpha(0.3)};
+
+			p:first-child {
+				font-weight: bold;
+				color: ${colors.lighter(colors.green)};
+			}
+		}
+
+		&.IMPORTANT {
+			background-color: ${colors.purple.setAlpha(0.09)};
+			border-color: ${colors.purple.setAlpha(0.3)};
+
+			p:first-child {
+				font-weight: bold;
+				color: ${colors.lighter(colors.purple)};
+			}
+		}
+
+		&.WARNING {
+			background-color: ${colors.yellow.setAlpha(0.09)};
+			border-color: ${colors.yellow.setAlpha(0.3)};
+
+			p:first-child {
+				font-weight: bold;
+				color: ${colors.lighter(colors.yellow)};
+			}
+		}
+
+		&.CAUTION {
+			background-color: ${colors.red.setAlpha(0.09)};
+			border-color: ${colors.red.setAlpha(0.3)};
+
+			p:first-child {
+				font-weight: bold;
+				color: ${colors.lighter(colors.red)};
+			}
+		}
 	}
 
 	.fa-support:before {

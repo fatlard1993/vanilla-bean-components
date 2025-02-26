@@ -47,7 +47,8 @@ export const parseMarkdown = (markdown, path) => {
 		.replaceAll(
 			/<pre><code class="language-([^\s"]+)/g,
 			`<pre class="language-$1">${copyToClipboardButton(id)}<code id=${id} class="language-$1`,
-		);
+		)
+		.replaceAll(/<blockquote>\s?<p>\s?\[!(\w+)]/g, `<blockquote class="$1"><p>$1</p><p>`);
 
 	return emoji.replace_colons(parsed);
 };
