@@ -77,6 +77,7 @@ export default `
 		padding: 12px;
 		border-radius: 3px;
 		text-decoration: inherit;
+		max-width: calc(100% - 42px);
 
 		button {
 			position: absolute !important;
@@ -88,6 +89,12 @@ export default `
 				opacity: 0.8;
 				top: -17px;
 			}
+		}
+
+		code {
+			display: block;
+			overflow: auto;
+			width: 100%;
 		}
 	}
 
