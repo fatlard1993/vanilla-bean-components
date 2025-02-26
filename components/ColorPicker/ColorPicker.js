@@ -99,6 +99,7 @@ const ColorSwatch = styled(
 	Button,
 	({ colors }) => `
 		margin-top: 3px;
+		margin-right: 3px;
 
 		&.rainbow {
 			animation: rainbow 2s linear;

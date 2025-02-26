@@ -33,10 +33,8 @@ export default {
 
 		font-weight: 600;
 	`,
-	sourceCodePro: `
-		font-family: 'Source Code Pro', monospace;
-		font-size: 1em;
-		line-height: 1.5em;
-		tab-size: 2;
+	kodeMono: `
+		font-family: 'Kode Mono Variable', monospace;
+		line-height: normal;
 	`,
 };

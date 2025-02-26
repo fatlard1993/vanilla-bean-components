@@ -4,7 +4,7 @@ import { GET } from '../../request';
 
 const dependentStyleSheets = [
 	'@fortawesome/fontawesome-free/css/all.css',
-	'source-code-pro/source-code-pro.css',
+	'@fontsource-variable/kode-mono/index.css',
 	'augmented-ui/augmented-ui.min.css',
 ];
 

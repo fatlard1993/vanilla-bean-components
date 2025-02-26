@@ -30,8 +30,11 @@ export default `
 		-webkit-text-size-adjust: none;
 
 		font-size: 16px;
-		font-family: 'Source Code Pro', monospace;
-		line-height: normal;
+		${fonts.kodeMono}
+
+		sub, sup {
+			font-size: smaller;
+		}
 	}
 
 	#app {

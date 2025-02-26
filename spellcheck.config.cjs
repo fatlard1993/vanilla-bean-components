@@ -142,6 +142,7 @@ module.exports = {
 		'fontawesome',
 		'nes',
 		'excalidraw',
+		'kode',
 	],
 	skipIfMatch: [String.raw`\d+v[wh]`],
 	skipWordIfMatch: [],

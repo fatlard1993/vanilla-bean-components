@@ -99,7 +99,7 @@ const IconOne = styled(
 
 The fonts used here are:
 
-- [Source Code Pro](https://github.com/adobe-fonts/source-code-pro)
+- [Kode Mono](https://kodemono.com/)
 - [Font Awesome](https://fontawesome.com/)
 - [Font With a Syntax Highlighter](https://blog.glyphdrawing.club/font-with-built-in-syntax-highlighting/)
 

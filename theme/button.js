@@ -3,7 +3,7 @@ import fonts from './fonts';
 
 export default `
 	display: inline-block;
-	padding: 4px 12px 8px 12px;
+	padding: 4px 12px 6px 12px;
 	margin: 0;
 	box-sizing: border-box;
 	text-decoration: none;
