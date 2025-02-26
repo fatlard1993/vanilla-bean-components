@@ -93,8 +93,9 @@ const randomShape = ({
 };
 
 class ShapeMatchGame extends Component {
-	constructor() {
+	constructor(options) {
 		super({
+			...options,
 			inkLevel: 100,
 			color: '#000',
 			lineWidth: 3,

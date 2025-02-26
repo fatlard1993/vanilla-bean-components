@@ -5,15 +5,15 @@ import exampleCode from './Stopwatch.js.asText';
 
 export class Stopwatch extends Component {
 	constructor(options = {}) {
-		super({ tag: 'span', time: 0, interval: 10, running: false, ...options });
+		super({ tag: 'span', time: 0, interval: 10, ...options });
 	}
 
 	render() {
 		this._time = new Elem({ tag: 'span' });
 
-		const start = new Button({ content: 'Start', onPointerPress: () => this.start() });
-		const stop = new Button({ content: 'Stop', onPointerPress: () => this.stop() });
-		const reset = new Button({ content: 'Reset', onPointerPress: () => (this.options.time = 0) });
+		const start = new Button({ content: 'Start', onPointerPress: this.start.bind(this) });
+		const stop = new Button({ content: 'Stop', onPointerPress: this.stop.bind(this) });
+		const reset = new Button({ content: 'Reset', onPointerPress: this.reset.bind(this) });
 
 		this.content([this._time, start, stop, reset]);
 
@@ -22,19 +22,27 @@ export class Stopwatch extends Component {
 
 	_setOption(key, value) {
 		if (key === 'time') this._time.content(`${value}ms `);
-		else if (key === 'running') this[value ? 'start' : 'stop']();
-		else if (key === 'interval' && this.options.running) {
-			this.stop();
-			this.start(value);
-		} else super._setOption(key, value);
+		else super._setOption(key, value);
 	}
 
-	start(interval = this.options.interval) {
-		this.interval = setInterval(() => (this.options.time += interval), interval);
+	start() {
+		const { interval } = this.options;
+
+		console.log(this._interval);
+
+		if (!this._interval) this._interval = setInterval(() => (this.options.time += interval), interval);
 	}
 
 	stop() {
-		if (this.interval) clearInterval(this.interval);
+		if (this._interval) {
+			clearInterval(this._interval);
+
+			this._interval = undefined;
+		}
+	}
+
+	reset() {
+		this.options.time = 0;
 	}
 }
 

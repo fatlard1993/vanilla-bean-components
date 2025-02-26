@@ -1,20 +1,16 @@
-import { Component, Keyboard, styled } from '../..';
+import { styled } from '../..';
 
 import ExampleView from '../DemoView/ExampleView';
 import exampleCode from './Calculator.js.asText';
 
-const CalculatorDisplay = styled(
-	Component,
-	() => `
+const CalculatorDisplay = styled.Component`
 	font-size: 24px;
 	background: ${({ colors }) => colors.black};
 	text-align: right;
 	padding: 18px;
-`,
-);
+`;
 
-const StyledKeyboard = styled(
-	Keyboard,
+const StyledKeyboard = styled.Keyboard(
 	({ colors }) => `
 		& > div:first-of-type > button {
 			background-color: ${colors.dark(colors.gray)};
@@ -32,16 +28,14 @@ const StyledKeyboard = styled(
 	`,
 );
 
-export class Calculator extends Component {
+export class Calculator extends (styled.Component`
+	max-width: 396px;
+	margin: 0 auto;
+`) {
 	constructor(options = {}) {
 		super({
 			result: 0,
 			...options,
-			style: {
-				maxWidth: '396px',
-				margin: '0 auto',
-				...options.style,
-			},
 		});
 	}
 

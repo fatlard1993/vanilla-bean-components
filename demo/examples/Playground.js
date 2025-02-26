@@ -1,18 +1,14 @@
-import { Component, Input, Label, styled } from '../..';
+import { Component, styled } from '../..';
 
 import ExampleView from '../DemoView/ExampleView';
 import exampleCode from './Playground.js.asText';
 
-const StyledLabel = styled(
-	Label,
-	() => `
-		display: block;
-		width: auto;
-	`,
-);
+const StyledLabel = styled.Label`
+	display: block;
+	width: auto;
+`;
 
-const CodeInput = styled(
-	Input,
+const CodeInput = styled.Input(
 	() => `
 		min-width: 400px;
 		min-height: 100px;
@@ -20,7 +16,9 @@ const CodeInput = styled(
 	{ tag: 'textarea', syntaxHighlighting: true },
 );
 
-export class Playground extends Component {
+export class Playground extends (styled.Component`
+	display: flex;
+`) {
 	constructor(options = {}) {
 		const database = JSON.parse(localStorage.getItem('playground_db')) || {
 			html: '<div>wow!</div>',
@@ -30,7 +28,6 @@ export class Playground extends Component {
 		};
 
 		super({
-			style: { display: 'flex' },
 			...database,
 			...options,
 		});

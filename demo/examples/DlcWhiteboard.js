@@ -13,7 +13,6 @@ import {
 	randInt,
 	theme,
 	styled,
-	List,
 } from '../..';
 
 import ExampleView from '../DemoView/ExampleView';
@@ -21,30 +20,24 @@ import exampleCode from './DlcWhiteboard.js.asText';
 
 const CANVAS_SIZE = 400;
 
-const Inkwell = styled(
-	Component,
-	() => `
-		transform-origin: 0 100%;
-		transform: rotate(-90deg);
-		position: absolute;
-		top: 400px;
-		left: 0;
-		height: 12px;
-		width: 300px;
-	`,
-);
+const Inkwell = styled.Component`
+	transform-origin: 0 100%;
+	transform: rotate(-90deg);
+	position: absolute;
+	top: 400px;
+	left: 0;
+	height: 12px;
+	width: 300px;
+`;
 
-const DlcStoreList = styled(
-	List,
-	() => `
-		list-style: none;
-		padding: 0;
+const DlcStoreList = styled.List`
+	list-style: none;
+	padding: 0;
 
-		li {
-			margin: 6px 0;
-		}
-	`,
-);
+	li {
+		margin: 6px 0;
+	}
+`;
 
 class Achievement extends Notify {
 	constructor({
@@ -118,8 +111,13 @@ class DlcListItem extends Component {
 	}
 }
 
-class DlcWhiteboard extends Component {
-	constructor() {
+class DlcWhiteboard extends (styled.Component`
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+`) {
+	constructor(options) {
 		const database = JSON.parse(localStorage.getItem('dlc_whiteboard_db')) || {
 			ink: 3,
 			color: theme.colors.black.toString(),
@@ -131,15 +129,7 @@ class DlcWhiteboard extends Component {
 			firstInkRunOut: false,
 		};
 
-		super({
-			...database,
-			style: {
-				height: '100%',
-				display: 'flex',
-				flexDirection: 'column',
-				position: 'relative',
-			},
-		});
+		super({ ...database, ...options });
 	}
 
 	render() {

@@ -1,4 +1,4 @@
-import { Component, Input, Button, Popover, Menu, Icon, Table, delay, orderBy, randInt } from '../..';
+import { Component, Input, Button, Popover, Menu, Table, styled, delay, orderBy, randInt } from '../..';
 
 import ExampleView from '../DemoView/ExampleView';
 import exampleCode from './DataTable.js.asText';
@@ -21,21 +21,15 @@ const fetchData = async ({ sort } = {}) => {
 	return sort ? data.sort(orderBy(sort)) : data;
 };
 
-class Loader extends Icon {
-	constructor(options = {}) {
-		super({
-			icon: 'spinner',
-			animation: 'spin-pulse',
-			...options,
-			styles: ({ colors }) => ({
-				fontSize: '66px',
-				display: 'flex',
-				justifyContent: 'center',
-				color: colors.blue,
-			}),
-		});
-	}
-}
+const Loader = styled.Icon(
+	({ colors }) => `
+		display: flex;
+		font-size: 66px;
+		justify-content: center;
+		color: ${colors.blue};
+	`,
+	{ icon: 'spinner', animation: 'spin-pulse' },
+);
 
 export default class Example extends ExampleView {
 	async render() {
@@ -106,7 +100,7 @@ export default class Example extends ExampleView {
 							style: { marginRight: 0 },
 							onPointerPress: event => {
 								new Popover(
-									{ x: event.clientX, y: event.clientY },
+									{ state: 'auto', x: event.clientX, y: event.clientY },
 									new Menu({
 										items: [`Remind ${rowData.name}`, `Forgive ${rowData.name}`],
 										onSelect: console.log,

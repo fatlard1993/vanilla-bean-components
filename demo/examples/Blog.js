@@ -1,4 +1,4 @@
-import { Component, Icon, delay } from '../..';
+import { Component, styled, delay } from '../..';
 
 import ExampleView from '../DemoView/ExampleView';
 import exampleCode from './Blog.js.asText';
@@ -12,45 +12,31 @@ const fetchPosts = async () => {
 	];
 };
 
-class Loader extends Icon {
-	constructor(options = {}) {
-		super({
-			icon: 'spinner',
-			animation: 'spin-pulse',
-			...options,
-			styles: ({ colors }) => ({
-				fontSize: '66px',
-				display: 'flex',
-				justifyContent: 'center',
-				color: colors.blue,
-			}),
-		});
-	}
-}
+const Loader = styled.Icon(
+	({ colors }) => `
+		display: flex;
+		font-size: 66px;
+		justify-content: center;
+		color: ${colors.blue};
+	`,
+	{ icon: 'spinner', animation: 'spin-pulse' },
+);
 
-class PostHeading extends Component {
-	constructor(content) {
-		super({
-			tag: 'h2',
-			content,
-			styles: ({ colors }) => ({
-				fontSize: '3em',
-				margin: '0 0 18px 0',
-				color: colors.blue,
-			}),
-		});
-	}
-}
+const PostHeading = styled.Component(
+	({ colors }) => `
+		font-size: 3em;
+		margin: 0 0 18px 0;
+		color: ${colors.blue};
+	`,
+	{ tag: 'h2' },
+);
 
-class PostBody extends Component {
-	constructor(content) {
-		super({
-			tag: 'p',
-			content,
-			style: { textIndent: '6px' },
-		});
-	}
-}
+const PostBody = styled.Component(
+	() => `
+		text-indent: 6px;
+	`,
+	{ tag: 'p' },
+);
 
 class Post extends Component {
 	constructor(options) {

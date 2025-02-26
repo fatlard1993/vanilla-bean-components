@@ -9,7 +9,13 @@ export default class ExampleView extends DemoView {
 
 		if (this.options.exampleCode) {
 			new Label(
-				{ variant: 'collapsible', collapsed: true, label: 'Example Code', appendTo: this },
+				{
+					variant: 'collapsible',
+					collapsed: true,
+					label: 'Example Code',
+					style: { width: 'calc(98% - 24px)', margin: '1%' },
+					appendTo: this,
+				},
 				new Code({
 					style: { margin: '12px auto' },
 					code: this.options.exampleCode,

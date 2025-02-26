@@ -3,16 +3,11 @@ import { Component, List, Input, Button, Popover, Label, styled } from '../..';
 import ExampleView from '../DemoView/ExampleView';
 import exampleCode from './Todo.js.asText';
 
-const StyledComponent = styled(
-	Component,
-	() => `
-		&.checked label {
-			text-decoration: line-through;
-		}
-	`,
-);
-
-class TodoListItem extends StyledComponent {
+class TodoListItem extends (styled.Component`
+	&.checked label {
+		text-decoration: line-through;
+	}
+`) {
 	_setOption(key, value) {
 		if (key === 'checked') {
 			this[value ? 'addClass' : 'removeClass']('checked');

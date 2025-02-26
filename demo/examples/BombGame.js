@@ -1,4 +1,4 @@
-import { Elem, Component, Button, randInt, styled, Icon } from '../..';
+import { Elem, Button, randInt, styled } from '../..';
 
 import ExampleView from '../DemoView/ExampleView';
 import exampleCode from './BombGame.js.asText';
@@ -6,40 +6,35 @@ import exampleCode from './BombGame.js.asText';
 // Higher numbers are easier (Suggestion: Easy: 1000 | Medium: 700 | Hard: 500)
 const DIFFICULTY = 700;
 
-const Bomb = styled(
-	Icon,
-	() => `
-		position: absolute;
-		display: none;
-		justify-content: center;
-		align-items: center;
+const Bomb = styled.Icon`
+	position: absolute;
+	display: none;
+	justify-content: center;
+	align-items: center;
 
-		&.set {
-			display: flex;
-		}
-
-		&.explode {
-			font-size: 66px !important;
-			color: ${({ colors }) => colors.red};
-			transition: color 300ms;
-			pointer-events: none;
-		}
-	`,
-);
-
-class BombGame extends Component {
-	constructor(options = {}) {
-		super({
-			...options,
-			style: {
-				height: '100%',
-				display: 'flex',
-				flexDirection: 'column',
-				...options.style,
-			},
-		});
+	&.set {
+		display: flex;
 	}
 
+	&.explode {
+		font-size: 66px !important;
+		color: ${({ colors }) => colors.red};
+		transition: color 300ms;
+		pointer-events: none;
+	}
+`;
+
+class BombGame extends (styled.Component`
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+
+	&.minefield {
+		position: relative;
+		flex: 1;
+		background-color: ${({ colors }) => colors.black};
+	}
+`) {
 	render() {
 		this._score = new Elem();
 		this._time = new Elem();
@@ -47,13 +42,7 @@ class BombGame extends Component {
 			{ onPointerPress: () => (this.options.paused = !(this.options.paused ?? true)) },
 			'Play',
 		);
-		this._minefield = new Component({
-			styles: ({ colors }) => ({
-				position: 'relative',
-				flex: 1,
-				backgroundColor: colors.black,
-			}),
-		});
+		this._minefield = new Elem({ className: 'minefield' });
 		this._bomb = new Bomb({
 			icon: 'bomb',
 			animation: 'shake',
