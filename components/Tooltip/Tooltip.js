@@ -16,6 +16,7 @@ const StyledPopover = styled(
 		transform: scaleX(0);
 		transition: opacity 0.3s, transform 0.1s, overlay 0.3s allow-discrete, display 0.3s allow-discrete;
 		transition-delay: 0.3s;
+		text-indent: 0;
 
 		&:popover-open {
 			display: inline-block;

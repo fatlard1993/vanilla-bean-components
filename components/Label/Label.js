@@ -115,7 +115,7 @@ class Label extends StyledLabel {
 
 		super(
 			{
-				for: children[0],
+				...(children.length > 0 && { for: children[0] }),
 				...defaultOptions,
 				...options,
 			},

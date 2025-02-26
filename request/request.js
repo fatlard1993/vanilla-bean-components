@@ -18,7 +18,7 @@ export const request = async (url, options = {}) => {
 		enabled = true,
 		urlParameters,
 		searchParameters,
-		method,
+		method = 'GET',
 		fetchOptions,
 	} = options;
 
@@ -158,7 +158,7 @@ export const request = async (url, options = {}) => {
 		});
 	}
 
-	if (subscriptions.has(apiId)) {
+	if (subscriptions.has(apiId) && !isRefetch) {
 		Object.values(subscriptions.get(apiId)).forEach(({ onRefetch: listener }) => listener?.(result));
 	}
 

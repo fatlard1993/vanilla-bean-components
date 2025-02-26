@@ -123,7 +123,7 @@ class Component extends Elem {
 	 * @param {any} value - The new option value
 	 */
 	_setOption(key, value) {
-		if (key.startsWith('on')) {
+		if (key.startsWith('on') && value) {
 			const targetEvent = key.replace(/^on/, '').toLowerCase();
 
 			if (this.on({ targetEvent, id: key, callback: value })) return;
@@ -187,6 +187,8 @@ class Component extends Elem {
 	}
 
 	on({ targetEvent, id = targetEvent, callback }) {
+		if (!callback) return false;
+
 		this.cleanup?.[id]?.();
 
 		if (commonEvents.has(targetEvent) || this.__registeredEvents.has(targetEvent)) {
