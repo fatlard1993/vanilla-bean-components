@@ -28,7 +28,7 @@ import { Page } from 'vanilla-bean-components';
 new Page({ appendTo: document.body, content: 'Hello World' });
 ```
 
-All [components](./demo/components) maintain a README, demo, and test which offer good examples of how each component can be used. Additionally, there are a set of [examples](./demo/examples) available for reference.
+All [components](./components) maintain a README, demo, and test which offer good examples of how each component can be used. Additionally, there are a set of [examples](./demo/examples) available for reference.
 
 > Read the [Getting Started](./docs/GETTING_STARTED.md) doc when you're ready to start your own project with vanilla-bean-components.
 
