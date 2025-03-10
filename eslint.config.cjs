@@ -17,7 +17,6 @@ module.exports = [
 	js.configs.recommended,
 	jsdoc.configs['flat/recommended'],
 	...fixupConfigRules(compat.configs['flat/recommended']),
-	...fixupConfigRules(unicorn.configs['flat/recommended']),
 	{
 		languageOptions: {
 			ecmaVersion: 'latest',
@@ -31,6 +30,7 @@ module.exports = [
 			import: importPlugin,
 			'write-good-comments': writeGoodComments,
 			spellcheck,
+			unicorn,
 		},
 		rules: {
 			'no-console': 'warn',
@@ -41,16 +41,16 @@ module.exports = [
 			'no-async-promise-executor': 'off',
 			'no-prototype-builtins': 'off',
 
-			'unicorn/prevent-abbreviations': [
-				'error',
-				{
-					allowList: {
-						elem: true,
-						Elem: true,
-						args: true,
-					},
-				},
-			],
+			// 'unicorn/prevent-abbreviations': [
+			// 	'error',
+			// 	{
+			// 		allowList: {
+			// 			elem: true,
+			// 			Elem: true,
+			// 			args: true,
+			// 		},
+			// 	},
+			// ],
 			'unicorn/filename-case': 'off',
 			'unicorn/no-null': 'off',
 			'unicorn/no-await-expression-member': 'off',

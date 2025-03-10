@@ -8,7 +8,6 @@ const components = [...new Glob('components/*/index.js').scanSync('.')].sort(ord
 let result = `/* This file is automatically managed (bun build:index) (${basename(process.argv[1])}), do not edit by hand */\n\n`;
 
 components.forEach(file => {
-	// eslint-disable-next-line unicorn/no-unreadable-array-destructuring
 	const [, , name] = file.match(/(.+?)\/(.+)\/(.+?)(\..+)?$/);
 
 	result += `export * from './${name}';\n`;

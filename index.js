@@ -17,5 +17,4 @@ export * from './utils';
 
 export { default as theme } from './theme';
 
-// eslint-disable-next-line unicorn/prefer-export-from
 export { styled };

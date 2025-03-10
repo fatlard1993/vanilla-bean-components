@@ -28,7 +28,6 @@ result += `\nimport DocumentationView from './DemoView/DocumentationView.js';\n\
 result += `const MarkdownDocumentation = styled(DocumentationView, () => '', { folderName: 'markdown' });\n`;
 
 documentation.forEach(file => {
-	// eslint-disable-next-line unicorn/no-unreadable-array-destructuring
 	const [, , name] = file.match(/(.+?)\/(.+)\/(.+?)(\..+)?$/);
 	result += `const ${name}Documentation = styled(DocumentationView, () => '', { folderName: '${name}' });\n`;
 });
