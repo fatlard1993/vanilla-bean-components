@@ -5,6 +5,28 @@ import { hydrateUrl } from './hydrateUrl';
 export const cache = new Map();
 export const subscriptions = new Map();
 
+const checkInvalidates = (invalidates, { cacheId, apiId }) => {
+	return invalidates.some(invalidate => {
+		let _isInvalidated = false;
+
+		if (Array.isArray(cacheId)) {
+			_isInvalidated = Array.isArray(invalidate) ? invalidate === cacheId : cacheId.includes(invalidate);
+		} else {
+			_isInvalidated = Array.isArray(invalidate) ? false : cacheId === invalidate;
+		}
+
+		if (!_isInvalidated) {
+			if (Array.isArray(apiId)) {
+				_isInvalidated = Array.isArray(invalidate) ? invalidate === apiId : apiId.includes(invalidate);
+			} else {
+				_isInvalidated = Array.isArray(invalidate) ? false : apiId === invalidate;
+			}
+		}
+
+		return _isInvalidated;
+	});
+};
+
 /** @typedef {(url: string, options: {invalidateAfter: number, invalidates: Array, cache: boolean, isRefetch: boolean, onRefetch: Function, enabled: boolean, urlParameters: object, searchParameters: object}) => object} Request */
 /** @type {Request} */
 export const request = async (url, options = {}) => {
@@ -45,7 +67,7 @@ export const request = async (url, options = {}) => {
 		contentType: null,
 		body: null,
 		invalidateCache: () => cache.delete(cacheId),
-		refetch: async overrides => await request.call(this, url, { isRefetch, ...options, ...overrides }),
+		refetch: async overrides => await request.call(this, url, { ...options, isRefetch, ...overrides }),
 		subscribe: callback => {
 			const subscriptionId = nanoid(5);
 			const unsubscribe = () => {
@@ -54,15 +76,16 @@ export const request = async (url, options = {}) => {
 
 				subscriptions.set(apiId, newSubscription);
 			};
-			const refetch = async overrides =>
-				await request.call(this, url, { isRefetch: subscriptionId, ...options, ...overrides });
-
-			const subscription = {
-				[subscriptionId]: {
+			const refetch = async overrides => {
+				return await request.call(this, url, {
+					...options,
+					isRefetch: subscriptionId,
 					onRefetch: callback,
-					unsubscribe,
-				},
+					...overrides,
+				});
 			};
+
+			const subscription = { [subscriptionId]: { onRefetch: callback, unsubscribe } };
 
 			if (!subscriptions.has(apiId)) subscriptions.set(apiId, { refetch, ...subscription });
 			else subscriptions.set(apiId, { ...subscriptions.get(apiId), ...subscription });
@@ -111,39 +134,13 @@ export const request = async (url, options = {}) => {
 
 	if (result.success && invalidates) {
 		cache.forEach(({ invalidate: dropCache, apiId: cacheApiId }, _id) => {
-			const isInvalidated = invalidates.some(invalidate => {
-				let _isInvalidated = false;
+			const isInvalidated = checkInvalidates(invalidates, { cacheId: _id, apiId: cacheApiId });
 
-				if (Array.isArray(_id)) {
-					_isInvalidated = Array.isArray(invalidate) ? invalidate === _id : _id.includes(invalidate);
-				} else {
-					_isInvalidated = Array.isArray(invalidate) ? false : _id === invalidate;
-				}
+			if (isInvalidated) {
+				dropCache();
 
-				if (!_isInvalidated) {
-					if (Array.isArray(cacheApiId)) {
-						_isInvalidated = Array.isArray(invalidate) ? invalidate === cacheApiId : cacheApiId.includes(invalidate);
-					} else {
-						_isInvalidated = Array.isArray(invalidate) ? false : cacheApiId === invalidate;
-					}
-				}
-
-				return _isInvalidated;
-			});
-
-			if (isInvalidated) dropCache();
-		});
-
-		subscriptions.forEach(({ refetch }, _id) => {
-			const isInvalidated = invalidates.some(invalidate => {
-				if (Array.isArray(_id)) {
-					return Array.isArray(invalidate) ? invalidate === _id : _id.includes(invalidate);
-				} else {
-					return Array.isArray(invalidate) ? false : _id === invalidate;
-				}
-			});
-
-			if (isInvalidated) refetch(result);
+				if (subscriptions.has(cacheApiId)) subscriptions.get(cacheApiId).refetch();
+			}
 		});
 	}
 
@@ -158,17 +155,11 @@ export const request = async (url, options = {}) => {
 		});
 	}
 
-	if (subscriptions.has(apiId) && !isRefetch) {
-		Object.values(subscriptions.get(apiId)).forEach(({ onRefetch: listener }) => listener?.(result));
-	}
-
 	if (onRefetch) {
 		if (isRefetch) {
 			result.subscriptionId = isRefetch;
 			result.unsubscribe = subscriptions.get(apiId)?.[isRefetch]?.unsubscribe;
 			result.refetch = async overrides => await request.call(this, url, { isRefetch, ...options, ...overrides });
-
-			if (subscriptions.get(apiId)?.[isRefetch]) onRefetch(result);
 		} else {
 			const { subscriptionId, unsubscribe, refetch } = result.subscribe(onRefetch);
 
@@ -176,6 +167,10 @@ export const request = async (url, options = {}) => {
 			result.unsubscribe = unsubscribe;
 			result.refetch = refetch;
 		}
+	}
+
+	if (subscriptions.has(apiId)) {
+		Object.values(subscriptions.get(apiId)).forEach(({ onRefetch: listener }) => listener?.(result));
 	}
 
 	return result;
