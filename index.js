@@ -16,5 +16,6 @@ export * from './styled';
 export * from './utils';
 
 export { default as theme } from './theme';
+export { default as rootContext } from './rootContext';
 
 export { styled };
