@@ -10,6 +10,7 @@ const build = async () => {
 		outdir: 'demo/build',
 		define: {
 			'process.env.AUTOPREFIXER_GRID': 'undefined',
+			'process.cwd': 'String',
 		},
 		plugins: [asText, markdownLoader],
 	});
