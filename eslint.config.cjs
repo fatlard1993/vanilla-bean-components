@@ -7,7 +7,7 @@ const compat = require('eslint-plugin-compat');
 const importPlugin = require('eslint-plugin-import');
 const spellcheck = require('eslint-plugin-spellcheck');
 const testingLibrary = require('eslint-plugin-testing-library');
-const unicorn = require('eslint-plugin-unicorn');
+// const unicorn = require('eslint-plugin-unicorn');
 const writeGoodComments = require('eslint-plugin-write-good-comments');
 
 module.exports = [
@@ -30,7 +30,7 @@ module.exports = [
 			import: importPlugin,
 			'write-good-comments': writeGoodComments,
 			spellcheck,
-			unicorn,
+			unicorn: import('eslint-plugin-unicorn'),
 		},
 		rules: {
 			'no-console': 'warn',
