@@ -4,7 +4,9 @@
 	"type": "module",
 	"exports": {
 		"./theme/*": "./theme/*.js",
+		"./theme": "./theme/index.js",
 		"./utils/*": "./utils/*.js",
+		"./utils": "./utils/index.js",
 		"./package.json": "./package.json",
 		"./eslint.config.cjs": "./eslint.config.cjs",
 		"./prettier.config.cjs": "./prettier.config.cjs",
