@@ -9,4 +9,4 @@ export const randInt = (min = -999, max = 999) => {
 };
 
 /** @type {(array: Array) => number} Choose a random item from an array */
-export const randFromArray = array => array[randInt(0, array.length)];
+export const randFromArray = array => array[randInt(0, array.length - 1)];
