@@ -243,7 +243,7 @@ class Dialog extends StyledDialog {
 				tag: 'h2',
 				id: this.uniqueId,
 				addClass: ['header'],
-				append: this.options.header,
+				content: this.options.header,
 				appendTo: this,
 			});
 		}
@@ -307,7 +307,9 @@ class Dialog extends StyledDialog {
 
 			if (value) this.addClass(`variant-${value}`);
 		} else if (key === 'body') {
-			this._body.options.content = value;
+			this._body.content(value);
+		} else if (key === 'header') {
+			this._header.content(value);
 		} else super._setOption(key, value);
 	}
 
