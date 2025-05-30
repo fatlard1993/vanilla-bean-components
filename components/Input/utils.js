@@ -1,6 +1,8 @@
 import { Component } from '../../Component';
 import { styled } from '../../styled';
 import { getElementsContainingText } from '../../utils';
+import { Button } from '../Button';
+import { Popover } from '../Popover';
 
 export const InputValidationError = styled(
 	Component,
@@ -34,9 +36,35 @@ export const updateValidationErrors = ({ elem, validations, value }) => {
 			existingValidationError.style.display = isValid ? 'none' : 'block';
 		} else if (!isValid) {
 			const validationError = new InputValidationError({ content: resolvedMessage });
+			const [inputLabel] = elem.parentElement.getElementsByTagName('label');
 
-			// Insert directly before the input element in case there is a label or other stacked elements
-			elem.parentElement.insertBefore(validationError.elem, elem);
+			if (inputLabel) {
+				let errorPopover = elem.parentElement.querySelector('section');
+
+				if (!errorPopover) {
+					errorPopover = new Popover({ autoOpen: false, state: 'auto' });
+					elem.parentElement.insertBefore(errorPopover.elem, elem);
+
+					new Button({
+						appendTo: inputLabel,
+						icon: 'exclamation',
+						styles: ({ colors }) => ({
+							marginLeft: '6px',
+							width: '18px',
+							height: '18px',
+							fontSize: '12px',
+							padding: 0,
+							backgroundColor: colors.red,
+						}),
+						onPointerPress: event => errorPopover.show({ x: event.clientX, y: event.clientY }),
+					});
+				}
+
+				errorPopover.append(validationError.elem);
+			}
+
+			// Insert directly before the input element in case there are other stacked elements
+			else elem.parentElement.insertBefore(validationError.elem, elem);
 		}
 	});
 
