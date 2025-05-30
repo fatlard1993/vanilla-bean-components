@@ -14,5 +14,10 @@ export default class Demo extends DemoView {
 		);
 
 		super.render();
+
+		new Label(
+			{ appendTo: this.demoWrapper, label: '0' },
+			new Label('1', new Label('2', new Label('3', new Label('4', new Label('5', new Label('6')))))),
+		);
 	}
 }

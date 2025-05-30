@@ -10,9 +10,9 @@ const StyledLabel = styled(
 		display: inline-block;
 		font-size: 1em;
 		width: calc(100% - 24px);
-		margin: 0 0 9px;
-		padding: 6px 12px 9px 12px;
-		background-color: ${colors.white.setAlpha(0.06)};
+		margin: 0 0 6px;
+		padding: 6px 12px 6px 12px;
+		background-color: ${colors.white.setAlpha(0.04)};
 		color: ${colors.white};
 		transition: all 0.5s;
 
