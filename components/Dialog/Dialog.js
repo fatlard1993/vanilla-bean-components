@@ -4,7 +4,29 @@ import { Button } from '../Button';
 import { Component } from '../../Component';
 import { Elem } from '../../Elem';
 
-const StyledDialog = styled(
+const DialogButton = styled(
+	Button,
+	() => `
+		margin: 9px 18px 3px 30px;
+		flex: 1;
+	`,
+);
+
+const size_enum = Object.freeze(['small', 'standard', 'large']);
+const variant_enum = Object.freeze(['info', 'success', 'warning', 'error']);
+
+const defaultOptions = {
+	tag: 'dialog',
+	size: 'small',
+	openOnRender: 16,
+	modal: true,
+	appendTo: document.body,
+	registeredEvents: new Set(['close']),
+
+	augmentedUI: 'tl-clip tr-2-clip-x br-clip bl-2-clip-y border',
+};
+
+class Dialog extends styled(
 	Component,
 	({ colors }) => `
 		background-color: transparent;
@@ -21,9 +43,9 @@ const StyledDialog = styled(
 
 		--aug-border-bg: linear-gradient(-12deg, ${colors.light(colors.teal)}, ${colors.light(colors.blue)});
 		--aug-border-all: 2px;
-		--aug-tl1: 24px;
-		--aug-tr-extend1: 42%;
-		--aug-tr1: 24px;
+		--aug-tl1: 30px;
+		--aug-tr-extend1: 30%;
+		--aug-tr1: 30px;
 		--aug-bl-extend2: 32px;
 		--aug-br1: 12px;
 
@@ -33,10 +55,9 @@ const StyledDialog = styled(
 		}
 
 		.header {
-			width: 50%;
+			width: 60%;
 			text-align: center;
 			font-size: 1.2em;
-			line-height: 30px;
 			margin: 0;
 		}
 
@@ -44,6 +65,10 @@ const StyledDialog = styled(
 			flex: 1;
 			padding: 6px 6px 6px 21px;
 			overflow: hidden auto;
+
+			&::-webkit-scrollbar-track {
+				margin: 24px 0 3px 0;
+			}
 
 			&:before {
 				content: "";
@@ -201,31 +226,7 @@ const StyledDialog = styled(
 			}
 		}
 	`,
-);
-
-const DialogButton = styled(
-	Button,
-	() => `
-		margin: 9px 18px 3px 30px;
-		flex: 1;
-	`,
-);
-
-const size_enum = Object.freeze(['small', 'standard', 'large']);
-const variant_enum = Object.freeze(['info', 'success', 'warning', 'error']);
-
-const defaultOptions = {
-	tag: 'dialog',
-	size: 'small',
-	openOnRender: 16,
-	modal: true,
-	appendTo: document.body,
-	registeredEvents: new Set(['close']),
-
-	augmentedUI: 'tl-clip tr-2-clip-x br-clip bl-2-clip-y border',
-};
-
-class Dialog extends StyledDialog {
+) {
 	variant_enum = variant_enum;
 	size_enum = size_enum;
 

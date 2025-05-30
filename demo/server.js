@@ -26,7 +26,8 @@ const spawnBuild = async () => {
 const server = Bun.serve({
 	port: 9999,
 	fetch: async request => {
-		const path = new URL(request.url).pathname.replace(/^\/img/, '/../img').replace('vanilla-bean-components', '..');
+		const url = new URL(request.url);
+		const path = url.pathname.replace(/^\/img/, '/../img').replace('vanilla-bean-components', '..');
 
 		if (request.method === 'GET' && path === '/') return new Response(Bun.file('demo/build/index.html'));
 
@@ -37,6 +38,15 @@ const server = Bun.serve({
 		}
 
 		console.log(path);
+
+		if (request.method === 'GET' && path === '/api-pass') {
+			const result = await fetch(url.searchParams.get('api'));
+			console.log(result);
+
+			return Response.json(
+				await (result.headers.get('Content-Type').includes('application/json') ? result.json() : result.text()),
+			);
+		}
 
 		if (path.endsWith('markdown/README.md')) {
 			let response = await fetch(

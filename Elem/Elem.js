@@ -95,8 +95,7 @@ class Elem extends EventTarget {
 	}
 
 	setStyle(style) {
-		if (typeof style === 'string') return this.styles(() => style);
-		if (typeof style === 'function') return this.styles(style);
+		if (!style || typeof style === 'string' || typeof style === 'function') return;
 
 		Object.entries(style).forEach(([key, value]) => {
 			if (!key || /\d/.test(key)) return;

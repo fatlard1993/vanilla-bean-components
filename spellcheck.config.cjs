@@ -144,6 +144,7 @@ module.exports = {
 		'excalidraw',
 		'kode',
 		'fontsource',
+		'keyof',
 	],
 	skipIfMatch: [String.raw`\d+v[wh]`],
 	skipWordIfMatch: [],
