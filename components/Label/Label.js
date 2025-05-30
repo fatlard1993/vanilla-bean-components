@@ -22,15 +22,33 @@ const StyledLabel = styled(
 
 		label {
 			display: block;
+			margin: 0;
+			color: ${colors.white};
+		}
+
+		&.variant-overlay {
+			label {
+				position: relative;
+				z-index: 1;
+				transform: translate(0, 0);
+				transition: transform 0.5s, color 0.5s;
+			}
+
+			input {
+				transform: translate(0, 0);
+				transition: transform 0.5s;
+			}
 		}
 
 		&.variant-overlay:not(:focus-within):has(input:placeholder-shown) {
 			label {
 				pointer-events: none;
-				position: absolute;
-				top: 16px;
-				left: 21px;
 				color: ${colors.gray};
+				transform: translate(12px, 20px);
+			}
+
+			input {
+				transform: translate(0, -12px);
 			}
 		}
 
@@ -40,13 +58,20 @@ const StyledLabel = styled(
 			label {
 				display: inline-block;
 				vertical-align: top;
-				margin-top: 3px;
+				margin-top: 5px;
 				margin-right: 9px;
 				line-height: 2;
 			}
 
 			input:not([type=checkbox]), textarea, select {
 				flex: 1;
+			}
+		}
+
+		&.variant-inline-after {
+			label {
+				margin-left: 9px;
+				margin-right: 0;
 			}
 		}
 
@@ -79,7 +104,7 @@ const StyledLabel = styled(
 				}
 			}
 
-			label {
+			> label {
 				cursor: pointer;
 
 				&:before {
@@ -127,11 +152,6 @@ class Label extends StyledLabel {
 		this._labelText = new Component({
 			tag: 'label',
 			[this.options.variant === 'inline-after' ? 'appendTo' : 'prependTo']: this,
-			styles: ({ colors }) => ({
-				display: 'block',
-				color: colors.white,
-				margin: 0,
-			}),
 			onPointerPress: () => {
 				if (this.options.variant === 'collapsible') {
 					this[this.hasClass('collapsed') ? 'removeClass' : 'addClass']('collapsed');
@@ -152,6 +172,8 @@ class Label extends StyledLabel {
 			this.addClass(`variant-${value}`);
 
 			this.options.augmentedUI = value === 'collapsible' ? 'tl-clip tr-2-clip-x br-clip bl-clip border' : false;
+
+			this[this.options.variant === 'inline-after' ? 'append' : 'prepend'](this._labelText);
 		} else if (key === 'for') {
 			let forId = typeof value === 'string' ? value : value?.id || value?.elem?.id;
 
