@@ -34,12 +34,18 @@ export default class TooltipWrapper extends StyledIcon {
 
 				this.on({
 					targetEvent: 'pointerover',
-					callback: ({ clientX, clientY }) => this._tooltip.show({ x: clientX, y: clientY }),
+					callback: ({ clientX, clientY }) => {
+						this.tooltipTimeout = setTimeout(() => this._tooltip.show({ x: clientX, y: clientY }), 700);
+					},
 				});
 
 				this.on({
 					targetEvent: 'pointerout',
-					callback: () => this._tooltip.hide(),
+					callback: () => {
+						clearTimeout(this.tooltipTimeout);
+
+						this._tooltip.hide();
+					},
 				});
 			}
 		} else super._setOption(key, value);

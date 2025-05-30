@@ -14,16 +14,13 @@ const StyledPopover = styled(
 		color: ${colors.black};
 		opacity: 0;
 		transform: scaleX(0);
-		transition: opacity 0.3s, transform 0.1s, overlay 0.3s allow-discrete, display 0.3s allow-discrete;
-		transition-delay: 0.3s;
+		transition: opacity 0.4s, transform 0.1s, overlay 0.4s allow-discrete, display 0.4s allow-discrete;
 		text-indent: 0;
 
 		&:popover-open {
-			display: inline-block;
 			opacity: 1;
 			transform: scaleX(1);
-			transition: overlay 0.6s allow-discrete, display 0.6s allow-discrete, opacity 0.6s, transform 0.6s;
-			transition-delay: 0.5s;
+			transition: overlay 0.4s allow-discrete, display 0.4s allow-discrete, opacity 0.4s, transform 0.4s;
 		}
 
 		@starting-style {
