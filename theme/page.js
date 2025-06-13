@@ -47,6 +47,8 @@ export default `
 
 		&:before {
 			margin-right: 3px;
+			font-size: 0.7em;
+			opacity: 0.7;
 		}
 	}
 
