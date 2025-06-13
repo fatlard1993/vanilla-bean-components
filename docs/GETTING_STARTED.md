@@ -2,20 +2,45 @@
 
 > `npm install github:fatlard1993/vanilla-bean-components`
 
-- [Context](../context/README.md)
-- [Request](../request/README.md)
-- [Elem](../Elem/README.md)
-- [Component](../Component/README.md)
-- [Theme](../theme/README.md)
-- [Styled](../styled/README.md)
-
-Being that this is primarily a development pattern, I'll simply recommend what I currently do. Feel free to stray from the path wherever makes sense for your use-case.
+This is intended to primarily be a development pattern, so I'll simply recommend what I currently do. Feel free to stray from the path wherever makes sense for your use-case.
 
 ## HTML
 
 Create an html file with whatever metadata, or remote styles/scripts that you need.
 
-> [example](../demo/index.html)
+```html
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>my-cool-app</title>
+
+		<meta charset="UTF-8" />
+		<meta http-equiv="cleartype" content="on" />
+
+		<meta name="author" content="me" />
+		<meta name="description" content="demo" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
+		<meta name="HandheldFriendly" content="true" />
+		<meta name="MobileOptimized" content="320" />
+
+		<meta name="mobile-web-app-capable" content="yes" />
+
+		<meta name="apple-mobile-web-app-title" content="my-cool-app" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="application-name" content="my-cool-app" />
+		<meta name="msapplication-tooltip" content="my-cool-app" />
+		<meta name="msapplication-TileColor" content="#bada55" />
+
+		<meta name="theme-color" content="#bada55" />
+
+		<script type="module" src="./index.js"></script>
+	</head>
+	<body></body>
+</html>
+```
 
 ### JS Entrypoint
 
@@ -29,9 +54,7 @@ This is the main entrypoint for your app.
 
 Create a js file that will be main file for your frontend.
 
-> [example](../demo/index.js)
-
-Not _strictly necessary_, but the `Page` component is designed to be the top-level component; it injects the global theme css along with any css/font dependencies to the page and renders itself and its children when the DOM is loaded with `autoRender: 'onload'`.
+While not _strictly necessary_, the `Page` component is designed to be the top-level component; it injects the global theme css along with any css/font dependencies to the page and renders itself and its children when the DOM is loaded with `autoRender: 'onload'`.
 
 ```js
 import { Page } from 'vanilla-bean-components';
@@ -41,12 +64,63 @@ new Page({ appendTo: document.body, content: 'Hello World' });
 
 ## Build
 
-Now that you have the minimum app structure inplace you'll need some way to get it into the browser. You _can_ use a static build, but since the use-case of this library is more geared towards reactive apps you'll likely have or need a server component to integrate with. In either case I recommend considering [bun](https://bun.sh/), thats what I'm currently using, although you _should_ be able to use whatever else you want.
+With the minimum app structure inplace you'll need some way to get it into the browser. You _can_ use a static build, but since the use-case of this pattern is more geared towards reactive apps you'll likely have or need a server component to integrate with. In either case I recommend considering [bun](https://bun.sh/), thats what I'm currently using, although you _should_ be able to use whatever else you want.
 
 Heres a couple build examples with `bun`:
 
-- Simple build script: `bun build client/index.html --outdir client/build --define 'process.env.AUTOPREFIXER_GRID=\"undefined\"'`
-- More complex build script: [example](../devTools/build.js)
+- Simple build script:
+
+```sh
+bun build client/index.html --outdir client/build --define 'process.env.AUTOPREFIXER_GRID=\"undefined\"'
+```
+
+- More complex build script:
+
+```js
+import { watch } from 'fs';
+import { buildLoader as asText } from '../plugins/asText';
+import { buildLoader as markdownLoader } from '../plugins/markdownLoader';
+
+const build = async () => {
+	console.log('Building...');
+
+	const buildResults = await Bun.build({
+		entrypoints: ['demo/index.html'],
+		outdir: 'demo/build',
+		define: {
+			'process.env.AUTOPREFIXER_GRID': 'undefined',
+			'process.cwd': 'String',
+		},
+		plugins: [asText, markdownLoader],
+	});
+
+	console.log(buildResults.success ? 'build.success' : buildResults.logs);
+
+	return buildResults;
+};
+
+const enableWatcher = process.argv[2] === '--watch';
+const watcherIgnore = /\.asText$|^demo\/build|^\.|^img\/|^docs\/|^devTools\//;
+
+if (enableWatcher) {
+	console.log(`Initializing watcher`);
+
+	const watcher = watch(`${import.meta.dir}/..`, { recursive: true }, (event, filename) => {
+		if (watcherIgnore.test(filename)) return;
+
+		console.log(`Detected ${event} in ${filename}`);
+
+		build();
+	});
+
+	process.on('SIGINT', () => {
+		watcher.close();
+		process.exit(0);
+	});
+}
+
+await build();
+```
 
 ## Server
 
@@ -76,9 +150,9 @@ console.log(`Listening on ${server.hostname}:${server.port}`);
 
 ## Developer dependencies
 
-How to take advantage of the dev dependencies and various scripts and configs that vanilla-bean-components has setup:
+Take advantage of the dev dependencies and various scripts and configs that vanilla-bean-components has setup:
 
-Copy/paste any applicable devDependencies from vanilla-bean-components to your app.
+> Copy/paste any applicable devDependencies from vanilla-bean-components to your app.
 
 `prettier.config.cjs`
 

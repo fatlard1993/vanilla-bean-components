@@ -1,6 +1,6 @@
 # Component
 
-A Component class is an Elem with even more tools and capabilities. This class is intended to create high-level custom components and more complex sub-components than what an Elem supports. The main differences here are focused around observable options, rendering, event listening & emitting, and runtime styling.
+The Component class is an Elem with more capabilities. This class is intended to create high-level custom components and more complex sub-components than what an Elem supports. The main differences here are focused around observable options, rendering, event listening & emitting, and runtime styling.
 
 ## Usage
 
@@ -46,9 +46,13 @@ class Button extends Component {
 		);
 	}
 
-	setOption(key, value) {
+	render() {
+		super.render();
+	}
+
+	_setOption(key, value) {
 		if (key === 'mode') this.removeClass(/\bmode-\S+\b/g).addClass(`mode-${value}`);
-		else super.setOption(key, value);
+		else super._setOption(key, value);
 	}
 }
 ```
@@ -65,15 +69,9 @@ const FocusedContent = styled(
 );
 ```
 
-## Component
-
-A Component class is an Elem with even more tools and capabilities. This class is intended to create high-level custom components and more complex sub-components than what an Elem supports. The main differences here are focused around observable options, rendering, event listening & emitting, and runtime styling.
-
 ### Options & methods
 
-A Component offers everything the Elem offers with a handful of additions.
-
-Class instance property `options` is built on Context. All `set` operations run through the internal method `setOption`. The base `setOption` method handles applying options as either method calls or property sets. Keys that exist on the Component class take precedence, otherwise apply to the base HTMLElement. Additional behavior can be configured or overwritten in extended components by overlaying the `setOption` method. Option changes can also be observed and subscribed to via the Context API.
+The Class instance property `options` is built on Context. All `set` operations run through the internal method `_setOption`. The base `_setOption` method handles applying options as either method calls or property sets. Keys that exist on the Component class take precedence, otherwise apply to the base HTMLElement. Additional behavior can be configured or overwritten in extended components by overlaying the `_setOption` method. Option changes can also be observed and subscribed to via the Context API.
 
 - Elem configuration
   - `@param {Boolean | 'onload' | 'animationFrame'} options.autoRender - Control when to render the component`

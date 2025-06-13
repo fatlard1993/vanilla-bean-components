@@ -30,7 +30,7 @@ class Elem extends EventTarget {
 	}
 
 	/**
-	 * Pseudo-protected method - setOption - Handles the behavior of a changing option where applicable
+	 * Pseudo-protected method - _setOption - Handles the behavior of a changing option where applicable
 	 * (called by Elem constructor, not intended for direct invocation)
 	 * @param {string} key - The option key
 	 * @param {any} value - The new option value

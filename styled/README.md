@@ -1,6 +1,6 @@
 # styled
 
-Create a tagged Component class that will have scoped styles processed and injected into the page.
+> Create a tagged Component class that will have scoped styles processed and injected into the page.
 
 ```js
 const MyStyledComponent = styled(
@@ -18,7 +18,7 @@ const secondInstanceOfMyStyledComponent = new MyStyledComponent({
 });
 ```
 
-Supports all top-level components as named functions:
+All top-level components are available as named functions:
 
 ```js
 const MyStyledComponent = styled.Button(
@@ -29,7 +29,7 @@ const MyStyledComponent = styled.Button(
 );
 ```
 
-Can be used as a tag function:
+Tag function syntax is supported:
 
 ```js
 const MyStyledComponent = styled.Icon`
@@ -39,16 +39,32 @@ const MyStyledComponent = styled.Icon`
 
 ## appendStyles
 
-Append a style tag with custom css onto the page at runtime
+Append a style tag with custom css onto the page at runtime.
+
+```js
+appendStyles('div.cool { font-size: 16px; }');
+```
 
 ## postCSS
 
-Process a piece of css text with [postcss](https://github.com/postcss/postcss), with the plugins: [autoprefixer](https://github.com/postcss/autoprefixer), and [postcss-nested](https://github.com/postcss/postcss-nested)
+Returns a piece of css text processed with [postcss](https://github.com/postcss/postcss), with the plugins: [autoprefixer](https://github.com/postcss/autoprefixer), and [postcss-nested](https://github.com/postcss/postcss-nested)
+
+```js
+const processedCSS = postCSS('div.cool { font-size: 16px; &:before { font-size: 6px } }');
+```
 
 ## themeStyles
 
-Process a css decorator function, hydrating with theme and wrapping in optional scope
+Returns a css string from a css decorator function, hydrating with theme and wrapping in optional scope.
+
+```js
+const themedCSS = themeStyles({ styles: ({ colors }) => `color: ${colors.black};`, scope: 'div.cool' });
+```
 
 ## shimCSS
 
 Process a css decorator function, hydrating with theme, wrapping in optional scope, and post-processing with postCSS. Then appends the resulting css text a style tag to the page.
+
+```js
+shimCSS({ styles: ({ colors }) => `color: ${colors.white};`, scope: 'div.cool' });
+```

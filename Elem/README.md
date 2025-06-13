@@ -1,12 +1,10 @@
 # Elem
 
-An Element (`Elem` class) is a small wrapping layer around createElement and its resulting HTMLElement object. You can think of it like a little toolbox that comes with every element.
+An Element (`Elem` class) is a small wrapping layer around createElement and its resulting HTMLElement object.
 
 ## Usage
 
-```js
-new Elem(options, ...children);
-```
+`new Elem(options, ...children);`
 
 ```js
 new Elem({
@@ -18,7 +16,7 @@ new Elem({
 
 ## Options & methods
 
-Everything in a Elem can be controlled by its `options`. In addition to configuration, `options` offers access to properties, methods, and events of the Elem class and its `.elem` HTMLElement.
+Everything about a Elem can be controlled by its `options`, which offers access to; properties, methods, and events of the Elem class and its `.elem` HTMLElement.
 
 - ...[EventTarget](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget)
 - ...[Node](https://developer.mozilla.org/en-US/docs/Web/API/Node)
@@ -49,7 +47,7 @@ Not all Elem methods make sense to use with options:
 - `get parentElem`
 - `get parent`
 - `get children`
-- `setOption(key, value)`
+- `_setOption(key, value)`
   - _This method is used internally to synchronize options property changes and not intended to be called directly_
 - `setOptions(options)`
 - `hasClass(...classes) => Boolean`

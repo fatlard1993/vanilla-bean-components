@@ -64,13 +64,21 @@ request('/users', { id: ['users'], invalidateAfter: false });
 
 ## Subscriptions
 
-Any `request` with an `id` can be subscribed to. When a request response resolves it will execute any functions subscribed to that `request().id` with the contents of that response.
+Any `request` with an `id` can be subscribed to. When a request response resolves it will execute any functions subscribed to it with the contents of that response.
 
 There are 2 major was to interact with the subscriptions:
 
 ### onRefetch
 
 An `onRefetch` function can be provided to generate an automatic subscription
+
+```js
+request('users', {
+	onRefetch: response => {
+		console.log('got users: ', response);
+	},
+});
+```
 
 ### subscribe()
 

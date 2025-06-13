@@ -41,14 +41,43 @@ import TodoExample from './examples/Todo';
 
 import DocumentationView from './DemoView/DocumentationView.js';
 
+const startDocumentation = styled(DocumentationView, () => '', {
+	fileName: 'docs/GETTING_STARTED.md',
+	nextLabel: 'Elem',
+	nextUrl: '#/documentation/Elem',
+});
 const MarkdownDocumentation = styled(DocumentationView, () => '', { folderName: 'markdown' });
-const ComponentDocumentation = styled(DocumentationView, () => '', { folderName: 'Component' });
-const ContextDocumentation = styled(DocumentationView, () => '', { folderName: 'Context' });
-const demoDocumentation = styled(DocumentationView, () => '', { folderName: 'demo' });
-const ElemDocumentation = styled(DocumentationView, () => '', { folderName: 'Elem' });
+const ComponentDocumentation = styled(DocumentationView, () => '', {
+	folderName: 'Component',
+	nextLabel: 'Context',
+	nextUrl: '#/documentation/Context',
+});
+const ContextDocumentation = styled(DocumentationView, () => '', {
+	folderName: 'Context',
+	nextLabel: 'styled',
+	nextUrl: '#/documentation/styled',
+});
+const demoDocumentation = styled(DocumentationView, () => '', {
+	folderName: 'demo',
+	nextLabel: 'Getting Started',
+	nextUrl: '#/documentation/start',
+});
+const ElemDocumentation = styled(DocumentationView, () => '', {
+	folderName: 'Elem',
+	nextLabel: 'Component',
+	nextUrl: '#/documentation/Component',
+});
 const requestDocumentation = styled(DocumentationView, () => '', { folderName: 'request' });
-const styledDocumentation = styled(DocumentationView, () => '', { folderName: 'styled' });
-const themeDocumentation = styled(DocumentationView, () => '', { folderName: 'theme' });
+const styledDocumentation = styled(DocumentationView, () => '', {
+	folderName: 'styled',
+	nextLabel: 'theme',
+	nextUrl: '#/documentation/theme',
+});
+const themeDocumentation = styled(DocumentationView, () => '', {
+	folderName: 'theme',
+	nextLabel: 'request',
+	nextUrl: '#/documentation/request',
+});
 
 export default {
 	['/Button']: ButtonDemo,
@@ -88,6 +117,7 @@ export default {
 	['/examples/Stopwatch']: StopwatchExample,
 	['/examples/Todo']: TodoExample,
 
+	['/documentation/start']: startDocumentation,
 	['/documentation/markdown']: MarkdownDocumentation,
 	['/documentation/Component']: ComponentDocumentation,
 	['/documentation/Context']: ContextDocumentation,

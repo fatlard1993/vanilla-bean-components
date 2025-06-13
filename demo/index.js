@@ -24,7 +24,7 @@ class NotFound extends View {
 
 new Page({
 	appendTo: document.body,
-	append: [new DemoMenu(), new Router({ views, notFound: NotFound })],
+	append: [new DemoMenu(), new Router({ views, notFound: NotFound, defaultPath: '/documentation/demo' })],
 	styleSheets: ['emoji-js/lib/emoji.css'],
 });
 
