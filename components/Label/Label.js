@@ -24,6 +24,7 @@ const StyledLabel = styled(
 			display: block;
 			margin: 0;
 			color: ${colors.white};
+			padding-left: 3px;
 		}
 
 		&.variant-overlay {

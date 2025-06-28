@@ -52,7 +52,7 @@ export default `
 	accent-color: ${colors.blue};
 	background-color: ${colors.black};
 	outline-color: ${colors.lighter(colors.orange)};
-	padding: 2px 6px;
+	padding: 2px 4px;
 
 	&:disabled {
 		color: ${colors.black};
