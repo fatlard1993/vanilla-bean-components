@@ -68,7 +68,7 @@ export class Calculator extends (styled.Component`
 
 				if (key === 'clear') this.options.result = '';
 				else if (key === '=') this.options.result = eval(this.options.result);
-				else if (key === 'backspace') this.options.result = this.options.result.slice(-1);
+				else if (key === 'backspace') this.options.result = this.options.result.slice(0, -1) || '0';
 				else this.options.result = this.options.result === 0 ? key : `${this.options.result}${key}`;
 			},
 		});
