@@ -31,23 +31,23 @@ const PostHeading = styled.Component(
 	{ tag: 'h2' },
 );
 
-const PostBody = styled.Component(
-	() => `
-		text-indent: 6px;
-	`,
-	{ tag: 'p' },
-);
+class PostBody extends (styled.Component`
+	text-indent: 6px;
+`) {
+	constructor(content) {
+		super({ tag: 'p', content });
+	}
+}
 
-class Post extends Component {
+class Post extends (styled.Component`
+	padding: 12px;
+	border: 1px solid;
+`) {
 	constructor(options) {
 		super({
 			tag: 'p',
-			content: [new PostHeading(options.heading), new PostBody(options.body)],
+			content: [new PostHeading({ content: options.heading }), new PostBody(options.body)],
 			...options,
-			styles: ({ colors }) => ({
-				padding: '12px',
-				border: `1px solid ${colors.blue}`,
-			}),
 		});
 	}
 }
