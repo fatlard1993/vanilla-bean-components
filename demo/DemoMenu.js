@@ -3,7 +3,7 @@ import { Button, Link, Menu, Popover } from '../components';
 import { Elem } from '../Elem';
 import { styled } from '../styled';
 import theme from '../theme';
-import { capitalize, fromCamelCase, toCamelCase } from '../utils';
+import { capitalize, fromCamelCase, orderBy, toCamelCase } from '../utils';
 
 import views from './views';
 
@@ -86,10 +86,14 @@ export default class DemoMenu extends StyledComponent {
 							...(window.location.hash === href ? { background: colors.black, cursor: 'default' } : {}),
 						}),
 					});
+
+					menuItems[parent].sort(orderBy({ property: 'textContent', direction: 'asc' }));
 				});
 
 				this.menu.options.menuItems = menuItems;
-				this.menu.options.items = Object.keys(menuItems).map(item => capitalize(fromCamelCase(item, ' '), true));
+				this.menu.options.items = Object.keys(menuItems)
+					.map(item => capitalize(fromCamelCase(item, ' '), true))
+					.sort(orderBy({ direction: 'asc' }));
 
 				this.menuPopover.setStyle({
 					top: `${clientY + 6}px`,
