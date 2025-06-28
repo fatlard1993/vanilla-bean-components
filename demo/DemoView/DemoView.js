@@ -1,5 +1,5 @@
 /* eslint-disable spellcheck/spell-checker */
-import { Elem, Link, View, styled, GET, Label, Button, Form, Select } from '../..';
+import { Elem, Link, View, styled, GET, Label, Button, Form, Select, Icon } from '../..';
 import DemoOptions from './DemoOptions';
 import { DemoWrapper } from './DemoWrapper';
 
@@ -60,20 +60,22 @@ export class DemoView extends View {
 			if (componentAncestors.length > 0) {
 				new StyledLabel(
 					{ label: 'Ancestors', appendTo: this.demoMetadata },
-					componentAncestors.map(
-						({ constructor: { name } }) =>
-							new Link({
-								textContent: name.replace(/\d$/, ''),
-								variant: 'button',
-								style: { marginRight: '6px' },
-								href:
-									{
-										EventTarget: 'https://developer.mozilla.org/en-US/docs/Web/API/EventTarget',
-										Elem: '#/documentation/Elem',
-										Component: '#/documentation/Component',
-									}[name] || `#/${name.replace(/\d$/, '')}`,
-							}),
-					),
+					componentAncestors.reverse().flatMap(({ constructor: { name } }, index) => [
+						new Link({
+							textContent: name.replace(/\d$/, ''),
+							variant: 'button',
+							style: { marginRight: '6px' },
+							href:
+								{
+									EventTarget: 'https://developer.mozilla.org/en-US/docs/Web/API/EventTarget',
+									Elem: '#/documentation/Elem',
+									Component: '#/documentation/Component',
+								}[name] || `#/${name.replace(/\d$/, '')}`,
+						}),
+						index === componentAncestors.length - 1
+							? undefined
+							: new Icon({ icon: 'arrow-right', style: { display: 'inline', marginRight: '6px' } }),
+					]),
 				);
 			}
 
