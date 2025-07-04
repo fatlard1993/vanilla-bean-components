@@ -7,6 +7,43 @@ import { capitalize, fromCamelCase, orderBy, toCamelCase } from '../utils';
 
 import views from './views';
 
+const menuItems = {
+	documentation: [],
+	componentDemos: [],
+	examples: [],
+};
+
+Object.keys(views).forEach(name => {
+	const href = `#${name}`;
+	let parent = 'componentDemos';
+
+	if (name.startsWith('/examples/')) parent = 'examples';
+	else if (name.startsWith('/documentation/')) parent = 'documentation';
+
+	menuItems[parent].push({
+		ListItemComponent: Link,
+		listItemOptions: {
+			style: {
+				border: 'none',
+				padding: '0',
+				paddingLeft: '18px',
+			},
+		},
+		textContent: /^\/\w+\//.test(name) ? name.replace(/^\/\w+\//, '') : name.slice(1),
+		href,
+		styles: ({ colors }) => ({
+			textDecoration: 'none',
+			color: 'inherit',
+			padding: '6px 6px 9px 6px',
+			borderBottom: '1px solid #999',
+			display: 'block',
+			...(window.location.hash === href ? { background: colors.black, cursor: 'default' } : {}),
+		}),
+	});
+
+	menuItems[parent].sort(orderBy({ property: 'textContent', direction: 'asc' }));
+});
+
 const StyledComponent = styled(
 	Component,
 	({ colors }) => `
@@ -14,6 +51,10 @@ const StyledComponent = styled(
 		flex-wrap: wrap;
 		padding: 12px 24px;
 		background-color: ${colors.darkest(colors.gray)};
+
+		li.selected {
+			background-color: ${colors.white.setAlpha(0.06)} !important;
+		}
 	`,
 );
 
@@ -21,17 +62,14 @@ export default class DemoMenu extends StyledComponent {
 	render() {
 		this._links = [];
 
-		this.menuPopover = new Popover({ appendTo: this, style: { maxHeight: '60%' } });
+		this.menuPopover = new Popover({ appendTo: this, style: { top: '32px', left: '32px', maxHeight: '60%' } });
 
 		this.menu = new Menu({
+			items: Object.keys(menuItems)
+				.map(item => capitalize(fromCamelCase(item, ' '), true))
+				.sort(orderBy({ direction: 'asc' })),
 			onSelect: ({ target }) => {
-				this.subMenu.options.items = this.menu.options.menuItems[toCamelCase(target.textContent)];
-
-				this.menu.children.forEach(item => {
-					item.elem.style.backgroundColor = 'inherit';
-				});
-
-				if (this.subMenu.options.items) target.style.backgroundColor = theme.colors.white.setAlpha(0.06);
+				this.openSubMenu(toCamelCase(target.textContent));
 			},
 			appendTo: this.menuPopover,
 		});
@@ -51,55 +89,7 @@ export default class DemoMenu extends StyledComponent {
 				textContent: 'Menu',
 			},
 			appendTo: this,
-			popovertarget: this.menuPopover.uniqueId,
-			onPointerPress: ({ clientX, clientY }) => {
-				const menuItems = {
-					documentation: [],
-					componentDemos: [],
-					examples: [],
-				};
-
-				Object.keys(views).forEach(name => {
-					const href = `#${name}`;
-					let parent = 'componentDemos';
-
-					if (name.startsWith('/examples/')) parent = 'examples';
-					else if (name.startsWith('/documentation/')) parent = 'documentation';
-
-					menuItems[parent].push({
-						ListItemComponent: Link,
-						listItemOptions: {
-							style: {
-								border: 'none',
-								padding: '0',
-								paddingLeft: '18px',
-							},
-						},
-						textContent: /^\/\w+\//.test(name) ? name.replace(/^\/\w+\//, '') : name.slice(1),
-						href,
-						styles: ({ colors }) => ({
-							textDecoration: 'none',
-							color: 'inherit',
-							padding: '6px 6px 9px 6px',
-							borderBottom: '1px solid #999',
-							display: 'block',
-							...(window.location.hash === href ? { background: colors.black, cursor: 'default' } : {}),
-						}),
-					});
-
-					menuItems[parent].sort(orderBy({ property: 'textContent', direction: 'asc' }));
-				});
-
-				this.menu.options.menuItems = menuItems;
-				this.menu.options.items = Object.keys(menuItems)
-					.map(item => capitalize(fromCamelCase(item, ' '), true))
-					.sort(orderBy({ direction: 'asc' }));
-
-				this.menuPopover.setStyle({
-					top: `${clientY + 6}px`,
-					left: `${clientX + 6}px`,
-				});
-			},
+			onPointerPress: () => this.toggle(),
 		});
 
 		const title = new Elem({
@@ -107,6 +97,10 @@ export default class DemoMenu extends StyledComponent {
 			content: window.location.hash.slice(2),
 			style: { margin: '0 0 0 12px', fontSize: '24px' },
 			appendTo: this,
+		});
+
+		document.addEventListener('keyup', ({ key }) => {
+			if (key === 'm' || key === 'Escape') this.toggle();
 		});
 
 		window.addEventListener('hashchange', () => {
@@ -117,5 +111,27 @@ export default class DemoMenu extends StyledComponent {
 		});
 
 		super.render();
+	}
+
+	close() {
+		this.menuPopover.hide();
+	}
+
+	openMenu() {
+		this.menuPopover.show();
+
+		this.openSubMenu(window.location.hash.match(/#\/(.+?)\//)?.[1] || 'componentDemos');
+	}
+
+	openSubMenu(menuName) {
+		this.subMenu.options.items = menuItems[menuName];
+
+		this.menu.children.forEach(item => {
+			item.elem.classList[toCamelCase(item.elem.textContent) === menuName ? 'add' : 'remove']('selected');
+		});
+	}
+
+	toggle() {
+		this[this.menuPopover?.isOpen ? 'close' : 'openMenu']();
 	}
 }
