@@ -1,10 +1,10 @@
-import { Component, List, Input, Button, Popover, Label, styled } from '../..';
+import { Component, List, Input, Button, Popover, styled } from '../..';
 
 import ExampleView from '../DemoView/ExampleView';
 import exampleCode from './Todo.js.asText';
 
 class TodoListItem extends (styled.Component`
-	&.checked label {
+	&.checked span {
 		text-decoration: line-through;
 	}
 `) {
@@ -21,7 +21,6 @@ class TodoListItem extends (styled.Component`
 		this._checkbox = new Input({
 			type: 'checkbox',
 			value: this.options.subscriber('checked'),
-			label: this.options.subscriber('label'),
 			onChange: ({ value }) => {
 				this.parent.parent.parent.options.items = this.parent.parent.options.items.map(item =>
 					item.label === this.initialLabel ? { ...item, checked: value } : item,
@@ -57,9 +56,10 @@ class TodoListItem extends (styled.Component`
 		});
 
 		this.content([
-			new Label({ label: this.options.subscriber('label'), variant: 'inline-after' }, this._checkbox),
+			this._checkbox,
 			this._edit,
 			this._trash,
+			new Component({ tag: 'span', textContent: this.options.subscriber('label') }),
 		]);
 
 		super.render();
@@ -75,13 +75,13 @@ class Todo extends Component {
 		this._list = new List({ items: this.options.subscriber('items'), ListItemComponent: TodoListItem });
 		this._input = new Input({
 			type: 'text',
+			style: { flex: 1 },
 			onChange: ({ value }) => {
 				this._input.options.value = value;
 			},
 		});
 		this._add = new Button({
 			icon: 'add',
-			style: { position: 'absolute', top: '-16px', right: '-16px' },
 			onPointerPress: () => {
 				this.options.items = [{ label: this._input.options.value }, ...this.options.items];
 				this._input.options.value = '';
@@ -90,7 +90,7 @@ class Todo extends Component {
 
 		this.content([
 			new Component(
-				{ tag: 'fieldset', style: { border: 'none', padding: 0, margin: 0, position: 'relative' } },
+				{ tag: 'fieldset', style: { display: 'flex', border: 'none', gap: '6px', margin: 0 } },
 				this._input,
 				this._add,
 			),
