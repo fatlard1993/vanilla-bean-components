@@ -78,7 +78,7 @@ export default class Popover extends StyledIcon {
 	show(options) {
 		if (options) this.edgeAwarePlacement(options);
 
-		this.elem.showPopover();
+		if (this.elem.isConnected) this.elem.showPopover();
 	}
 
 	hide() {
