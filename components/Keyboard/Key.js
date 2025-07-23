@@ -28,7 +28,7 @@ class Key extends StyledButton {
 			{
 				textContent: text ?? key,
 				...optionsWithoutConfig,
-				addClass: [key, keyClass, ...(options.addClass || [])],
+				addClass: [key, keyClass].concat(options.addClass),
 			},
 			...children,
 		);

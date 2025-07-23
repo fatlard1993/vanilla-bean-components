@@ -65,7 +65,7 @@ export default class Notify extends StyledPopover {
 			onPointerPress: () => this.elem.remove(),
 			state: 'manual',
 			...options,
-			addClass: [type, ...(options.addClass || [])],
+			addClass: [type].concat(options.addClass),
 			icon,
 		});
 

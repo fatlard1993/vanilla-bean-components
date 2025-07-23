@@ -13,6 +13,8 @@ export const configured = function (BaseComponent, options = {}) {
 	return class ConfiguredComponent extends BaseComponent {
 		constructor(overlayOptions = {}, ...children) {
 			super({ ...options, ...overlayOptions }, ...children);
+
+			this.addClass(options.addClass, overlayOptions.addClass);
 		}
 	};
 };
@@ -45,5 +47,5 @@ export const styled = function (BaseComponent, styles = () => '', options = {}) 
 
 	shimCSS({ scope: `.${componentId}`, styles });
 
-	return configured(BaseComponent, { ...options, addClass: [componentId, ...(options.addClass || [])] });
+	return configured(BaseComponent, { ...options, addClass: [componentId].concat(options.addClass) });
 };

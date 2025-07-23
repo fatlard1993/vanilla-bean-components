@@ -93,7 +93,7 @@ class Tooltip extends StyledPopover {
 			{
 				...defaultOptions,
 				...options,
-				addClass: ['tooltip', ...(options.addClass || [])],
+				addClass: ['tooltip'].concat(options.addClass),
 			},
 			children,
 		);

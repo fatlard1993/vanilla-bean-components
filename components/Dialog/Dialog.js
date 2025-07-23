@@ -258,7 +258,7 @@ class Dialog extends styled(
 				addClass: ['footer'],
 				append:
 					this.options.footer ||
-					(this.options.buttons || []).map(
+					this.options.buttons?.map(
 						button =>
 							new DialogButton({
 								onPointerPress: event =>
