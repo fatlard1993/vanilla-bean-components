@@ -1,6 +1,6 @@
 # styled
 
-> Create a tagged Component class that will have scoped styles processed and injected into the page.
+> Create a Component class that will have scoped styles processed and injected into the page.
 
 ```js
 const MyStyledComponent = styled(
@@ -35,6 +35,31 @@ Tag function syntax is supported:
 const MyStyledComponent = styled.Icon`
 	background-color: ${({ colors }) => colors.black};
 `;
+```
+
+Configuration options can be set:
+
+```js
+const MyStyledComponent = styled(
+	Component,
+	({ colors }) => `
+		background-color: ${colors.black};
+		color: ${colors.lighter(colors.blue)};
+	`,
+	{
+		tag: 'p',
+		textContent: 'Default Text',
+	},
+);
+```
+
+Configuration options can be set without styles using the base function `configured`:
+
+```js
+const MyConfiguredComponent = configured(Component, {
+	tag: 'p',
+	textContent: 'Default Text',
+});
 ```
 
 ## appendStyles
