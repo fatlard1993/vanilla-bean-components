@@ -63,7 +63,7 @@ class Dialog extends styled(
 
 		.content {
 			flex: 1;
-			padding: 6px 6px 6px 21px;
+			padding: 6px 21px;
 			overflow: hidden auto;
 
 			&::-webkit-scrollbar-track {
