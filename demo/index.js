@@ -1,10 +1,7 @@
-import process from 'process';
 import { Elem, Page, Router, View } from '..';
 
 import DemoMenu from './DemoMenu';
 import views from './views';
-
-window.process = process;
 
 class NotFound extends View {
 	render() {
