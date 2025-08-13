@@ -78,7 +78,7 @@ module.exports = [
 			'import/first': 'warn',
 			'import/order': 'warn',
 
-			'write-good-comments/write-good-comments': 'warn',
+			'write-good-comments/write-good-comments': ['warn', { whitelist: ['typeof'] }],
 
 			'spellcheck/spell-checker': ['warn', require('./spellcheck.config.cjs')],
 		},

@@ -1,46 +1,41 @@
-```js
-new Input({
-	type: 'text',
-	value: 'value',
-	validations: [[/.+/, 'This input is required']],
-	onKeyUp: event => {},
-	onInput: event => {},
-	onChange: event => {},
-});
-```
+# Input
+
+Comprehensive input component supporting all HTML input types (text, email, password, number, date, checkbox, radio, range, etc.) with validation, formatting, and advanced features.
+
+## Usage
 
 ```js
-new Input({
-	tag: 'textarea',
-	syntaxHighlighting: true,
-	language: 'json',
-	value: '{\n\t"key": "value"\n}',
-	validations: [
-		[
-			_ => {
-				try {
-					JSON.parse(_);
-					return true;
-				} catch {
-					return false;
-				}
-			},
-			'This input must be valid JSON',
-		],
-	],
-	onKeyUp: event => {},
-	onInput: event => {},
-	onChange: event => {},
-});
+[[extract-usage ./demo.js]]
 ```
 
-```js
-new Input({
-	tag: 'checkbox',
-	value: true,
-	validations: [[_ => !!_, 'Must be true']],
-	onKeyUp: event => {},
-	onInput: event => {},
-	onChange: event => {},
-});
-```
+## Default Options
+
+[[extract-options Input.js]]
+
+## Methods
+
+[[extract-methods Input.js]]
+
+## Properties
+
+[[extract-properties Input.js]]
+
+## Events
+
+[[extract-events Input.js]]
+
+## Enums
+
+[[extract-enums Input.js]]
+
+## Custom Events
+
+[[extract-custom-events Input.js]]
+
+## Dependencies
+
+[[extract-imports Input.js]]
+
+## Design
+
+[[extract-design]]

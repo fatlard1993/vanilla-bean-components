@@ -8,7 +8,7 @@ class Link extends TooltipWrapper {
 	variant_enum = variant_enum;
 
 	constructor(options = {}, ...children) {
-		super({ ...defaultOptions, ...options }, children);
+		super({ ...defaultOptions, ...options }, ...children);
 	}
 
 	_setOption(key, value) {

@@ -1,22 +1,41 @@
+# Whiteboard
+
+Interactive drawing canvas component with drawing tools, shape creation, collaboration support, and export capabilities.
+
+## Usage
+
 ```js
-new Whiteboard({
-	width: '640px',
-	height: '480px',
-	color: '#BADA55',
-	background: '#FFF',
-	lineWidth: 3,
-	readOnly: false,
-	lines: [
-		{
-			color: '#000',
-			width: 6,
-			line: [
-				{ x: 100, y: 100 },
-				{ x: 200, y: 200 },
-			],
-		},
-	],
-	onDraw: event => {},
-	onLine: event => {},
-});
+[[extract-usage ./demo.js]]
 ```
+
+## Default Options
+
+[[extract-options Whiteboard.js]]
+
+## Methods
+
+[[extract-methods Whiteboard.js]]
+
+## Properties
+
+[[extract-properties Whiteboard.js]]
+
+## Events
+
+[[extract-events Whiteboard.js]]
+
+## Enums
+
+[[extract-enums Whiteboard.js]]
+
+## Custom Events
+
+[[extract-custom-events Whiteboard.js]]
+
+## Dependencies
+
+[[extract-imports Whiteboard.js]]
+
+## Design
+
+[[extract-design]]

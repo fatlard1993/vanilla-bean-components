@@ -61,7 +61,10 @@ const server = Bun.serve({
 		if (path.endsWith('.md') && (await Bun.file(path.slice(1)).exists())) {
 			console.log('Load Markdown', { path });
 
-			return Response.json((await import(`..${path}`))?.default);
+			const filePath = path.slice(1);
+			const fileContent = await Bun.file(filePath).text();
+			const parsedMarkdown = parseMarkdown(fileContent, filePath);
+			return Response.json(parsedMarkdown);
 		}
 
 		if (path.endsWith('design.excalidraw.png')) {

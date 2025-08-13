@@ -3,7 +3,7 @@ import { Component } from '../../Component';
 export default class Icon extends Component {
 	_setOption(key, value) {
 		if (key === 'icon' || key === 'animation') {
-			this.removeClass(/\bfa-\S+?\b/g);
+			this.removeClass(/\bfa-\S+\b/g);
 
 			if (value) {
 				this.addClass(

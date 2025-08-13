@@ -12,7 +12,7 @@ export default class Button extends TooltipWrapper {
 				...options,
 				onKeyUp: event => {
 					if (event.code === 'Space' || event.code === 'Enter') {
-						this.options.onPointerPress(event);
+						this.options.onPointerPress?.(event);
 					}
 				},
 			},

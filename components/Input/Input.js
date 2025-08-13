@@ -80,11 +80,26 @@ export default class Input extends Component {
 						: `calc((${((this.elem.value?.match(/\n/g) || '').length + 1) * 1.25}em + 16px)`;
 				};
 
+				// Create debounced version for input events
+				this.__debouncedUpdateAutoHeight =
+					this.__debouncedUpdateAutoHeight ||
+					(() => {
+						clearTimeout(this.__autoHeightTimeout);
+						this.__autoHeightTimeout = setTimeout(this.__updateAutoHeight, 16); // ~60fps
+					});
+
 				this.__updateAutoHeight();
 
-				this.elem.addEventListener('input', this.__updateAutoHeight);
+				this.elem.addEventListener('input', this.__debouncedUpdateAutoHeight);
+
+				// Add cleanup for timeout
+				this.addCleanup('autoHeight', () => {
+					clearTimeout(this.__autoHeightTimeout);
+					this.elem.removeEventListener?.('input', this.__debouncedUpdateAutoHeight);
+				});
 			} else {
-				this.elem.removeEventListener('input', this.__updateAutoHeight);
+				this.elem.removeEventListener('input', this.__debouncedUpdateAutoHeight);
+				clearTimeout(this.__autoHeightTimeout);
 
 				this.elem.style.height = typeof value === 'number' ? `${value + 1}em` : value;
 			}
@@ -98,10 +113,21 @@ export default class Input extends Component {
 		if (this.rendered && key === 'value') retry(() => this.validate(), { delay: 500, max: 1 });
 	}
 
+	/**
+	 * Checks if the input value has changed from its initial value
+	 * @returns {boolean} True if value is no longer the initial value
+	 */
 	get isDirty() {
 		return this.initialValue !== this.options.value;
 	}
 
+	/**
+	 * Validates the input value against configured validation rules
+	 * @param {object} options - Validation options
+	 * @param {Array} options.validations - Custom validation rules to use
+	 * @param {*} options.value - Custom value
+	 * @returns {Array|undefined} Array of validation errors, or undefined if valid
+	 */
 	validate({ validations, value } = {}) {
 		const errors = updateValidationErrors({
 			elem: this.elem,

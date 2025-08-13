@@ -1,14 +1,41 @@
+# Calendar
+
+A flexible calendar component supporting month, week, and day views with event management and interactive navigation.
+
+## Usage
+
 ```js
-new Calendar({
-	view: 'month',
-	events: [
-		{
-			at: '3/15/2025 00:00',
-			label: 'The end of the world',
-			notes: 'Good luck!',
-			color: '#666',
-			duration: 6e6,
-		},
-	],
-});
+[[extract-usage ./demo.js]]
 ```
+
+## Default Options
+
+[[extract-options Calendar.js]]
+
+## Methods
+
+[[extract-methods Calendar.js]]
+
+## Properties
+
+[[extract-properties Calendar.js]]
+
+## Events
+
+[[extract-events Calendar.js]]
+
+## Enums
+
+[[extract-enums Calendar.js]]
+
+## Custom Events
+
+[[extract-custom-events Calendar.js]]
+
+## Dependencies
+
+[[extract-imports Calendar.js]]
+
+## Design
+
+[[extract-design]]

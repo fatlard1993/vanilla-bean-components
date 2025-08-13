@@ -308,12 +308,20 @@ class Dialog extends styled(
 
 			if (value) this.addClass(`variant-${value}`);
 		} else if (key === 'body') {
-			this._body.content(value);
+			if (this._body) {
+				this._body.content(value);
+			}
 		} else if (key === 'header') {
-			this._header.content(value);
+			if (this._header) {
+				this._header.content(value);
+			}
 		} else super._setOption(key, value);
 	}
 
+	/**
+	 * Opens the dialog, either as modal or non-modal
+	 * @param {boolean} modal - Whether to open as modal dialog (default: true)
+	 */
 	open(modal = this.options.modal) {
 		try {
 			this.elem[modal ? 'showModal' : 'show']();
@@ -325,6 +333,10 @@ class Dialog extends styled(
 		}
 	}
 
+	/**
+	 * Closes the dialog with optional return value
+	 * @param {string} returnValue - Value to return when dialog closes
+	 */
 	close(returnValue) {
 		this.elem.close(returnValue);
 	}
