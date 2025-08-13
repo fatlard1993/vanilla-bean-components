@@ -1,4 +1,4 @@
-import { TinyColor } from '@ctrl/tinycolor';
+import { random as randomColor } from '@ctrl/tinycolor';
 
 /**
  * Create a hsl color string using a string as the seed
@@ -12,7 +12,7 @@ import { TinyColor } from '@ctrl/tinycolor';
 export const stringToColor = (string, config = {}) => {
 	const { h, s, l } = { h: [0, 360], s: [75, 100], l: [40, 60], ...config };
 
-	if (!string) return new TinyColor.random().toRgbString();
+	if (!string) return randomColor().toRgbString();
 
 	const range = (hash, min, max) => {
 		const diff = max - min;
