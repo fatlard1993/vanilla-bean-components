@@ -1,4 +1,3 @@
-/* eslint-disable testing-library/no-node-access */
 /// <reference lib="dom" />
 
 import { beforeEach, mock, spyOn, expect, setSystemTime } from 'bun:test';
