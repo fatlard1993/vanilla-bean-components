@@ -27,20 +27,28 @@ const defaultOptions = {
 	priorityOptions: new Set(['onConnected', 'textContent', 'content', 'appendTo', 'prependTo', 'value']),
 };
 
-/** Component - A general purpose component building block */
+/**
+ * General purpose reactive component with automatic cleanup and lifecycle management.
+ * Extends Elem with Context integration, event handling, and style processing.
+ * @augments Elem
+ * @augments EventTarget
+ */
 class Component extends Elem {
 	defaultOptions = defaultOptions;
 
 	/**
-	 * Create a Component
-	 * @param {object} options - The options for initializing the component
-	 * @param {string} options.tag - The HTML tag
-	 * @param {boolean | 'onload' | 'animationFrame'} options.autoRender - Control when to render the component
-	 * @param {Set} options.knownAttributes - Options to send to elem.setAttribute
-	 * @param {Set} options.priorityOptions - Options to process first when processing a whole options object
-	 * @param {object} options.style - Style properties to set in the HTMLElement
-	 * @param {object} options.attributes - HTML attributes to set in the HTMLElement
-	 * @param {...children} children - Child elements to add to append option
+	 * Create reactive component with Context-driven options and automatic cleanup.
+	 * @param {object} [options] - Component configuration
+	 * @param {string} [options.tag] - HTML tag name
+	 * @param {boolean|'onload'|'animationFrame'} [options.autoRender] - Render timing control
+	 * @param {Set<string>} [options.registeredEvents] - Custom event types to handle via on()
+	 * @param {Set<string>} [options.knownAttributes] - Attribute names for elem.setAttribute()
+	 * @param {Set<string>} [options.priorityOptions] - Option keys processed first during render
+	 * @param {object} [options.style] - Inline CSS properties
+	 * @param {object} [options.attributes] - HTML attributes
+	 * @param {string|object|Function} [options.styles] - CSS string, style object, or theme function
+	 * @param {...(Component|HTMLElement|string)} children - Elements appended to append option
+	 * @returns {Component} Component instance with reactive options Context
 	 */
 	constructor(options = {}, ...children) {
 		const { tag, autoRender, registeredEvents, knownAttributes, priorityOptions, ...optionsWithoutConfig } = {
@@ -94,10 +102,18 @@ class Component extends Elem {
 		}
 	}
 
+	/**
+	 * String representation of Component instance.
+	 * @returns {string} '[object Component]'
+	 */
 	toString() {
 		return '[object Component]';
 	}
 
+	/**
+	 * Process all options through _setOption and mark as rendered.
+	 * Clears existing content when re-rendering. Priority options processed first.
+	 */
 	render() {
 		if (this.rendered) {
 			this.empty();
@@ -117,10 +133,11 @@ class Component extends Elem {
 	}
 
 	/**
-	 * Pseudo-protected method - setOption - Handles the behavior of a changing option where applicable
-	 * (called by options Context, not intended for direct invocation)
-	 * @param {string} key - The option key
-	 * @param {any} value - The new option value
+	 * Route option changes to appropriate handlers based on key and value type.
+	 * Called by options Context on property changes.
+	 * @param {string} key - Option property name
+	 * @param {*} value - New option value
+	 * @private
 	 */
 	_setOption(key, value) {
 		if (key.startsWith('on') && value) {
@@ -147,14 +164,28 @@ class Component extends Elem {
 		else this.elem[key] = value;
 	}
 
+	/**
+	 * Get parent Component instance.
+	 * @returns {Component|undefined} Parent component or undefined if none
+	 */
 	get parent() {
 		return this.parentElem?._component;
 	}
 
+	/**
+	 * Get child Component instances.
+	 * @returns {Component[]} Array of child components
+	 */
 	get children() {
 		return Array.from(this.elem.children).flatMap(({ _component }) => [_component]);
 	}
 
+	/**
+	 * Register cleanup function called on disconnect or manual cleanup.
+	 * Initializes cleanup system and disconnect listener on first use.
+	 * @param {string} id - Cleanup identifier for replacement/removal
+	 * @param {Function} cleanupFunction - Function called during cleanup
+	 */
 	addCleanup(id, cleanupFunction) {
 		if (!this.cleanup) {
 			this.cleanup = {};
@@ -165,6 +196,11 @@ class Component extends Elem {
 		this.cleanup[id] = cleanupFunction;
 	}
 
+	/**
+	 * Execute cleanup functions for this component and optionally children.
+	 * @param {object} [cleanup] - Cleanup functions object (defaults to this.cleanup)
+	 * @param {boolean} [rootCleanup] - Whether to recursively clean up child components
+	 */
 	processCleanup(cleanup = this.cleanup || {}, rootCleanup = false) {
 		if (rootCleanup) {
 			const cleanups = [];
@@ -186,6 +222,16 @@ class Component extends Elem {
 		Object.values(cleanup).forEach(cleanupFunction => cleanupFunction());
 	}
 
+	/**
+	 * Register event listener with automatic cleanup and event type routing.
+	 * Handles input events (adds value property), connection events (DOM observation),
+	 * common pointer events, and custom registered events.
+	 * @param {object} config - Event configuration
+	 * @param {string} config.targetEvent - Event type name
+	 * @param {string} [config.id] - Cleanup ID (defaults to targetEvent)
+	 * @param {Function} config.callback - Event handler function
+	 * @returns {boolean} True if event handled and registered
+	 */
 	on({ targetEvent, id = targetEvent, callback }) {
 		if (!callback) return false;
 
@@ -238,13 +284,27 @@ class Component extends Elem {
 		return false;
 	}
 
+	/**
+	 * Dispatch custom event on this component.
+	 * @param {string} eventType - Event type name
+	 * @param {*} [detail] - Event detail data
+	 */
 	emit(eventType, detail) {
 		this.dispatchEvent(new CustomEvent(eventType, { detail }));
 	}
 
+	/**
+	 * Apply styles via inline properties or scoped CSS injection.
+	 * Object styles set as inline properties. String/function styles processed
+	 * through theme system and injected as scoped CSS.
+	 * @param {string|object|Function} styles - Style definition
+	 */
 	styles(styles) {
 		if (!styles) return;
-		if (typeof styles === 'object') return this?.setStyle(styles);
+		if (typeof styles === 'object') {
+			this?.setStyle(styles);
+			return;
+		}
 
 		const themedStyles = themeStyles({ styles, scope: `.${this.uniqueId}` });
 
@@ -259,6 +319,11 @@ class Component extends Elem {
 		this.addCleanup(this.uniqueId, () => document.getElementById(this.uniqueId)?.remove());
 	}
 
+	/**
+	 * Register pointer hover handler with move tracking during hover.
+	 * Callback bound to component context and called on enter and during move.
+	 * @param {Function} [callback] - Handler called on pointerenter and pointermove
+	 */
 	onHover(callback = () => {}) {
 		this.cleanup?.onHover?.();
 		callback = callback.bind(this);
@@ -287,6 +352,11 @@ class Component extends Elem {
 		});
 	}
 
+	/**
+	 * Register pointer press handler for pointerdown-to-pointerup sequences.
+	 * Callback bound to component context and called on successful press completion.
+	 * @param {Function} [callback] - Handler called on pointerup after pointerdown
+	 */
 	onPointerPress(callback = () => {}) {
 		this.cleanup?.onPointerPress?.();
 		callback = callback.bind(this);
@@ -314,6 +384,11 @@ class Component extends Elem {
 		});
 	}
 
+	/**
+	 * Get prototype chain from this instance up to Object.
+	 * @param {object} [targetClass] - Starting point for traversal (defaults to this)
+	 * @returns {object[]} Array of prototype objects in inheritance order
+	 */
 	ancestry(targetClass = this) {
 		if (!targetClass || targetClass?.constructor?.name === 'Object') return [];
 
