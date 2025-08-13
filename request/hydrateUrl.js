@@ -1,8 +1,10 @@
 /**
- * Hydrate a url string with values from an object
- * @param {string} url - The url string with variables prefixed with a colon. For example: /users/:id
- * @param {object} parameters - An object containing values with keys that match the variables in the url string. For example: { id: '1q2uw3' }
- * @returns {string} Random id string
+ * Hydrates a URL string by replacing colon-prefixed parameters with encoded values
+ * @param {string} url - URL with colon-prefixed variables (e.g., "/users/:id")
+ * @param {object} [parameters] - Key-value pairs matching URL variables
+ * @returns {string} URL with parameters replaced and URI-encoded
+ * @example
+ * hydrateUrl("/users/:id", { id: "123" }) // "/users/123"
  */
 export const hydrateUrl = (url, parameters = {}) => {
 	let hydratedUrl = url;

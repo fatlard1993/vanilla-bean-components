@@ -27,8 +27,48 @@ const checkInvalidates = (invalidates, { cacheId, apiId }) => {
 	});
 };
 
-/** @typedef {(url: string, options: {invalidateAfter: number, invalidates: Array, cache: boolean, isRefetch: boolean, onRefetch: Function, enabled: boolean, urlParameters: object, searchParameters: object}) => object} Request */
-/** @type {Request} */
+/**
+ * @typedef {object} RequestOptions
+ * @property {string|string[]|Function} [id] - Cache identifier (deprecated, use apiId)
+ * @property {string|string[]|Function} [apiId] - API endpoint identifier for subscriptions
+ * @property {string|string[]|Function} [cacheId] - Cache storage key (defaults to method + hydrated URL)
+ * @property {string[]} [invalidates] - Cache keys to clear on successful response
+ * @property {number|false} [invalidateAfter] - Cache TTL in milliseconds, false disables
+ * @property {boolean} [cache] - Enable caching (auto-detected: true for reads, false for mutations)
+ * @property {boolean} [enabled] - Execute request when true
+ * @property {Function} [onRefetch] - Callback executed on response (creates subscription)
+ * @property {object} [urlParameters] - Values for colon-prefixed URL variables
+ * @property {object} [searchParameters] - Query string parameters
+ * @property {object} [body] - Request body (JSON serialized for non-GET requests)
+ * @property {object} [fetchOptions] - Fetch API options
+ * @property {string} [method] - HTTP method
+ * @property {boolean} [isRefetch] - Internal flag for subscription refetches
+ */
+
+/**
+ * @typedef {object} RequestResult
+ * @property {string} originalUrl - Original URL before parameter hydration
+ * @property {string} url - Final URL with parameters and query string
+ * @property {RequestOptions} options - Request configuration used
+ * @property {string|string[]} apiId - API endpoint identifier
+ * @property {string|string[]} cacheId - Cache storage key
+ * @property {string|null} subscriptionId - Subscription ID if onRefetch provided
+ * @property {Function} unsubscribe - Remove subscription
+ * @property {Response} response - Fetch Response object
+ * @property {boolean} success - True if status 200-299
+ * @property {string|null} contentType - Response Content-Type header
+ * @property {*} body - Parsed response body (JSON or text)
+ * @property {Function} invalidateCache - Clear this request's cache entry
+ * @property {Function} refetch - Re-execute request with optional overrides
+ * @property {Function} subscribe - Create subscription to this API endpoint
+ */
+
+/**
+ * Executes HTTP request with caching, subscriptions, and invalidation
+ * @param {string} url - Request URL with optional colon-prefixed parameters
+ * @param {RequestOptions} [options] - Request configuration
+ * @returns {Promise<RequestResult>} Request result with response data and utilities
+ */
 export const request = async (url, options = {}) => {
 	const {
 		apiId: apiIdOption = options.id,
@@ -126,7 +166,7 @@ export const request = async (url, options = {}) => {
 		...fetchOptions,
 		method,
 	});
-	result.success = result.response.status % 200 < 100;
+	result.success = Math.floor(result.response.status / 100) === 2;
 	result.contentType = result.response.headers.get('content-type');
 	result.body = await (result.contentType && result.contentType.includes('application/json')
 		? result.response.json()
@@ -176,13 +216,38 @@ export const request = async (url, options = {}) => {
 	return result;
 };
 
-/** @type {Request} */
+/**
+ * Executes GET request
+ * @param {string} url - Request URL
+ * @param {RequestOptions} [options] - Request configuration
+ * @returns {Promise<RequestResult>} Request result
+ */
 export const GET = async (url, options = {}) => await request(url, { method: 'GET', ...options });
-/** @type {Request} */
+/**
+ * Executes POST request
+ * @param {string} url - Request URL
+ * @param {RequestOptions} [options] - Request configuration
+ * @returns {Promise<RequestResult>} Request result
+ */
 export const POST = async (url, options = {}) => await request(url, { method: 'POST', ...options });
-/** @type {Request} */
+/**
+ * Executes PUT request
+ * @param {string} url - Request URL
+ * @param {RequestOptions} [options] - Request configuration
+ * @returns {Promise<RequestResult>} Request result
+ */
 export const PUT = async (url, options = {}) => await request(url, { method: 'PUT', ...options });
-/** @type {Request} */
+/**
+ * Executes PATCH request
+ * @param {string} url - Request URL
+ * @param {RequestOptions} [options] - Request configuration
+ * @returns {Promise<RequestResult>} Request result
+ */
 export const PATCH = async (url, options = {}) => await request(url, { method: 'PATCH', ...options });
-/** @type {Request} */
+/**
+ * Executes DELETE request
+ * @param {string} url - Request URL
+ * @param {RequestOptions} [options] - Request configuration
+ * @returns {Promise<RequestResult>} Request result
+ */
 export const DELETE = async (url, options = {}) => await request(url, { method: 'DELETE', ...options });
