@@ -2,12 +2,17 @@ import theme from '../theme';
 
 import { removeExcessIndentation } from '../utils/string';
 
-/** @typedef {{ styles: () => string, scope: string }} StyleConfig */
+/**
+ * @typedef {object} StyleConfig
+ * @property {Function} styles - Theme function that returns CSS string or style object
+ * @property {string} [scope] - Optional CSS selector to wrap the styles
+ */
 
 /**
- * Process a css decorator function, hydrating with theme and wrapping in optional scope
- * @param {StyleConfig} styleConfig - The style function and scope to generate the css string
- * @returns {string} Processed CSS string
+ * Process a theme function into CSS string with optional scoping
+ * Handles both CSS string and style object returns from theme functions
+ * @param {StyleConfig} styleConfig - Configuration with styles function and optional scope
+ * @returns {string|object} Processed CSS string (scoped if specified) or style object for direct application
  */
 export const themeStyles = ({ styles = () => '', scope }) => {
 	const themedStyles = styles(theme);

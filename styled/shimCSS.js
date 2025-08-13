@@ -5,10 +5,10 @@ import { postCSS } from './postCSS';
 import { themeStyles } from './themeStyles';
 
 /**
- * Process a css decorator function, hydrating with theme, wrapping in optional scope, and post-processing with postCSS.
- * Then appends the resulting css text a style tag to the page.
- * @param {import('./themeStyles').StyleConfig} styleConfig - The style function and scope to generate the css string
- * @returns {void}
+ * Complete CSS processing pipeline: theme hydration → PostCSS processing → DOM injection
+ * Handles load-time batching for performance optimization
+ * @param {import('./themeStyles').StyleConfig} styleConfig - Configuration object with styles function and optional scope
+ * @returns {Promise<void>|void} Promise when document loaded, void when queued for load event
  */
 export const shimCSS = styleConfig => {
 	if (document.readyState === 'complete') return postCSS(themeStyles(styleConfig)).then(css => appendStyles(css));

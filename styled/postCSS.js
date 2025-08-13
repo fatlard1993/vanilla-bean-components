@@ -3,9 +3,9 @@ import plugin_autoprefixer from 'autoprefixer';
 import plugin_nested from 'postcss-nested';
 
 /**
- * Process a piece of css text with postCSS
- * @param {string} styleText - CSS string
- * @returns {string} Processed CSS string
+ * Process CSS through the PostCSS pipeline with autoprefixer and nested syntax support
+ * @param {string} styleText - Raw CSS string to process
+ * @returns {Promise<string>} Promise resolving to processed CSS string (empty string on error)
  */
 export const postCSS = async styleText => {
 	if (!styleText) return '';

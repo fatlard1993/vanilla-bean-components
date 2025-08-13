@@ -1,8 +1,8 @@
 /**
- * Append a style tag with custom css onto the page at runtime
- * @param {string} css - The css string to inject into the page
- * @param {string} [id] - An optional id to attach to the style tag
- * @returns {HTMLStyleElement} The created style tag
+ * Inject CSS directly into the document head via a style element
+ * @param {string} css - Raw CSS string to inject
+ * @param {string} [id] - Optional element ID for the created style tag (enables later removal/updates)
+ * @returns {HTMLStyleElement} The created and appended style element
  */
 export const appendStyles = (css, id) => {
 	const style = document.createElement('style');
