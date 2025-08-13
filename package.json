@@ -35,8 +35,8 @@
 		"!/utils/**/*.test.js"
 	],
 	"description": "JS class-based components",
-	"author": "justfatlard",
-	"license": "ISC",
+	"license": "MIT",
+	"author": "justfatlard (https://github.com/fatlard1993)",
 	"browserslist": [
 		"last 1 version",
 		"> 1%",
