@@ -21,7 +21,7 @@ const build = async () => {
 };
 
 const enableWatcher = process.argv[2] === '--watch';
-const watcherIgnore = /\.asText$|^demo\/build|^\.|^img\/|^docs\/|^devTools\//;
+const watcherIgnore = /\.asText$|^demo\/build|^\.|^img\/|^devTools\//;
 
 if (enableWatcher) {
 	console.log(`Initializing watcher`);

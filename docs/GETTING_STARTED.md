@@ -1,206 +1,266 @@
-# Getting Started With vanilla-bean-components
+# Getting Started
 
-> `npm install github:fatlard1993/vanilla-bean-components`
+This guide will walk you through setting up vanilla-bean-components from scratch and building your first reactive application. But - Since this is intended to primarily be a development pattern, so I'll simply recommend what I currently do. Feel free to stray from the path wherever makes sense for your use-case.
 
-This is intended to primarily be a development pattern, so I'll simply recommend what I currently do. Feel free to stray from the path wherever makes sense for your use-case.
+## Installation
 
-## HTML
+```bash
+# Using Bun (recommended)
+bun add github:fatlard1993/vanilla-bean-components
+```
 
-Create an html file with whatever metadata, or remote styles/scripts that you need.
+## Basic HTML Setup
+
+Create an `index.html` file:
 
 ```html
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>my-cool-app</title>
-
 		<meta charset="UTF-8" />
-		<meta http-equiv="cleartype" content="on" />
-
-		<meta name="author" content="me" />
-		<meta name="description" content="demo" />
-
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
-		<meta name="HandheldFriendly" content="true" />
-		<meta name="MobileOptimized" content="320" />
-
-		<meta name="mobile-web-app-capable" content="yes" />
-
-		<meta name="apple-mobile-web-app-title" content="my-cool-app" />
-		<meta name="apple-mobile-web-app-capable" content="yes" />
-		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-
-		<meta name="application-name" content="my-cool-app" />
-		<meta name="msapplication-tooltip" content="my-cool-app" />
-		<meta name="msapplication-TileColor" content="#bada55" />
-
-		<meta name="theme-color" content="#bada55" />
-
-		<script type="module" src="./index.js"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>My App</title>
+		<script type="module" src="./main.js"></script>
 	</head>
 	<body></body>
 </html>
 ```
 
-### JS Entrypoint
+## Your First Component
 
-This is the main entrypoint for your app.
-
-```html
-<script type="module" src="./index.js"></script>
-```
-
-## JS
-
-Create a js file that will be main file for your frontend.
-
-While not _strictly necessary_, the `Page` component is designed to be the top-level component; it injects the global theme css along with any css/font dependencies to the page and renders itself and its children when the DOM is loaded with `autoRender: 'onload'`.
+Create `main.js`:
 
 ```js
-import { Page } from 'vanilla-bean-components';
+import { Component, Context } from 'vanilla-bean-components';
 
-new Page({ appendTo: document.body, content: 'Hello World' });
+// Create reactive state
+const state = new Context({
+	count: 0,
+	message: 'Hello, World!',
+});
+
+// Create a simple counter component
+const counter = new Component({
+	tag: 'div',
+	style: {
+		padding: '20px',
+		textAlign: 'center',
+		fontFamily: 'system-ui',
+	},
+	append: [
+		new Component({
+			tag: 'h1',
+			textContent: state.subscriber('message'),
+		}),
+		new Component({
+			tag: 'p',
+			textContent: state.subscriber('count', count => `Count: ${count}`),
+			style: { fontSize: '24px', margin: '20px 0' },
+		}),
+		new Component({
+			tag: 'button',
+			textContent: 'Increment',
+			style: {
+				padding: '10px 20px',
+				fontSize: '16px',
+				marginRight: '10px',
+			},
+			onPointerPress: () => state.count++,
+		}),
+		new Component({
+			tag: 'button',
+			textContent: 'Reset',
+			onPointerPress: () => (state.count = 0),
+		}),
+	],
+	appendTo: document.body,
+});
 ```
 
-## Build
+## Understanding the Basics
 
-With the minimum app structure inplace you'll need some way to get it into the browser. You _can_ use a static build, but since the use-case of this pattern is more geared towards reactive apps you'll likely have or need a server component to integrate with. In either case I recommend considering [bun](https://bun.sh/), thats what I'm currently using, although you _should_ be able to use whatever else you want.
+### Components
 
-Heres a couple build examples with `bun`:
-
-- Simple build script:
-
-```sh
-bun build client/index.html --outdir client/build --define 'process.env.AUTOPREFIXER_GRID=\"undefined\"'
-```
-
-- More complex build script:
+Components wrap HTML elements with reactive capabilities:
 
 ```js
-import { watch } from 'fs';
-import { buildLoader as asText } from '../plugins/asText';
-import { buildLoader as markdownLoader } from '../plugins/markdownLoader';
+const myComponent = new Component({
+	tag: 'div', // HTML element type
+	textContent: 'Hello', // Properties set directly on element
+	className: 'my-class', // Standard HTML attributes
+	onPointerPress: () => {}, // Event handlers
+	style: {
+		// Inline styles as object
+		color: 'blue',
+		padding: '10px',
+	},
+	append: [child1, child2], // Child elements
+	appendTo: document.body, // Where to render
+});
+```
 
-const build = async () => {
-	console.log('Building...');
+### Reactive State with Context
 
-	const buildResults = await Bun.build({
-		entrypoints: ['demo/index.html'],
-		outdir: 'demo/build',
-		define: {
-			'process.env.AUTOPREFIXER_GRID': 'undefined',
-			'process.cwd': 'String',
+Context creates observable state that automatically updates the UI:
+
+```js
+const state = new Context({
+	user: { name: 'John', email: 'john@example.com' },
+	isLoggedIn: false,
+	notifications: [],
+});
+
+// Subscribe to changes
+const greeting = state.subscriber('user', user => `Welcome, ${user.name}!`);
+const badge = state.subscriber('notifications', notes => notes.length);
+
+// Direct property access triggers updates
+state.isLoggedIn = true;
+state.notifications.push({ message: 'New message' });
+```
+
+## Working with Forms
+
+Create a contact form with validation:
+
+```js
+import { Form, Button, Select } from 'vanilla-bean-components';
+
+const contactForm = new Form({
+	data: {
+		name: '',
+		email: '',
+		subject: 'general',
+		message: '',
+	},
+	inputs: [
+		{
+			key: 'name',
+			label: 'Full Name',
+			validations: [
+				[/.+/, 'Name is required'],
+				[/^.{2,50}$/, 'Name must be 2-50 characters'],
+			],
 		},
-		plugins: [asText, markdownLoader],
-	});
+		{
+			key: 'email',
+			label: 'Email Address',
+			type: 'email',
+			validations: [[/.+@.+\..+/, 'Valid email required']],
+		},
+		{
+			key: 'subject',
+			label: 'Subject',
+			InputComponent: Select,
+			options: ['general', 'support', 'billing', 'feature-request'],
+		},
+		{
+			key: 'message',
+			label: 'Message',
+			tag: 'textarea',
+			validations: [[/.{10,}/, 'Message must be at least 10 characters']],
+		},
+	],
+	append: new Button({
+		textContent: 'Send Message',
+		onPointerPress: () => {
+			if (contactForm.validate()) {
+				console.log('Form has errors');
+				return;
+			}
 
-	console.log(buildResults.success ? 'build.success' : buildResults.logs);
-
-	return buildResults;
-};
-
-const enableWatcher = process.argv[2] === '--watch';
-const watcherIgnore = /\.asText$|^demo\/build|^\.|^img\/|^docs\/|^devTools\//;
-
-if (enableWatcher) {
-	console.log(`Initializing watcher`);
-
-	const watcher = watch(`${import.meta.dir}/..`, { recursive: true }, (event, filename) => {
-		if (watcherIgnore.test(filename)) return;
-
-		console.log(`Detected ${event} in ${filename}`);
-
-		build();
-	});
-
-	process.on('SIGINT', () => {
-		watcher.close();
-		process.exit(0);
-	});
-}
-
-await build();
+			console.log('Form data:', contactForm.options.data);
+			// Submit form data...
+		},
+	}),
+	appendTo: document.body,
+});
 ```
 
-## Server
+## HTTP Requests with Caching
 
-Heres an example of a simple server built with bun:
+The request system provides intelligent caching and subscriptions:
 
 ```js
-const server = Bun.serve({
-	port: 9999,
-	fetch: async request => {
-		const path = new URL(request.url).pathname;
+import { GET, POST } from 'vanilla-bean-components/request';
 
-		if (request.method === 'GET' && path === '/') return new Response(Bun.file('client/build/index.html'));
-
-		console.log(path);
-
-		let file = Bun.file(`client/build${path}`);
-
-		if (!(await file.exists())) file = Bun.file(`node_modules${path}`);
-		if (!(await file.exists())) return new Response(`File Not Found: ${path}`, { status: 404 });
-
-		return new Response(file);
+// Cached request with live updates
+const { body: users } = await GET('/api/users', {
+	apiId: 'users',
+	onRefetch: ({ body }) => {
+		// Called whenever data changes
+		updateUserList(body);
 	},
 });
 
-console.log(`Listening on ${server.hostname}:${server.port}`);
+// Mutations that trigger automatic refetch
+await POST('/api/users', {
+	body: { name: 'New User', email: 'user@example.com' },
+	invalidates: ['users'], // Clears cache and triggers refetch
+});
+
+// The users list automatically updates with fresh data
 ```
 
-## Developer dependencies
+## Styling and Theming
 
-Take advantage of the dev dependencies and various scripts and configs that vanilla-bean-components has setup:
-
-> Copy/paste any applicable devDependencies from vanilla-bean-components to your app.
-
-`prettier.config.cjs`
+### Using the Theme System
 
 ```js
-module.exports = require('vanilla-bean-components/prettier.config.cjs');
+import { styled } from 'vanilla-bean-components';
+import { Component } from 'vanilla-bean-components';
+
+const ThemedButton = styled(
+	Component,
+	({ colors, fonts }) => `
+    ${fonts.kodeMono}
+    background: ${colors.blue};
+    color: ${colors.mostReadable(colors.blue, [colors.white, colors.black])};
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+
+    &:hover {
+        background: ${colors.dark(colors.blue)};
+        transform: translateY(-1px);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+`,
+);
 ```
 
-`eslint.config.cjs`
+### Template Literal Syntax
 
 ```js
-const globals = require('globals');
-const vanillaBeanEslint = require('vanilla-bean-components/eslint.config.cjs');
-const vanillaBeanSpellcheck = require('vanilla-bean-components/spellcheck.config.cjs');
-const localSpellcheck = require('./spellcheck.config.cjs');
+const StyledCard = styled.Component`
+	background: ${({ colors }) => colors.darker(colors.gray)};
+	border-radius: 8px;
+	padding: 20px;
+	box-shadow: 0 4px 12px ${({ colors }) => colors.black.setAlpha(0.2)};
 
-module.exports = [
-	...vanillaBeanEslint,
-	{
-		rules: {
-			'spellcheck/spell-checker': [
-				'warn',
-				{
-					...vanillaBeanSpellcheck,
-					...localSpellcheck,
-					skipWords: [...vanillaBeanSpellcheck.skipWords, ...localSpellcheck.skipWords],
-				},
-			],
-		},
-	},
-	{
-		files: ['server/*.js', 'server/**/*.js'],
-		languageOptions: {
-			globals: {
-				...globals.node,
-				Bun: true,
-			},
-		},
-		rules: {
-			'no-console': 'off',
-		},
-	},
-];
+	h2 {
+		color: ${({ colors }) => colors.light(colors.blue)};
+		margin-top: 0;
+	}
+`;
 ```
 
-`test-setup.js`
+## Next Steps
 
-```js
-/// <reference lib="dom" />
+Now that you have the basics:
 
-import 'vanilla-bean-components/test-setup.js';
-```
+1. **Explore Components**: Check out the built-in components in `/components/` like `Dialog`, `Calendar`, `ColorPicker`, etc.
+
+2. **Learn Advanced Patterns**: Study the demo applications in `/demo/` for complex examples.
+
+3. **Master Styling**: Read the [styled system documentation](./styled/README.md) for advanced theming.
+
+4. **State Management**: Dive deeper into [Context patterns](./Context/README.md) for complex state.
+
+5. **HTTP Integration**: Learn about [request caching and subscriptions](./request/README.md).
+
+The library is designed to grow with your needs - start simple and add complexity as required.
