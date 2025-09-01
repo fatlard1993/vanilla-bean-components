@@ -1,12 +1,22 @@
 # styled
 
-> Create Component classes with scoped styles that are automatically processed and injected into the page.
+Create Component classes with scoped styles that are automatically processed and injected into the page.
 
-The `styled` system provides automatic CSS scoping, theme integration, and PostCSS processing for components. All styles are scoped using unique class identifiers to prevent CSS conflicts.
+## Key Features
+
+- **Automatic CSS scoping** - Generates unique class identifiers to prevent style conflicts
+- **Theme integration** - Direct access to colors, fonts, and component styles within CSS
+- **PostCSS processing** - Supports nested syntax, autoprefixing, and modern CSS features
+- **Component inheritance** - Extend styled components with template literals or function syntax
+- **Runtime style override** - Modify styles dynamically at component instantiation
+- **Load-time optimization** - Batches style processing for efficient DOM injection
+- **Memory management** - Automatic cleanup when components are removed from DOM
 
 ## Basic Usage
 
 ### Template Literal Syntax
+
+Create styled components using template literals with theme integration:
 
 ```js
 const StyledIcon = styled.Icon`
@@ -22,6 +32,8 @@ const StyledIcon = styled.Icon`
 ```
 
 ### Function Syntax with Configuration
+
+Use function syntax when you need to pass component configuration options:
 
 ```js
 const ConfiguredComponent = styled(
@@ -45,7 +57,7 @@ const ConfiguredComponent = styled(
 
 ### Named Component Shortcuts
 
-All top-level components are available as named functions:
+All top-level components are available as shorthand methods:
 
 ```js
 const StyledButton = styled.Button`
@@ -59,11 +71,11 @@ const StyledInput = styled.Input`
 `;
 ```
 
-**Note**: Template literal syntax creates components with default options (empty object). Use function syntax if you need to pass component configuration.
+**Note**: Template literal syntax creates components with empty configuration. Use function syntax to pass component options.
 
 ## Theme Integration
 
-Style functions receive the complete theme object with colors, fonts, and pre-built component styles:
+Style functions receive the complete theme object containing colors, fonts, and component styles:
 
 ```js
 const ThemedComponent = styled.Component`
@@ -76,7 +88,7 @@ const ThemedComponent = styled.Component`
 
 ### Runtime Style Override
 
-Components can override or extend styles at runtime:
+Override or extend styles when creating component instances:
 
 ```js
 const instance = new StyledComponent({
@@ -87,11 +99,13 @@ const instance = new StyledComponent({
 });
 ```
 
-When `styles` option is an object, it's applied directly as inline styles. When it's a function, it generates scoped CSS.
+Object-based styles apply as inline styles. Function-based styles generate scoped CSS.
 
 ## Component Inheritance
 
 ### Extending Styled Components
+
+Build component hierarchies by extending existing styled components:
 
 ```js
 const BaseButton = styled.Button`
@@ -105,7 +119,29 @@ const PrimaryButton = styled(BaseButton)`
 `;
 ```
 
-### Full Component Functionality
+### Template Literals with Any Styled Component
+
+Template literal syntax works with any styled component, including those created with function syntax:
+
+```js
+const BaseComponent = styled(Component, () => 'color: red;');
+
+// Extend any styled component with template literals
+const ExtendedComponent = styled(BaseComponent)`
+	background: ${({ colors }) => colors.blue};
+	padding: 16px;
+`;
+
+// Use in class definitions for custom methods
+class MyComponent extends (styled(BaseComponent)`
+	font-weight: bold;
+	border-radius: 4px;
+`) {
+	// Add custom methods here
+}
+```
+
+### Component Functionality Inheritance
 
 Styled components inherit all functionality from their base component:
 
@@ -125,7 +161,7 @@ const instance = new StyledInput({
 
 ### PostCSS Features
 
-Nested CSS syntax is automatically processed:
+Nested CSS syntax processes automatically through PostCSS:
 
 ```js
 const NestedComponent = styled.Component`
@@ -147,47 +183,19 @@ const NestedComponent = styled.Component`
 
 ### Automatic Scoping
 
-Each styled component gets a unique class identifier:
+Each styled component receives a unique class identifier to prevent CSS conflicts:
 
 ```js
 const StyledDiv = styled(Component, () => `color: red;`);
 const instance = new StyledDiv();
 
-// Generated CSS will be scoped like:
-// .a1b2c3d4 { color: red; }
-// And the component will have class="a1b2c3d4"
+// Generated CSS: .a1b2c3d4 { color: red; }
+// Component class: "a1b2c3d4"
 ```
 
-## Performance & Load-Time Behavior
+### Conditional Styles
 
-### Processing Pipeline
-
-The styled system processes styles through several stages:
-
-1. **Component Creation**: Generates unique class identifier using `classSafeNanoid()`
-2. **Style Function Creation**: Template literals processed into theme functions
-3. **Theme Integration**: Style functions receive complete theme object
-4. **CSS Processing**: `shimCSS()` handles the processing pipeline
-5. **PostCSS Processing**: Nested syntax and autoprefixing
-6. **DOM Injection**: Final CSS injected via `appendStyles()`
-
-### Load-Time Batching
-
-Style processing depends on when components are created:
-
-- **Document Complete**: Styles process immediately and return a Promise
-- **Document Loading**: Styles are queued and processed on window `load` event
-- **Queueing**: Multiple styles are batched together for efficient processing
-
-```js
-// If document is already loaded - processes immediately
-const StyledComponent = styled(Component, () => 'color: red;');
-
-// If document is still loading - queued for batch processing
-const AnotherStyled = styled(Component, () => 'color: blue;');
-```
-
-## Conditional Styles
+Apply conditional styles using CSS classes and selectors:
 
 ```js
 const ConditionalComponent = styled.Component`
@@ -211,9 +219,54 @@ const instance = new ConditionalComponent({
 });
 ```
 
-## Configuration-Only Components
+## Performance
 
-Use `configured()` for components that need options but no styles:
+### Processing Pipeline
+
+The styled system processes styles through this pipeline:
+
+1. **Component Creation** - Generates unique class identifier via `classSafeNanoid()`
+2. **Style Processing** - Converts template literals into theme functions
+3. **Theme Application** - Injects complete theme object into style functions
+4. **CSS Processing** - Processes styles through `shimCSS()` pipeline
+5. **PostCSS Transform** - Handles nested syntax and autoprefixing
+6. **DOM Injection** - Injects final CSS via `appendStyles()`
+
+### Load-Time Optimization
+
+Style processing timing depends on document state:
+
+| Document State      | Behavior                                   |
+| ------------------- | ------------------------------------------ |
+| Complete            | Processes immediately, returns Promise     |
+| Loading             | Queues for batch processing on window load |
+| Multiple Components | Batches together for efficiency            |
+
+```js
+// Document loaded - processes immediately
+const StyledComponent = styled(Component, () => 'color: red;');
+
+// Document loading - queued for batch processing
+const AnotherStyled = styled(Component, () => 'color: blue;');
+```
+
+## API Reference
+
+### styled(BaseComponent, styles?, options?)
+
+Creates a styled component class.
+
+**Parameters:**
+
+- `BaseComponent` (Function) - Component class to extend
+- `styles` (Function|String) - Style function or CSS string
+- `options` (Object) - Component configuration options
+
+**Returns:** Extended component class with scoped styling
+
+### configured(BaseComponent, options)
+
+Creates a component with configuration but no styles:
 
 ```js
 const ConfiguredComponent = configured(Component, {
@@ -223,11 +276,11 @@ const ConfiguredComponent = configured(Component, {
 });
 ```
 
-## Utility Functions
+### Utility Functions
 
-### appendStyles(css, id?)
+#### appendStyles(css, id?)
 
-Directly inject CSS into the page:
+Inject CSS directly into the page:
 
 ```js
 appendStyles(
@@ -241,7 +294,7 @@ appendStyles(
 );
 ```
 
-### postCSS(styleText)
+#### postCSS(styleText)
 
 Process CSS with PostCSS plugins:
 
@@ -249,19 +302,15 @@ Process CSS with PostCSS plugins:
 const processedCSS = await postCSS(`
   .container {
     display: flex;
-
     .item {
       flex: 1;
-
-      &:hover {
-        transform: scale(1.1);
-      }
+      &:hover { transform: scale(1.1); }
     }
   }
 `);
 ```
 
-### themeStyles({ styles, scope })
+#### themeStyles({ styles, scope })
 
 Generate themed CSS with optional scoping:
 
@@ -273,7 +322,7 @@ const themedCSS = themeStyles({
 // Returns: ".my-component { color: hsl(0, 0%, 90%); background: hsl(0, 0%, 10%); }"
 ```
 
-### shimCSS(styleConfig)
+#### shimCSS(styleConfig)
 
 Complete style processing pipeline:
 
@@ -282,28 +331,26 @@ shimCSS({
 	styles: ({ colors }) => `
     display: flex;
     background: ${colors.blue};
-
-    .item {
-      padding: 8px;
-    }
+    .item { padding: 8px; }
   `,
 	scope: '.my-scoped-component',
 });
 ```
 
-**Note**: In test environments, `shimCSS` may behave differently than in production. It always returns `undefined` during testing but handles the complete processing pipeline in production environments.
+**Note**: Returns `undefined` in test environments while handling full processing in production.
 
 ## Development Features
 
-In development mode, components automatically get class names based on their constructor inheritance chain, making debugging easier:
+### Debug Class Names
+
+Development mode adds inheritance-based class names for easier debugging:
 
 ```js
-// In development, this component might have classes:
-// "a1b2c3 MyCustomComponent Component Elem"
+// Development classes: "a1b2c3 MyCustomComponent Component Elem"
 class MyCustomComponent extends Component {}
-const styled = styled(MyCustomComponent /* styles */);
+const StyledCustom = styled(MyCustomComponent, () => 'color: blue;');
 ```
 
-## Cleanup and Memory Management
+### Memory Management
 
-Styled components automatically clean up their injected styles when disconnected from the DOM, preventing memory leaks and style pollution.
+Styled components automatically remove injected styles when disconnected from DOM, preventing memory leaks and style pollution.
