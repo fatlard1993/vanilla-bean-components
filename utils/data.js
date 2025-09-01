@@ -1,8 +1,8 @@
 /**
- * Debounce a function
- * @param {Function} callback - The function to debounced
- * @param {number} delay - The number of ms after the last invocation to delay running the function
- * @returns {Function} The now debounce aware callback
+ * Creates debounced version of function that delays execution until after delay period of inactivity.
+ * @param {Function} callback - Function to debounce
+ * @param {number} [delay] - Milliseconds to delay after last invocation
+ * @returns {Function} Debounced function that cancels previous invocations
  */
 export const debounce = (callback, delay = 400) => {
 	let timerId;
@@ -15,10 +15,10 @@ export const debounce = (callback, delay = 400) => {
 };
 
 /**
- * Throttle a function
- * @param {Function} callback - The function to throttled
- * @param {number} delay - The number of ms allowed between invocations of the function
- * @returns {Function} The now throttle aware callback
+ * Creates throttled version of function that limits execution to once per delay period.
+ * @param {Function} callback - Function to throttle
+ * @param {number} [delay] - Minimum milliseconds between function invocations
+ * @returns {Function} Throttled function that enforces rate limiting
  */
 export const throttle = (callback, delay = 400) => {
 	let previousCall = Date.now();
@@ -34,19 +34,21 @@ export const throttle = (callback, delay = 400) => {
 };
 
 /**
- * async delay
- * @param {number} ms - The number of ms to await
- * @returns {Promise} A promise wrapped setTimeout
+ * Creates promise that resolves after specified delay.
+ * @param {number} ms - Milliseconds to delay before promise resolution
+ * @returns {Promise<void>} Promise that resolves after delay period
  */
 export const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
- * async retry with delay
- * @param {Function} callback - The function to execute, and if it throws, to retry
- * @param {object} options -
- * @param {number|(index: number) => number} options.delay - The number of ms to await before executing a retry, if its a function it will provide the current retry index to calculate a dynamic sunset, Default: 500
- * @param {number} options.max - The max number of times to retry, Default: 3
- * @returns {any} The callback return
+ * Executes function with automatic retry on failure, with configurable delay and attempt limits.
+ * @param {Function} callback - Function to execute and retry on failure
+ * @param {object} [options] - Retry configuration
+ * @param {number|Function} [options.delay] - Delay in milliseconds between retries, or function receiving attempt index
+ * @param {number} [options.max] - Maximum number of retry attempts
+ * @param {number} [options.index] - Internal retry counter, do not provide
+ * @returns {Promise<*>} Promise resolving to callback return value
+ * @throws {Error} Final error if all retry attempts fail
  */
 export const retry = async (callback, options = {}) => {
 	const { index = 0, max = 3 } = options;
@@ -67,19 +69,22 @@ export const retry = async (callback, options = {}) => {
 };
 
 /**
- * Convert a number from one range to another
- * @param {number} value - The number to convert
- * @param {Array} sourceRange - The range the value originates from
- * @param {Array} targetRange - The range to convert the value into
- * @returns {number} The original value converted into the target range
+ * Converts number from source range to equivalent value in target range using linear interpolation.
+ * @param {number} value - Number to convert between ranges
+ * @param {[number, number]} sourceRange - Source range as [min, max] array
+ * @param {[number, number]} targetRange - Target range as [min, max] array
+ * @returns {number} Value converted to target range maintaining proportional position
  */
 export const convertRange = (value, sourceRange, targetRange) =>
 	((value - sourceRange[0]) * (targetRange[1] - targetRange[0])) / (sourceRange[1] - sourceRange[0]) + targetRange[0];
 
 /**
- * Retrieve a list of non-native properties from a javascript object
- * @param {object} object - The source object
- * @returns {[string]} An array of the string property names
+ * Extracts non-native property names from object and its prototype chain.
+ *
+ * Filters out built-in JavaScript object methods and properties like constructor,
+ * toString, hasOwnProperty, etc.
+ * @param {object} object - Object to extract custom properties from
+ * @returns {string[]} Array of custom property names excluding native methods
  */
 export const getCustomProperties = object =>
 	[
@@ -93,16 +98,16 @@ export const getCustomProperties = object =>
 	);
 
 /**
- * Build an array of items from a set of conditions and results
- * @param {object[]} conditionalItems -
- * @param {boolean} conditionalItems[].if - The condition
- * @param {any} conditionalItems[].thenItem - The item inserted into the result if the condition is true
- * @param {[any]} conditionalItems[].thenItems - An array of items spread into the result if the condition is true
- * @param {any} conditionalItems[].elseItem - The item inserted into the result if the condition is false
- * @param {[any]} conditionalItems[].elseItems - An array of items spread into the result if the condition is false
- * @param {any} conditionalItems[].alwaysItem - The item inserted into the result regardless of the condition
- * @param {[any]} conditionalItems[].alwaysItems - An array of items spread into the result regardless of the condition
- * @returns {Array} The array of items who's conditions resolved truthy
+ * Builds array from conditional item descriptors, supporting conditional inclusion and arrays.
+ * @param {object[]} conditionalItems - Array of conditional item descriptors
+ * @param {boolean} conditionalItems[].if - Condition determining item inclusion
+ * @param {*} [conditionalItems[].thenItem] - Single item added when condition is true
+ * @param {*[]} [conditionalItems[].thenItems] - Array of items spread when condition is true
+ * @param {*} [conditionalItems[].elseItem] - Single item added when condition is false
+ * @param {*[]} [conditionalItems[].elseItems] - Array of items spread when condition is false
+ * @param {*} [conditionalItems[].alwaysItem] - Single item always added regardless of condition
+ * @param {*[]} [conditionalItems[].alwaysItems] - Array of items always spread regardless of condition
+ * @returns {*[]} Flattened array of items matching their conditions
  */
 export const conditionalList = conditionalItems =>
 	conditionalItems
@@ -127,11 +132,11 @@ export const conditionalList = conditionalItems =>
 		});
 
 /**
- * Build an array of items from a set of conditions and results
- * @param {object[]} orders -
- * @param {string} orders[].property - The property to sort
- * @param {'asc'|'desc'} orders[].direction - The direction to sort the property by
- * @returns {Function} A JS Array.sort function primed sort your data by the preceding order configurations
+ * Creates multi-level sorting function for Array.sort() with locale-aware comparison.
+ * @param {object|object[]} orders - Sort configuration, single object or array for multi-level sorting
+ * @param {string} [orders.property] - Object property to sort by, undefined sorts primitive values directly
+ * @param {'asc'|'desc'} [orders.direction] - Sort direction: ascending or descending
+ * @returns {Function} Comparator function for Array.sort() with multi-level sorting support
  */
 export const orderBy = orders => (a, b) => {
 	const sortDirection = { asc: -1, desc: 1 };

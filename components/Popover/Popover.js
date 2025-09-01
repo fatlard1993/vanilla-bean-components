@@ -21,6 +21,24 @@ const StyledIcon = styled(
 const defaultOptions = { uniqueId: true, state: 'manual', viewport: document.documentElement, appendTo: document.body };
 const state_enum = Object.freeze(['auto', 'manual']);
 
+/**
+ * Popover component using native HTML popover API with edge-aware positioning.
+ *
+ * Provides positioned overlay content with automatic edge detection and placement adjustment.
+ * Supports manual and automatic dismiss behavior with customizable positioning and sizing.
+ * @param {object} [options={}] - Popover configuration options
+ * @param {string} [options.state='manual'] - Popover state ('auto', 'manual')
+ * @param {boolean} [options.autoOpen=true] - Whether to automatically open on render
+ * @param {number} [options.x] - X position for the popover
+ * @param {number} [options.y] - Y position for the popover
+ * @param {number} [options.maxWidth=264] - Maximum width in pixels
+ * @param {number} [options.maxHeight=132] - Maximum height in pixels
+ * @param {HTMLElement} [options.viewport] - Viewport element for edge detection
+ * @param {string} [options.icon] - Icon to display in the popover
+ * @param {string|Component} [options.content] - Popover content
+ * @param {...(Component|HTMLElement|string)} children - Child elements to append
+ * @returns {Popover} Popover component instance
+ */
 export default class Popover extends StyledIcon {
 	defaultOptions = defaultOptions;
 	state_enum = state_enum;
@@ -75,16 +93,27 @@ export default class Popover extends StyledIcon {
 		this.elem.style.right = pastRight ? `${document.documentElement.clientWidth + cursorOffset - x}px` : 'unset';
 	}
 
+	/**
+	 * Shows the popover with optional position update.
+	 * @param {object} [options] - Position and sizing options
+	 */
 	show(options) {
 		if (options) this.edgeAwarePlacement(options);
 
 		if (this.elem.isConnected) this.elem.showPopover();
 	}
 
+	/**
+	 * Hides the popover.
+	 */
 	hide() {
 		this.elem.hidePopover();
 	}
 
+	/**
+	 * Checks if the popover is currently open.
+	 * @returns {boolean} True if popover is open
+	 */
 	get isOpen() {
 		return this.elem.matches(':popover-open');
 	}

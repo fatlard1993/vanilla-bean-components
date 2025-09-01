@@ -2,50 +2,52 @@
 
 Reactive component class extending Elem with Context integration, lifecycle management, and automatic cleanup.
 
-## Core Features
+## Key Features
 
-- **Reactive options** - Properties backed by Context emit events on changes
-- **Automatic cleanup** - Event listeners and resources cleaned up on DOM disconnect
-- **Flexible rendering** - Configurable render timing (immediate, onload, animationFrame)
-- **Event routing** - Input events get `.value` property, connection events use DOM observation
-- **Style processing** - Inline objects or scoped CSS via theme system
-- **Lifecycle hooks** - onHover, onPointerPress with automatic cleanup
-
-## Constructor
+- **Reactive options system** - Property changes backed by Context emit events and update DOM automatically
+- **Automatic memory management** - Event listeners and resources cleaned up on DOM disconnect
+- **Flexible render timing** - Immediate, onload, or animationFrame rendering modes
+- **Enhanced event handling** - Input events include `.value` property, DOM connection detection
+- **Integrated styling** - Inline objects or scoped CSS with theme system integration
+- **Lifecycle hooks** - Built-in hover and press handlers with automatic cleanup
 
 ```js
-new Component(options?, ...children)
+import { Component } from 'vanilla-bean-components';
 ```
 
-### Configuration Options
+## Basic Usage
 
-| Option             | Type                                  | Description                                 |
-| ------------------ | ------------------------------------- | ------------------------------------------- |
-| `tag`              | `string`                              | HTML tag name (default: 'div')              |
-| `autoRender`       | `boolean\|'onload'\|'animationFrame'` | Render timing control                       |
-| `registeredEvents` | `Set<string>`                         | Custom event types for on() method          |
-| `knownAttributes`  | `Set<string>`                         | Attribute names for elem.setAttribute()     |
-| `priorityOptions`  | `Set<string>`                         | Option keys processed first during render   |
-| `style`            | `object`                              | Inline CSS properties                       |
-| `attributes`       | `object`                              | HTML attributes                             |
-| `styles`           | `string\|object\|Function`            | CSS string, style object, or theme function |
+### Simple Components
 
-All standard Elem options supported. Children arguments appended to `append` option.
+Every Component extends EventTarget and wraps an HTMLElement with reactive options:
 
-## Usage Patterns
+```js
+import { Component } from 'vanilla-bean-components';
 
-### One-Off Components
+const button = new Component({
+	tag: 'button',
+	textContent: 'Click me',
+	className: 'primary-btn',
+	onPointerPress: () => alert('Hello!'),
+	appendTo: document.body,
+});
+```
+
+### Reactive Property Updates
+
+Options are backed by Context - property changes trigger DOM updates automatically:
 
 ```js
 const input = new Component({
 	tag: 'input',
 	value: 'Initial text',
 	onChange: ({ value }) => {
-		input.options.value = value;
+		input.options.value = value; // Updates DOM reactively
 	},
 	appendTo: document.body,
 });
 
+// Display that updates automatically
 new Component({
 	tag: 'p',
 	textContent: input.options.subscriber('value', value => `Current: ${value}`),
@@ -53,7 +55,9 @@ new Component({
 });
 ```
 
-### Extended Components
+### Extended Component Classes
+
+Create reusable component classes with custom behavior:
 
 ```js
 class Button extends Component {
@@ -81,199 +85,297 @@ class Button extends Component {
 }
 ```
 
-### With styled()
+### With Styled Components
+
+Components integrate seamlessly with the styled system:
 
 ```js
+import { styled } from 'vanilla-bean-components';
+
 const StyledComponent = styled(
 	Component,
 	({ colors }) => `
 	background: ${colors.blue};
 	color: ${colors.white};
+	padding: 16px;
+	border-radius: 8px;
 `,
 );
 ```
 
 ## Reactive Options System
 
-Component options stored in Context instance (vs plain object in Elem) - property changes trigger re-processing:
+Component options are stored in a Context instance (not plain object like Elem), enabling automatic reactivity:
 
 ```js
 const button = new Component({ textContent: 'Click me' });
-button.options.textContent = 'Updated'; // Triggers DOM update via Context
+
+// Property changes trigger DOM updates
+button.options.textContent = 'Updated'; // Updates DOM via Context
 button.options.addClass = 'active'; // Adds CSS class reactively
 
-// Context features available
+// Full Context features available
 const subscription = button.options.subscribe({
 	key: 'textContent',
 	callback: value => console.log('Text changed:', value),
 });
 ```
 
-### Option Routing
+### Option Processing Pipeline
 
-Options routed based on key and value type via `_setOption`:
+Options are routed through `_setOption` based on key and value type:
 
-- **Event handlers** - Keys starting with 'on' registered via on() method
-- **Known attributes** - Set via elem.setAttribute()
-- **Component methods** - Called with value as parameter
-- **HTMLElement properties** - Set directly on elem
-- **Functions** - Stored as component properties
-- **Default** - Set as elem properties
+| Condition                | Routing                    | Example                |
+| ------------------------ | -------------------------- | ---------------------- |
+| Key starts with 'on'     | Event handler registration | `onClick: handler`     |
+| Key in `knownAttributes` | `elem.setAttribute()`      | `id: 'my-id'`          |
+| Component has method     | Method call with value     | `addClass: 'active'`   |
+| HTMLElement has property | Direct elem property       | `textContent: 'hello'` |
+| Value is function        | Component property         | `customMethod: fn`     |
+| Default                  | Elem property assignment   | `customProp: value`    |
 
-## Options Reference
+## Event Handling
 
-### Component-Specific Options
+### Automatic Event Registration
 
-These options trigger Component-specific behavior:
-
-```js
-styles: Function; // Theme function for scoped CSS
-onHover: Function; // Hover handler with move tracking
-onPointerPress: Function; // Press sequence handler
-uniqueId: string; // Override auto-generated unique ID
-augmentedUI: string | boolean; // data-augmented-ui attribute
-```
-
-### All Elem Options Work as Options
-
-Standard Elem methods work perfectly as reactive options:
+Event handlers are registered automatically when option keys start with 'on':
 
 ```js
 new Component({
-	textContent: 'Hello', // Sets textContent reactively
-	addClass: 'btn primary', // Adds classes reactively
-	setStyle: { color: 'red' }, // Sets styles reactively
-	append: [child1, child2], // Appends children reactively
-	appendTo: document.body, // Appends to parent reactively
-	// Any Elem method works as an option
+	onClick: event => console.log('clicked'),
+	onChange: ({ value }) => console.log('value:', value), // Input events include .value
+	onConnected: () => console.log('added to DOM'),
+	onDisconnected: () => console.log('removed from DOM'),
 });
 ```
 
-### Event Handler Options
+### Enhanced Input Events
 
-Event handlers registered automatically when option key starts with 'on':
-
-```js
-onClick: Function; // click events
-onChange: Function; // change events (input elements get .value)
-onConnected: Function; // DOM connection detection
-onCustomEvent: Function; // Custom events (if in registeredEvents)
-```
-
-## Event System
-
-### on() Method
+Input-related events (`keydown`, `keyup`, `change`, `blur`, `input`, `search`) receive enhanced event objects:
 
 ```js
-component.on({ targetEvent, callback, id? })
+new Component({
+	tag: 'input',
+	type: 'text',
+	onChange: ({ value, event }) => {
+		console.log('New value:', value); // Extracted from input
+		console.log('Original event:', event);
+	},
+});
 ```
 
-**Input Events** (`keydown`, `keyup`, `change`, `blur`, `input`, `search`)
+### Connection Events
 
-- Augments event object with `.value` property
-- Handles checkbox checked state and input values
+DOM connection/disconnection detected via MutationObserver:
 
-**Connection Events** (`connected`, `disconnected`)
-
-- Uses DOM observation for reliable detection
-- Triggers cleanup on disconnect
-
-**Common Events** (pointer events, contextmenu)
-
-- Direct addEventListener registration
-- Automatic cleanup tracking
+```js
+new Component({
+	onConnected: () => console.log('Component added to DOM'),
+	onDisconnected: () => {
+		console.log('Component removed - cleanup triggered');
+	},
+});
+```
 
 ### Specialized Event Handlers
 
-```js
-// Hover with move tracking
-component.onHover(event => console.log(event.clientX, event.clientY));
+#### Hover with Movement Tracking
 
-// Press detection (down-to-up sequence)
-component.onPointerPress(event => console.log('Complete press'));
+```js
+component.onHover(event => {
+	console.log('Mouse position:', event.clientX, event.clientY);
+});
 ```
+
+#### Press Detection
+
+Detects complete press sequence (down → up):
+
+```js
+component.onPointerPress(event => {
+	console.log('Complete press detected');
+});
+```
+
+## Styling
+
+### Inline Style Objects
+
+Apply styles as JavaScript objects:
+
+```js
+component.styles({
+	color: 'red',
+	padding: '10px',
+	backgroundColor: '#f0f0f0',
+});
+
+// Or as option
+new Component({
+	styles: { color: 'red', padding: '10px' },
+});
+```
+
+### Scoped CSS with Theme Integration
+
+Use theme functions for scoped, processed CSS:
+
+```js
+// Theme function with automatic scoping and PostCSS processing
+component.styles(
+	({ colors, fonts }) => `
+	background: ${colors.blue};
+	${fonts.kodeMono}
+	padding: 16px;
+	border-radius: 8px;
+
+	&:hover {
+		background: ${colors.darker(colors.blue)};
+	}
+
+	@media (max-width: 768px) {
+		padding: 8px;
+	}
+`,
+);
+```
+
+CSS is processed through PostCSS, receives unique class scope, and is injected into the DOM automatically.
 
 ## Lifecycle Management
 
-### Rendering
+### Rendering Process
 
 ```js
 component.render(); // Process all options through _setOption
 ```
 
-- Clears content when re-rendering (`rendered` flag reset)
-- Processes priority options first
-- Sets `rendered = true` when complete
+Rendering behavior:
 
-### Cleanup System
+1. **Content clearing** - Removes existing content when re-rendering
+2. **Priority processing** - Processes `priorityOptions` first
+3. **Option routing** - Each option processed via `_setOption`
+4. **Completion flag** - Sets `rendered = true`
 
-```js
-component.addCleanup('id', () => console.log('cleanup'));
-component.processCleanup(); // Execute all cleanup functions
-```
+### Automatic Cleanup System
 
-- Automatic cleanup on DOM disconnect
-- Recursive cleanup of child components
-- Manual cleanup function execution
-
-## Styling
-
-### Inline Styles
+Components automatically clean up resources when removed from DOM:
 
 ```js
-component.styles({ color: 'red', padding: '10px' });
-// Or as option: new Component({ styles: { color: 'red' } });
-```
-
-### Scoped CSS
-
-```js
-// Theme function with automatic scoping
-component.styles(
-	({ colors }) => `
-  background: ${colors.blue};
-  &:hover { background: ${colors.darker(colors.blue)}; }
-`,
-);
-// Or as option: new Component({ styles: themeFunction });
-```
-
-CSS processed through PostCSS and injected with unique class scope.
-
-## Methods Reference
-
-### Options-Compatible Methods
-
-These methods can be called via options or directly:
-
-```js
-// Via options (reactive)
-new Component({
-	styles: ({ colors }) => `color: ${colors.blue};`,
-	onHover: event => console.log('hover'),
-	addClass: 'active',
-	setStyle: { padding: '10px' },
-	append: [child1, child2],
+// Manual cleanup registration
+component.addCleanup('unique-id', () => {
+	console.log('Custom cleanup executed');
 });
 
-// Direct calls (immediate)
-component.styles(styleFunction);
-component.onHover(callback);
-component.addClass('active');
-component.setStyle({ padding: '10px' });
-component.append(child1, child2);
+// Manual cleanup execution (automatic on disconnect)
+component.processCleanup();
 ```
 
-### Direct-Only Methods
+**Automatic cleanup includes:**
 
-These methods don't make sense as options:
+- Event listener removal
+- Context subscription cleanup
+- Style element removal from DOM
+- Recursive child component cleanup
+
+### Render Timing Control
+
+Control when components render with `autoRender` option:
 
 ```js
-component.render(); // Lifecycle method
-component.addCleanup(id, fn); // Cleanup registration
-component.processCleanup(); // Manual cleanup execution
-component.on({ targetEvent, callback }); // Event registration
-component.emit(eventType, detail); // Event dispatch
+// Immediate rendering (default)
+new Component({ autoRender: true });
+
+// Render on window load event
+new Component({ autoRender: 'onload' });
+
+// Render on next animation frame
+new Component({ autoRender: 'animationFrame' });
+
+// Manual rendering only
+new Component({ autoRender: false });
+```
+
+## API Reference
+
+### Constructor
+
+```js
+new Component(options?, ...children)
+```
+
+**Parameters:**
+
+- `options` (Object) - Configuration options
+- `children` (...Component|Elem) - Child elements appended to `append` option
+
+### Configuration Options
+
+#### Component-Specific Options
+
+| Option             | Type                                  | Description                                 |
+| ------------------ | ------------------------------------- | ------------------------------------------- |
+| `tag`              | `string`                              | HTML tag name (default: 'div')              |
+| `autoRender`       | `boolean\|'onload'\|'animationFrame'` | Render timing control                       |
+| `registeredEvents` | `Set<string>`                         | Custom event types for on() method          |
+| `knownAttributes`  | `Set<string>`                         | Attribute names for elem.setAttribute()     |
+| `priorityOptions`  | `Set<string>`                         | Option keys processed first during render   |
+| `styles`           | `string\|object\|Function`            | CSS string, style object, or theme function |
+| `uniqueId`         | `string`                              | Override auto-generated unique ID           |
+| `augmentedUI`      | `string\|boolean`                     | data-augmented-ui attribute                 |
+
+#### Event Handler Options
+
+| Option           | Type       | Description                                  |
+| ---------------- | ---------- | -------------------------------------------- |
+| `onHover`        | `Function` | Hover handler with move tracking             |
+| `onPointerPress` | `Function` | Press sequence handler                       |
+| `onClick`        | `Function` | Click event handler                          |
+| `onChange`       | `Function` | Change event handler (input .value included) |
+| `onConnected`    | `Function` | DOM connection detection                     |
+| `onDisconnected` | `Function` | DOM disconnection detection                  |
+
+All standard Elem options work as reactive Component options.
+
+### Methods
+
+#### Options-Compatible Methods
+
+Can be called directly or used as reactive options:
+
+```js
+component.styles(styleFunction); // Direct call
+component.onHover(callback); // Direct call
+component.addClass('active'); // Direct call
+component.append(child); // Direct call
+
+// Or as reactive options:
+new Component({
+	styles: styleFunction,
+	onHover: callback,
+	addClass: 'active',
+	append: [child],
+});
+```
+
+#### Lifecycle Methods
+
+```js
+component.render(); // Process all options
+component.addCleanup(id, fn); // Register cleanup function
+component.processCleanup(); // Execute cleanup functions
+```
+
+#### Event Methods
+
+```js
+component.on({ targetEvent, callback, id? }); // Event registration
+component.emit(eventType, detail);             // Event dispatch
+```
+
+#### Utility Methods
+
+```js
 component.ancestry(); // Prototype chain inspection
 ```
 
@@ -283,13 +385,19 @@ component.ancestry(); // Prototype chain inspection
 component.parent; // Parent Component/Elem instance
 component.children; // Child Component/Elem instances
 component.uniqueId; // Frozen unique identifier
-component.options; // Reactive Context instance (not plain object like Elem)
+component.options; // Reactive Context instance
+component.elem; // Underlying HTMLElement
+component.rendered; // Boolean render status flag
 ```
 
 ## Memory Management
 
-- Event listeners auto-removed on disconnect
-- Context subscriptions cleaned up
-- Style elements removed from DOM
-- Child component cleanup cascades
-- Manual cleanup registration system
+Components provide comprehensive automatic memory management:
+
+- **Event listeners** - Automatically removed on DOM disconnect
+- **Context subscriptions** - Cleaned up when component destroyed
+- **Style elements** - Removed from DOM head on cleanup
+- **Child components** - Recursive cleanup propagation
+- **Custom cleanup** - Manual cleanup function registration
+
+No manual cleanup required for typical usage - components handle resource management automatically.

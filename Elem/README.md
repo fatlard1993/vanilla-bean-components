@@ -1,21 +1,25 @@
 # Elem
 
-A lightweight wrapper around DOM elements that provides enhanced manipulation methods while maintaining direct access to the underlying HTMLElement.
+Enhanced DOM element wrapper providing fluent API methods while maintaining direct access to the underlying HTMLElement.
 
-## Features
+## Key Features
 
-- Fluent API with method chaining
-- Automatic option routing to appropriate methods/properties
-- Enhanced class manipulation with regex support
-- Flexible content and child element handling
-- Direct access to native HTMLElement via `.elem`
+- **Fluent method chaining** - Chainable methods for building complex DOM structures
+- **Intelligent option routing** - Automatic routing of properties to appropriate DOM methods
+- **Enhanced class manipulation** - Regular expression support for class operations
+- **Flexible content handling** - Support for text, HTML, and nested element content
+- **Direct DOM access** - Full HTMLElement API via `.elem` property
+- **EventTarget integration** - Built-in event handling capabilities
 
-## Usage
+## Basic Usage
+
+### Simple Element Creation
+
+Create DOM elements with enhanced manipulation capabilities:
 
 ```js
-import { Elem } from './Elem';
+import { Elem } from 'vanilla-bean-components';
 
-// Basic element creation
 const button = new Elem({
 	tag: 'button',
 	textContent: 'Click me',
@@ -23,8 +27,13 @@ const button = new Elem({
 	onclick: () => alert('Clicked!'),
 	appendTo: document.body,
 });
+```
 
-// Complex nested structure
+### Complex Nested Structures
+
+Build complex DOM hierarchies with nested elements:
+
+```js
 const card = new Elem(
 	{
 		tag: 'div',
@@ -34,22 +43,54 @@ const card = new Elem(
 	new Elem({ tag: 'h3', textContent: 'Card Title' }),
 	new Elem({ tag: 'p', textContent: 'Card content goes here.' }),
 );
+```
 
-// Method chaining
-const menu = new Elem({ tag: 'nav' })
+### Method Chaining
+
+Chain methods for fluent DOM construction:
+
+```js
+const navigation = new Elem({ tag: 'nav' })
 	.addClass('menu', 'horizontal')
+	.setStyle({ display: 'flex', gap: '16px' })
 	.append(
 		new Elem({ tag: 'a', textContent: 'Home', href: '/' }),
 		new Elem({ tag: 'a', textContent: 'About', href: '/about' }),
+		new Elem({ tag: 'a', textContent: 'Contact', href: '/contact' }),
 	)
 	.appendTo(document.body);
 ```
 
-## Constructor
+### Direct DOM Access
 
-`new Elem(options, ...children)`
+Access the full HTMLElement API when needed:
 
-### Configuration Options
+```js
+const input = new Elem({ tag: 'input', type: 'text' });
+
+// Enhanced methods
+input.addClass('form-control').setStyle({ width: '100%' });
+
+// Direct DOM access
+input.elem.focus();
+input.elem.select();
+input.elem.scrollIntoView({ behavior: 'smooth' });
+```
+
+## Configuration Options
+
+### Constructor Syntax
+
+```js
+new Elem(options?, ...children)
+```
+
+**Parameters:**
+
+- `options` (Object) - Configuration options and HTML properties
+- `children` (...Elem|HTMLElement|string) - Child elements or text content
+
+### Core Options
 
 | Option       | Type                        | Description                        |
 | ------------ | --------------------------- | ---------------------------------- |
@@ -57,86 +98,293 @@ const menu = new Elem({ tag: 'nav' })
 | `style`      | `object`                    | CSS properties as key-value pairs  |
 | `attributes` | `object`                    | HTML attributes as key-value pairs |
 | `content`    | `string\|Elem\|HTMLElement` | Element content                    |
-| `appendTo`   | `Elem\|HTMLElement`         | Parent to append to                |
-| `prependTo`  | `Elem\|HTMLElement`         | Parent to prepend to               |
+| `appendTo`   | `Elem\|HTMLElement`         | Parent element to append to        |
+| `prependTo`  | `Elem\|HTMLElement`         | Parent element to prepend to       |
 | `append`     | `Array`                     | Child elements to append           |
 | `prepend`    | `Array`                     | Child elements to prepend          |
 
-### HTMLElement Properties
+### HTML Properties
 
-All standard HTMLElement properties are supported:
-
-- `className`, `id`, `textContent`, `innerHTML`, `innerText`
-- `disabled`, `value`, `checked`, `selected`
-- Event handlers: `onclick`, `onchange`, `onsubmit`, etc.
-- Element-specific properties (e.g., `href` for anchors, `src` for images)
-
-## Methods
-
-### Class Management
+All standard HTMLElement properties work as options:
 
 ```js
-elem.hasClass('active', /^btn-/); // Check classes (supports regex)
-elem.addClass('new-class'); // Add classes
-elem.removeClass(/^temp-/); // Remove classes (supports regex)
+new Elem({
+	// Content properties
+	textContent: 'Button text',
+	innerHTML: '<span>HTML content</span>',
+
+	// Form properties
+	value: 'input value',
+	checked: true,
+	disabled: false,
+
+	// Element properties
+	id: 'unique-id',
+	className: 'btn primary',
+	title: 'Tooltip text',
+
+	// Link properties
+	href: 'https://example.com',
+	target: '_blank',
+
+	// Image properties
+	src: 'image.jpg',
+	alt: 'Image description',
+});
 ```
 
-### Content & Structure
+### Event Handler Properties
+
+Event handlers can be assigned directly:
 
 ```js
-elem.content('New text'); // Set content
-elem.append(child1, child2); // Append children
-elem.prepend(child1, child2); // Prepend children
-elem.empty(); // Remove all children
+new Elem({
+	tag: 'button',
+	onclick: event => console.log('clicked'),
+	onmouseover: event => console.log('hover'),
+	onchange: event => console.log('changed'),
+	onfocus: event => console.log('focused'),
+});
 ```
 
-### Styling & Attributes
+## DOM Manipulation
+
+### Content Management
 
 ```js
-elem.setStyle({ color: 'red', fontSize: '16px' });
-elem.setAttributes({ 'data-id': '123', role: 'button' });
+// Set content (replaces existing)
+elem.content('New text content');
+elem.content(new Elem({ tag: 'span', textContent: 'HTML element' }));
+
+// Clear all content
+elem.empty();
 ```
 
-### Hierarchy
+### Child Element Management
 
 ```js
-elem.appendTo(parent); // Append to parent
-elem.prependTo(parent); // Prepend to parent
-elem.parent; // Get parent Elem instance
-elem.parentElem; // Get parent HTMLElement
-elem.children; // Get child Elem instances
+// Add children
+elem.append(child1, child2, 'text content');
+elem.prepend(child1, child2);
+
+// Access children
+const childElements = elem.children; // Array of Elem instances
+const nativeChildren = elem.elem.children; // HTMLCollection
 ```
 
-### Utility
+### Hierarchy Management
 
 ```js
-elem.setOptions({ className: 'new', textContent: 'Updated' });
-elem.toString(); // Returns '[object Elem]'
+// Add to DOM
+elem.appendTo(document.body);
+elem.prependTo(document.querySelector('.container'));
+
+// Navigate hierarchy
+const parentElem = elem.parent; // Parent Elem instance (if exists)
+const nativeParent = elem.parentElem; // Parent HTMLElement
 ```
 
-## Direct DOM Access
-
-Access the underlying HTMLElement via the `.elem` property:
+### Style and Attribute Management
 
 ```js
-const myElem = new Elem({ tag: 'div' });
-myElem.elem.focus(); // Call native methods
-myElem.elem.scrollIntoView(); // Access full DOM API
+// Set multiple styles
+elem.setStyle({
+	color: 'red',
+	fontSize: '16px',
+	backgroundColor: '#f0f0f0',
+});
+
+// Set multiple attributes
+elem.setAttributes({
+	'data-id': '123',
+	'aria-label': 'Close button',
+	role: 'button',
+});
+```
+
+## Class Management
+
+### Enhanced Class Operations
+
+Elem provides enhanced class manipulation with regular expression support:
+
+```js
+// Check for classes
+elem.hasClass('active'); // Check single class
+elem.hasClass('btn', 'primary'); // Check multiple classes
+elem.hasClass(/^btn-/); // Check with regex pattern
+
+// Add classes
+elem.addClass('new-class');
+elem.addClass('class1', 'class2', 'class3');
+
+// Remove classes
+elem.removeClass('old-class');
+elem.removeClass(/^temp-/); // Remove all classes starting with 'temp-'
+elem.removeClass(/\bmobile-\w+/g); // Remove classes matching pattern
+
+// Toggle classes
+elem.toggleClass('active');
+```
+
+### Class Manipulation Examples
+
+```js
+const button = new Elem({ tag: 'button', className: 'btn btn-primary temp-123' });
+
+// Remove all temporary classes
+button.removeClass(/^temp-/);
+
+// Add state classes
+button.addClass('btn-large', 'btn-rounded');
+
+// Conditional classes
+if (isActive) {
+	button.addClass('active', 'selected');
+}
+
+// Check for button variants
+if (button.hasClass(/^btn-(primary|secondary|danger)$/)) {
+	console.log('Has button variant class');
+}
 ```
 
 ## Event Handling
 
-Elem extends EventTarget, so you can use standard event methods:
+### EventTarget Integration
+
+Elem extends EventTarget, providing full event capabilities:
 
 ```js
-const elem = new Elem({ tag: 'button' });
+const button = new Elem({ tag: 'button', textContent: 'Click me' });
 
-// Via options
-new Elem({ tag: 'button', onclick: handleClick });
+// Option-based event handlers
+new Elem({
+	tag: 'input',
+	onchange: event => console.log('Value changed:', event.target.value),
+	onfocus: event => event.target.select(),
+});
 
-// Via addEventListener
+// addEventListener method
+button.addEventListener('click', event => {
+	console.log('Button clicked');
+});
+
+// Custom events
+button.addEventListener('customEvent', event => {
+	console.log('Custom event data:', event.detail);
+});
+
+// Dispatch events
+button.dispatchEvent(
+	new CustomEvent('customEvent', {
+		detail: { message: 'Hello' },
+	}),
+);
+```
+
+### Event Handler Options vs Methods
+
+```js
+// Via constructor options (preferred for initial setup)
+const elem = new Elem({
+	tag: 'button',
+	onclick: handleClick,
+	onmouseover: handleHover,
+});
+
+// Via addEventListener (preferred for dynamic binding)
 elem.addEventListener('click', handleClick);
+elem.addEventListener('mouseover', handleHover);
 
 // Via native element
 elem.elem.addEventListener('click', handleClick);
 ```
+
+## API Reference
+
+### Constructor
+
+```js
+new Elem(options?, ...children)
+```
+
+### Core Methods
+
+#### Content Methods
+
+```js
+elem.content(content); // Set element content
+elem.empty(); // Remove all child elements
+```
+
+#### Child Management Methods
+
+```js
+elem.append(...children); // Append child elements
+elem.prepend(...children); // Prepend child elements
+elem.appendTo(parent); // Append to parent element
+elem.prependTo(parent); // Prepend to parent element
+```
+
+#### Style and Attribute Methods
+
+```js
+elem.setStyle(styles); // Set CSS properties
+elem.setAttributes(attributes); // Set HTML attributes
+elem.setOptions(options); // Set multiple options at once
+```
+
+#### Class Methods
+
+```js
+elem.hasClass(...classes); // Check for classes (supports regex)
+elem.addClass(...classes); // Add CSS classes
+elem.removeClass(...classes); // Remove CSS classes (supports regex)
+elem.toggleClass(className); // Toggle CSS class
+```
+
+### Properties
+
+```js
+elem.elem; // Underlying HTMLElement
+elem.parent; // Parent Elem instance (if created by Elem)
+elem.parentElem; // Parent HTMLElement
+elem.children; // Array of child Elem instances
+elem.options; // Configuration options object
+```
+
+### Utility Methods
+
+```js
+elem.toString(); // Returns '[object Elem]'
+elem.ancestry(); // Get prototype chain information
+```
+
+## Integration with Component
+
+Elem serves as the foundation for the Component class:
+
+```js
+import { Component } from 'vanilla-bean-components';
+
+// Component extends Elem with reactive options
+const component = new Component({
+	tag: 'div',
+	textContent: 'I am reactive!',
+});
+
+// All Elem methods available
+component.addClass('component-class');
+component.setStyle({ padding: '16px' });
+
+// Plus Component-specific features
+component.options.textContent = 'Updated reactively!';
+```
+
+## Performance Considerations
+
+- **Direct DOM access** - Use `elem.elem` for performance-critical operations
+- **Method chaining** - Efficient for building complex structures
+- **Class operations** - Regular expressions processed efficiently
+- **Event handling** - EventTarget integration provides optimal event performance

@@ -4,6 +4,22 @@ import { Context } from '../../Context';
 import { Input } from '../Input';
 import { Label } from '../Label';
 
+/**
+ * Dynamic form component with reactive data binding and validation.
+ *
+ * Generates form inputs with labels from configuration and maintains reactive state
+ * through Context integration. Supports custom input components and validation.
+ * @param {object} [options={}] - Form configuration options
+ * @param {Array<object>} options.inputs - Array of input configuration objects
+ * @param {string} options.inputs[].key - Data key for the input field
+ * @param {string} [options.inputs[].label] - Label text, defaults to formatted key
+ * @param {Component} [options.inputs[].InputComponent=Input] - Input component class to use
+ * @param {Function} [options.inputs[].onChange] - Change handler for individual input
+ * @param {Function} [options.inputs[].parse] - Value parser function
+ * @param {object} [options.data={}] - Initial form data object
+ * @param {...(Component|HTMLElement|string)} children - Child elements to append after inputs
+ * @returns {Form} Form component instance
+ */
 export default class Form extends Component {
 	render() {
 		this.options.style = { ...this.options.style, overflow: 'hidden auto' };
@@ -46,6 +62,11 @@ export default class Form extends Component {
 		if (this.options.append) this._setOption('append', this.options.append);
 	}
 
+	/**
+	 * Validates all form inputs and returns validation status.
+	 * @param {object} [options] - Validation options passed to individual input validators
+	 * @returns {boolean} True if validation errors exist, false if all inputs are valid
+	 */
 	validate(options) {
 		if (!this.inputElements) return;
 

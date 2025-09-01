@@ -1,8 +1,8 @@
 /**
- * Return the index of a target element within its parent
- * @param {HTMLElement} element - The target element
- * @param {number} index - (do not use)
- * @returns {number} index
+ * Calculates zero-based index position of element within parent's children.
+ * @param {HTMLElement} element - Element to find index of
+ * @param {number} [index] - Internal recursion accumulator, do not provide
+ * @returns {number} Zero-based index position within parent element
  */
 export const getElementIndex = (element, index = 0) => {
 	if (index === undefined) index = 0;
@@ -13,10 +13,10 @@ export const getElementIndex = (element, index = 0) => {
 };
 
 /**
- * Check if one element is a descendant of another element
- * @param {HTMLElement} element - The target element
- * @param {HTMLElement} parentElement - The potential targets ancestor
- * @returns {boolean} element isDescendantOf parent
+ * Determines if element is a descendant of specified parent element.
+ * @param {HTMLElement} element - Element to test descendant relationship
+ * @param {HTMLElement} parentElement - Potential ancestor element
+ * @returns {boolean} True if element is descendant of parentElement, false otherwise
  */
 export const isDescendantOf = (element, parentElement) => {
 	const isTheParent = element.parentElement === parentElement;
@@ -27,13 +27,16 @@ export const isDescendantOf = (element, parentElement) => {
 };
 
 /**
- * Get an array of elements that contain a target piece of text
- * @param {string} text - The target text
- * @param {object} options -
- * @param {string} options.xPathElement - The element selector used in the xPath evaluation, Default: *
- * @param {Node} options.scope - The contextNode to scope the results of the query, Default: document.body
- * @param {boolean} options.caseSensitive - If set to true: elements with an exact case match will be in the result, Default: false
- * @returns {Array} An array of Node results
+ * Finds elements containing specified text using XPath evaluation.
+ *
+ * Uses XPath contains() function with optional case-insensitive matching.
+ * Returns deepest matching elements to avoid duplicate parent/child results.
+ * @param {string} text - Text content to search for within elements
+ * @param {object} [options] - Search configuration options
+ * @param {string} [options.xPathElement] - Element selector for XPath evaluation
+ * @param {Node} [options.scope] - Context node to scope the search query
+ * @param {boolean} [options.caseSensitive] - Whether to perform case-sensitive text matching
+ * @returns {Node[]} Array of elements containing the text, with duplicate parent/child pairs resolved to deepest match
  */
 export const getElementsContainingText = (text, options = {}) => {
 	const { xPathElement = '*', scope = document.body, caseSensitive = false } = options;

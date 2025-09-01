@@ -38,6 +38,26 @@ const defaultOptions = {
 
 const dataTypeToInputType = { number: 'number', boolean: 'checkbox', string: 'text' };
 
+/**
+ * Versatile input component supporting all HTML input types and textarea functionality.
+ *
+ * Provides enhanced input behavior with auto-height for textareas, syntax highlighting,
+ * validation support, and automatic type detection based on value type.
+ * @param {object} [options={}] - Input configuration options
+ * @param {string} [options.tag='input'] - HTML tag ('input' or 'textarea')
+ * @param {string} [options.type] - Input type, auto-detected from value type if not specified
+ * @param {*} [options.value=''] - Initial input value
+ * @param {string} [options.placeholder=''] - Placeholder text
+ * @param {string} [options.autocomplete='off'] - Autocomplete behavior
+ * @param {string} [options.autocapitalize='off'] - Auto-capitalization behavior
+ * @param {string} [options.autocorrect='off'] - Auto-correction behavior
+ * @param {string|number} [options.height='auto'] - Height for textarea ('auto' for dynamic sizing)
+ * @param {boolean} [options.syntaxHighlighting] - Enable syntax highlighting for textarea
+ * @param {string} [options.language] - Programming language for syntax highlighting
+ * @param {Array<Function>} [options.validations] - Array of validation functions
+ * @param {...(Component|HTMLElement|string)} children - Child elements to append
+ * @returns {Input} Input component instance
+ */
 export default class Input extends Component {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 	type_enum = type_enum;

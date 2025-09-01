@@ -10,6 +10,18 @@ const dependentStyleSheets = [
 
 shimCSS({ styles: ({ page }) => page });
 
+/**
+ * Page component that provides full-page layout with automatic stylesheet loading.
+ *
+ * Serves as a root container for applications with automatic loading of required stylesheets
+ * including FontAwesome, fonts, and augmented-ui. Provides full viewport sizing and flexible layout.
+ * @param {object} [options={}] - Page configuration options
+ * @param {Array<string|object>} [options.styleSheets=[]] - Additional stylesheets to load
+ * @param {object} [options.style] - Additional CSS styles to apply
+ * @param {string} [options.autoRender='onload'] - When to auto-render the page
+ * @param {...(Component|HTMLElement|string)} children - Child elements to append
+ * @returns {Page} Page component instance
+ */
 class Page extends Component {
 	constructor(options = {}, ...children) {
 		const { styleSheets = [], ...optionsWithoutConfig } = options;

@@ -56,6 +56,17 @@ const RadioButtonInput = styled(
 	`,
 );
 
+/**
+ * Radio button group component with custom styled radio inputs.
+ *
+ * Renders a group of radio button options with consistent styling and behavior.
+ * Each radio button is properly labeled and grouped for exclusive selection.
+ * @param {object} [options={}] - RadioButton configuration options
+ * @param {Array<string|object>} [options.options] - Array of radio button options
+ * @param {*} [options.value] - Currently selected value
+ * @param {...(Component|HTMLElement|string)} children - Child elements to append
+ * @returns {RadioButton} RadioButton component instance
+ */
 class RadioButton extends Component {
 	_setOption(key, value) {
 		if (key === 'options') {

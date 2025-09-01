@@ -12,6 +12,24 @@ const defaultOptions = {
 	registeredEvents: new Set(['line', 'draw']),
 };
 
+/**
+ * Interactive drawing canvas component with multi-touch support and line rendering.
+ *
+ * Provides a drawing surface with pointer event handling, configurable drawing settings,
+ * and the ability to render predefined lines. Supports multiple simultaneous drawing pointers.
+ * @param {object} [options={}] - Whiteboard configuration options
+ * @param {string} [options.tag='canvas'] - HTML tag, uses canvas element
+ * @param {string} [options.background='#FFF'] - Canvas background color
+ * @param {string} [options.color='#000'] - Default drawing color
+ * @param {number} [options.lineWidth=3] - Default line width for drawing
+ * @param {string} [options.width='200px'] - Canvas width
+ * @param {string} [options.height='200px'] - Canvas height
+ * @param {boolean} [options.readOnly=false] - Whether drawing is disabled
+ * @param {Array<object>} [options.lines] - Predefined lines to render on the canvas
+ * @param {number} [options.drawThrottle] - Custom throttle delay for draw events
+ * @param {...(Component|HTMLElement|string)} children - Child elements to append
+ * @returns {Whiteboard} Whiteboard component instance
+ */
 export default class Whiteboard extends Component {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
@@ -131,6 +149,14 @@ export default class Whiteboard extends Component {
 		this.pointers[pointerId].y = to.y;
 	}
 
+	/**
+	 * Draws a line on the canvas with specified properties.
+	 * @param {object} options - Line drawing options
+	 * @param {string} options.color - Line color
+	 * @param {number} options.width - Line width
+	 * @param {Array<object>} options.line - Array of {x, y} points defining the line
+	 * @param {boolean} [options.cap] - Whether to close the path after drawing
+	 */
 	drawLine({ color, width, line, cap = true }) {
 		if (line.length === 0) return;
 
@@ -146,6 +172,9 @@ export default class Whiteboard extends Component {
 		if (cap) this.canvas.closePath();
 	}
 
+	/**
+	 * Clears the entire canvas.
+	 */
 	empty() {
 		this.canvas.clearRect(0, 0, this.elem.width, this.elem.height);
 	}

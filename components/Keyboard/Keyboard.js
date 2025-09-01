@@ -10,6 +10,19 @@ const KeyRow = styled(
 	`,
 );
 
+/**
+ * Virtual keyboard component with customizable layouts and tactile feedback.
+ *
+ * Provides touch-friendly keyboard interface with predefined layouts (simple, number)
+ * and configurable key definitions. Supports layout switching and key event handling.
+ * @param {object} [options={}] - Keyboard configuration options
+ * @param {string} [options.layout='simple'] - Initial keyboard layout name
+ * @param {boolean} [options.tactileResponse=true] - Whether to provide haptic feedback on key press
+ * @param {object} [options.keyDefinitions] - Key configuration object mapping key names to definitions
+ * @param {object} [options.layouts] - Layout configuration object mapping layout names to key arrays
+ * @param {...(Component|HTMLElement|string)} children - Child elements to append
+ * @returns {Keyboard} Keyboard component instance
+ */
 class Keyboard extends Component {
 	constructor(options = {}, ...children) {
 		super(
@@ -59,6 +72,10 @@ class Keyboard extends Component {
 
 	// todo native keyboard events https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/KeyboardEvent
 
+	/**
+	 * Switches the keyboard to the specified layout and rebuilds the keys.
+	 * @param {string} name - Layout name to switch to
+	 */
 	setLayout(name) {
 		const rows = this.options.layouts[name];
 
@@ -114,18 +131,33 @@ class Keyboard extends Component {
 		});
 	}
 
+	/**
+	 * Registers a callback for key down events.
+	 * @param {Function} callback - Event handler function
+	 * @returns {Function} Unsubscribe function
+	 */
 	onKeyDown(callback) {
 		this.addEventListener('keyDown', callback);
 
 		return () => this.removeEventListener('keyDown', callback);
 	}
 
+	/**
+	 * Registers a callback for key up events.
+	 * @param {Function} callback - Event handler function
+	 * @returns {Function} Unsubscribe function
+	 */
 	onKeyUp(callback) {
 		this.addEventListener('keyUp', callback);
 
 		return () => this.removeEventListener('keyUp', callback);
 	}
 
+	/**
+	 * Registers a callback for key press events.
+	 * @param {Function} callback - Event handler function
+	 * @returns {Function} Unsubscribe function
+	 */
 	onKeyPress(callback) {
 		this.addEventListener('keyPress', callback);
 

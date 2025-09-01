@@ -17,7 +17,17 @@ const StyledIcon = styled(
 	`,
 );
 
-/** A Component with support for a tooltip */
+/**
+ * Wrapper component that adds tooltip functionality to any component.
+ *
+ * Extends Icon to provide automatic tooltip management with hover triggers,
+ * positioning, and lifecycle management. Tooltips appear on hover with configurable delay.
+ * @param {object} [options={}] - TooltipWrapper configuration options
+ * @param {string|object} [options.tooltip] - Tooltip text or configuration object
+ * @param {string} [options.icon] - Icon to display in the component
+ * @param {...(Component|HTMLElement|string)} children - Child elements to append
+ * @returns {TooltipWrapper} TooltipWrapper component instance
+ */
 export default class TooltipWrapper extends StyledIcon {
 	_setOption(key, value) {
 		if (key === 'tooltip') {

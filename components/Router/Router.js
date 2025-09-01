@@ -1,6 +1,19 @@
 import { Component } from '../../Component';
 import { routeToRegex } from './utils';
 
+/**
+ * Client-side router component with hash-based routing and dynamic view rendering.
+ *
+ * Provides single-page application routing using URL hash fragments with support
+ * for route parameters, dynamic view rendering, and browser history integration.
+ * @param {object} [options={}] - Router configuration options
+ * @param {object} options.views - Object mapping route patterns to component classes
+ * @param {string} [options.defaultPath] - Default route path, uses first view key if not specified
+ * @param {Component} [options.notFound] - Component class for 404/not found routes
+ * @param {Function} [options.onRenderView] - Callback fired when rendering a new view
+ * @param {...(Component|HTMLElement|string)} children - Child elements to append
+ * @returns {Router} Router component instance
+ */
 class Router extends Component {
 	constructor(options = {}, ...children) {
 		super(
@@ -18,16 +31,28 @@ class Router extends Component {
 		);
 	}
 
+	/**
+	 * Gets the current path from the URL hash.
+	 * @returns {string} Current route path
+	 */
 	get path() {
 		return window.location.hash.replace(/^#\/?/, '/').replace(/\?.*$/, '');
 	}
 
+	/**
+	 * Sets the current path and triggers view rendering.
+	 * @param {string} path - New route path to navigate to
+	 */
 	set path(path) {
 		window.location.hash = path;
 
 		this.renderView();
 	}
 
+	/**
+	 * Gets the matched route for the current path.
+	 * @returns {string} Matched route pattern
+	 */
 	get route() {
 		return this.pathToRoute(this.path);
 	}
@@ -38,6 +63,11 @@ class Router extends Component {
 			: Object.keys(this.options.views).find(route => routeToRegex(route).test(path)) || path;
 	}
 
+	/**
+	 * Extracts route parameters from a path.
+	 * @param {string} [path] - Path to parse, defaults to current path
+	 * @returns {object} Object containing route parameters
+	 */
 	parseRouteParameters(path = this.path) {
 		const route = this.pathToRoute(path);
 		const routeRegex = routeToRegex(route);

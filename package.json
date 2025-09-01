@@ -53,7 +53,6 @@
 		"build:clean": "rm -rf ./*.asText ./demo/build/",
 		"build:watch": "bun run build -- --watch",
 		"create:component": "bun run devTools/createComponent.js",
-		"docs:regenerate": "bun run devTools/regenerateREADMEs.js",
 		"lint": "bun --bun eslint",
 		"lint:fix": "bun --bun eslint --fix",
 		"format": "bun run lint:fix && bun --bun prettier --write . | grep -q unchanged",

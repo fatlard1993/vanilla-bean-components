@@ -64,10 +64,13 @@ const checkInvalidates = (invalidates, { cacheId, apiId }) => {
  */
 
 /**
- * Executes HTTP request with caching, subscriptions, and invalidation
- * @param {string} url - Request URL with optional colon-prefixed parameters
- * @param {RequestOptions} [options] - Request configuration
- * @returns {Promise<RequestResult>} Request result with response data and utilities
+ * Executes HTTP request with intelligent caching, subscription system, and cache invalidation.
+ *
+ * Provides automatic caching for GET requests, subscription-based data updates,
+ * and cache invalidation pipeline for maintaining data consistency.
+ * @param {string} url - Request URL supporting colon-prefixed parameters (e.g., '/users/:id')
+ * @param {RequestOptions} [options] - Request configuration and caching options
+ * @returns {Promise<RequestResult>} Request result containing response data and control utilities
  */
 export const request = async (url, options = {}) => {
 	const {

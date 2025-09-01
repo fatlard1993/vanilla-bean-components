@@ -26,6 +26,27 @@ const defaultOptions = {
 	augmentedUI: 'tl-clip tr-2-clip-x br-clip bl-2-clip-y border',
 };
 
+/**
+ * Modal and non-modal dialog component with customizable appearance and behavior.
+ *
+ * Provides native HTML dialog functionality with enhanced styling, animations, and configurable
+ * header/body/footer sections. Supports different sizes, color variants, and button configurations.
+ * @param {object} [options] - Dialog configuration options
+ * @param {string} [options.tag] - HTML tag, uses native dialog element
+ * @param {string} [options.size] - Dialog size ('small', 'standard', 'large')
+ * @param {string} [options.variant] - Color variant ('info', 'success', 'warning', 'error')
+ * @param {number|boolean} [options.openOnRender] - Auto-open delay in ms, or false to disable
+ * @param {boolean} [options.modal] - Whether to open as modal dialog
+ * @param {string} [options.header] - Header text content
+ * @param {string|Component} [options.body] - Body content
+ * @param {Array<Component>} [options.footer] - Custom footer components
+ * @param {Array<string|object>} [options.buttons] - Button configurations for default footer
+ * @param {Function} [options.onButtonPress] - Handler for button press events
+ * @param {Function} [options.closeDialog] - Custom close function
+ * @param {string} [options.augmentedUI] - Augmented UI styling configuration
+ * @param {...(Component|HTMLElement|string)} children - Child elements to append
+ * @returns {Dialog} Dialog component instance
+ */
 class Dialog extends styled(
 	Component,
 	({ colors }) => `

@@ -5,20 +5,16 @@ import ErrorHandler from './ErrorHandler';
 import CleanupManager from './CleanupManager';
 
 /**
- * Reactive state container emitting events on property changes.
- * Constructor returns proxy for direct property access and Context methods.
+ * Reactive state container with proxy-based property access and automatic event emission.
+ * Constructor returns proxy enabling direct property access alongside Context methods.
  * @augments EventTarget
- * @example
- * const state = new Context({count: 0}); // Returns proxy
- * state.count = 5; // Direct property access
- * state.addEventListener('count', handler); // Context method
  */
 export default class Context extends EventTarget {
 	/**
-	 * Create reactive state container.
-	 * @param {object} initialState - Plain object (arrays/primitives rejected)
-	 * @returns {Proxy} Direct property access + Context methods
-	 * @throws {TypeError} When initialState is not a plain object
+	 * Creates reactive state container with proxy-based property access.
+	 * @param {object} initialState - Plain object containing initial state properties
+	 * @returns {Proxy} Proxy object enabling direct property access and Context method calls
+	 * @throws {TypeError} When initialState is null, undefined, array, or non-object type
 	 */
 	constructor(initialState) {
 		super();
@@ -137,11 +133,13 @@ export default class Context extends EventTarget {
 	}
 
 	/**
-	 * Handle property changes and emit events.
-	 * Emits generic 'set' event and property-specific event.
-	 * @param {string|symbol} key - Property that changed
-	 * @param {*} value - New value
-	 * @param {boolean} result - Whether set operation succeeded
+	 * Processes property changes and dispatches corresponding events.
+	 *
+	 * Dispatches generic 'set' event containing key and value, followed by
+	 * property-specific event with value as detail.
+	 * @param {string|symbol} key - Property name that was modified
+	 * @param {*} value - New value assigned to the property
+	 * @param {boolean} result - Whether the proxy set operation succeeded
 	 * @private
 	 */
 	onSet(key, value, result) {
@@ -163,10 +161,10 @@ export default class Context extends EventTarget {
 	}
 
 	/**
-	 * Create reactive subscriber for a property.
-	 * @param {string} key - Property to watch
-	 * @param {Function} [parser] - Transform function for the value
-	 * @returns {Subscriber|null} Proxy delegating to parsed property value
+	 * Creates reactive subscriber that tracks a specific property with optional transformation.
+	 * @param {string} key - Property name to subscribe to
+	 * @param {Function} [parser] - Transform function applied to property value before delivery
+	 * @returns {Subscriber|null} Subscriber instance with proxy behavior, null if context destroyed
 	 */
 	subscriber(key, parser) {
 		if (this.isDestroyed) {
@@ -183,12 +181,12 @@ export default class Context extends EventTarget {
 	}
 
 	/**
-	 * Subscribe to property changes with manual control.
+	 * Subscribes to property changes with manual subscription management.
 	 * @param {object} config - Subscription configuration
-	 * @param {string} config.key - Property to watch
-	 * @param {Function} config.callback - Called with parsed value on changes
-	 * @param {Function} [config.parser] - Transform function for the value
-	 * @returns {{unsubscribe: Function, current: *, id: string}} Subscription control
+	 * @param {string} config.key - Property name to watch for changes
+	 * @param {Function} config.callback - Handler invoked with parsed value when property changes
+	 * @param {Function} [config.parser] - Transform function applied to property value before callback
+	 * @returns {{unsubscribe: Function, current: *, id: string}} Subscription control object
 	 * @throws {TypeError} When callback is not a function or key is not a string
 	 */
 	subscribe({ callback, key, parser = _ => _ }) {
@@ -296,8 +294,10 @@ export default class Context extends EventTarget {
 	}
 
 	/**
-	 * Clean up all resources and mark as destroyed.
-	 * Removes subscriptions, event listeners, and cross-context connections.
+	 * Destroys context and cleans up all associated resources.
+	 *
+	 * Removes all subscriptions, event listeners, and cross-context connections.
+	 * Prevents further property modifications and subscription creation.
 	 */
 	destroy() {
 		if (this._boundMethods) {

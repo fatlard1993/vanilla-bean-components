@@ -132,6 +132,20 @@ const variant_enum = Object.freeze(['overlay', 'collapsible', 'inline', 'inline-
 
 const defaultOptions = { variant: 'simple' };
 
+/**
+ * Label component with multiple display variants and input association.
+ *
+ * Provides flexible label styling with support for overlay, collapsible, inline, and simple variants.
+ * Automatically associates with input components and supports interactive collapsible behavior.
+ * @param {object|string} [options={}] - Label configuration options, or label text string
+ * @param {string} [options.variant='simple'] - Label display variant ('overlay', 'collapsible', 'inline', 'inline-after', 'simple')
+ * @param {string|object} [options.label] - Label text content or label component options
+ * @param {Component|string} [options.for] - Input component or ID to associate label with
+ * @param {boolean} [options.collapsed] - Whether collapsible variant starts collapsed
+ * @param {string} [options.tooltip] - Tooltip text for the label
+ * @param {...(Component|HTMLElement|string)} children - Child elements, typically input components
+ * @returns {Label} Label component instance
+ */
 class Label extends StyledLabel {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 	variant_enum = variant_enum;

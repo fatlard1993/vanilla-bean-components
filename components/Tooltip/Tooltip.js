@@ -84,6 +84,19 @@ const defaultOptions = { position: 'topRight', autoOpen: false };
 
 const position_enum = ['center', 'top', 'bottom', 'left', 'right', 'topLeft', 'topRight', 'bottomLeft', 'bottomRight'];
 
+/**
+ * Tooltip popover component with configurable positioning and smooth animations.
+ *
+ * Extends Popover to provide tooltip-specific styling and positioning options.
+ * Supports multiple position presets and animated show/hide transitions.
+ * @param {object} [options={}] - Tooltip configuration options
+ * @param {string} [options.position='topRight'] - Tooltip position relative to parent
+ * @param {boolean} [options.autoOpen=false] - Whether tooltip opens automatically
+ * @param {string} [options.textContent] - Tooltip text content
+ * @param {string} [options.icon] - Icon to display in tooltip
+ * @param {...(Component|HTMLElement|string)} children - Child elements to append
+ * @returns {Tooltip} Tooltip component instance
+ */
 class Tooltip extends StyledPopover {
 	position_enum = position_enum;
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };

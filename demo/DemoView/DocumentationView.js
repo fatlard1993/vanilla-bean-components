@@ -1,6 +1,14 @@
 import { Elem, Link } from '../..';
-import { GET } from '../../request';
 
+// Static imports for build-time markdown
+import ComponentReadme from '../build/Component/README.js';
+import ContextReadme from '../build/Context/README.js';
+import ElemReadme from '../build/Elem/README.js';
+import DemoReadme from '../build/demo/README.js';
+import GettingStartedReadme from '../build/docs/GETTING_STARTED.js';
+import RequestReadme from '../build/request/README.js';
+import StyledReadme from '../build/styled/README.js';
+import ThemeReadme from '../build/theme/README.js';
 import DemoView from '.';
 
 export default class DocumentationView extends DemoView {
@@ -9,10 +17,26 @@ export default class DocumentationView extends DemoView {
 
 		this.elem.style.overflow = 'auto';
 
-		const response = await GET(this.options.fileName || `${this.options.folderName}/README.md`);
+		try {
+			const markdownMap = {
+				'Component/README.md': ComponentReadme,
+				'Context/README.md': ContextReadme,
+				'Elem/README.md': ElemReadme,
+				'demo/README.md': DemoReadme,
+				'docs/GETTING_STARTED.md': GettingStartedReadme,
+				'request/README.md': RequestReadme,
+				'styled/README.md': StyledReadme,
+				'theme/README.md': ThemeReadme,
+			};
 
-		if (response.response.ok) {
-			new Elem({ style: { overflow: 'auto' }, innerHTML: response.body, appendTo: this.demoWrapper });
+			const markdownPath = this.options.fileName || `${this.options.folderName}/README.md`;
+			const readme = markdownMap[markdownPath];
+
+			if (readme) {
+				new Elem({ style: { overflow: 'auto' }, innerHTML: readme, appendTo: this.demoWrapper });
+			} else {
+				console.warn(`No documentation found for ${markdownPath}`);
+			}
 
 			if (this.options.nextUrl) {
 				new Elem({ tag: 'hr', style: { margin: '32px 0' }, appendTo: this.demoWrapper });
@@ -24,6 +48,8 @@ export default class DocumentationView extends DemoView {
 					appendTo: this.demoWrapper,
 				});
 			}
+		} catch (error) {
+			console.warn(`No documentation found for ${this.options.folderName || this.options.fileName}`, error);
 		}
 	}
 }

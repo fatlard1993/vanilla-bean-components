@@ -49,6 +49,18 @@ const TagListIconButton = styled(
 
 const defaultOptions = { readOnly: false };
 
+/**
+ * Interactive tag list component with add/remove functionality and input support.
+ *
+ * Displays a collection of tags with optional editing capabilities including
+ * inline text input for adding new tags and removal buttons for existing tags.
+ * @param {object} [options={}] - TagList configuration options
+ * @param {string} [options.tag='ul'] - HTML tag for the container element
+ * @param {boolean} [options.readOnly=false] - Whether tags can be added/removed
+ * @param {Array<string>} [options.tags] - Initial array of tag text values
+ * @param {...(Component|HTMLElement|string)} children - Child elements to append
+ * @returns {TagList} TagList component instance
+ */
 class TagList extends StyledComponent {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 

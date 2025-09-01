@@ -1,11 +1,11 @@
 # {ComponentName}
 
-{Component description here}
+[[extract-description {ComponentName}.js]]
 
 ## Usage
 
 ```js
-[[extract-usage ./demo.js]]
+[[extract-usage {ComponentName}.js]]
 ```
 
 ## Default Options
@@ -38,4 +38,4 @@
 
 ## Design
 
-[[extract-design]]
+[[extract-design {ComponentName}.js]]

@@ -6,6 +6,22 @@ import { Icon } from '../Icon';
 
 const defaultOptions = { tag: 'table' };
 
+/**
+ * Data table component with sorting, column configuration, and footer support.
+ *
+ * Renders tabular data with configurable columns, sortable headers, and optional footer.
+ * Supports custom cell rendering and automatic sorting functionality.
+ * @param {object} [options={}] - Table configuration options
+ * @param {string} [options.tag='table'] - HTML tag for the table element
+ * @param {Array<string|object>} options.columns - Column definitions with keys and optional configurations
+ * @param {Array<object>} [options.data] - Array of data objects to display in table rows
+ * @param {Array<string|object>} [options.footer] - Footer row data
+ * @param {Function} [options.onSort] - Custom sort function, defaults to built-in sorting
+ * @param {string} [options.sortProperty] - Currently sorted column key
+ * @param {string} [options.sortDirection] - Sort direction ('asc' or 'desc')
+ * @param {...(Component|HTMLElement|string)} children - Child elements to append
+ * @returns {Table} Table component instance
+ */
 class Table extends Component {
 	constructor(options = {}, ...children) {
 		super(

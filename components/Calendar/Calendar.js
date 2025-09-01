@@ -191,6 +191,23 @@ export const MONTHS = [
 	'December',
 ];
 
+/**
+ * Interactive calendar component supporting month, week, and day views with event management.
+ *
+ * Provides full calendar functionality with navigation, event display, and user interaction.
+ * Supports multiple view modes, event rendering, and date selection with customizable styling.
+ * @param {object} [options={}] - Calendar configuration options
+ * @param {string} [options.view='month'] - Initial calendar view mode ('month', 'week', 'day')
+ * @param {string} [options.height='420px'] - Calendar component height
+ * @param {number} [options.year] - Initial year to display, defaults to current year
+ * @param {number} [options.month] - Initial month to display (0-11), defaults to current month
+ * @param {number} [options.day] - Initial day to display, defaults to current day
+ * @param {Array<object>} [options.events=[]] - Calendar events array, automatically converted to CalendarEvent instances
+ * @param {Array<string>} [options.views] - Available view modes for toolbar
+ * @param {boolean} [options.display24h] - Whether to display time in 24-hour format in day view
+ * @param {...(Component|HTMLElement|string)} children - Child elements to append
+ * @returns {Calendar} Calendar component instance
+ */
 class Calendar extends StyledComponent {
 	constructor(options = {}, ...children) {
 		super(
@@ -476,6 +493,13 @@ class Calendar extends StyledComponent {
 		this.options.day = getDaysInMonth(this.options.year, this.options.month).numberOfDays;
 	}
 
+	/**
+	 * Sets the calendar to display a specific date.
+	 * @param {number} year - Year to set
+	 * @param {number} month - Month to set (0-11)
+	 * @param {number} day - Day to set
+	 * @param {boolean} [reRender] - Whether to re-render the calendar after setting date
+	 */
 	setDate(year, month, day, reRender) {
 		this.options.year = Number.parseInt(year);
 		this.options.month = Number.parseInt(month);
@@ -485,6 +509,9 @@ class Calendar extends StyledComponent {
 		if (reRender) this.render();
 	}
 
+	/**
+	 * Navigates the calendar to today's date and re-renders.
+	 */
 	today() {
 		const now = new Date();
 
@@ -495,6 +522,9 @@ class Calendar extends StyledComponent {
 		this.render();
 	}
 
+	/**
+	 * Navigates to the previous time period based on current view (day/week/month).
+	 */
 	previous() {
 		if (this.options.view === 'day') {
 			--this.options.day;
@@ -543,6 +573,9 @@ class Calendar extends StyledComponent {
 		this.render();
 	}
 
+	/**
+	 * Navigates to the next time period based on current view (day/week/month).
+	 */
 	next() {
 		if (this.options.view === 'day') {
 			++this.options.day;
@@ -593,6 +626,10 @@ class Calendar extends StyledComponent {
 		this.render();
 	}
 
+	/**
+	 * Navigates to a specific day and switches to day view.
+	 * @param {number|Date} position - Date position as timestamp or Date object
+	 */
 	goToDay(position) {
 		const date = new Date(position);
 
@@ -601,6 +638,11 @@ class Calendar extends StyledComponent {
 		this.setView('day');
 	}
 
+	/**
+	 * Changes the calendar view mode and updates the display.
+	 * @param {string} view - View mode to set ('month', 'week', 'day')
+	 * @returns {Calendar} This calendar instance for method chaining
+	 */
 	setView(view) {
 		if (this.options.view !== view) {
 			this.options.view = view;
@@ -618,6 +660,11 @@ class Calendar extends StyledComponent {
 		return this;
 	}
 
+	/**
+	 * Retrieves all events occurring on a specific date.
+	 * @param {string|Date} date - Date to query for events
+	 * @returns {Array<CalendarEvent>} Array of events occurring on the specified date
+	 */
 	eventsAt(date) {
 		date = new Date(date);
 
@@ -670,6 +717,11 @@ class Calendar extends StyledComponent {
 		return events;
 	}
 
+	/**
+	 * Adds a new event to the calendar and re-renders.
+	 * @param {object} eventItem - Event data object to add
+	 * @returns {Calendar} This calendar instance for method chaining
+	 */
 	addEvent(eventItem) {
 		if (eventItem) {
 			this.options.events.push(new CalendarEvent(eventItem, this));

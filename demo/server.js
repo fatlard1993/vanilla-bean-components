@@ -58,13 +58,34 @@ const server = Bun.serve({
 			return Response.json(response);
 		}
 
-		if (path.endsWith('.md') && (await Bun.file(path.slice(1)).exists())) {
+		if (path.endsWith('.md')) {
 			console.log('Load Markdown', { path });
 
+			// Check for component documentation requests
+			const componentMatch = path.match(/^\/components\/([^/]+)\/README\.md$/);
+			if (componentMatch) {
+				const componentName = componentMatch[1];
+				const templatePath = './devTools/COMPONENT_README_TEMPLATE.md';
+
+				if (await Bun.file(templatePath).exists()) {
+					let templateContent = await Bun.file(templatePath).text();
+
+					// Replace {ComponentName} placeholders with actual component name
+					templateContent = templateContent.replaceAll('{ComponentName}', componentName);
+
+					// Parse with component directory as context for JSDoc extraction
+					const parsedMarkdown = parseMarkdown(templateContent, `components/${componentName}/README.md`);
+					return Response.json(parsedMarkdown);
+				}
+			}
+
+			// Handle regular markdown files
 			const filePath = path.slice(1);
-			const fileContent = await Bun.file(filePath).text();
-			const parsedMarkdown = parseMarkdown(fileContent, filePath);
-			return Response.json(parsedMarkdown);
+			if (await Bun.file(filePath).exists()) {
+				const fileContent = await Bun.file(filePath).text();
+				const parsedMarkdown = parseMarkdown(fileContent, filePath);
+				return Response.json(parsedMarkdown);
+			}
 		}
 
 		if (path.endsWith('design.excalidraw.png')) {

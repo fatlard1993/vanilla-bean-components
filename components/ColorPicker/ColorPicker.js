@@ -139,6 +139,20 @@ const ColorSwatch = styled(
 
 const defaultOptions = { tag: 'div', value: '#666', onChange: () => {}, augmentedUI: true };
 
+/**
+ * Interactive color picker component with HSL controls and color swatches.
+ *
+ * Provides visual color selection with saturation/lightness area and hue slider controls.
+ * Supports text input, predefined color swatches, and random color generation.
+ * @param {object} [options={}] - ColorPicker configuration options
+ * @param {string} [options.tag='div'] - HTML tag for the component wrapper
+ * @param {string} [options.value='#666'] - Initial color value (CSS color, 'random' for random color)
+ * @param {Function} [options.onChange] - Callback function called when color changes
+ * @param {boolean} [options.augmentedUI=true] - Whether to apply augmented UI styling
+ * @param {Array<string>} [options.swatches] - Array of predefined color values for swatch buttons
+ * @param {...(Component|HTMLElement|string)} children - Child elements to append
+ * @returns {ColorPicker} ColorPicker component instance
+ */
 class ColorPicker extends StyledInput {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
@@ -200,12 +214,21 @@ class ColorPicker extends StyledInput {
 		super.render();
 	}
 
+	/**
+	 * Changes the color value and triggers change event.
+	 * @param {string|object} value - New color value (CSS string, HSL object, or 'random')
+	 */
 	change(value) {
 		this.options.value = this.parseValue(value).hslString;
 
 		this.elem.dispatchEvent(new CustomEvent('change', { detail: { value: this.options.value } }));
 	}
 
+	/**
+	 * Parses color value into HSL components and TinyColor instance.
+	 * @param {string|object} value - Color value to parse
+	 * @returns {object} Object containing h, s, l values, TinyColor instance, and HSL string
+	 */
 	parseValue(value) {
 		const color = value === 'random' ? randomColor() : new TinyColor(value);
 		const {

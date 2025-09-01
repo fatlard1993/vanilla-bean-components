@@ -28,6 +28,19 @@ const ListItem = styled(
 	`,
 );
 
+/**
+ * List component for rendering unordered lists with customizable list items.
+ *
+ * Provides dynamic list rendering with support for custom ListItemComponent classes
+ * and flexible item configuration. Automatically wraps items in styled list item elements.
+ * @param {object} [options={}] - List configuration options
+ * @param {string} [options.tag='ul'] - HTML tag for the list container
+ * @param {Array<*>} [options.items] - Array of list items to render
+ * @param {Component} [options.ListItemComponent] - Custom component class for rendering items
+ * @param {boolean} [options.noStyle] - Whether to apply no-style class for plain list
+ * @param {...(Component|HTMLElement|string)} children - Child elements to append
+ * @returns {List} List component instance
+ */
 export default class List extends StyledComponent {
 	constructor(options = {}, ...children) {
 		super(

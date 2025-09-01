@@ -6,6 +6,20 @@ import { Notify } from '../Notify';
 
 const defaultOptions = { tag: 'code', language: 'javascript', multiline: 'auto' };
 
+/**
+ * Code display component with syntax highlighting and optional copy functionality.
+ *
+ * Renders code blocks with language-specific styling and automatic multiline detection.
+ * Supports inline code spans and multiline code blocks with optional copy-to-clipboard button.
+ * @param {object} [options={}] - Code component configuration options
+ * @param {string} [options.tag='code'] - HTML tag, automatically set to 'pre' for multiline code
+ * @param {string} [options.language='javascript'] - Programming language for syntax highlighting class
+ * @param {string|boolean} [options.multiline='auto'] - Whether to render as multiline block ('auto' detects newlines)
+ * @param {string} [options.code] - Code content to display
+ * @param {boolean} [options.copyButton] - Whether to show copy-to-clipboard button
+ * @param {...(Component|HTMLElement|string)} children - Child elements to append
+ * @returns {Code} Code component instance
+ */
 class Code extends Component {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 

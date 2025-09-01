@@ -37,18 +37,24 @@ class Component extends Elem {
 	defaultOptions = defaultOptions;
 
 	/**
-	 * Create reactive component with Context-driven options and automatic cleanup.
-	 * @param {object} [options] - Component configuration
-	 * @param {string} [options.tag] - HTML tag name
-	 * @param {boolean|'onload'|'animationFrame'} [options.autoRender] - Render timing control
-	 * @param {Set<string>} [options.registeredEvents] - Custom event types to handle via on()
-	 * @param {Set<string>} [options.knownAttributes] - Attribute names for elem.setAttribute()
+	 * Creates reactive component with Context-driven options, automatic cleanup, and lifecycle management.
+	 * @param {object} [options] - Component configuration object with reactive properties
+	 * @param {string} [options.tag] - HTML tag name for the root element
+	 * @param {boolean|'onload'|'animationFrame'} [options.autoRender] - Render timing: true (immediate), 'onload' (window load), 'animationFrame' (next frame), false (manual)
+	 * @param {Set<string>} [options.registeredEvents] - Additional event types to handle via on() method
+	 * @param {Set<string>} [options.knownAttributes] - Attribute names routed to elem.setAttribute() instead of property assignment
 	 * @param {Set<string>} [options.priorityOptions] - Option keys processed first during render
-	 * @param {object} [options.style] - Inline CSS properties
-	 * @param {object} [options.attributes] - HTML attributes
-	 * @param {string|object|Function} [options.styles] - CSS string, style object, or theme function
-	 * @param {...(Component|HTMLElement|string)} children - Elements appended to append option
-	 * @returns {Component} Component instance with reactive options Context
+	 * @param {object} [options.style] - Inline CSS properties applied as HTMLElement.style
+	 * @param {object} [options.attributes] - HTML attributes applied via setAttribute()
+	 * @param {string|object|Function} [options.styles] - CSS definition: string/function processed through theme system, object applied inline
+	 * @param {string} [options.textContent] - Text content for the element
+	 * @param {string|string[]} [options.addClass] - CSS classes to add to the element
+	 * @param {Component|HTMLElement|Array} [options.append] - Child elements to append
+	 * @param {Component|HTMLElement} [options.appendTo] - Parent element to append this component to
+	 * @param {Function} [options.onConnected] - Callback when component is added to DOM
+	 * @param {Function} [options.onDisconnected] - Callback when component is removed from DOM
+	 * @param {...(Component|HTMLElement|string)} children - Child elements automatically added to append option
+	 * @returns {Component} Component instance with reactive options accessible via this.options
 	 */
 	constructor(options = {}, ...children) {
 		const { tag, autoRender, registeredEvents, knownAttributes, priorityOptions, ...optionsWithoutConfig } = {
@@ -133,10 +139,12 @@ class Component extends Elem {
 	}
 
 	/**
-	 * Route option changes to appropriate handlers based on key and value type.
-	 * Called by options Context on property changes.
-	 * @param {string} key - Option property name
-	 * @param {*} value - New option value
+	 * Routes option changes to appropriate handlers based on key patterns and value types.
+	 *
+	 * Implements the options processing pipeline determining how each property change
+	 * should be handled. Routing priority: event handlers → special keys → attributes → methods → properties.
+	 * @param {string} key - Option property name being changed
+	 * @param {*} value - New value being assigned to the option
 	 * @private
 	 */
 	_setOption(key, value) {
@@ -223,14 +231,15 @@ class Component extends Elem {
 	}
 
 	/**
-	 * Register event listener with automatic cleanup and event type routing.
-	 * Handles input events (adds value property), connection events (DOM observation),
-	 * common pointer events, and custom registered events.
-	 * @param {object} config - Event configuration
-	 * @param {string} config.targetEvent - Event type name
-	 * @param {string} [config.id] - Cleanup ID (defaults to targetEvent)
-	 * @param {Function} config.callback - Event handler function
-	 * @returns {boolean} True if event handled and registered
+	 * Registers event listener with automatic cleanup and enhanced event processing.
+	 *
+	 * Provides specialized handling for input events (adds .value property),
+	 * connection events (DOM observation), and common pointer events.
+	 * @param {object} config - Event registration configuration
+	 * @param {string} config.targetEvent - Event type to listen for
+	 * @param {string} [config.id] - Unique identifier for cleanup management
+	 * @param {Function} config.callback - Event handler function, bound to component context for input events
+	 * @returns {boolean} True if event type was recognized and registered, false if unsupported
 	 */
 	on({ targetEvent, id = targetEvent, callback }) {
 		if (!callback) return false;
@@ -294,10 +303,11 @@ class Component extends Elem {
 	}
 
 	/**
-	 * Apply styles via inline properties or scoped CSS injection.
-	 * Object styles set as inline properties. String/function styles processed
-	 * through theme system and injected as scoped CSS.
-	 * @param {string|object|Function} styles - Style definition
+	 * Applies styles via inline properties or scoped CSS injection with theme processing.
+	 *
+	 * Object styles are applied as inline properties. String/function styles are
+	 * processed through the theme system, PostCSS, and injected as scoped CSS.
+	 * @param {string|object|Function} styles - Style definition: object for inline styles, string/function for scoped CSS
 	 */
 	styles(styles) {
 		if (!styles) return;

@@ -49,7 +49,7 @@ export default class Demo extends DemoView {
 
 const readMeFile = `# ${name}
 
-{Component description here}
+[[extract-description ${name}.js]]
 
 ## Usage
 
@@ -86,15 +86,40 @@ const componentFile = `import { Component } from '../../Component';
 
 const defaultOptions = { tag: 'div' };
 
+/**
+ * [Component description - describe what this component does and its primary purpose]
+ *
+ * [Optional: Additional context about when to use this component or special behaviors]
+ *
+ * @param {object} [options={}] - Component configuration options
+ * @param {string} [options.tag='div'] - HTML tag name for the root element
+ * @param {...(Component|HTMLElement|string)} children - Child elements to append
+ * @returns {${name}} Component instance with reactive options
+ * @example
+ * // Basic usage
+ * new ${name}({
+ *   // Add example options here
+ * });
+ */
 class ${name} extends Component {
 	constructor(options = {}, ...children) {
 		super({ ...defaultOptions, ...options }, ...children);
 	}
 
+	/**
+	 * Renders component and processes all options.
+	 */
 	render() {
 		super.render();
 	}
 
+	/**
+	 * Routes option changes to appropriate handlers.
+	 *
+	 * @param {string} key - Option property name
+	 * @param {*} value - New option value
+	 * @private
+	 */
 	_setOption(key, value) {
 		super._setOption(key, value);
 	}

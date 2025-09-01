@@ -52,6 +52,21 @@ const StyledPopover = styled(
 	`,
 );
 
+/**
+ * Notification popover component with type-based styling and auto-dismiss functionality.
+ *
+ * Extends Popover to provide notification-specific behavior including automatic icons,
+ * color-coded styling based on notification type, and optional timeout dismissal.
+ * @param {object} [options={}] - Notify configuration options
+ * @param {string} [options.type='success'] - Notification type ('info', 'success', 'warning', 'error')
+ * @param {string|Component} [options.content] - Notification content to display
+ * @param {number} [options.timeout] - Auto-dismiss timeout in milliseconds
+ * @param {string} [options.icon] - Custom icon name, defaults to type-appropriate icon
+ * @param {number} [options.x] - X position for the notification
+ * @param {number} [options.y] - Y position for the notification
+ * @param {...(Component|HTMLElement|string)} children - Child elements to append
+ * @returns {Notify} Notify component instance
+ */
 export default class Notify extends StyledPopover {
 	type_enum = type_enum;
 
