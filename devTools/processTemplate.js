@@ -12,12 +12,12 @@ import { extractJSDoc } from './extractJSDoc.js';
  * @returns {string} Processed template with commands replaced by generated content
  */
 export function processTemplate(templateContent, componentPath = '.') {
-	// Replace all extraction commands
-	return templateContent.replace(/\[\[([^\]]+)\]\]/g, (match, command) => {
+	// Replace extraction commands that start with known command words
+	return templateContent.replace(/\[\[(extract-\w+|import)\s+([^\]]+)\]\]/g, (match, command, args) => {
 		try {
-			return processCommand(command.trim(), componentPath);
+			return processCommand(`${command} ${args}`.trim(), componentPath);
 		} catch (error) {
-			console.warn(`Failed to process command "${command}":`, error.message);
+			console.warn(`Failed to process command "${command} ${args}":`, error.message);
 			return match; // Return original if processing fails
 		}
 	});
