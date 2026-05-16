@@ -18,7 +18,16 @@ const StyledIcon = styled(
 	`,
 );
 
-const defaultOptions = { uniqueId: true, state: 'manual', viewport: document.documentElement, appendTo: document.body };
+const defaultOptions = {
+	uniqueId: true,
+	state: 'manual',
+	get viewport() {
+		return document.documentElement;
+	},
+	get appendTo() {
+		return document.body;
+	},
+};
 const state_enum = Object.freeze(['auto', 'manual']);
 
 /**
@@ -40,19 +49,23 @@ const state_enum = Object.freeze(['auto', 'manual']);
  * @returns {Popover} Popover component instance
  */
 export default class Popover extends StyledIcon {
-	defaultOptions = defaultOptions;
+	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 	state_enum = state_enum;
 
-	constructor({ autoOpen = true, ...options } = {}, ...children) {
+	constructor({ autoOpen = true, onConnected: userOnConnected, ...options } = {}, ...children) {
 		super(
 			{
 				...defaultOptions,
 				onConnected: () => {
-					if (autoOpen) setTimeout(() => this.show(), 200);
+					if (autoOpen) {
+						const timeoutId = setTimeout(() => this.show(), 200);
+						this.replaceCleanup('autoOpen', () => clearTimeout(timeoutId));
+					}
+					userOnConnected?.();
 				},
 				...options,
 			},
-			children,
+			...children,
 		);
 
 		if (this.options.x !== undefined && this.options.y !== undefined) this.edgeAwarePlacement(this.options);
@@ -107,7 +120,11 @@ export default class Popover extends StyledIcon {
 	 * Hides the popover.
 	 */
 	hide() {
-		this.elem.hidePopover();
+		try {
+			this.elem.hidePopover();
+		} catch {
+			// Popover not shown or not connected
+		}
 	}
 
 	/**

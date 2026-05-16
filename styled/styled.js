@@ -56,7 +56,6 @@ export const styled = function (BaseComponent, styles = () => '', options = {}) 
 		};
 
 		const componentId = classSafeNanoid();
-		shimCSS({ scope: `.${componentId}`, styles: () => '' });
 
 		const StyledComponent = configured(BaseComponent, { addClass: [componentId] });
 

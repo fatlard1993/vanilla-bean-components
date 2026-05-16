@@ -33,11 +33,14 @@ export default class Button extends TooltipWrapper {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
 	constructor(options = {}, ...children) {
+		const userOnKeyUp = options.onKeyUp;
+
 		super(
 			{
 				...defaultOptions,
 				...options,
 				onKeyUp: event => {
+					userOnKeyUp?.call(this, event);
 					if (event.code === 'Space' || event.code === 'Enter') {
 						this.options.onPointerPress?.(event);
 					}

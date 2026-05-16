@@ -4,6 +4,24 @@ import Subscriber from './Subscriber';
 import ErrorHandler from './ErrorHandler';
 import CleanupManager from './CleanupManager';
 
+const contextKeys = new Set([
+	'target',
+	'proxy',
+	'__cleanup',
+	'__subscriptions',
+	'__notifyDepth',
+	'__boundMethods',
+	'isDestroyed',
+	'addEventListener',
+	'removeEventListener',
+	'dispatchEvent',
+	'subscriber',
+	'subscribe',
+	'unsubscribe',
+	'destroy',
+	Symbol.dispose,
+]);
+
 /**
  * Reactive state container with proxy-based property access and automatic event emission.
  * Constructor returns proxy enabling direct property access alongside Context methods.
@@ -40,8 +58,8 @@ export default class Context extends EventTarget {
 		}
 
 		const context = this;
-		this.cleanup = new CleanupManager();
-		this.subscriptions = {};
+		this.__cleanup = new CleanupManager();
+		this.__subscriptions = {};
 
 		try {
 			this.target = Object.fromEntries(
@@ -49,11 +67,11 @@ export default class Context extends EventTarget {
 					if (value?.__isSubscriber) {
 						try {
 							const { unsubscribe } = value.subscribe(_value => {
-								if (!this.cleanup.isDestroyed) {
+								if (!this.__cleanup.isDestroyed) {
 									this.proxy[key] = _value;
 								}
 							});
-							this.cleanup.add(unsubscribe, `subscriber-${key}`);
+							this.__cleanup.add(unsubscribe, `subscriber-${key}`);
 							value = value.toJSON();
 						} catch (error) {
 							ErrorHandler.handleParserError(error, this, key, 'subscriber-initialization');
@@ -71,14 +89,14 @@ export default class Context extends EventTarget {
 
 		this.proxy = new Proxy(this.target, {
 			get(target, key) {
-				if (context[key] !== undefined) {
+				if (contextKeys.has(key)) {
 					const value = context[key];
 					if (typeof value === 'function') {
-						if (!context._boundMethods) context._boundMethods = new Map();
-						if (!context._boundMethods.has(key)) {
-							context._boundMethods.set(key, value.bind(context));
+						if (!context.__boundMethods) context.__boundMethods = new Map();
+						if (!context.__boundMethods.has(key)) {
+							context.__boundMethods.set(key, value.bind(context));
 						}
-						return context._boundMethods.get(key);
+						return context.__boundMethods.get(key);
 					}
 					return value;
 				}
@@ -99,11 +117,12 @@ export default class Context extends EventTarget {
 	 * @returns {boolean} True if destroyed
 	 */
 	get isDestroyed() {
-		return this.cleanup.isDestroyed;
+		return this.__cleanup.isDestroyed;
 	}
 
 	/**
-	 * Add event listener with automatic cleanup tracking.
+	 * Add event listener (low-level escape hatch — caller is responsible for removal).
+	 * Prefer subscribe() for managed subscriptions with automatic cleanup.
 	 * @param {string} type - Event type
 	 * @param {Function} listener - Event handler
 	 * @param {boolean|object} [options] - Event listener options
@@ -115,15 +134,10 @@ export default class Context extends EventTarget {
 		}
 
 		super.addEventListener(type, listener, options);
-
-		// Auto-register cleanup
-		this.cleanup.add(() => {
-			super.removeEventListener(type, listener, options);
-		}, `listener-${type}`);
 	}
 
 	/**
-	 * Remove event listener (cleanup is automatic).
+	 * Remove event listener.
 	 * @param {string} type - Event type
 	 * @param {Function} listener - Event handler
 	 * @param {boolean|object} [options] - Event listener options
@@ -137,6 +151,7 @@ export default class Context extends EventTarget {
 	 *
 	 * Dispatches generic 'set' event containing key and value, followed by
 	 * property-specific event with value as detail.
+	 * Includes re-entrancy guard to prevent infinite loops from circular subscriptions.
 	 * @param {string|symbol} key - Property name that was modified
 	 * @param {*} value - New value assigned to the property
 	 * @param {boolean} result - Whether the proxy set operation succeeded
@@ -152,11 +167,23 @@ export default class Context extends EventTarget {
 			return;
 		}
 
+		if (!this.__notifyDepth) this.__notifyDepth = 0;
+		this.__notifyDepth++;
+
 		try {
+			if (this.__notifyDepth > 50) {
+				ErrorHandler.handleWarning(
+					`Circular dependency detected: property "${String(key)}" exceeded max notification depth`,
+				);
+				return;
+			}
+
 			this.dispatchEvent(new CustomEvent('set', { detail: { key, value } }));
 			this.dispatchEvent(new CustomEvent(String(key), { detail: value }));
 		} catch (error) {
 			ErrorHandler.handleEventDispatchError(error, key, value);
+		} finally {
+			this.__notifyDepth--;
 		}
 	}
 
@@ -221,12 +248,12 @@ export default class Context extends EventTarget {
 		};
 
 		subscription.key = key;
-		this.subscriptions[id] = subscription;
+		this.__subscriptions[id] = subscription;
 
 		try {
 			this.addEventListener(String(key), subscription);
 		} catch (error) {
-			delete this.subscriptions[id];
+			delete this.__subscriptions[id];
 			ErrorHandler.handleSubscriptionSetupError(error, key, this.constructor.name);
 			return {
 				unsubscribe: () => ErrorHandler.handleWarning('Unsubscribe called on failed subscription'),
@@ -237,13 +264,14 @@ export default class Context extends EventTarget {
 		}
 
 		const unsubscribe = () => {
-			if (this.subscriptions[id]) {
+			if (this.__subscriptions[id]) {
 				this.removeEventListener(String(key), subscription);
-				delete this.subscriptions[id];
+				delete this.__subscriptions[id];
 			}
+			deregister();
 		};
 
-		this.cleanup.add(unsubscribe, `subscription-${key}`);
+		const deregister = this.__cleanup.add(unsubscribe, `subscription-${key}`);
 
 		return {
 			unsubscribe,
@@ -257,7 +285,7 @@ export default class Context extends EventTarget {
 	 * @param {string} id - Subscription ID from subscribe()
 	 */
 	unsubscribe(id) {
-		if (!id || !this.subscriptions[id]) {
+		if (!id || !this.__subscriptions[id]) {
 			if (id) {
 				ErrorHandler.handleWarning(`Attempted to unsubscribe non-existent subscription: ${id}`);
 			}
@@ -265,13 +293,13 @@ export default class Context extends EventTarget {
 		}
 
 		try {
-			const subscription = this.subscriptions[id];
+			const subscription = this.__subscriptions[id];
 			const { key } = subscription;
-			this.removeEventListener(key, subscription);
-			delete this.subscriptions[id];
+			this.removeEventListener(String(key), subscription);
+			delete this.__subscriptions[id];
 		} catch (error) {
 			ErrorHandler.handleUnsubscribeError(error, id, this.constructor.name);
-			delete this.subscriptions[id];
+			delete this.__subscriptions[id];
 		}
 	}
 
@@ -286,7 +314,7 @@ export default class Context extends EventTarget {
 
 	getInitialValue(key, parser) {
 		try {
-			return parser(this.proxy[key]);
+			return parser(this.target[key]);
 		} catch (error) {
 			ErrorHandler.handleParserError(error, this, key, 'initial-subscription');
 			return null;
@@ -294,19 +322,20 @@ export default class Context extends EventTarget {
 	}
 
 	/**
-	 * Destroys context and cleans up all associated resources.
+	 * Destroys context and cleans up all managed subscriptions.
 	 *
-	 * Removes all subscriptions, event listeners, and cross-context connections.
+	 * Removes all subscriptions created via subscribe() and cross-context connections.
+	 * Listeners added directly via addEventListener() are NOT removed — caller is responsible.
 	 * Prevents further property modifications and subscription creation.
 	 */
 	destroy() {
-		if (this._boundMethods) {
-			this._boundMethods.clear();
-			this._boundMethods = null;
+		if (this.__boundMethods) {
+			this.__boundMethods.clear();
+			this.__boundMethods = null;
 		}
 
-		this.cleanup.destroy();
-		this.subscriptions = {};
+		this.__cleanup.destroy();
+		this.__subscriptions = {};
 	}
 
 	[Symbol.dispose]() {

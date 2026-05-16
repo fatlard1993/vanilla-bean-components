@@ -20,6 +20,6 @@ describe('Counter Demo', () => {
 
 		expect(counterCode).toContain('extends ExampleView');
 		expect(counterCode).toContain('export default class');
-		expect(counterCode).toContain('render()');
+		expect(counterCode).toContain('build()');
 	});
 });

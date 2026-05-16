@@ -12,11 +12,31 @@ export const isMac = () =>
  * @returns {boolean} A boolean indicating the success of the action
  */
 export const copyToClipboard = text => {
-	if (!isSecureContext) return false;
+	if (window.isSecureContext && navigator.clipboard) {
+		navigator.clipboard.writeText(text);
 
-	window.navigator.clipboard.writeText(text);
+		return true;
+	}
 
-	return true;
+	const textarea = document.createElement('textarea');
+
+	textarea.value = text ?? '';
+	textarea.style.position = 'fixed';
+	textarea.style.opacity = '0';
+	document.body.appendChild(textarea);
+	textarea.select();
+
+	let ok = false;
+
+	try {
+		ok = document.execCommand('copy');
+	} catch {
+		// execCommand not supported
+	}
+
+	textarea.remove();
+
+	return ok;
 };
 
 /**
@@ -24,7 +44,7 @@ export const copyToClipboard = text => {
  * @returns {string} The current clipboard content
  */
 export const readClipboard = async () => {
-	if (!isSecureContext) return false;
+	if (!window.isSecureContext || !navigator.clipboard) return false;
 
 	return await window.navigator.clipboard.readText();
 };

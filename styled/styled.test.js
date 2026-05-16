@@ -127,9 +127,7 @@ describe('styled system', () => {
 		test('handles empty styles function', () => {
 			styled(Component);
 
-			expect(mockShimCSS).toHaveBeenCalledTimes(1);
-			const shimCall = mockShimCSS.mock.calls[0][0];
-			expect(shimCall.styles()).toBe('');
+			expect(mockShimCSS).not.toHaveBeenCalled();
 		});
 
 		test('combines addClass from options with generated scope class', () => {

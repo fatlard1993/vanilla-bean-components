@@ -3,7 +3,7 @@ import theme from '../../theme';
 import { Table } from '.';
 
 export default class Demo extends DemoView {
-	render() {
+	build() {
 		this.component = new Table({
 			data: [
 				{ foo: true, bar: 'one', baz: 'wow' },
@@ -16,7 +16,5 @@ export default class Demo extends DemoView {
 			],
 			footer: [{ content: 'Total:', colspan: 2 }, 'who cares?'],
 		});
-
-		super.render();
 	}
 }

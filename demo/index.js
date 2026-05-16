@@ -4,7 +4,7 @@ import DemoMenu from './DemoMenu';
 import views from './views';
 
 class NotFound extends View {
-	render() {
+	build() {
 		new Elem({
 			style: {
 				margin: '6px auto',
@@ -14,8 +14,6 @@ class NotFound extends View {
 			textContent: `Could not find route "${this.options.route}"`,
 			appendTo: this,
 		});
-
-		super.render();
 	}
 }
 

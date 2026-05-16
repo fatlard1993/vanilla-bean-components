@@ -10,6 +10,6 @@ describe('Menu', () => {
 
 		const listItems = await findAllByRole(container, 'listitem');
 
-		listItems.forEach((item, index) => expect(item.textContent, items[index].textContent));
+		listItems.forEach((item, index) => expect(item.textContent).toBe(items[index].textContent));
 	});
 });

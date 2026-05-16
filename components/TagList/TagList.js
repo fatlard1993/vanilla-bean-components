@@ -68,9 +68,7 @@ class TagList extends StyledComponent {
 		super({ ...options, tag: 'ul' }, ...children);
 	}
 
-	render() {
-		super.render();
-
+	build() {
 		if (!this.options.readOnly) {
 			this.tagInput = new TagListTextInput({
 				placeholder: 'New Tag',
@@ -138,6 +136,15 @@ class TagList extends StyledComponent {
 			);
 		}
 
+		if (!this.options.readOnly) {
+			this.replaceCleanup('tagListChildren', () => {
+				this.addButtonPopover?.destroy?.();
+				this.addButton?.destroy?.();
+				this.tagInput?.destroy?.();
+				this.addTag?.destroy?.();
+			});
+		}
+
 		this.append([
 			...(this.options.tags || []).map(textContent => new Tag({ readOnly: this.options.readOnly, textContent })),
 			...(this.addTag ? [this.addTag] : []),
@@ -146,3 +153,21 @@ class TagList extends StyledComponent {
 }
 
 export default TagList;
+
+// Zero-arg scenarios for LLD verification
+export const duplicateRejected = () => {
+	const tl = new TagList({ tags: ['hello'], autoRender: false });
+	tl.render();
+	const before = tl.elem.children.length;
+	tl.tagInput.elem.value = 'hello';
+	tl.tagInput.elem.dispatchEvent(new KeyboardEvent('keyup', { code: 'Enter', bubbles: true }));
+	return tl.elem.children.length === before;
+};
+
+export const inputIsLastAfterAdd = () => {
+	const tl = new TagList({ tags: [], autoRender: false });
+	tl.render();
+	tl.tagInput.elem.value = 'newtag';
+	tl.tagInput.elem.dispatchEvent(new KeyboardEvent('keyup', { code: 'Enter', bubbles: true }));
+	return tl.elem.lastElementChild === tl.addTag.elem;
+};

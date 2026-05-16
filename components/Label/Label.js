@@ -163,10 +163,9 @@ class Label extends StyledLabel {
 		);
 	}
 
-	render() {
+	build() {
 		this._labelText = new Component({
 			tag: 'label',
-			[this.options.variant === 'inline-after' ? 'appendTo' : 'prependTo']: this,
 			onPointerPress: () => {
 				if (this.options.variant === 'collapsible') {
 					this[this.hasClass('collapsed') ? 'removeClass' : 'addClass']('collapsed');
@@ -174,13 +173,13 @@ class Label extends StyledLabel {
 			},
 		});
 
-		super.render();
+		this[this.options.variant === 'inline-after' ? 'append' : 'prepend'](this._labelText);
 	}
 
 	_setOption(key, value) {
 		if (key === 'label') {
-			if (typeof value === 'object') this._labelText.setOptions(value);
-			else this._labelText.options.content = value;
+			if (typeof value === 'object') this._labelText?.setOptions(value);
+			else if (this._labelText) this._labelText.options.content = value;
 		} else if (key === 'collapsed') this[value ? 'addClass' : 'removeClass']('collapsed');
 		else if (key === 'variant') {
 			this.removeClass(/\bvariant-\S+\b/g);
@@ -188,7 +187,7 @@ class Label extends StyledLabel {
 
 			this.options.augmentedUI = value === 'collapsible' ? 'tl-clip tr-2-clip-x br-clip bl-clip border' : false;
 
-			this[this.options.variant === 'inline-after' ? 'append' : 'prepend'](this._labelText);
+			this._labelText && this[this.options.variant === 'inline-after' ? 'append' : 'prepend'](this._labelText);
 		} else if (key === 'for') {
 			let forId = typeof value === 'string' ? value : value?.id || value?.elem?.id;
 
@@ -196,7 +195,7 @@ class Label extends StyledLabel {
 				forId = value.elem.id = value.uniqueId;
 			}
 
-			this._labelText.elem.htmlFor = forId;
+			if (this._labelText) this._labelText.elem.htmlFor = forId ?? '';
 		} else super._setOption(key, value);
 	}
 }

@@ -1,6 +1,5 @@
 import { Component } from '../../Component';
 import { styled } from '../../styled';
-import { getElementsContainingText } from '../../utils';
 import { Button } from '../Button';
 import { Popover } from '../Popover';
 
@@ -17,6 +16,14 @@ export const InputValidationError = styled(
 export const updateValidationErrors = ({ elem, validations, value }) => {
 	if (!validations?.length) return;
 
+	// Destroy previous validation components before re-evaluating
+	const parent = elem.parentElement;
+	if (parent) {
+		parent.querySelectorAll('[data-validation-error]').forEach(el => {
+			el._component?.destroy?.() ?? el._elem?.destroy?.() ?? el.remove();
+		});
+	}
+
 	const errors = [];
 
 	validations.forEach(([validation, message]) => {
@@ -24,41 +31,32 @@ export const updateValidationErrors = ({ elem, validations, value }) => {
 
 		const resolvedMessage = typeof message == 'function' ? message(value) : message;
 
-		const [existingValidationError] = getElementsContainingText(resolvedMessage, {
-			xPathElement: 'div',
-			scope: elem.parentElement,
-			caseSensitive: true,
-		});
-
-		if (!isValid) errors.push(resolvedMessage);
-
-		if (existingValidationError) {
-			existingValidationError.style.display = isValid ? 'none' : 'block';
-		} else if (!isValid) {
+		if (!isValid) {
+			errors.push(resolvedMessage);
 			const validationError = new InputValidationError({ content: resolvedMessage });
+			validationError.elem.dataset.validationError = '';
+
 			const [inputLabel] = elem.parentElement.getElementsByTagName('label');
 
 			if (inputLabel) {
-				let errorPopover = elem.parentElement.querySelector('section');
+				const errorPopover = new Popover({ autoOpen: false, state: 'auto' });
+				errorPopover.elem.dataset.validationError = '';
+				elem.parentElement.insertBefore(errorPopover.elem, elem);
 
-				if (!errorPopover) {
-					errorPopover = new Popover({ autoOpen: false, state: 'auto' });
-					elem.parentElement.insertBefore(errorPopover.elem, elem);
-
-					new Button({
-						appendTo: inputLabel,
-						icon: 'exclamation',
-						styles: ({ colors }) => ({
-							marginLeft: '6px',
-							width: '18px',
-							height: '18px',
-							fontSize: '12px',
-							padding: 0,
-							backgroundColor: colors.red,
-						}),
-						onPointerPress: event => errorPopover.show({ x: event.clientX, y: event.clientY }),
-					});
-				}
+				const errorButton = new Button({
+					appendTo: inputLabel,
+					icon: 'exclamation',
+					styles: ({ colors }) => ({
+						marginLeft: '6px',
+						width: '18px',
+						height: '18px',
+						fontSize: '12px',
+						padding: 0,
+						backgroundColor: colors.red,
+					}),
+					onPointerPress: event => errorPopover.show({ x: event.clientX, y: event.clientY }),
+				});
+				errorButton.elem.dataset.validationError = '';
 
 				errorPopover.append(validationError.elem);
 			}

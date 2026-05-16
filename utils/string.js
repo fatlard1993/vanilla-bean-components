@@ -65,8 +65,8 @@ export const removeExcessIndentation = string => {
 			if (!a?.length) return b;
 			if (!b?.length) return a;
 
-			return a.length <= b.length ? a : b;
+			return a[0].length <= b[0].length ? a : b;
 		});
 
-	return lines.join('\n').replaceAll(new RegExp(`^${minIndentation}`, 'gm'), '');
+	return lines.join('\n').replaceAll(new RegExp(`^${minIndentation[0]}`, 'gm'), '');
 };

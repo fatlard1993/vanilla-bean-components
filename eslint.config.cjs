@@ -7,7 +7,6 @@ const compat = require('eslint-plugin-compat');
 const importPlugin = require('eslint-plugin-import');
 const spellcheck = require('eslint-plugin-spellcheck');
 const testingLibrary = require('eslint-plugin-testing-library');
-// const unicorn = require('eslint-plugin-unicorn');
 const writeGoodComments = require('eslint-plugin-write-good-comments');
 
 module.exports = [
@@ -30,7 +29,6 @@ module.exports = [
 			import: importPlugin,
 			'write-good-comments': writeGoodComments,
 			spellcheck,
-			unicorn: import('eslint-plugin-unicorn'),
 		},
 		rules: {
 			'no-console': 'warn',
@@ -41,34 +39,6 @@ module.exports = [
 			'no-async-promise-executor': 'off',
 			'no-prototype-builtins': 'off',
 
-			// 'unicorn/prevent-abbreviations': [
-			// 	'error',
-			// 	{
-			// 		allowList: {
-			// 			elem: true,
-			// 			Elem: true,
-			// 			args: true,
-			// 		},
-			// 	},
-			// ],
-			'unicorn/filename-case': 'off',
-			'unicorn/no-null': 'off',
-			'unicorn/no-await-expression-member': 'off',
-			'unicorn/no-array-for-each': 'off',
-			'unicorn/prefer-spread': 'off',
-			'unicorn/no-negated-condition': 'off',
-			'unicorn/no-array-reduce': 'off',
-			'unicorn/no-array-callback-reference': 'off',
-			'unicorn/prefer-query-selector': 'off',
-			'unicorn/prefer-node-protocol': 'off',
-			'unicorn/no-this-assignment': 'off',
-			'unicorn/consistent-function-scoping': 'off',
-			'unicorn/numeric-separators-style': 'off',
-			'unicorn/prefer-switch': 'off',
-			'unicorn/prefer-dom-node-dataset': 'off',
-			'unicorn/prefer-global-this': 'off',
-			'unicorn/import-style': 'off',
-
 			// TODO This rule doesn't work after updating to eslint 9
 			// https://github.com/import-js/eslint-plugin-import/pull/2829
 			// 'import/no-unused-modules': [1, { unusedExports: true }],
@@ -78,7 +48,7 @@ module.exports = [
 			'import/first': 'warn',
 			'import/order': 'warn',
 
-			'write-good-comments/write-good-comments': ['warn', { whitelist: ['typeof'] }],
+			'write-good-comments/write-good-comments': 'off',
 
 			'spellcheck/spell-checker': ['warn', require('./spellcheck.config.cjs')],
 		},

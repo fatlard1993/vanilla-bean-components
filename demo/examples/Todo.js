@@ -15,7 +15,7 @@ class TodoListItem extends (styled.Component`
 		super._setOption(key, value);
 	}
 
-	render() {
+	build() {
 		this.initialLabel = this.options.label;
 
 		this._checkbox = new Input({
@@ -61,8 +61,6 @@ class TodoListItem extends (styled.Component`
 			this._trash,
 			new Component({ tag: 'span', textContent: this.options.subscriber('label') }),
 		]);
-
-		super.render();
 	}
 }
 
@@ -71,7 +69,7 @@ class Todo extends Component {
 		super({ items: JSON.parse(localStorage.getItem('todo_items') || '[]'), ...options });
 	}
 
-	render() {
+	build() {
 		this._list = new List({ items: this.options.subscriber('items'), ListItemComponent: TodoListItem });
 		this._input = new Input({
 			type: 'text',
@@ -96,8 +94,6 @@ class Todo extends Component {
 			),
 			this._list,
 		]);
-
-		super.render();
 	}
 
 	_setOption(key, value) {
@@ -110,10 +106,8 @@ class Todo extends Component {
 }
 
 export default class Example extends ExampleView {
-	render() {
+	build() {
 		this.options.exampleCode = exampleCode;
-
-		super.render();
 
 		new Todo({ appendTo: this.demoWrapper });
 	}

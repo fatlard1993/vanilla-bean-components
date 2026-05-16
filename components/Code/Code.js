@@ -38,7 +38,7 @@ class Code extends Component {
 		);
 	}
 
-	render() {
+	build() {
 		if (this.options.multiline) {
 			this._code = new Elem({
 				tag: 'code',
@@ -63,13 +63,11 @@ class Code extends Component {
 					},
 				}),
 			);
-
-		super.render();
 	}
 
 	_setOption(key, value) {
 		if (key === 'language') {
-			if (this.options.multiline) {
+			if (this.options.multiline && this._code) {
 				this._code.removeClass(/\blanguage-\S+\b/g);
 				this._code.addClass(`language-${value}`);
 			}
@@ -77,7 +75,7 @@ class Code extends Component {
 			this.removeClass(/\blanguage-\S+\b/g);
 			this.addClass(`language-${value}`);
 		} else if (key === 'code') {
-			(this.options.multiline ? this._code : this).elem.textContent = value;
+			(this.options.multiline && this._code ? this._code : this).elem.textContent = value;
 		} else super._setOption(key, value);
 	}
 }

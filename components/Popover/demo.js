@@ -19,13 +19,11 @@ export default class Demo extends DemoView {
 		});
 	}
 
-	render() {
+	build() {
 		this.component = new Popover({
 			autoOpen: false,
 			content: 'Some content for our popover',
 		});
-
-		super.render();
 
 		new Label({
 			appendTo: this.demoWrapper,

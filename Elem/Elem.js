@@ -86,7 +86,7 @@ class Elem extends EventTarget {
 	 * @returns {Array<Elem>} Array of child Elem instances
 	 */
 	get children() {
-		return Array.from(this.elem.children).flatMap(({ _elem }) => [_elem]);
+		return Array.from(this.elem.children).flatMap(({ _elem }) => (_elem ? [_elem] : []));
 	}
 
 	/**
@@ -110,9 +110,10 @@ class Elem extends EventTarget {
 	 */
 	hasClass(...classes) {
 		return classes.flat(Number.POSITIVE_INFINITY).every(className => {
-			const classRegex = className instanceof RegExp ? className : new RegExp(`\\b${className}\\b`, 'g');
+			if (className instanceof RegExp) return className.test(this.elem.className);
 
-			return classRegex.test(this.elem.className);
+			const escaped = className.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+			return new RegExp(`\\b${escaped}\\b`, 'g').test(this.elem.className);
 		});
 	}
 
@@ -147,7 +148,8 @@ class Elem extends EventTarget {
 					className.flags.includes('g') ? className.flags : className.flags + 'g',
 				);
 			} else {
-				classRegex = new RegExp(`\\b${className}\\b`, 'g');
+				const escaped = className.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+				classRegex = new RegExp(`\\b${escaped}\\b`, 'g');
 			}
 
 			if (classRegex.test(this.elem.className)) {
@@ -164,6 +166,7 @@ class Elem extends EventTarget {
 	 */
 	empty() {
 		this.elem.replaceChildren();
+		return this;
 	}
 
 	/**
@@ -177,7 +180,7 @@ class Elem extends EventTarget {
 		if (!style || typeof style !== 'object' || Array.isArray(style)) return this;
 
 		Object.entries(style).forEach(([key, value]) => {
-			if (!key || /\d/.test(key)) return;
+			if (!key || /^\d+$/.test(key)) return;
 
 			this.elem.style[key] = value;
 		});
@@ -231,8 +234,10 @@ class Elem extends EventTarget {
 	 * @returns {void}
 	 */
 	prependTo(parentElem) {
-		if (parentElem.firstChild) parentElem.insertBefore(this.elem, parentElem.firstChild);
-		else parentElem.append(this.elem);
+		if (!parentElem) return;
+		const el = parentElem.elem ?? parentElem;
+		if (el.firstChild) el.insertBefore(this.elem, el.firstChild);
+		else el.append(this.elem);
 	}
 
 	/**

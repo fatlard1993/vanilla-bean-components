@@ -86,12 +86,19 @@ class RadioButton extends Component {
 									value: option?.value || option,
 									name: this.uniqueId,
 									checked: this.options.value === (option?.value || option),
+									onChange: event => {
+										if (event.target.checked) this.options.value = event.target.value;
+									},
 								}),
 								option?.label || option,
 							],
 						}),
 				),
 			);
+		} else if (key === 'value') {
+			this.elem.querySelectorAll('input[type="radio"]').forEach(input => {
+				input.checked = input.value === String(value);
+			});
 		} else super._setOption(key, value);
 	}
 }

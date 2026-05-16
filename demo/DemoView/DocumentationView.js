@@ -12,9 +12,7 @@ import ThemeReadme from '../build/theme/README.js';
 import DemoView from '.';
 
 export default class DocumentationView extends DemoView {
-	async render() {
-		super.render();
-
+	async build() {
 		this.elem.style.overflow = 'auto';
 
 		try {

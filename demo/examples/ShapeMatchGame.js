@@ -108,7 +108,7 @@ class ShapeMatchGame extends Component {
 		});
 	}
 
-	render() {
+	build() {
 		this._score = new Elem();
 		this._time = new Elem();
 		this._playPause = new Button(
@@ -215,8 +215,6 @@ class ShapeMatchGame extends Component {
 		});
 
 		this.content([this._score, this._time, this._playPause, this._whiteboard, this._inkwell, colorPicker, colorSwatch]);
-
-		super.render();
 	}
 
 	_setOption(key, value) {
@@ -256,7 +254,7 @@ class ShapeMatchGame extends Component {
 	newShape() {
 		this.shape = randomShape();
 
-		this._whiteboard.empty();
+		this._whiteboard.clearCanvas();
 
 		this._whiteboard.options.background = theme.colors.mostReadable(this.shape.color, [
 			theme.colors.white,
@@ -266,7 +264,7 @@ class ShapeMatchGame extends Component {
 		this._whiteboard.options.readOnly = true;
 
 		this.shapeTimeout = setTimeout(() => {
-			this._whiteboard.empty();
+			this._whiteboard.clearCanvas();
 			this._whiteboard.options.readOnly = false;
 		}, 2000);
 
@@ -276,10 +274,8 @@ class ShapeMatchGame extends Component {
 }
 
 export default class Example extends ExampleView {
-	render() {
+	build() {
 		this.options.exampleCode = exampleCode;
-
-		super.render();
 
 		this.demoWrapper.setStyle({ height: '100%' });
 

@@ -20,7 +20,9 @@ const defaultOptions = {
 	size: 'small',
 	openOnRender: 16,
 	modal: true,
-	appendTo: document.body,
+	get appendTo() {
+		return document.body;
+	},
 	registeredEvents: new Set(['close']),
 
 	augmentedUI: 'tl-clip tr-2-clip-x br-clip bl-2-clip-y border',
@@ -254,54 +256,47 @@ class Dialog extends styled(
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
 	constructor(options = {}, ...children) {
-		super({ ...defaultOptions, ...options }, children);
+		super({ ...defaultOptions, ...options }, ...children);
 
 		this.options['aria-labelledby'] = this.uniqueId;
 	}
 
-	render() {
-		if (!this._header) {
-			this._header = new Elem({
-				tag: 'h2',
-				id: this.uniqueId,
-				addClass: ['header'],
-				content: this.options.header,
-				appendTo: this,
-			});
-		}
+	build() {
+		this._header = new Elem({
+			tag: 'h2',
+			id: this.uniqueId,
+			addClass: ['header'],
+			content: this.options.header,
+			appendTo: this,
+		});
 
-		if (!this._body) {
-			this._body = new Elem({ content: this.options.body, addClass: ['content'], appendTo: this });
-		}
+		this._body = new Elem({ content: this.options.body, addClass: ['content'], appendTo: this });
 
-		if (!this._footer) {
-			this._footer = new Elem({
-				addClass: ['footer'],
-				append:
-					this.options.footer ||
-					this.options.buttons?.map(
-						button =>
-							new DialogButton({
-								onPointerPress: event =>
-									this.options.onButtonPress({
-										event,
-										button,
-										closeDialog: this.options.closeDialog || (() => this.close()),
-									}),
-								...(typeof button === 'object' ? button : { textContent: button }),
-							}),
-					),
-				appendTo: this,
-			});
-		}
-
-		super.render();
+		this._footer = new Elem({
+			addClass: ['footer'],
+			append:
+				this.options.footer ||
+				this.options.buttons?.map(
+					button =>
+						new DialogButton({
+							onPointerPress: event =>
+								this.options.onButtonPress?.({
+									event,
+									button,
+									closeDialog: this.options.closeDialog || (() => this.close()),
+								}),
+							...(typeof button === 'object' ? button : { textContent: button }),
+						}),
+				),
+			appendTo: this,
+		});
 
 		if (this.options.openOnRender) {
-			setTimeout(
+			const openDelay = setTimeout(
 				() => this.open(),
 				typeof this.options.openOnRender === 'number' ? this.options.openOnRender : defaultOptions.openOnRender,
 			);
+			this.replaceCleanup('openOnRender', () => clearTimeout(openDelay));
 		}
 	}
 
@@ -329,13 +324,9 @@ class Dialog extends styled(
 
 			if (value) this.addClass(`variant-${value}`);
 		} else if (key === 'body') {
-			if (this._body) {
-				this._body.content(value);
-			}
+			this._body?.content(value);
 		} else if (key === 'header') {
-			if (this._header) {
-				this._header.content(value);
-			}
+			this._header?.content(value);
 		} else super._setOption(key, value);
 	}
 
@@ -346,7 +337,12 @@ class Dialog extends styled(
 	open(modal = this.options.modal) {
 		try {
 			this.elem[modal ? 'showModal' : 'show']();
+			this._openRetried = false;
 		} catch (error) {
+			if (this._openRetried) return;
+
+			this._openRetried = true;
+
 			// eslint-disable-next-line no-console
 			if (process.env.NODE_ENV === 'development') console.error(error, 'Retrying...');
 

@@ -3,7 +3,7 @@ import theme from '../../theme';
 import { Calendar } from '.';
 
 export default class Demo extends DemoView {
-	render() {
+	build() {
 		this.component = new Calendar({
 			view: 'month',
 		});
@@ -14,7 +14,5 @@ export default class Demo extends DemoView {
 			color: theme.colors.purple,
 			duration: 60 * 60 * 1000,
 		});
-
-		super.render();
 	}
 }

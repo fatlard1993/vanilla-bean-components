@@ -58,7 +58,7 @@ class Achievement extends Notify {
 }
 
 class DlcListItem extends Component {
-	render() {
+	build() {
 		this._buy = new Button({
 			icon: 'cart-shopping',
 			textContent: `$${this.options.price}`,
@@ -106,8 +106,6 @@ class DlcListItem extends Component {
 		});
 
 		this.content([this._buy, this.options.label]);
-
-		super.render();
 	}
 }
 
@@ -132,7 +130,7 @@ class DlcWhiteboard extends (styled.Component`
 		super({ ...database, ...options });
 	}
 
-	render() {
+	build() {
 		this._credits = new Component();
 		this._openStore = new Button({
 			textContent: 'Open DLC Store',
@@ -327,8 +325,6 @@ class DlcWhiteboard extends (styled.Component`
 			colorPicker,
 			colorSwatch,
 		]);
-
-		super.render();
 	}
 
 	_setOption(key, value) {
@@ -338,10 +334,8 @@ class DlcWhiteboard extends (styled.Component`
 }
 
 export default class Example extends ExampleView {
-	render() {
+	build() {
 		this.options.exampleCode = exampleCode;
-
-		super.render();
 
 		this.demoWrapper.setStyle({ height: '100%' });
 

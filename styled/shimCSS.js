@@ -11,19 +11,28 @@ import { themeStyles } from './themeStyles';
  * @returns {Promise<void>|void} Promise when document loaded, void when queued for load event
  */
 export const shimCSS = styleConfig => {
-	if (document.readyState === 'complete') return postCSS(themeStyles(styleConfig)).then(css => appendStyles(css));
+	if (document.readyState === 'complete')
+		return postCSS(themeStyles(styleConfig)).then(css => appendStyles(css, styleConfig.scope?.replace(/^\./, '')));
 	else {
 		rootContext.onLoadStyleQueue = rootContext.onLoadStyleQueue || [];
-		rootContext.onLoadCSS = rootContext.onLoadCSS || '';
-
 		rootContext.onLoadStyleQueue.push(styleConfig);
 
 		if (!rootContext.onLoadStyleListener) {
 			rootContext.onLoadStyleListener = async () => {
-				const styleText = rootContext.onLoadStyleQueue.map(themeStyles).join('\n');
-				const processedCSS = await postCSS(styleText);
+				await Promise.all(
+					rootContext.onLoadStyleQueue.map(async config => {
+						try {
+							const css = await postCSS(themeStyles(config));
+							appendStyles(css, config.scope?.replace(/^\./, ''));
+						} catch (error) {
+							console.error('shimCSS: failed to process style config', error);
+						}
+					}),
+				);
 
-				appendStyles(processedCSS);
+				rootContext.onLoadStyleQueue = null;
+				window.removeEventListener('load', rootContext.onLoadStyleListener);
+				rootContext.onLoadStyleListener = null;
 			};
 
 			window.addEventListener('load', rootContext.onLoadStyleListener);

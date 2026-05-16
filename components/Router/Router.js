@@ -75,6 +75,8 @@ class Router extends Component {
 		let routeParameterKeys = route.match(routeRegex);
 		const parameters = {};
 
+		if (!routeParameterValues || !routeParameterKeys) return parameters;
+
 		routeParameterValues = routeParameterValues.slice(1);
 		routeParameterKeys = routeParameterKeys.slice(1);
 
@@ -87,16 +89,15 @@ class Router extends Component {
 		return parameters;
 	}
 
-	render() {
-		super.render();
-
+	build() {
 		const reRenderView = () => this.renderView();
 
 		window.addEventListener('popstate', reRenderView);
-
-		this.options.onDisconnected = () => {
+		window.addEventListener('hashchange', reRenderView);
+		this.replaceCleanup('popstate', () => {
 			window.removeEventListener('popstate', reRenderView);
-		};
+			window.removeEventListener('hashchange', reRenderView);
+		});
 
 		this.renderView();
 	}
@@ -106,6 +107,7 @@ class Router extends Component {
 
 		this.options.onRenderView?.(route);
 
+		this.view?.destroy?.();
 		this.empty();
 
 		if (!this.path) return (this.path = route);
@@ -120,3 +122,16 @@ class Router extends Component {
 }
 
 export default Router;
+
+// Zero-arg scenarios for LLD verification
+export const hashStripsQueryString = () => {
+	const r = new Router({ views: { '/path': Component }, autoRender: false });
+	window.location.hash = '#/path?query=1&sort=name';
+	return r.path;
+};
+
+export const paramExtractedFromRoute = () => {
+	const r = new Router({ views: { '/users/:id': Component }, autoRender: false });
+	window.location.hash = '#/users/42';
+	return r.parseRouteParameters('/users/42')?.id;
+};

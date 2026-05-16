@@ -1,27 +1,17 @@
 import DemoView from '../../demo/DemoView';
+import { Component } from '../../Component';
 import { GET } from '../../request';
 import { randInt } from '../../utils';
-import { Component } from '../../Component';
 import { Button } from '../Button';
 import { Dialog } from '.';
 
 export default class Demo extends DemoView {
-	async render() {
-		const baconIpsum = await GET('/api-pass', {
-			searchParameters: { api: `https://baconipsum.com/api/?type=all-meat&sentences=${randInt(3, 33)}` },
-		});
-
+	build() {
 		this.component = new Dialog({
 			header: 'header',
 			size: 'small',
 			variant: null,
-			body: [
-				new Component({
-					style: { color: 'green' },
-					textContent: 'body',
-				}),
-				...baconIpsum.body,
-			],
+			body: 'Loading…',
 			buttons: ['noop', 'dismiss'],
 			openOnRender: false,
 			onButtonPress: ({ button, closeDialog }) => {
@@ -31,7 +21,14 @@ export default class Demo extends DemoView {
 			},
 		});
 
-		super.render();
+		GET('/api-pass', {
+			searchParameters: { api: `https://baconipsum.com/api/?type=all-meat&sentences=${randInt(3, 33)}` },
+		}).then(baconIpsum => {
+			this.component.options.body = [
+				new Component({ style: { color: 'green' }, textContent: 'body' }),
+				...baconIpsum.body,
+			];
+		});
 
 		new Button({
 			appendTo: this.demoWrapper,

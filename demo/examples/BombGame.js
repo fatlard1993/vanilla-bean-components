@@ -35,7 +35,7 @@ class BombGame extends (styled.Component`
 		background-color: ${({ colors }) => colors.black};
 	}
 `) {
-	render() {
+	build() {
 		this._score = new Elem();
 		this._time = new Elem();
 		this._playPause = new Button(
@@ -51,8 +51,6 @@ class BombGame extends (styled.Component`
 		});
 
 		this.content([this._score, this._time, this._playPause, this._minefield]);
-
-		super.render();
 	}
 
 	_setOption(key, value) {
@@ -137,10 +135,8 @@ class BombGame extends (styled.Component`
 }
 
 export default class Example extends ExampleView {
-	render() {
+	build() {
 		this.options.exampleCode = exampleCode;
-
-		super.render();
 
 		this.demoWrapper.setStyle({ height: '100%' });
 

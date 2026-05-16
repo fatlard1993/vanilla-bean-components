@@ -81,6 +81,7 @@ class Keyboard extends Component {
 
 		if (typeof name !== 'string' || !rows) return;
 
+		this.children.forEach(child => child.destroy?.());
 		this.empty();
 		this.removeClass(/\blayout-\S+\b/g).addClass(`layout-${name}`);
 

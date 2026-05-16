@@ -2,7 +2,11 @@
 	"name": "vanilla-bean-components",
 	"version": "0.0.134",
 	"type": "module",
+	"module": "./index.js",
 	"exports": {
+		"./Component": "./Component/index.js",
+		"./Elem": "./Elem/index.js",
+		"./styled": "./styled/index.js",
 		"./Context": "./Context/index.js",
 		"./plugins/*": "./plugins/*.js",
 		"./request": "./request/index.js",
@@ -19,6 +23,9 @@
 		".": "./index.js"
 	},
 	"files": [
+		"/Elem/*.js",
+		"/Component/*.js",
+		"/styled/*.js",
 		"/Context/*.js",
 		"/plugins/*.js",
 		"/request/*.js",
@@ -30,11 +37,22 @@
 		"eslint.config.cjs",
 		"prettier.config.cjs",
 		"spellcheck.config.cjs",
+		"test-setup.js",
 		"!/components/**/demo.js",
 		"!/components/**/*.test.js",
 		"!/utils/**/*.test.js"
 	],
-	"description": "JS class-based components",
+	"description": "A lightweight, reactive component library for building modern web applications with vanilla JavaScript",
+	"keywords": [
+		"components",
+		"reactive",
+		"vanilla-js",
+		"proxy",
+		"web-components",
+		"ui",
+		"no-framework",
+		"dom"
+	],
 	"license": "MIT",
 	"author": "justfatlard (https://github.com/fatlard1993)",
 	"browserslist": [
@@ -87,7 +105,6 @@
 		"@testing-library/jest-dom": "^6.6.4",
 		"@testing-library/user-event": "^14.6.1",
 		"bun-types": "^1.2.20",
-		"emoji-js": "^3.8.1",
 		"eslint": "^9.33.0",
 		"eslint-plugin-compat": "^6.0.2",
 		"eslint-plugin-import": "^2.32.0",
@@ -97,6 +114,7 @@
 		"eslint-plugin-unicorn": "^60.0.0",
 		"eslint-plugin-write-good-comments": "^0.2.0",
 		"globals": "^16.3.0",
+		"emoji-js": "^3.8.1",
 		"marked": "^16.1.2",
 		"moresketchy": "wbern/MoreSketchy.js",
 		"prettier": "^3.6.2"

@@ -33,7 +33,7 @@ export class Playground extends (styled.Component`
 		});
 	}
 
-	render() {
+	build() {
 		this.left = new Component({ appendTo: this });
 		this.right = new Component({
 			style: { display: 'flex', flex: 1 },
@@ -99,8 +99,6 @@ export class Playground extends (styled.Component`
 		});
 
 		this.html.elem.style.width = this.js.elem.style.width = this.css.elem.style.width = this.options.width;
-
-		super.render();
 	}
 
 	_setOption(key, value) {
@@ -128,10 +126,8 @@ export class Playground extends (styled.Component`
 }
 
 export default class Example extends ExampleView {
-	render() {
+	build() {
 		this.options.exampleCode = exampleCode;
-
-		super.render();
 
 		new Playground({ appendTo: this.demoWrapper });
 	}

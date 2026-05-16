@@ -3,7 +3,9 @@ import { Input } from '../Input';
 
 const defaultOptions = {
 	tag: 'select',
-	priorityOptions: new Set(['textContent', 'content', 'appendTo', 'prependTo', 'options']),
+	get priorityOptions() {
+		return new Set(['textContent', 'content', 'appendTo', 'prependTo', 'options']);
+	},
 };
 
 /**
@@ -50,7 +52,7 @@ class Select extends Input {
 	get value() {
 		const selected = Array.from(this.elem.children).find(({ selected }) => selected);
 
-		return selected?.value || selected?.label || selected?.textContent || this.elem.value;
+		return selected?.value ?? selected?.label ?? selected?.textContent ?? this.elem.value;
 	}
 
 	/**

@@ -56,7 +56,7 @@ class Tag extends StyledComponent {
 			if (this.options.readOnly) return;
 
 			if (this.removeButton) {
-				this.removeButton.elem.remove();
+				this.removeButton.destroy();
 				this.removeButton = undefined;
 			} else {
 				const { top, left } = this.elem.getBoundingClientRect();
@@ -69,13 +69,13 @@ class Tag extends StyledComponent {
 					},
 					new Button({
 						icon: 'close',
-						onPointerPress: () => this.elem.remove(),
+						onPointerPress: () => this.destroy(),
 					}),
 				);
 			}
 		};
 
-		super({ ...defaultOptions, ...options, onPointerPress }, children);
+		super({ ...defaultOptions, ...options, onPointerPress }, ...children);
 	}
 }
 

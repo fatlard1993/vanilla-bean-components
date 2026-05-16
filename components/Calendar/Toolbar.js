@@ -25,7 +25,7 @@ const Right = styled(
 const VIEWS = ['day', 'week', 'month'];
 
 class Toolbar extends Component {
-	constructor({ calendar, ...options } = {}, ...children) {
+	constructor({ calendar, view, ...options } = {}, ...children) {
 		super(
 			{
 				...options,
@@ -39,11 +39,10 @@ class Toolbar extends Component {
 		);
 
 		this.calendar = calendar;
+		this._currentView = view;
 	}
 
-	render() {
-		super.render();
-
+	build() {
 		new Left({
 			appendTo: this,
 			append: ['previous', 'today', 'next'].map(
@@ -65,7 +64,7 @@ class Toolbar extends Component {
 			append: (this.options.views || VIEWS).map(
 				view =>
 					new Button({
-						addClass: [`set-${view}`, ...(view === this.options.view ? ['pressed'] : [])],
+						addClass: [`set-${view}`, ...(view === this._currentView ? ['pressed'] : [])],
 						textContent: capitalize(view),
 						onPointerPress: () => {
 							this.calendar.setView(view);

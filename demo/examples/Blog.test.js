@@ -17,7 +17,7 @@ describe('Blog Demo', () => {
 		const blogCode = fs.readFileSync(path.join(__dirname, 'Blog.js'), 'utf8');
 
 		expect(blogCode).toContain('fetchPosts');
-		expect(blogCode).toContain('async render()');
+		expect(blogCode).toContain('async build()');
 		expect(blogCode).toContain('extends ExampleView');
 	});
 

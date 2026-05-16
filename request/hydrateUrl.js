@@ -10,9 +10,10 @@ export const hydrateUrl = (url, parameters = {}) => {
 	let hydratedUrl = url;
 
 	Object.entries(parameters)
-		.filter(([, value]) => typeof value === 'string' && value.length > 0)
+		.filter(([, value]) => value != null && String(value).length > 0)
+		.map(([key, value]) => [key, String(value)])
 		.forEach(([key, value]) => {
-			hydratedUrl = hydratedUrl.replace(`:${key}`, encodeURIComponent(value));
+			hydratedUrl = hydratedUrl.replaceAll(`:${key}`, encodeURIComponent(value));
 		});
 
 	return hydratedUrl;

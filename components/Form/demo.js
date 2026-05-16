@@ -5,7 +5,7 @@ import { Select } from '../Select';
 import { Form } from '.';
 
 export default class Demo extends DemoView {
-	render() {
+	build() {
 		this.component = new Form(
 			{
 				data: { string: 'myString', number: 13, bool: true, color: 'blue', multiChoice: 'one' },
@@ -25,13 +25,11 @@ export default class Demo extends DemoView {
 				content: 'Submit',
 				appendTo: this.demoWrapper,
 				onPointerPress: () => {
-					if (this.component.validate()) return console.log('form is invalid', this.component.options.data);
+					if (this.component.hasErrors()) return console.log('form is invalid', this.component.options.data);
 
 					console.log('form is valid', this.component.options.data);
 				},
 			}),
 		);
-
-		super.render();
 	}
 }

@@ -99,27 +99,29 @@ describe('data utilities', () => {
 	});
 
 	describe('throttle', () => {
-		test('does not execute callback immediately', () => {
+		test('executes callback immediately on first call', () => {
 			const callback = mock(() => 'result');
 			const throttled = throttle(callback, 100);
 
-			const result = throttled('arg');
+			throttled('arg');
 
-			expect(callback).not.toHaveBeenCalled();
-			expect(result).toBeUndefined();
+			expect(callback).toHaveBeenCalledTimes(1);
 		});
 
-		test('executes after delay period', async () => {
+		test('suppresses calls within delay period', async () => {
 			const callback = mock();
 			const throttled = throttle(callback, 50);
 
 			throttled('test');
-			expect(callback).not.toHaveBeenCalled();
-
-			await delay(60);
+			expect(callback).toHaveBeenCalledTimes(1);
 
 			throttled('test2');
 			expect(callback).toHaveBeenCalledTimes(1);
+
+			await delay(60);
+
+			throttled('test3');
+			expect(callback).toHaveBeenCalledTimes(2);
 		});
 
 		test('uses default delay of 400ms', async () => {
@@ -127,15 +129,15 @@ describe('data utilities', () => {
 			const throttled = throttle(callback);
 
 			throttled();
-			expect(callback).not.toHaveBeenCalled();
+			expect(callback).toHaveBeenCalledTimes(1);
 
 			await delay(300);
 			throttled();
-			expect(callback).not.toHaveBeenCalled();
+			expect(callback).toHaveBeenCalledTimes(1);
 
 			await delay(150);
 			throttled();
-			expect(callback).toHaveBeenCalledTimes(1);
+			expect(callback).toHaveBeenCalledTimes(2);
 		});
 
 		test('returns function that can be called', () => {
@@ -146,14 +148,10 @@ describe('data utilities', () => {
 			expect(() => throttled()).not.toThrow();
 		});
 
-		test('handles arguments when function is called', async () => {
+		test('passes arguments to callback', () => {
 			const callback = mock();
 			const throttled = throttle(callback, 50);
 
-			throttled('arg1', 'arg2');
-			expect(callback).not.toHaveBeenCalled();
-
-			await delay(60);
 			throttled('arg1', 'arg2');
 			expect(callback).toHaveBeenCalledWith('arg1', 'arg2');
 		});
@@ -166,11 +164,11 @@ describe('data utilities', () => {
 			throttled();
 			throttled();
 
-			expect(callback).not.toHaveBeenCalled();
+			expect(callback).toHaveBeenCalledTimes(1);
 
 			await delay(110);
 			throttled();
-			expect(callback).toHaveBeenCalledTimes(1);
+			expect(callback).toHaveBeenCalledTimes(2);
 		});
 	});
 
@@ -670,11 +668,11 @@ describe('data utilities', () => {
 			throttledCounter();
 			throttledCounter();
 
-			expect(callCount).toBe(0);
+			expect(callCount).toBe(1);
 
 			await delay(60);
 			throttledCounter();
-			expect(callCount).toBe(1);
+			expect(callCount).toBe(2);
 		});
 
 		test('retry with exponential back-off', async () => {

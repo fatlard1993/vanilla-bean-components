@@ -5,7 +5,7 @@ import { Page } from '.';
 const nesCSS = 'https://unpkg.com/nes.css/css/nes.css';
 
 export default class Demo extends DemoView {
-	render() {
+	build() {
 		this.component = new Page(
 			{
 				textContent: 'The top-level component; it injects style sheets and renders when the DOM is loaded',
@@ -18,7 +18,5 @@ export default class Demo extends DemoView {
 				new Elem({ tag: 'i', addClass: ['nes-icon', 'is-large', 'heart'] }),
 			),
 		);
-
-		super.render();
 	}
 }

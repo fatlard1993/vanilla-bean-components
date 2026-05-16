@@ -256,11 +256,11 @@ describe('request library', () => {
 			expect(cache.size).toBe(1);
 		});
 
-		it('should cache POST requests by default (when no invalidates)', async () => {
+		it('should not cache POST requests by default', async () => {
 			await POST('/users', { body: { name: 'John' } });
 			await POST('/users', { body: { name: 'John' } });
 
-			expect(fetch).toHaveBeenCalledTimes(1);
+			expect(fetch).toHaveBeenCalledTimes(2);
 		});
 
 		it('should not cache POST requests with invalidates', async () => {
@@ -499,7 +499,7 @@ describe('request library', () => {
 				'/users',
 				expect.objectContaining({
 					credentials: 'include',
-					headers: { Authorization: 'Bearer token' },
+					headers: { 'Content-Type': 'application/json', Authorization: 'Bearer token' },
 					method: 'GET',
 					body: null,
 				}),
@@ -575,7 +575,11 @@ describe('request library', () => {
 		it('should handle network errors', async () => {
 			global.fetch = mock(() => Promise.reject(new Error('Network error')));
 
-			await expect(GET('/users')).rejects.toThrow('Network error');
+			const result = await GET('/users');
+
+			expect(result.success).toBe(false);
+			expect(result.body).toBeInstanceOf(Error);
+			expect(result.body.message).toBe('Network error');
 		});
 
 		it('should handle concurrent requests to same endpoint with different cache behavior', async () => {

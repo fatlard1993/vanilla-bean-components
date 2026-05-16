@@ -3,10 +3,8 @@ import { Component } from '../../Component';
 import { Router } from '.';
 
 export default class Demo extends DemoView {
-	render() {
+	build() {
 		this.component = new Router({ views: {} });
-
-		super.render();
 
 		new Component({
 			textContent: 'A basic hash based view router',

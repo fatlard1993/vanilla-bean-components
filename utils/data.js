@@ -21,7 +21,7 @@ export const debounce = (callback, delay = 400) => {
  * @returns {Function} Throttled function that enforces rate limiting
  */
 export const throttle = (callback, delay = 400) => {
-	let previousCall = Date.now();
+	let previousCall = 0;
 
 	return function () {
 		const time = Date.now();
@@ -55,7 +55,7 @@ export const retry = async (callback, options = {}) => {
 	const delayMs = (typeof options.delay === 'function' ? options.delay(index) : options.delay) ?? 500;
 
 	try {
-		return callback();
+		return await callback();
 	} catch (error) {
 		// eslint-disable-next-line no-console
 		if (process.env.NODE_ENV === 'development') console.warn('[DEV] retry error', error);
@@ -92,7 +92,7 @@ export const getCustomProperties = object =>
 	].filter(
 		key =>
 			typeof key !== 'string' ||
-			!/^(?:constructor|prototype|arguments|caller|name|length|toString|toLocaleString|valueOf|apply|bind|call|__proto__| __defineGetter__|__defineSetter__|hasOwnProperty|__lookupGetter__|__lookupSetter__|__defineGetter__|isPrototypeOf|propertyIsEnumerable)$/.test(
+			!/^(?:constructor|prototype|arguments|caller|name|length|toString|toLocaleString|valueOf|apply|bind|call|__proto__|__defineGetter__|__defineSetter__|hasOwnProperty|__lookupGetter__|__lookupSetter__|isPrototypeOf|propertyIsEnumerable)$/.test(
 				key,
 			),
 	);

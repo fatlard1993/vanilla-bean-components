@@ -30,13 +30,13 @@ export default class BaseSubscriber {
 	 */
 	createProxy(subscriberKeys) {
 		const subscriber = this;
-		const allKeys = [...subscriberKeys, Symbol.dispose];
+		const allKeys = new Set([...subscriberKeys, Symbol.dispose]);
 
 		return new Proxy(
 			{},
 			{
 				get(_, key) {
-					if (allKeys.includes(key)) {
+					if (allKeys.has(key)) {
 						const value = subscriber[key];
 						if (typeof value === 'function') return value.bind(subscriber);
 						return value;
@@ -62,20 +62,6 @@ export default class BaseSubscriber {
 							'property-access',
 						);
 						return null;
-					}
-				},
-
-				apply(_, thisArg, argumentsList) {
-					try {
-						const currentValue = subscriber.getCurrentValue();
-						if (typeof currentValue === 'function') {
-							return currentValue.apply(thisArg, argumentsList);
-						}
-						throw new TypeError('subscriber is not a function');
-					} catch (error) {
-						ErrorHandler.handleSubscriptionSetupError(error, subscriber.key, this.constructor.name);
-
-						throw new TypeError('subscriber is not a function');
 					}
 				},
 			},

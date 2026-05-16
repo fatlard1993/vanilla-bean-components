@@ -21,11 +21,13 @@ import { Label } from '../Label';
  * @returns {Form} Form component instance
  */
 export default class Form extends Component {
-	render() {
-		this.options.style = { ...this.options.style, overflow: 'hidden auto' };
-		this.options.data = new Context(this.options.data);
-
-		super.render();
+	build() {
+		if (!this.options.inputs?.length) return;
+		this.setStyle({ overflow: 'hidden auto' });
+		const currentData = this.options.data ? { ...this.options.data } : {};
+		this.options.data?.destroy?.();
+		this.options.data = new Context(currentData);
+		this.replaceCleanup('formData', () => this.options.data?.destroy?.());
 
 		const form = this;
 
@@ -57,23 +59,29 @@ export default class Form extends Component {
 				},
 			),
 		);
-
-		// Re-attach any appended children
-		if (this.options.append) this._setOption('append', this.options.append);
 	}
 
 	/**
-	 * Validates all form inputs and returns validation status.
+	 * Validates all form inputs and returns whether errors were found.
 	 * @param {object} [options] - Validation options passed to individual input validators
 	 * @returns {boolean} True if validation errors exist, false if all inputs are valid
 	 */
-	validate(options) {
-		if (!this.inputElements) return;
+	hasErrors(options) {
+		if (!this.inputElements) return false;
 
 		const validationErrors = Object.values(this.inputElements)
 			.map(input => input?.validate?.(options))
 			.filter(errors => !!errors);
 
 		return validationErrors.length > 0;
+	}
+
+	/**
+	 * @deprecated Use hasErrors() instead. validate() returns true when errors EXIST (inverted from typical validation APIs).
+	 * @param {object} [options] - Validation options passed to individual input validators
+	 * @returns {boolean} True if validation errors exist, false if all inputs are valid
+	 */
+	validate(options) {
+		return this.hasErrors(options);
 	}
 }

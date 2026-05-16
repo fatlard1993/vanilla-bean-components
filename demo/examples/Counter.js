@@ -20,10 +20,8 @@ export class Counter extends Component {
 }
 
 export default class Example extends ExampleView {
-	render() {
+	build() {
 		this.options.exampleCode = exampleCode;
-
-		super.render();
 
 		new Counter({ appendTo: this.demoWrapper });
 	}

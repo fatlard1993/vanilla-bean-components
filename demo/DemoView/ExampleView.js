@@ -2,10 +2,8 @@ import { Code, Label } from '../../components';
 import DemoView from '.';
 
 export default class ExampleView extends DemoView {
-	async render() {
+	async build() {
 		this.elem.style.overflow = 'auto';
-
-		super.render();
 
 		if (this.options.exampleCode) {
 			new Label(

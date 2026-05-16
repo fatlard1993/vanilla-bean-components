@@ -178,7 +178,7 @@ export default class MetaSubscriber extends BaseSubscriber {
 	initializeValues() {
 		this.targets.forEach((target, index) => {
 			try {
-				const rawValue = target.context.proxy[target.key];
+				const rawValue = target.context.target[target.key];
 				this.currentValues[index] = target.parser ? target.parser(rawValue) : rawValue;
 			} catch (error) {
 				ErrorHandler.handleParserError(error, target.context, target.key, 'meta-subscriber-init');
@@ -215,7 +215,6 @@ export default class MetaSubscriber extends BaseSubscriber {
 				const subscription = target.context.subscribe({
 					key: target.key,
 					callback: value => this.handleTargetUpdate(index, target, value),
-					parser: target.parser || (v => v),
 				});
 
 				this.cleanup.add(subscription.unsubscribe, `target-${index}-${target.key}`);

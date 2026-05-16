@@ -5,19 +5,21 @@ import { hydrateUrl } from './hydrateUrl';
 export const cache = new Map();
 export const subscriptions = new Map();
 
+const arraysEqual = (a, b) => a.length === b.length && a.every((v, i) => v === b[i]);
+
 const checkInvalidates = (invalidates, { cacheId, apiId }) => {
 	return invalidates.some(invalidate => {
 		let _isInvalidated = false;
 
 		if (Array.isArray(cacheId)) {
-			_isInvalidated = Array.isArray(invalidate) ? invalidate === cacheId : cacheId.includes(invalidate);
+			_isInvalidated = Array.isArray(invalidate) ? arraysEqual(invalidate, cacheId) : cacheId.includes(invalidate);
 		} else {
 			_isInvalidated = Array.isArray(invalidate) ? false : cacheId === invalidate;
 		}
 
 		if (!_isInvalidated) {
 			if (Array.isArray(apiId)) {
-				_isInvalidated = Array.isArray(invalidate) ? invalidate === apiId : apiId.includes(invalidate);
+				_isInvalidated = Array.isArray(invalidate) ? arraysEqual(invalidate, apiId) : apiId.includes(invalidate);
 			} else {
 				_isInvalidated = Array.isArray(invalidate) ? false : apiId === invalidate;
 			}
@@ -77,7 +79,6 @@ export const request = async (url, options = {}) => {
 		apiId: apiIdOption = options.id,
 		invalidateAfter = 60 * 1000,
 		invalidates,
-		cache: useCache = invalidates ? false : true,
 		isRefetch = false,
 		onRefetch,
 		enabled = true,
@@ -87,15 +88,16 @@ export const request = async (url, options = {}) => {
 		fetchOptions,
 	} = options;
 
+	const useCache = options.cache ?? (invalidates ? false : method === 'GET');
+
 	let hydratedUrl = url;
 
 	if (urlParameters) hydratedUrl = hydrateUrl(hydratedUrl, urlParameters);
 	if (searchParameters) hydratedUrl = `${hydratedUrl}?${new URLSearchParams(searchParameters)}`;
 
-	const apiId = (typeof apiIdOption === 'function' ? apiIdOption(options) : apiIdOption) || options.method + url;
+	const apiId = (typeof apiIdOption === 'function' ? apiIdOption(options) : apiIdOption) || method + url;
 	const cacheId =
-		(typeof options.cacheId === 'function' ? options.cacheId(options) : options.cacheId) ||
-		options.method + hydratedUrl;
+		(typeof options.cacheId === 'function' ? options.cacheId(options) : options.cacheId) || method + hydratedUrl;
 
 	const result = {
 		originalUrl: url,
@@ -110,7 +112,7 @@ export const request = async (url, options = {}) => {
 		contentType: null,
 		body: null,
 		invalidateCache: () => cache.delete(cacheId),
-		refetch: async overrides => await request.call(this, url, { ...options, isRefetch, ...overrides }),
+		refetch: async overrides => await request(url, { ...options, isRefetch, ...overrides }),
 		subscribe: callback => {
 			const subscriptionId = nanoid(5);
 			const unsubscribe = () => {
@@ -120,7 +122,7 @@ export const request = async (url, options = {}) => {
 				subscriptions.set(apiId, newSubscription);
 			};
 			const refetch = async overrides => {
-				return await request.call(this, url, {
+				return await request(url, {
 					...options,
 					isRefetch: subscriptionId,
 					onRefetch: callback,
@@ -163,17 +165,24 @@ export const request = async (url, options = {}) => {
 		return cachedResult;
 	}
 
-	result.response = await fetch(hydratedUrl, {
-		headers: { 'Content-Type': 'application/json' },
-		...(options.body && method !== 'GET' ? { body: JSON.stringify(options.body) } : { body: null }),
-		...fetchOptions,
-		method,
-	});
-	result.success = Math.floor(result.response.status / 100) === 2;
-	result.contentType = result.response.headers.get('content-type');
-	result.body = await (result.contentType && result.contentType.includes('application/json')
-		? result.response.json()
-		: result.response.text());
+	try {
+		const { headers: fetchHeaders, ...restFetchOptions } = fetchOptions || {};
+		result.response = await fetch(hydratedUrl, {
+			headers: { 'Content-Type': 'application/json', ...fetchHeaders },
+			...(options.body && method !== 'GET' ? { body: JSON.stringify(options.body) } : { body: null }),
+			...restFetchOptions,
+			method,
+		});
+		result.success = Math.floor(result.response.status / 100) === 2;
+		result.contentType = result.response.headers.get('content-type');
+		result.body = await (result.contentType && result.contentType.includes('application/json')
+			? result.response.json()
+			: result.response.text());
+	} catch (error) {
+		result.success = false;
+		result.body = error;
+		return result;
+	}
 
 	if (result.success && invalidates) {
 		cache.forEach(({ invalidate: dropCache, apiId: cacheApiId }, _id) => {
@@ -193,7 +202,7 @@ export const request = async (url, options = {}) => {
 		cache.set(cacheId, {
 			apiId,
 			invalidate: result.invalidateCache,
-			result,
+			result: { ...result },
 			...(invalidateAfter ? { timeout: setTimeout(result.invalidateCache, invalidateAfter) } : {}),
 		});
 	}
@@ -202,8 +211,8 @@ export const request = async (url, options = {}) => {
 		if (isRefetch) {
 			result.subscriptionId = isRefetch;
 			result.unsubscribe = subscriptions.get(apiId)?.[isRefetch]?.unsubscribe;
-			result.refetch = async overrides => await request.call(this, url, { isRefetch, ...options, ...overrides });
-		} else {
+			result.refetch = async overrides => await request(url, { isRefetch, ...options, ...overrides });
+		} else if (!result.subscriptionId) {
 			const { subscriptionId, unsubscribe, refetch } = result.subscribe(onRefetch);
 
 			result.subscriptionId = subscriptionId;

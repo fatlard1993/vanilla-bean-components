@@ -24,7 +24,7 @@ const StyledInput = styled(
 		--aug-clip-bl1: initial;
 		--aug-clip-br1: initial;
 		--aug-border: initial;
-		--aug-border-bg: radial-gradient(circle at left bottom, ${colors.white} 30px, ${colors} 30px), radial-gradient(circle at right bottom, ${colors.white} 30px, ${colors} 30px), radial-gradient(circle at right top, ${colors.white} 30px, ${colors} 30px), radial-gradient(circle at left top, ${colors.white} 30px, ${colors} 30px);
+		--aug-border-bg: radial-gradient(circle at left bottom, ${colors.white} 30px, ${colors.gray} 30px), radial-gradient(circle at right bottom, ${colors.white} 30px, ${colors.gray} 30px), radial-gradient(circle at right top, ${colors.white} 30px, ${colors.gray} 30px), radial-gradient(circle at left top, ${colors.white} 30px, ${colors.gray} 30px);
 
 		input {
 			margin: 18px auto 9px;
@@ -161,12 +161,12 @@ class ColorPicker extends StyledInput {
 
 		if (options.value === 'random') options.value = randomColor().toHslString();
 
-		super(options, children);
+		super(options, ...children);
 
 		this.pointers = {};
 	}
 
-	render() {
+	build() {
 		this.textInput = new Input({
 			type: 'text',
 			value: this.options.subscriber('value', value => this.hslString || value),
@@ -176,7 +176,7 @@ class ColorPicker extends StyledInput {
 		});
 
 		this.hueArea = new HueArea({
-			innerHTML: hue,
+			innerHTML: hue(this.uniqueId),
 			prependTo: this.elem,
 			onPointerDown: this.interactionInit.bind(this),
 		});
@@ -185,7 +185,7 @@ class ColorPicker extends StyledInput {
 		});
 
 		this.pickerArea = new PickerArea({
-			innerHTML: saturation,
+			innerHTML: saturation(this.uniqueId),
 			prependTo: this.elem,
 			onPointerDown: this.interactionInit.bind(this),
 		});
@@ -210,8 +210,6 @@ class ColorPicker extends StyledInput {
 				});
 			});
 		}
-
-		super.render();
 	}
 
 	/**
@@ -235,7 +233,7 @@ class ColorPicker extends StyledInput {
 			h = this.hue,
 			s = this.saturation,
 			l = this.lightness ?? 0.5,
-		} = typeof value === 'object' ? value : color.toHsv();
+		} = typeof value === 'object' ? value : color.toHsl();
 		const hslString =
 			typeof value === 'object'
 				? `hsl(${Math.round(h)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%)`
@@ -258,7 +256,7 @@ class ColorPicker extends StyledInput {
 
 			this.elem.style.backgroundColor = hslString;
 
-			this.pickerArea.elem.style.backgroundColor = `hsl(${h}, 100%, 50%)`;
+			this.pickerArea?.elem && (this.pickerArea.elem.style.backgroundColor = `hsl(${h}, 100%, 50%)`);
 		} else super._setOption(key, value);
 	}
 
@@ -325,6 +323,13 @@ class ColorPicker extends StyledInput {
 		document.addEventListener('pointerup', removePointer);
 		document.addEventListener('pointerleave', removePointer);
 		document.addEventListener('pointercancel', removePointer);
+
+		this.replaceCleanup('gestureListeners', () => {
+			document.removeEventListener('pointermove', move);
+			document.removeEventListener('pointerup', removePointer);
+			document.removeEventListener('pointerleave', removePointer);
+			document.removeEventListener('pointercancel', removePointer);
+		});
 	}
 
 	pickerMove(event) {

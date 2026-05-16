@@ -31,6 +31,7 @@ const StyledIcon = styled(
 export default class TooltipWrapper extends StyledIcon {
 	_setOption(key, value) {
 		if (key === 'tooltip') {
+			if (value == null) return;
 			const tooltipOptions = typeof value === 'object' ? value : { textContent: value };
 
 			if (this._tooltip) {
@@ -43,14 +44,14 @@ export default class TooltipWrapper extends StyledIcon {
 
 				this.addClass('hasTooltip');
 
-				this._tooltipOverId = this.on({
+				this.on({
 					targetEvent: 'pointerover',
 					callback: ({ clientX, clientY }) => {
 						this.tooltipTimeout = setTimeout(() => this._tooltip.show({ x: clientX, y: clientY }), 700);
 					},
 				});
 
-				this._tooltipOutId = this.on({
+				this.on({
 					targetEvent: 'pointerout',
 					callback: () => {
 						clearTimeout(this.tooltipTimeout);
@@ -59,7 +60,7 @@ export default class TooltipWrapper extends StyledIcon {
 				});
 
 				// Add cleanup for tooltip
-				this.addCleanup('tooltip', () => {
+				this.replaceCleanup('tooltip', () => {
 					if (this._tooltip) {
 						this._tooltip.destroy?.();
 						this._tooltip = null;

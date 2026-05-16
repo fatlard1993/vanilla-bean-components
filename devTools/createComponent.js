@@ -2,12 +2,26 @@ import fs from 'fs';
 
 import { capitalize } from '../utils/string';
 
-const options = process.argv[3] ? JSON.parse(process.argv[3]) : {};
+if (!process.argv[2]) {
+	console.error('Usage: bun run create:component <ComponentName> [optionsJSON]');
+	process.exit(1);
+}
+
+let options = {};
+try {
+	options = process.argv[3] ? JSON.parse(process.argv[3]) : {};
+} catch {
+	console.error('Invalid JSON options:', process.argv[3]);
+	process.exit(1);
+}
 
 const name = capitalize(process.argv[2]);
 const componentFolder = `components/${name}`;
 
-if (fs.existsSync(componentFolder)) throw new Error(`Component '${name}' already exists`);
+if (fs.existsSync(componentFolder)) {
+	console.error(`Component '${name}' already exists at ${componentFolder}`);
+	process.exit(1);
+}
 
 fs.mkdirSync(componentFolder);
 
@@ -37,12 +51,10 @@ const demoFile = `import DemoView from '../../demo/DemoView';
 import { ${name} } from '.';
 
 export default class Demo extends DemoView {
-	render() {
+	build() {
 		this.component = new ${name}({
 			${demoOptions}
 		});
-
-		super.render();
 	}
 }
 `;
@@ -107,10 +119,10 @@ class ${name} extends Component {
 	}
 
 	/**
-	 * Renders component and processes all options.
+	 * Creates component structure before options are processed.
 	 */
-	render() {
-		super.render();
+	build() {
+		// Create child elements here — this runs before options are processed
 	}
 
 	/**
@@ -134,5 +146,5 @@ await Bun.write(`${componentFolder}/demo.js`, demoFile);
 await Bun.write(`${componentFolder}/README.md`, readMeFile);
 await Bun.write(`${componentFolder}/index.js`, `export { default as ${name} } from './${name}';`);
 
-Bun.spawn(['bun', 'run', 'build:index']);
-Bun.spawn(['bun', 'run', 'format']);
+await Bun.spawn(['bun', 'run', 'build:index']).exited;
+await Bun.spawn(['bun', 'run', 'format']).exited;

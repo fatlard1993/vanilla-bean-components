@@ -8,7 +8,7 @@ export class Stopwatch extends Component {
 		super({ tag: 'span', time: 0, interval: 10, ...options });
 	}
 
-	render() {
+	build() {
 		this._time = new Elem({ tag: 'span' });
 
 		const start = new Button({ content: 'Start', onPointerPress: this.start.bind(this) });
@@ -16,8 +16,6 @@ export class Stopwatch extends Component {
 		const reset = new Button({ content: 'Reset', onPointerPress: this.reset.bind(this) });
 
 		this.content([this._time, start, stop, reset]);
-
-		super.render();
 	}
 
 	_setOption(key, value) {
@@ -47,10 +45,8 @@ export class Stopwatch extends Component {
 }
 
 export default class Example extends ExampleView {
-	render() {
+	build() {
 		this.options.exampleCode = exampleCode;
-
-		super.render();
 
 		new Stopwatch({ appendTo: this.demoWrapper });
 	}

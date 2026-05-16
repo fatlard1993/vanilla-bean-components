@@ -32,10 +32,8 @@ const Loader = styled.Icon(
 );
 
 export default class Example extends ExampleView {
-	async render() {
+	async build() {
 		this.options.exampleCode = exampleCode;
-
-		super.render();
 
 		new Loader({ appendTo: this.demoWrapper });
 

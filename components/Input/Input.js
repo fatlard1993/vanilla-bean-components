@@ -75,11 +75,9 @@ export default class Input extends Component {
 		this.initialValue = this.options.value;
 	}
 
-	render() {
-		super.render();
-
+	build() {
 		if (this.tag === 'textarea' && this.options.syntaxHighlighting) {
-			this.elem.addEventListener('keydown', function (event) {
+			const handleKeydown = function (event) {
 				if (event.key == 'Tab') {
 					event.preventDefault();
 
@@ -87,7 +85,10 @@ export default class Input extends Component {
 						? insertTabCharacter(this)
 						: adjustIndentation({ textarea: this, action: event.shiftKey ? 'remove' : 'add' });
 				}
-			});
+			};
+
+			this.elem.addEventListener('keydown', handleKeydown);
+			this.replaceCleanup('syntaxHighlightingKeydown', () => this.elem.removeEventListener('keydown', handleKeydown));
 		}
 	}
 
@@ -96,8 +97,8 @@ export default class Input extends Component {
 			if (value === 'auto') {
 				this.__updateAutoHeight = () => {
 					this.elem.style.height = this.options.syntaxHighlighting
-						? `calc((${((this.elem.value?.match(/\n/g) || '').length + 1) * 1.19}em + 10px)`
-						: `calc((${((this.elem.value?.match(/\n/g) || '').length + 1) * 1.25}em + 16px)`;
+						? `calc(${((this.elem.value?.match(/\n/g) || '').length + 1) * 1.19}em + 10px)`
+						: `calc(${((this.elem.value?.match(/\n/g) || '').length + 1) * 1.25}em + 16px)`;
 				};
 
 				// Create debounced version for input events
@@ -113,7 +114,7 @@ export default class Input extends Component {
 				this.elem.addEventListener('input', this.__debouncedUpdateAutoHeight);
 
 				// Add cleanup for timeout
-				this.addCleanup('autoHeight', () => {
+				this.replaceCleanup('autoHeight', () => {
 					clearTimeout(this.__autoHeightTimeout);
 					this.elem.removeEventListener?.('input', this.__debouncedUpdateAutoHeight);
 				});
@@ -130,7 +131,8 @@ export default class Input extends Component {
 			this.addClass(`language-${value}`);
 		} else super._setOption(key, value);
 
-		if (this.rendered && key === 'value') retry(() => this.validate(), { delay: 500, max: 1 });
+		if (this.rendered && key === 'value' && this.options.validations?.length)
+			retry(() => this.validate(), { delay: 500, max: 1 });
 	}
 
 	/**

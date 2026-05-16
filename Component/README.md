@@ -125,14 +125,14 @@ const subscription = button.options.subscribe({
 
 Options are routed through `_setOption` based on key and value type:
 
-| Condition                | Routing                    | Example                |
-| ------------------------ | -------------------------- | ---------------------- |
-| Key starts with 'on'     | Event handler registration | `onClick: handler`     |
-| Key in `knownAttributes` | `elem.setAttribute()`      | `id: 'my-id'`          |
-| Component has method     | Method call with value     | `addClass: 'active'`   |
-| HTMLElement has property | Direct elem property       | `textContent: 'hello'` |
-| Value is function        | Component property         | `customMethod: fn`     |
-| Default                  | Elem property assignment   | `customProp: value`    |
+| Condition                | Routing                    | Example                   |
+| ------------------------ | -------------------------- | ------------------------- |
+| Key starts with 'on'     | Event handler registration | `onPointerPress: handler` |
+| Key in `knownAttributes` | `elem.setAttribute()`      | `id: 'my-id'`             |
+| Component has method     | Method call with value     | `addClass: 'active'`      |
+| HTMLElement has property | Direct elem property       | `textContent: 'hello'`    |
+| Value is function        | Component property         | `customMethod: fn`        |
+| Default                  | Elem property assignment   | `customProp: value`       |
 
 ## Event Handling
 
@@ -142,12 +142,14 @@ Event handlers are registered automatically when option keys start with 'on':
 
 ```js
 new Component({
-	onClick: event => console.log('clicked'),
+	onPointerPress: event => console.log('pressed'),
 	onChange: ({ value }) => console.log('value:', value), // Input events include .value
 	onConnected: () => console.log('added to DOM'),
 	onDisconnected: () => console.log('removed from DOM'),
 });
 ```
+
+> **Note:** `click` is not in the supported event set. Use `onPointerPress` for press interactions.
 
 ### Enhanced Input Events
 
@@ -244,18 +246,57 @@ CSS is processed through PostCSS, receives unique class scope, and is injected i
 
 ## Lifecycle Management
 
-### Rendering Process
+### Render Lifecycle
+
+`render()` orchestrates a fixed sequence every time it is called:
+
+```
+render()
+  ├─ if (this.rendered)   ← re-render only: clears children, runs descendant cleanup
+  │     empty()
+  │     this.rendered = false
+  ├─ build()              ← subclass structural hook, runs before options are applied
+  ├─ _processOptions()    ← routes every option through _setOption()
+  │     priority keys first (onConnected, textContent, content, appendTo, prependTo, value)
+  │     then all remaining keys
+  └─ this.rendered = true
+```
+
+**`build()` is the subclass structural hook.** Override `build()` — never `render()` — to create child elements and internal structure. Because `build()` runs before `_processOptions()`, all structure exists by the time `_setOption` receives values.
 
 ```js
-component.render(); // Process all options through _setOption
+class Card extends Component {
+	build() {
+		this.header = new Component({ tag: 'header', appendTo: this });
+		this.body = new Component({ tag: 'section', appendTo: this });
+	}
+
+	_setOption(key, value) {
+		if (key === 'title') this.header.options.textContent = value;
+		else super._setOption(key, value);
+	}
+}
+```
+
+**`empty()` only runs on re-render.** On the initial render it is skipped. On subsequent `render()` calls it removes all child elements and runs cleanup on all descendant components before the DOM is cleared.
+
+**`async build()` is not supported.** `render()` does not await `build()`'s return value. Asynchronous initialization belongs in `onConnected`.
+
+**Deep hierarchies must chain `super.build()` manually.** If both a parent class and its subclass define `build()`, the subclass must call `super.build()` explicitly — it is not called automatically.
+
+### Rendering Process (summary)
+
+```js
+component.render(); // Re-render: empty → build → _processOptions → rendered = true
 ```
 
 Rendering behavior:
 
-1. **Content clearing** - Removes existing content when re-rendering
-2. **Priority processing** - Processes `priorityOptions` first
-3. **Option routing** - Each option processed via `_setOption`
-4. **Completion flag** - Sets `rendered = true`
+1. **Content clearing** - `empty()` removes existing children on re-render only (skipped on first render)
+2. **Structure creation** - `build()` creates sub-elements before options are applied
+3. **Priority processing** - `_processOptions()` applies `priorityOptions` keys first
+4. **Option routing** - Each option processed via `_setOption`
+5. **Completion flag** - Sets `rendered = true`
 
 ### Automatic Cleanup System
 
@@ -330,7 +371,7 @@ new Component(options?, ...children)
 | ---------------- | ---------- | -------------------------------------------- |
 | `onHover`        | `Function` | Hover handler with move tracking             |
 | `onPointerPress` | `Function` | Press sequence handler                       |
-| `onClick`        | `Function` | Click event handler                          |
+| ~~`onClick`~~    | —          | Not supported — use `onPointerPress` instead |
 | `onChange`       | `Function` | Change event handler (input .value included) |
 | `onConnected`    | `Function` | DOM connection detection                     |
 | `onDisconnected` | `Function` | DOM disconnection detection                  |
@@ -361,9 +402,12 @@ new Component({
 #### Lifecycle Methods
 
 ```js
-component.render(); // Process all options
-component.addCleanup(id, fn); // Register cleanup function
-component.processCleanup(); // Execute cleanup functions
+component.build(); // Subclass structural hook — override to create child elements
+component.render(); // Re-render: empty → build → _processOptions → rendered = true
+component.addCleanup(id, fn); // Register cleanup function (chains with existing for same id)
+component.replaceCleanup(id, fn); // Replace cleanup, running the previous one immediately
+component.processCleanup(); // Execute all cleanup functions
+component.destroy(); // Disconnect observer, run all cleanup, remove from DOM
 ```
 
 #### Event Methods

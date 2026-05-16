@@ -31,7 +31,7 @@ class Table extends Component {
 					this.options.data = this.options.data.sort(orderBy({ property, direction }));
 				},
 				...options,
-				columns: options.columns.map(column =>
+				columns: (options.columns || []).map(column =>
 					typeof column === 'string' ? { key: column, content: capitalize(column) } : column,
 				),
 				footer: options.footer?.map(column => (typeof column === 'string' ? { content: capitalize(column) } : column)),
@@ -40,16 +40,15 @@ class Table extends Component {
 		);
 	}
 
-	render() {
-		super.render();
-	}
-
 	_setOption(key, value) {
-		if (key === 'sort' && this.rendered) {
-			this.options.onSort(value, this.options.sortDirection);
-		} else if (key === 'sortDirection' && this.rendered) {
+		if (key === 'sortDirection' && this.rendered) {
 			this.options.onSort(this.options.sortProperty, value);
 		} else if (key === 'data' || key === 'selection') {
+			this._sortSubscribers?.forEach(sub => sub.destroy?.());
+			this._sortSubscribers = null;
+
+			if (!value) return;
+
 			if (this.thead) this.thead.empty();
 			else this.thead = new Elem({ tag: 'thead', appendTo: this });
 
@@ -59,6 +58,9 @@ class Table extends Component {
 			if (this.tfoot) this.tfoot.empty();
 			else this.tfoot = new Elem({ tag: 'tfoot', appendTo: this });
 
+			this._sortSubscribers = [];
+			this.replaceCleanup('sortSubscribers', () => this._sortSubscribers?.forEach(sub => sub.destroy?.()));
+
 			this.thead.append(
 				new Component(
 					{ tag: 'tr' },
@@ -66,19 +68,24 @@ class Table extends Component {
 						const th = new Component({ tag: 'th', ...column });
 
 						if (column.sort) {
-							new Icon({
-								icon: this.options.subscriber('sortDirection', () => {
-									if (this.options.sortProperty !== column.key) return 'sort';
+							const iconSub = this.options.subscriber('sortDirection', () => {
+								if (this.options.sortProperty !== column.key) return 'sort';
 
-									return this.options.sortDirection === 'asc' ? 'sort-down' : 'sort-up';
-								}),
-								style: this.options.subscriber('sortDirection', () => ({
-									display: 'inline',
-									marginLeft: '6px',
-									...(this.options.sortProperty !== column.key
-										? { color: theme.colors.dark(theme.colors.gray) }
-										: { color: theme.colors.white }),
-								})),
+								return this.options.sortDirection === 'asc' ? 'sort-down' : 'sort-up';
+							});
+							const styleSub = this.options.subscriber('sortDirection', () => ({
+								display: 'inline',
+								marginLeft: '6px',
+								...(this.options.sortProperty !== column.key
+									? { color: theme.colors.dark(theme.colors.gray) }
+									: { color: theme.colors.white }),
+							}));
+
+							this._sortSubscribers.push(iconSub, styleSub);
+
+							new Icon({
+								icon: iconSub,
+								style: styleSub,
 								appendTo: th,
 							});
 
@@ -112,7 +119,7 @@ class Table extends Component {
 												? column.dataColumn({ column, rowData, table: this })
 												: column.dataColumn),
 										},
-										column.key ? rowData[column.key].toString() : undefined,
+										column.key ? rowData[column.key]?.toString() : undefined,
 									),
 							),
 						),

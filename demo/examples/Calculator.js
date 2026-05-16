@@ -39,7 +39,7 @@ export class Calculator extends (styled.Component`
 		});
 	}
 
-	render() {
+	build() {
 		this._display = new CalculatorDisplay();
 		this._keypad = new StyledKeyboard({
 			layout: 'calculator',
@@ -74,8 +74,6 @@ export class Calculator extends (styled.Component`
 		});
 
 		this.content([this._display, this._keypad]);
-
-		super.render();
 	}
 
 	_setOption(key, value) {
@@ -85,10 +83,8 @@ export class Calculator extends (styled.Component`
 }
 
 export default class Example extends ExampleView {
-	render() {
+	build() {
 		this.options.exampleCode = exampleCode;
-
-		super.render();
 
 		new Calculator({ appendTo: this.demoWrapper });
 	}

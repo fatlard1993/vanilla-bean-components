@@ -9,7 +9,7 @@ import { Popover } from '../Popover';
 import { Whiteboard } from '.';
 
 export default class Demo extends DemoView {
-	render() {
+	build() {
 		const size = document.body.clientWidth - document.body.clientWidth * 0.22;
 
 		this.component = new Whiteboard({
@@ -28,8 +28,6 @@ export default class Demo extends DemoView {
 				localStorage.setItem('last_whiteboard_lines', JSON.stringify(this.component.options.lines));
 			},
 		});
-
-		super.render();
 
 		const colorPicker = new Popover(
 			{
@@ -76,7 +74,7 @@ export default class Demo extends DemoView {
 			onPointerPress: () => {
 				this.component.options.lines = [];
 				localStorage.removeItem('last_whiteboard_lines');
-				this.component.empty();
+				this.component.clearCanvas();
 			},
 		});
 	}

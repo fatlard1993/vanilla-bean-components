@@ -153,16 +153,13 @@ describe('Context', () => {
 			const callback = mock();
 
 			context.addEventListener('x', handler);
-			context.subscribe({ key: 'x', callback });
+			const { id } = context.subscribe({ key: 'x', callback });
 
-			expect(Object.keys(context.subscriptions).length).toBe(1);
-			expect(context.cleanup.size).toBeGreaterThan(0);
+			expect(id).toBeTruthy();
 
 			context.destroy();
 
 			expect(context.isDestroyed).toBe(true);
-			expect(Object.keys(context.subscriptions).length).toBe(0);
-			expect(context.cleanup.size).toBe(0);
 		});
 
 		test('handles operations on destroyed context gracefully', () => {

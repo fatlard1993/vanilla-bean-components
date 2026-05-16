@@ -49,14 +49,14 @@ export default class Whiteboard extends Component {
 		);
 	}
 
-	render() {
+	build() {
 		this.canvas = this.elem.getContext('2d');
-
-		super.render();
 
 		this.pointers = {};
 
-		this.elem.addEventListener('pointerdown', this.interactionInit.bind(this));
+		const boundInteractionInit = this.interactionInit.bind(this);
+		this.elem.addEventListener('pointerdown', boundInteractionInit);
+		this.replaceCleanup('pointerdown', () => this.elem.removeEventListener('pointerdown', boundInteractionInit));
 	}
 
 	_setOption(key, value) {
@@ -97,7 +97,7 @@ export default class Whiteboard extends Component {
 
 				this.drawEvent.call(this, event);
 			}).bind(this),
-			this.options.drawThrottle || Math.min(Math.max(this.options.lineWidth + 3, 24), 6),
+			this.options.drawThrottle || Math.max(Math.min(this.options.lineWidth + 3, 24), 6),
 		);
 		const removePointer = event => {
 			if (!this.pointers[event.pointerId]) return;
@@ -108,10 +108,10 @@ export default class Whiteboard extends Component {
 				event,
 				color: this.options.color,
 				width: this.options.lineWidth,
-				line: this.pointers[pointerId].line,
+				line: this.pointers[event.pointerId].line,
 			});
 
-			if (this.pointers[pointerId].line.length === 0) this.drawEvent(event, true);
+			if (this.pointers[event.pointerId].line.length === 0) this.drawEvent(event, true);
 
 			delete this.pointers[event.pointerId];
 			this.activePointerCount = Object.values(this.pointers).filter(_ => !!_).length;
@@ -130,10 +130,19 @@ export default class Whiteboard extends Component {
 		document.addEventListener('pointerup', removePointer);
 		document.addEventListener('pointerleave', removePointer);
 		document.addEventListener('pointercancel', removePointer);
+
+		this.replaceCleanup('gestureListeners', () => {
+			document.removeEventListener('pointermove', move);
+			document.removeEventListener('pointerup', removePointer);
+			document.removeEventListener('pointerleave', removePointer);
+			document.removeEventListener('pointercancel', removePointer);
+		});
 	}
 
 	drawEvent(event, cap = false) {
 		const { pointerId } = event;
+
+		if (!this.pointers[pointerId]) return;
 
 		const to = this.getPosition(event);
 		const { x, y } = this.pointers[pointerId];
@@ -175,7 +184,7 @@ export default class Whiteboard extends Component {
 	/**
 	 * Clears the entire canvas.
 	 */
-	empty() {
+	clearCanvas() {
 		this.canvas.clearRect(0, 0, this.elem.width, this.elem.height);
 	}
 }

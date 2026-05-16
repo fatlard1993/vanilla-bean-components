@@ -1,6 +1,12 @@
 import { TooltipWrapper } from '../TooltipWrapper';
 
-const defaultOptions = { tag: 'a', variant: 'link', tooltip: { icon: 'link', style: { fontSize: '12px' } } };
+const defaultOptions = {
+	tag: 'a',
+	variant: 'link',
+	get tooltip() {
+		return { icon: 'link', style: { fontSize: '12px' } };
+	},
+};
 const variant_enum = Object.freeze(['link', 'button']);
 
 /**

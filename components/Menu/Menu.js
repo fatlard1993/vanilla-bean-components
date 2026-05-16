@@ -40,6 +40,6 @@ const StyledList = styled(
  */
 export default class Menu extends StyledList {
 	constructor(options = {}, ...children) {
-		super({ ...options, onPointerPress: options.onSelect }, children);
+		super({ ...options, onPointerPress: options.onSelect }, ...children);
 	}
 }

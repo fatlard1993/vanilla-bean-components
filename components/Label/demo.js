@@ -3,7 +3,7 @@ import { Input } from '../Input';
 import { Label } from '.';
 
 export default class Demo extends DemoView {
-	render() {
+	build() {
 		this.component = new Label(
 			{
 				label: 'label',
@@ -12,8 +12,6 @@ export default class Demo extends DemoView {
 			},
 			new Input({ value: '' }),
 		);
-
-		super.render();
 
 		new Label(
 			{ appendTo: this.demoWrapper, label: '0' },

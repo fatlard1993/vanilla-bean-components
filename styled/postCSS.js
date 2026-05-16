@@ -10,11 +10,12 @@ import plugin_nested from 'postcss-nested';
 export const postCSS = async styleText => {
 	if (!styleText) return '';
 
-	return (
-		postcss([plugin_nested, plugin_autoprefixer])
-			.process(styleText, { from: undefined })
-			.then(({ css }) => css)
+	return postcss([plugin_nested, plugin_autoprefixer])
+		.process(styleText, { from: undefined })
+		.then(({ css }) => css)
+		.catch(error => {
 			// eslint-disable-next-line no-console
-			.catch(process.env.NODE_ENV === 'development' ? console.error : () => {})
-	);
+			console.error('[styled] PostCSS error:', error.message || error);
+			return '';
+		});
 };

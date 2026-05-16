@@ -1,7 +1,17 @@
 import BaseSubscriber from './BaseSubscriber.js';
 import ErrorHandler from './ErrorHandler.js';
 
-const subscriberKeys = ['__isSubscriber', 'key', 'parser', 'context', 'proxy', 'subscribe', 'unsubscribe', 'toJSON'];
+const subscriberKeys = [
+	'__isSubscriber',
+	'key',
+	'parser',
+	'context',
+	'proxy',
+	'subscribe',
+	'unsubscribe',
+	'destroy',
+	'toJSON',
+];
 
 /**
  * Reactive value updating when a Context property changes.
@@ -90,6 +100,15 @@ export default class Subscriber extends BaseSubscriber {
 			};
 		}
 
+		if (this.subscription) {
+			try {
+				this.context.unsubscribe(this.subscription.id);
+			} catch {
+				/* previous subscription cleanup — safe to ignore */
+			}
+			this.subscription = null;
+		}
+
 		try {
 			this.subscription = this.context.subscribe({
 				callback,
@@ -110,14 +129,20 @@ export default class Subscriber extends BaseSubscriber {
 	}
 
 	/**
+	 * Clean up subscription and mark as destroyed.
+	 * @override
+	 */
+	destroy() {
+		this.unsubscribe();
+		super.destroy();
+	}
+
+	/**
 	 * Remove current subscription.
 	 * @override
 	 */
 	unsubscribe() {
-		if (!this.subscription) {
-			ErrorHandler.handleWarning('No active subscription to unsubscribe');
-			return;
-		}
+		if (!this.subscription) return;
 
 		try {
 			this.context.unsubscribe(this.subscription.id);

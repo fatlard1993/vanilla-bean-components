@@ -87,8 +87,8 @@ describe('postCSS', () => {
 
 		const result = await postCSS(malformedCSS);
 
-		// postCSS returns undefined on error, which gets caught and handled
-		expect(result).toBeUndefined();
+		// postCSS returns empty string on error to prevent injecting "undefined" into style tags
+		expect(result).toBe('');
 	});
 
 	test('processes valid CSS without nested syntax', async () => {

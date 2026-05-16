@@ -10,7 +10,7 @@ The library uses different casing patterns to signal the type and scope of ident
 
 - **PascalCase** :: Classes, components, constructors, and types that represent instantiable entities
 - **camelCase** :: Variables, functions, methods, and properties that represent actions or state
-- **SCREAMING_SNAKE_CASE** :: Constants and enums that represent immutable configuration values
+- **snake_case + `_enum` suffix** :: Frozen enum arrays exposed as instance properties (e.g., `type_enum`, `size_enum`, `variant_enum`)
 - **snake_case** :: Test files and utility files (used sparingly for specific cases)
 - **kebab-case** :: CSS classes, HTML attributes, URL slugs, and external identifiers
 
@@ -44,7 +44,7 @@ Variable and function naming emphasizes readability and clearly communicates int
 
 **Special Naming Patterns:**
 
-- **Constants**: SCREAMING_SNAKE_CASE for values that never change (e.g., `type_enum` for HTML input types)
+- **Enums**: snake_case with `_enum` suffix for frozen arrays exposed as instance properties (e.g., `type_enum`, `size_enum`, `variant_enum`)
 - **Private methods**: Underscore prefix to indicate internal use (e.g., `_setOption`, `_updateAutoHeight`)
 - **Cleanup functions**: Prefixed with `__` for internal lifecycle methods (e.g., `__debouncedUpdateAutoHeight`)
 
@@ -131,7 +131,7 @@ Certain file types and contexts have specific naming requirements that override 
 **Test and Development:**
 
 - **Test descriptions**: sentence case with spaces for readability in test output
-- **Enum values**: Context-dependent-lowercase for HTML attributes (matching web standards), SCREAMING_SNAKE_CASE for internal constants
+- **Enum values**: Context-dependent — lowercase for HTML attributes (matching web standards), snake_case with `_enum` suffix for frozen instance arrays
 
 **Context-Sensitive Naming:**
 

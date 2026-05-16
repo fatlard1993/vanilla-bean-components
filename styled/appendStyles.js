@@ -5,9 +5,19 @@
  * @returns {HTMLStyleElement} The created and appended style element
  */
 export const appendStyles = (css, id) => {
+	if (!css) return;
+	if (id) {
+		const existing = document.getElementById(id);
+
+		if (existing) {
+			existing.textContent = css;
+			return existing;
+		}
+	}
+
 	const style = document.createElement('style');
 
-	style.innerHTML = css;
+	style.textContent = css;
 	if (id) style.id = id;
 
 	document.head.append(style);

@@ -3,15 +3,13 @@ import { Button } from '../Button';
 import { Notify } from '.';
 
 export default class Demo extends DemoView {
-	render() {
+	build() {
 		this.component = new Notify({
 			type: 'info',
 			textContent: 'textContent',
 			autoOpen: false,
 			onPointerPress: () => this.component.hide(),
 		});
-
-		super.render();
 
 		new Button({
 			appendTo: this.demoWrapper,

@@ -5,8 +5,6 @@
  * @returns {number} Zero-based index position within parent element
  */
 export const getElementIndex = (element, index = 0) => {
-	if (index === undefined) index = 0;
-
 	if (element.previousElementSibling) return getElementIndex(element.previousElementSibling, ++index);
 
 	return index;
@@ -41,7 +39,9 @@ export const isDescendantOf = (element, parentElement) => {
 export const getElementsContainingText = (text, options = {}) => {
 	const { xPathElement = '*', scope = document.body, caseSensitive = false } = options;
 
-	const xPath = `.//${xPathElement}[contains(${caseSensitive ? `text(),'${text}'` : `translate(.,'${text.toUpperCase()}','${text.toLowerCase()}'),'${text.toLowerCase()}'`})]`;
+	const esc = str => (!str.includes("'") ? `'${str}'` : `concat('${str.replace(/'/g, "',\"'\",'")}')`);
+
+	const xPath = `.//${xPathElement}[contains(${caseSensitive ? `text(),${esc(text)}` : `translate(.,${esc(text.toUpperCase())},${esc(text.toLowerCase())}),${esc(text.toLowerCase())}`})]`;
 	const result = document.evaluate(xPath, scope, null, XPathResult.ANY_TYPE, null);
 
 	let node = null;

@@ -82,7 +82,17 @@ const StyledPopover = styled(
 
 const defaultOptions = { position: 'topRight', autoOpen: false };
 
-const position_enum = ['center', 'top', 'bottom', 'left', 'right', 'topLeft', 'topRight', 'bottomLeft', 'bottomRight'];
+const position_enum = Object.freeze([
+	'center',
+	'top',
+	'bottom',
+	'left',
+	'right',
+	'topLeft',
+	'topRight',
+	'bottomLeft',
+	'bottomRight',
+]);
 
 /**
  * Tooltip popover component with configurable positioning and smooth animations.
@@ -108,7 +118,7 @@ class Tooltip extends StyledPopover {
 				...options,
 				addClass: ['tooltip'].concat(options.addClass),
 			},
-			children,
+			...children,
 		);
 	}
 

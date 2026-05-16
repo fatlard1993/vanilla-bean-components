@@ -18,26 +18,29 @@ const StyledEvent = styled(
 
 export default class CalendarEvent {
 	constructor(data) {
-		if (typeof data !== 'object') return false;
+		if (typeof data !== 'object') throw new TypeError('CalendarEvent requires an object argument');
 
 		this.options = data;
 
 		this.at = new Date(data.at);
 
-		if (!this.at) return false;
+		if (Number.isNaN(this.at.getTime())) throw new TypeError('CalendarEvent requires a valid date (options.at)');
 
 		this.label = data.label;
 		this.notes = data.notes;
 		this.color = data.color;
 		this.duration = data.duration;
+		this.recurring = data.recurring;
+		this.daily = data.daily;
+		this.whitelist = data.whitelist;
+		this.blacklist = data.blacklist;
+		this.weekdays = data.weekdays;
 		this.year = this.at.getFullYear();
 		this.month = this.at.getMonth() + 1;
 		this.day = this.at.getDate();
 		this.hour = this.at.getHours();
 		this.minute = this.at.getMinutes();
 		this.fullDate = `${this.month}/${this.day}/${this.year}`;
-
-		return this;
 	}
 
 	render(type, container, calendar) {

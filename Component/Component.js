@@ -5,6 +5,29 @@ import { Elem } from '../Elem';
 
 import { observeElementConnection } from './observeElementConnection';
 
+const _internalProperties = new Set([
+	'cleanup',
+	'rendered',
+	'elemObserver',
+	'options',
+	'elem',
+	'tag',
+	'defaultOptions',
+	'__registeredEvents',
+	'__knownAttributes',
+	'__priorityOptions',
+]);
+
+const _lifecycleMethods = new Set([
+	'render',
+	'destroy',
+	'build',
+	'empty',
+	'processCleanup',
+	'addCleanup',
+	'replaceCleanup',
+]);
+
 const connectionEvents = new Set(['connected', 'disconnected']);
 const inputEvents = new Set(['keydown', 'keyup', 'change', 'blur', 'input', 'search']);
 const commonEvents = new Set([
@@ -24,7 +47,9 @@ const defaultOptions = {
 	autoRender: true,
 	registeredEvents: new Set([]),
 	knownAttributes: new Set(['role', 'name', 'colspan', 'anchor', 'popover', 'popovertarget', 'popovertargetaction']),
-	priorityOptions: new Set(['onConnected', 'textContent', 'content', 'appendTo', 'prependTo', 'value']),
+	get priorityOptions() {
+		return new Set(['onConnected', 'textContent', 'content', 'appendTo', 'prependTo', 'value']);
+	},
 };
 
 /**
@@ -78,16 +103,15 @@ class Component extends Elem {
 			append: [optionsWithoutConfig.append, children],
 		});
 
-		const setOption = ({ detail: { key, value } }) => this._setOption(key, value);
+		const setOption = ({ detail: { key, value } }) => {
+			if (this.rendered) this._setOption(key, value);
+		};
 
 		this.options.addEventListener('set', setOption);
 
 		this.addCleanup('context', () => {
 			this.options.removeEventListener('set', setOption);
-
-			Object.keys(this.options.subscriptions).forEach(id => {
-				this.options.unsubscribe(id);
-			});
+			this.options.destroy?.();
 		});
 
 		if (autoRender === true) this.render();
@@ -101,7 +125,11 @@ class Component extends Elem {
 					window.removeEventListener('load', render);
 				});
 			}
-		} else if (autoRender === 'animationFrame') requestAnimationFrame(() => this.render());
+		} else if (autoRender === 'animationFrame') {
+			const frameId = requestAnimationFrame(() => this.render());
+
+			this.addCleanup('autoRender_animationFrame', () => cancelAnimationFrame(frameId));
+		}
 
 		if (process.env.NODE_ENV === 'development') {
 			this.addClass(...this.ancestry().map(({ constructor }) => constructor.name));
@@ -117,8 +145,33 @@ class Component extends Elem {
 	}
 
 	/**
-	 * Process all options through _setOption and mark as rendered.
-	 * Clears existing content when re-rendering. Priority options processed first.
+	 * Subclass structural hook — override to create child elements and component structure.
+	 * Called by render() before options are processed, so all structure exists
+	 * before _setOption receives values.
+	 */
+	build() {}
+
+	/**
+	 * Process all options through _setOption with priority ordering.
+	 * @private
+	 */
+	_processOptions() {
+		if (this.options) {
+			const priority = [];
+			const rest = [];
+
+			for (const entry of Object.entries(this.options)) {
+				(this.__priorityOptions.has(entry[0]) ? priority : rest).push(entry);
+			}
+
+			for (const [key, value] of priority) this._setOption(key, value);
+			for (const [key, value] of rest) this._setOption(key, value);
+		}
+	}
+
+	/**
+	 * Orchestrates the render lifecycle: empty → build() → _processOptions() → rendered.
+	 * Ensures subclass structure exists before options are processed.
 	 */
 	render() {
 		if (this.rendered) {
@@ -126,15 +179,8 @@ class Component extends Elem {
 			this.rendered = false;
 		}
 
-		if (this.options) {
-			const sortedOptions = Object.entries(this.options).reduce((options, option) => {
-				if (this.__priorityOptions.has(option[0])) return [option, ...options];
-				return [...options, option];
-			}, []);
-
-			sortedOptions.forEach(([key, value]) => this._setOption(key, value));
-		} else this.options = {};
-
+		this.build();
+		this._processOptions();
 		this.rendered = true;
 	}
 
@@ -161,15 +207,25 @@ class Component extends Elem {
 			if (value) this.elem.setAttribute('data-augmented-ui', typeof value === 'string' ? value : '');
 			else this.elem.removeAttribute('data-augmented-ui');
 		} else if (this.__knownAttributes.has(key) || key.startsWith('aria-')) {
-			this.elem.setAttribute(key, value);
-		} else if (typeof this[key] === 'function') this[key].call(this, value);
-		else if (this.hasOwnProperty(key)) this[key] = value;
+			if (value === null || value === undefined || value === false) this.elem.removeAttribute(key);
+			else this.elem.setAttribute(key, value);
+		} else if (typeof this[key] === 'function') {
+			if (_lifecycleMethods.has(key)) return;
+			this[key].call(this, value);
+		} else if (this.hasOwnProperty(key) && !_internalProperties.has(key)) this[key] = value;
 		else if (typeof this.elem[key] === 'function') {
 			if (value?.elem) value = value.elem;
 
 			this.elem[key].call(this.elem, value);
 		} else if (typeof value === 'function') this[key] = value;
-		else this.elem[key] = value;
+		else {
+			if (process.env.NODE_ENV === 'development' && !(key in this.elem)) {
+				console.warn(
+					`Component._setOption(): unknown key "${key}" assigned directly to elem. If intentional, add to knownAttributes.`,
+				);
+			}
+			this.elem[key] = value;
+		}
 	}
 
 	/**
@@ -185,23 +241,72 @@ class Component extends Elem {
 	 * @returns {Component[]} Array of child components
 	 */
 	get children() {
-		return Array.from(this.elem.children).flatMap(({ _component }) => [_component]);
+		return Array.from(this.elem.children).flatMap(({ _component }) => (_component ? [_component] : []));
+	}
+
+	/**
+	 * Removes all child elements after running cleanup on descendant components.
+	 * @returns {this}
+	 */
+	empty() {
+		const cleanupDescendants = element => {
+			for (const child of Array.from(element.children)) {
+				cleanupDescendants(child);
+				child._component?.processCleanup?.();
+			}
+		};
+		cleanupDescendants(this.elem);
+		this.elem.replaceChildren();
+		return this;
 	}
 
 	/**
 	 * Register cleanup function called on disconnect or manual cleanup.
+	 * Chains with any existing cleanup for the same ID (both will run).
+	 * Use replaceCleanup() instead when rebinding (e.g., event handlers in loops).
 	 * Initializes cleanup system and disconnect listener on first use.
-	 * @param {string} id - Cleanup identifier for replacement/removal
+	 * @param {string} id - Cleanup identifier
 	 * @param {Function} cleanupFunction - Function called during cleanup
 	 */
 	addCleanup(id, cleanupFunction) {
+		this._initCleanup();
+
+		const existing = this.cleanup[id];
+		this.cleanup[id] = existing
+			? () => {
+					try {
+						existing();
+					} catch (error) {
+						console.error('Cleanup error:', error);
+					}
+					try {
+						cleanupFunction();
+					} catch (error) {
+						console.error('Cleanup error:', error);
+					}
+				}
+			: cleanupFunction;
+	}
+
+	/**
+	 * Register cleanup that replaces any existing cleanup for the same ID.
+	 * Runs the previous cleanup immediately before storing the new one.
+	 * @param {string} id - Cleanup identifier
+	 * @param {Function} cleanupFunction - Function called during cleanup
+	 */
+	replaceCleanup(id, cleanupFunction) {
+		this._initCleanup();
+
+		this.cleanup[id]?.();
+		this.cleanup[id] = cleanupFunction;
+	}
+
+	/** @private */
+	_initCleanup() {
 		if (!this.cleanup) {
 			this.cleanup = {};
-
 			this.on({ targetEvent: 'disconnected', callback: () => this.processCleanup(this.cleanup, true) });
 		}
-
-		this.cleanup[id] = cleanupFunction;
 	}
 
 	/**
@@ -227,7 +332,36 @@ class Component extends Elem {
 			cleanups.forEach(child => child.processCleanup());
 		}
 
-		Object.values(cleanup).forEach(cleanupFunction => cleanupFunction());
+		const fns = Object.values(cleanup);
+		for (const key in cleanup) delete cleanup[key];
+
+		fns.forEach(cleanupFunction => {
+			try {
+				cleanupFunction();
+			} catch (error) {
+				console.error('Cleanup error:', error);
+			}
+		});
+	}
+
+	/**
+	 * Destroys this component and all children. Runs all cleanup functions,
+	 * clears registries, and removes from DOM.
+	 */
+	destroy() {
+		this.elemObserver?.disconnect();
+
+		// Disconnect descendant elemObservers before running cleanup
+		const disconnectDescendantObservers = children => {
+			children.forEach(child => {
+				child.elemObserver?.disconnect();
+				disconnectDescendantObservers(child.children);
+			});
+		};
+		disconnectDescendantObservers(this.children);
+
+		this.processCleanup(this.cleanup, true);
+		this.elem?.remove();
 	}
 
 	/**
@@ -244,12 +378,10 @@ class Component extends Elem {
 	on({ targetEvent, id = targetEvent, callback }) {
 		if (!callback) return false;
 
-		this.cleanup?.[id]?.();
-
 		if (commonEvents.has(targetEvent) || this.__registeredEvents.has(targetEvent)) {
 			this.elem.addEventListener(targetEvent, callback);
 
-			this.addCleanup(id, () => this.elem.removeEventListener(targetEvent, callback));
+			this.replaceCleanup(id, () => this.elem.removeEventListener(targetEvent, callback));
 
 			return true;
 		}
@@ -266,7 +398,7 @@ class Component extends Elem {
 
 			this.elem.addEventListener(targetEvent, _callback);
 
-			this.addCleanup(id, () => this.elem.removeEventListener(targetEvent, _callback));
+			this.replaceCleanup(id, () => this.elem.removeEventListener(targetEvent, _callback));
 
 			return true;
 		}
@@ -279,17 +411,22 @@ class Component extends Elem {
 					onConnected: event => this.emit('connected', event),
 					onDisconnected: event => this.emit('disconnected', event),
 				});
-			}
 
-			this.elemObserver.observe(this.parentElem || document, { childList: true, subtree: true });
+				this.addCleanup('elemObserver', () => this.elemObserver?.disconnect());
+			}
 
 			this.addEventListener(targetEvent, callback);
 
-			this.addCleanup(id, () => this.removeEventListener(targetEvent, callback));
+			this.replaceCleanup(id, () => this.removeEventListener(targetEvent, callback));
 
 			return true;
 		}
 
+		if (process.env.NODE_ENV === 'development') {
+			console.warn(
+				`Component.on(): unrecognized event "${targetEvent}". Use registeredEvents option to register custom events.`,
+			);
+		}
 		return false;
 	}
 
@@ -312,21 +449,27 @@ class Component extends Elem {
 	styles(styles) {
 		if (!styles) return;
 		if (typeof styles === 'object') {
-			this?.setStyle(styles);
+			this.setStyle(styles);
 			return;
 		}
 
 		const themedStyles = themeStyles({ styles, scope: `.${this.uniqueId}` });
 
 		if (typeof themedStyles === 'object') {
-			this?.setStyle(themedStyles);
+			this.setStyle(themedStyles);
 
 			return;
 		}
 
-		postCSS(themedStyles).then(css => appendStyles(css));
+		let cancelled = false;
+		postCSS(themedStyles).then(css => {
+			if (!cancelled) appendStyles(css, this.uniqueId);
+		});
 
-		this.addCleanup(this.uniqueId, () => document.getElementById(this.uniqueId)?.remove());
+		this.replaceCleanup(this.uniqueId, () => {
+			cancelled = true;
+			document.getElementById(this.uniqueId)?.remove();
+		});
 	}
 
 	/**
@@ -335,7 +478,6 @@ class Component extends Elem {
 	 * @param {Function} [callback] - Handler called on pointerenter and pointermove
 	 */
 	onHover(callback = () => {}) {
-		this.cleanup?.onHover?.();
 		callback = callback.bind(this);
 
 		const pointerEnter = event => {
@@ -353,7 +495,7 @@ class Component extends Elem {
 		this.elem.addEventListener('pointercancel', pointerLeave);
 		this.elem.addEventListener('pointerout', pointerLeave);
 
-		this.addCleanup('onHover', () => {
+		this.replaceCleanup('onHover', () => {
 			this.elem.removeEventListener('pointerenter', pointerEnter);
 			this.elem.removeEventListener('pointerleave', pointerLeave);
 			this.elem.removeEventListener('pointercancel', pointerLeave);
@@ -368,7 +510,6 @@ class Component extends Elem {
 	 * @param {Function} [callback] - Handler called on pointerup after pointerdown
 	 */
 	onPointerPress(callback = () => {}) {
-		this.cleanup?.onPointerPress?.();
 		callback = callback.bind(this);
 
 		const cleanupPointerDown = () => {
@@ -387,7 +528,7 @@ class Component extends Elem {
 
 		this.elem.addEventListener('pointerdown', pointerDown);
 
-		this.addCleanup('onPointerPress', () => {
+		this.replaceCleanup('onPointerPress', () => {
 			this.elem.removeEventListener('pointerdown', pointerDown);
 
 			cleanupPointerDown();

@@ -29,7 +29,7 @@ Install from GitHub:
 
 ```bash
 # Using bun
-bun install github:fatlard1993/vanilla-bean-components
+bun add github:fatlard1993/vanilla-bean-components
 
 # Using npm
 npm install github:fatlard1993/vanilla-bean-components
@@ -393,4 +393,4 @@ MIT License - see [LICENSE](./LICENSE) file for details.
 
 ---
 
-**[Browse Components](./components/)** • **[API Documentation](./docs/)** • **[Live Demo](./demo/)** • **[Getting Started Guide](./docs/GETTING_STARTED.md)**
+**[Browse Components](./components/)** • **[API Documentation](./docs/)** • **[Live Demo](./demo/)** • **[Getting Started Guide](./docs/GETTING_STARTED.md)** • **[Design Philosophy](./docs/ETHOS.md)**

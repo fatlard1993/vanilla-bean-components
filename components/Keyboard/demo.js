@@ -3,7 +3,7 @@ import { Component } from '../../Component';
 import { Keyboard } from '.';
 
 export default class Demo extends DemoView {
-	render() {
+	build() {
 		this.component = new Keyboard({
 			onKeyDown: console.log,
 			onKeyUp: console.log,
@@ -26,8 +26,6 @@ export default class Demo extends DemoView {
 				}
 			},
 		});
-
-		super.render();
 
 		this.output = new Component({
 			appendTo: this.demoWrapper,

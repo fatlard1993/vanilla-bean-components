@@ -3,7 +3,7 @@ import { Component } from '../../Component';
 import { Input } from '.';
 
 export default class Demo extends DemoView {
-	render() {
+	build() {
 		this.component = new Input({
 			type: 'text',
 			onKeyUp: event => {
@@ -27,8 +27,6 @@ export default class Demo extends DemoView {
 			value: 'value',
 			placeholder: 'placeholder',
 		});
-
-		super.render();
 
 		new Component({
 			tag: 'p',

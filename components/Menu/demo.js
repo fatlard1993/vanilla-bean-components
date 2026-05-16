@@ -2,7 +2,7 @@ import DemoView from '../../demo/DemoView';
 import { Menu } from '.';
 
 export default class Demo extends DemoView {
-	render() {
+	build() {
 		this.component = new Menu({
 			items: [
 				{ textContent: 'one', style: { textTransform: 'uppercase' } },
@@ -12,7 +12,5 @@ export default class Demo extends DemoView {
 			onSelect: console.log,
 			style: { width: '60px' },
 		});
-
-		super.render();
 	}
 }

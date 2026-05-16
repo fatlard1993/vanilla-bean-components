@@ -1,6 +1,6 @@
 # Getting Started
 
-This guide will walk you through setting up vanilla-bean-components from scratch and building your first reactive application. But - Since this is intended to primarily be a development pattern, so I'll simply recommend what I currently do. Feel free to stray from the path wherever makes sense for your use-case.
+This guide walks you through setting up vanilla-bean-components from scratch and building your first reactive application.
 
 ## Installation
 
@@ -164,8 +164,8 @@ const contactForm = new Form({
 	append: new Button({
 		textContent: 'Send Message',
 		onPointerPress: () => {
-			if (contactForm.validate()) {
-				console.log('Form has errors');
+			if (contactForm.hasErrors()) {
+				console.log('Form has validation errors');
 				return;
 			}
 
@@ -257,10 +257,12 @@ Now that you have the basics:
 
 2. **Learn Advanced Patterns**: Study the demo applications in `/demo/` for complex examples.
 
-3. **Master Styling**: Read the [styled system documentation](./styled/README.md) for advanced theming.
+3. **Master Styling**: Read the [styled system documentation](../styled/README.md) for advanced theming.
 
-4. **State Management**: Dive deeper into [Context patterns](./Context/README.md) for complex state.
+4. **State Management**: Dive deeper into [Context patterns](../Context/README.md) for complex state.
 
-5. **HTTP Integration**: Learn about [request caching and subscriptions](./request/README.md).
+5. **HTTP Integration**: Learn about [request caching and subscriptions](../request/README.md).
+
+6. **Architecture**: Read the [architecture overview](./ARCHITECTURE.md) for how all the pieces fit together.
 
 The library is designed to grow with your needs - start simple and add complexity as required.

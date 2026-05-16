@@ -23,8 +23,6 @@ export const stringToColor = (string, config = {}) => {
 
 	let hash = 0;
 
-	if (string.length === 0) return hash;
-
 	for (let x = 0; x < string.length; ++x) {
 		hash = string.codePointAt(x) + ((hash << 5) - hash);
 		hash &= hash;

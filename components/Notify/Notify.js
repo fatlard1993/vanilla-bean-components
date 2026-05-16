@@ -70,20 +70,23 @@ const StyledPopover = styled(
 export default class Notify extends StyledPopover {
 	type_enum = type_enum;
 
-	constructor(options) {
+	constructor(options = {}) {
 		const { timeout, type = 'success' } = options;
 		const icon =
 			options.icon ||
 			{ info: 'circle-info', success: 'check', warning: 'triangle-exclamation', error: 'skull-crossbones' }[type];
 
 		super({
-			onPointerPress: () => this.elem.remove(),
+			onPointerPress: () => this.destroy(),
 			state: 'manual',
 			...options,
 			addClass: [type].concat(options.addClass),
 			icon,
 		});
 
-		if (timeout) this.timeout = setTimeout(() => this.elem.remove(), timeout);
+		if (timeout) {
+			this.timeout = setTimeout(() => this.destroy(), timeout);
+			this.addCleanup('timeout', () => clearTimeout(this.timeout));
+		}
 	}
 }

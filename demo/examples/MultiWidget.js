@@ -8,9 +8,7 @@ import { Calculator } from './Calculator';
 import { Stopwatch } from './Stopwatch';
 
 class MultiWidget extends Component {
-	render() {
-		super.render();
-
+	build() {
 		const chooseWidget = new Select({
 			appendTo: this,
 			value: '',
@@ -43,10 +41,8 @@ class MultiWidget extends Component {
 }
 
 export default class Example extends ExampleView {
-	render() {
+	build() {
 		this.options.exampleCode = exampleCode;
-
-		super.render();
 
 		new MultiWidget({ appendTo: this.demoWrapper });
 	}

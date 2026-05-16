@@ -214,6 +214,7 @@ class Calendar extends StyledComponent {
 			{
 				view: 'month',
 				height: '420px',
+				registeredEvents: new Set(['selectDay', 'selectTime', 'selectEvent', 'newEvent']),
 				...options,
 				events: (options.events || []).map(eventItem => new CalendarEvent(eventItem)),
 			},
@@ -226,13 +227,11 @@ class Calendar extends StyledComponent {
 		else super._setOption(key, value);
 	}
 
-	render() {
-		super.render();
-
-		this.toolbar = new Toolbar({ appendTo: this, calendar: this, views: this.options.views });
+	build() {
+		this.toolbar = new Toolbar({ appendTo: this, calendar: this, views: this.options.views, view: this.options.view });
 		this.wrapper = new CalendarWrapper({ appendTo: this });
 
-		if (!this.options.month) {
+		if (this.options.month == null) {
 			const now = new Date();
 
 			this.setDate(now.getFullYear(), now.getMonth(), now.getDate());
@@ -246,7 +245,7 @@ class Calendar extends StyledComponent {
 
 		this.wrapper.elem.scrollTop = 0;
 
-		if (document.activeElement) document.activeElement.blur();
+		if (this.elem.contains(document.activeElement)) document.activeElement.blur();
 	}
 
 	renderDay() {
@@ -258,7 +257,7 @@ class Calendar extends StyledComponent {
 		)}, ${this.options.year}`;
 
 		const eventContainer = new Component({ addClass: 'event-container', appendTo: this.wrapper });
-		const events = this.eventsAt(`${this.options.year}/${this.options.month + 1}/${this.options.day}`);
+		const events = this.eventsAt(new Date(this.options.year, this.options.month, this.options.day));
 		const minGap = 30;
 		const gapsPerHour = Math.ceil(60 / minGap);
 
@@ -354,15 +353,15 @@ class Calendar extends StyledComponent {
 			const w = cDay.getDay();
 			const t = cDay.getTime();
 
-			const fullDate = `${m + 1}/${d}/${y}`;
-			const events = this.eventsAt(fullDate);
+			const cellDate = new Date(y, m, d);
+			const events = this.eventsAt(cellDate);
 			const isToday = y === now.getFullYear() && m === now.getMonth() && d === now.getDate();
 
 			const weekdayCell = new WeekDayCell({
 				addClass: isToday ? 'today' : undefined,
-				data: { at: cDay.getTime(), fullDate },
+				data: { at: cDay.getTime() },
 				onPointerPress: ({ target }) => {
-					this.emit('selectDay', { target, fullDate });
+					this.emit('selectDay', { target, date: cellDate });
 				},
 				appendTo: this.wrapper,
 			});
@@ -372,7 +371,7 @@ class Calendar extends StyledComponent {
 				addClass: 'day-title',
 				appendTo: weekdayCell,
 				onPointerPress: ({ target }) => {
-					this.emit('selectDay', { target, isTitle: true, fullDate });
+					this.emit('selectDay', { target, isTitle: true, date: cellDate });
 				},
 			});
 
@@ -395,7 +394,7 @@ class Calendar extends StyledComponent {
 				lastDayAppend +
 				', ' +
 				this.options.year;
-		} else if (firstDay.getYear() === lastDay.getYear()) {
+		} else if (firstDay.getFullYear() === lastDay.getFullYear()) {
 			this.toolbar.title.elem.textContent =
 				MONTHS[firstDay.getMonth()] +
 				' ' +
@@ -445,15 +444,14 @@ class Calendar extends StyledComponent {
 
 			for (let col = 0; col < 7; ++col) {
 				const date = new Date(this.options.year, this.options.month, ++dayX);
-				const fullDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 				const eventContainer = new Component({ addClass: 'event-container' });
 				const td = new MonthDayCell({
 					tag: 'td',
 					addClass: isCurrentMonth && currentDay === dayX ? 'today' : undefined,
-					data: { at: date.getTime(), fullDate },
+					data: { at: date.getTime() },
 					appendTo: tr,
 					onPointerPress: event => {
-						this.emit('selectDay', { target: event.target, fullDate });
+						this.emit('selectDay', { target: event.target, date });
 					},
 					append: [
 						new Component({
@@ -461,7 +459,7 @@ class Calendar extends StyledComponent {
 							textContent: date.getDate(),
 							addClass: 'day-title',
 							onPointerPress: event => {
-								this.emit('selectDay', { target: event.target, isTitle: true, fullDate });
+								this.emit('selectDay', { target: event.target, isTitle: true, date });
 							},
 						}),
 						eventContainer,
@@ -470,7 +468,7 @@ class Calendar extends StyledComponent {
 
 				if (dayX <= 0 || dayX > month.numberOfDays) td.addClass('not-in-month');
 
-				this.eventsAt(fullDate).forEach(calendarEvent => {
+				this.eventsAt(date).forEach(calendarEvent => {
 					if (calendarEvent.render) calendarEvent.render(this.options.view, eventContainer.elem, this);
 				});
 			}
@@ -480,17 +478,16 @@ class Calendar extends StyledComponent {
 	}
 
 	adjustDateToView() {
-		if (this.options.view !== 'week' || this.options.weekday === this.options.day || this.options.day > 8) return;
+		if (this.options.view !== 'week' || this.options.weekday >= this.options.day || this.options.day > 8) return;
 
-		--this.options.month;
-
-		if (this.options.month < 0) {
-			--this.options.year;
-
-			this.options.month = 11;
+		let { year, month } = this.options;
+		--month;
+		if (month < 0) {
+			--year;
+			month = 11;
 		}
 
-		this.options.day = getDaysInMonth(this.options.year, this.options.month).numberOfDays;
+		this.setDate(year, month, getDaysInMonth(year, month).numberOfDays);
 	}
 
 	/**
@@ -526,50 +523,39 @@ class Calendar extends StyledComponent {
 	 * Navigates to the previous time period based on current view (day/week/month).
 	 */
 	previous() {
+		let { year, month, day } = this.options;
+
 		if (this.options.view === 'day') {
-			--this.options.day;
+			--day;
 
-			if (this.options.day <= 0) {
-				--this.options.month;
-
-				if (this.options.month < 0) {
-					this.options.month = 11;
-
-					--this.options.year;
+			if (day <= 0) {
+				--month;
+				if (month < 0) {
+					month = 11;
+					--year;
 				}
-
-				const monthStat = getDaysInMonth(this.options.year, this.options.month);
-
-				this.options.day = monthStat.numberOfDays;
+				day = getDaysInMonth(year, month).numberOfDays;
 			}
 		} else if (this.options.view === 'month') {
-			--this.options.month;
-
-			if (this.options.month < 0) {
-				this.options.month = 11;
-
-				--this.options.year;
+			--month;
+			if (month < 0) {
+				month = 11;
+				--year;
 			}
 		} else if (this.options.view === 'week') {
-			this.options.day -= 7;
+			day -= 7;
 
-			if (this.options.day <= 0) {
-				--this.options.month;
-
-				if (this.options.month < 0) {
-					this.options.month = 11;
-
-					--this.options.year;
+			if (day <= 0) {
+				--month;
+				if (month < 0) {
+					month = 11;
+					--year;
 				}
-
-				const monthStat = getDaysInMonth(this.options.year, this.options.month);
-
-				this.options.day = monthStat.numberOfDays + this.options.day;
+				day = getDaysInMonth(year, month).numberOfDays + day;
 			}
 		}
 
-		this.setDate(this.options.year, this.options.month, this.options.day);
-
+		this.setDate(year, month, day);
 		this.render();
 	}
 
@@ -577,52 +563,41 @@ class Calendar extends StyledComponent {
 	 * Navigates to the next time period based on current view (day/week/month).
 	 */
 	next() {
+		let { year, month, day } = this.options;
+
 		if (this.options.view === 'day') {
-			++this.options.day;
+			++day;
+			const monthStat = getDaysInMonth(year, month);
 
-			const monthStat = getDaysInMonth(this.options.year, this.options.month);
-
-			if (this.options.day > monthStat.numberOfDays) {
-				this.options.day = 1;
-
-				++this.options.month;
-
-				if (this.options.month > 11) {
-					this.options.month = 0;
-
-					++this.options.year;
+			if (day > monthStat.numberOfDays) {
+				day = 1;
+				++month;
+				if (month > 11) {
+					month = 0;
+					++year;
 				}
 			}
 		} else if (this.options.view === 'month') {
-			++this.options.month;
-
-			if (this.options.month > 11) {
-				this.options.month = 0;
-
-				++this.options.year;
+			++month;
+			if (month > 11) {
+				month = 0;
+				++year;
 			}
 		} else if (this.options.view === 'week') {
-			this.options.day += 7;
+			day += 7;
+			const monthStat = getDaysInMonth(year, month);
 
-			const monthStat = getDaysInMonth(this.options.year, this.options.month);
-
-			if (this.options.day > monthStat.numberOfDays) {
-				++this.options.month;
-
-				if (this.options.month > 11) {
-					this.options.month = 0;
-
-					++this.options.year;
+			if (day > monthStat.numberOfDays) {
+				day -= monthStat.numberOfDays;
+				++month;
+				if (month > 11) {
+					month = 0;
+					++year;
 				}
-
-				const monthStat = getDaysInMonth(this.options.year, this.options.month);
-
-				this.options.day -= monthStat.numberOfDays;
 			}
 		}
 
-		this.setDate(this.options.year, this.options.month, this.options.day);
-
+		this.setDate(year, month, day);
 		this.render();
 	}
 
@@ -647,12 +622,6 @@ class Calendar extends StyledComponent {
 		if (this.options.view !== view) {
 			this.options.view = view;
 
-			const pressed = this.toolbar.elem.querySelector('.pressed');
-			const toPress = this.toolbar.elem.querySelector(`.set-${view}`);
-
-			if (pressed) pressed.classList.remove('pressed');
-			if (toPress) toPress.classList.add('pressed');
-
 			this.adjustDateToView();
 			this.render();
 		}
@@ -666,7 +635,7 @@ class Calendar extends StyledComponent {
 	 * @returns {Array<CalendarEvent>} Array of events occurring on the specified date
 	 */
 	eventsAt(date) {
-		date = new Date(date);
+		if (!(date instanceof Date)) date = new Date(date);
 
 		const events = [];
 
@@ -736,3 +705,11 @@ class Calendar extends StyledComponent {
 }
 
 export default Calendar;
+
+// Zero-arg scenarios for LLD verification
+export const navigateBackFromJanuary = () => {
+	const c = new Calendar({ view: 'month', year: 2024, month: 0, autoRender: false });
+	c.render();
+	c.previous();
+	return { month: c.options.month, year: c.options.year };
+};

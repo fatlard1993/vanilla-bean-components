@@ -59,7 +59,7 @@ const StyledComponent = styled(
 );
 
 export default class DemoMenu extends StyledComponent {
-	render() {
+	build() {
 		this._links = [];
 
 		this.menuPopover = new Popover({ appendTo: this, style: { top: '32px', left: '32px', maxHeight: '60%' } });
@@ -109,8 +109,6 @@ export default class DemoMenu extends StyledComponent {
 			this.menuPopover.hide();
 			this.subMenu.options.items = [];
 		});
-
-		super.render();
 	}
 
 	close() {
