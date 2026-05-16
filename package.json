@@ -1,6 +1,6 @@
 {
 	"name": "vanilla-bean-components",
-	"version": "0.0.134",
+	"version": "0.0.135",
 	"type": "module",
 	"module": "./index.js",
 	"exports": {
