@@ -8,7 +8,7 @@ const fontAwesome = `
 	font-variant: normal;
 	text-rendering: auto;
 	line-height: 1;
-	font-family: 'Font Awesome 6 Free';
+	font-family: 'Font Awesome 7 Free';
 	font-weight: 400;
 `;
 
@@ -27,13 +27,13 @@ export default {
 	fontAwesomeBrands: `
 		${fontAwesome}
 
-		font-family: 'Font Awesome 6 Brands';
+		font-family: 'Font Awesome 7 Brands';
 		font-weight: normal;
 	`,
 	fontAwesomeSolid: `
 		${fontAwesome}
 
-		font-weight: 600;
+		font-weight: 900;
 	`,
 	kodeMono: `
 		font-family: 'Kode Mono Variable', monospace;
