@@ -82,7 +82,6 @@ export default class Popover extends StyledIcon {
 		maxHeight() {},
 		x() {},
 		y() {},
-		autoOpen() {},
 	};
 
 	edgeAwarePlacement({
