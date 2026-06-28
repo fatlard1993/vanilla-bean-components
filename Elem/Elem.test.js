@@ -132,7 +132,7 @@ describe('Elem', () => {
 
 			// eslint-disable-next-line testing-library/no-node-access
 			expect(elem.children).toEqual([child1, child2]);
-			// eslint-disable-next-line testing-library/no-node-access
+
 			expect(elem.children.length).toBe(2);
 		});
 

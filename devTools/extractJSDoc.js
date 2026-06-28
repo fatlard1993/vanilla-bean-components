@@ -223,7 +223,9 @@ function extractProperties(content) {
 	const properties = [];
 
 	// Extract getter properties — same anti-span pattern as extractMethods.
-	const getterMatches = [...content.matchAll(/\/\*\*((?:(?!\/\*\*)[\s\S])*?)\*\/[ \t]*\n[ \t]*get\s+(\w+)\s*\(\)\s*\{/g)];
+	const getterMatches = [
+		...content.matchAll(/\/\*\*((?:(?!\/\*\*)[\s\S])*?)\*\/[ \t]*\n[ \t]*get\s+(\w+)\s*\(\)\s*\{/g),
+	];
 
 	getterMatches.forEach(match => {
 		const [, jsdoc, name] = match;
@@ -250,7 +252,7 @@ function extractProperties(content) {
 	});
 
 	// Extract documented properties (this.property assignments with JSDoc)
-	const propMatches = [...content.matchAll(/\/\*\*\s*\n([\s\S]*?)\*\/\s*(?:this\.)?(\w+)\s*=/g)];
+	const propMatches = [...content.matchAll(/\/\*\*((?:(?!\/\*\*)[\s\S])*?)\*\/[ \t]*\n[ \t]*(?:this\.)?(\w+)\s*=/g)];
 
 	propMatches.forEach(match => {
 		const [, jsdoc, name] = match;

@@ -354,10 +354,7 @@ describe('Form', () => {
 		test('hidden when condition returns false at render time', () => {
 			const form = new Form({
 				data: { type: 'basic', extra: '' },
-				inputs: [
-					{ key: 'type' },
-					{ key: 'extra', condition: data => data.type === 'advanced' },
-				],
+				inputs: [{ key: 'type' }, { key: 'extra', condition: data => data.type === 'advanced' }],
 				appendTo: container,
 			});
 
@@ -369,10 +366,7 @@ describe('Form', () => {
 		test('visible when condition returns true at render time', () => {
 			const form = new Form({
 				data: { type: 'advanced', extra: '' },
-				inputs: [
-					{ key: 'type' },
-					{ key: 'extra', condition: data => data.type === 'advanced' },
-				],
+				inputs: [{ key: 'type' }, { key: 'extra', condition: data => data.type === 'advanced' }],
 				appendTo: container,
 			});
 
@@ -384,10 +378,7 @@ describe('Form', () => {
 		test('shows field when data change satisfies condition', () => {
 			const form = new Form({
 				data: { type: 'basic', extra: '' },
-				inputs: [
-					{ key: 'type' },
-					{ key: 'extra', condition: data => data.type === 'advanced' },
-				],
+				inputs: [{ key: 'type' }, { key: 'extra', condition: data => data.type === 'advanced' }],
 				appendTo: container,
 			});
 
@@ -403,10 +394,7 @@ describe('Form', () => {
 		test('hides field when data change fails condition', () => {
 			const form = new Form({
 				data: { type: 'advanced', extra: '' },
-				inputs: [
-					{ key: 'type' },
-					{ key: 'extra', condition: data => data.type === 'advanced' },
-				],
+				inputs: [{ key: 'type' }, { key: 'extra', condition: data => data.type === 'advanced' }],
 				appendTo: container,
 			});
 
