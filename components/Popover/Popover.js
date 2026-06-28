@@ -76,6 +76,13 @@ export default class Popover extends StyledIcon {
 		state(value) {
 			this.elem.popover = value;
 		},
+		outsideClose() {},
+		viewport() {},
+		maxWidth() {},
+		maxHeight() {},
+		x() {},
+		y() {},
+		autoOpen() {},
 	};
 
 	edgeAwarePlacement({

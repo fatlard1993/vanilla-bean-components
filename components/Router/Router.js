@@ -102,6 +102,14 @@ class Router extends Component {
 		return parameters;
 	}
 
+	static handlers = {
+		views() {},
+		defaultPath() {},
+		notFound() {},
+		onRenderView() {},
+		mode() {},
+	};
+
 	build() {
 		const reRenderView = () => this.renderView();
 

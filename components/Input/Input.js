@@ -140,6 +140,9 @@ export default class Input extends Component {
 			this.removeClass(/\blanguage-\S+\b/g);
 			this.addClass(`language-${value}`);
 		},
+		autocorrect(value) {
+			this.elem.autocorrect = value;
+		},
 	};
 
 	/**
