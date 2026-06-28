@@ -2,7 +2,7 @@
 
 > ./Table.js
 
-Sortable data table where sort state is explicit options. The design decision: `sortProperty` and `sortDirection` are readable and writable options — the sort state is in the component's options object, not hidden inside event handlers, so it's readable and settable from outside.
+Sortable data table where sort state is explicit options. The design decision: `sortProperty` and `sortDirection` are readable and writable options; the sort state is in the component's options object, not hidden inside event handlers, so it's readable and settable from outside.
 
 ## Sort state lives in options — externally readable and settable
 

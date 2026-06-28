@@ -94,20 +94,52 @@ function extractOptions(content) {
 		),
 	];
 
+	const codeDefaults = extractDefaultOptionsFromCode(content);
+
 	return paramMatches
-		.filter(match => (match[3] && match[3].includes('options')) || match[2].includes('options.'))
+		.filter(match => match[2].includes('options.'))
 		.map(match => {
 			const [, type, fullParam, name, defaultValue, description] = match;
 			const optional = fullParam.startsWith('[') && fullParam.endsWith(']');
+			const optionName = name.replace('options.', '');
 
 			return {
-				name: name.replace('options.', ''),
+				name: optionName,
 				type: type.trim(),
 				description: description.trim().replace(/\s+/g, ' '),
 				optional,
-				default: defaultValue || null,
+				default: defaultValue || codeDefaults[optionName] || null,
+				isSubProperty: fullParam.includes('options.'),
 			};
 		});
+}
+
+/**
+ * Reads the `defaultOptions` object literal from source and extracts simple key→value pairs.
+ * Only captures string, number, and boolean literals — skips getters and complex values.
+ * @param {string} content - File content
+ * @returns {object} Map of option name → default value string
+ */
+function extractDefaultOptionsFromCode(content) {
+	const defaults = {};
+	const block = content.match(/const\s+defaultOptions\s*=\s*\{([\s\S]*?)\};/);
+	if (!block) return defaults;
+
+	const pairs = [
+		...block[1].matchAll(/\b(\w+):\s*(?:'([^']*)'|"([^"]*)"|(`[^`]*`)|(-?\d+\.?\d*(?:e[+-]?\d+)?)|true|false)/g),
+	];
+
+	pairs.forEach(match => {
+		const [full, key, singleQuoted, doubleQuoted, template, number] = match;
+		if (singleQuoted !== undefined) defaults[key] = `'${singleQuoted}'`;
+		else if (doubleQuoted !== undefined) defaults[key] = `"${doubleQuoted}"`;
+		else if (template !== undefined) defaults[key] = template;
+		else if (number !== undefined) defaults[key] = number;
+		else if (full.endsWith('true')) defaults[key] = 'true';
+		else if (full.endsWith('false')) defaults[key] = 'false';
+	});
+
+	return defaults;
 }
 
 /**
@@ -125,8 +157,15 @@ function extractMethods(content) {
 
 	const classBody = classBodyMatch[1];
 
-	// Now search for JSDoc comments within the class body only
-	const matches = [...classBody.matchAll(/\/\*\*\s*\n([\s\S]*?)\*\/\s*(?!constructor)(?!_\w+)(\w+)\s*\([^)]*\)\s*{/g)];
+	// Match each JSDoc block with the method that IMMEDIATELY follows it.
+	// `(?:(?!\/\*\*)[\s\S])*?` — non-greedy content that cannot cross into a new `/**`,
+	// so the captured block can never span multiple JSDoc comments or method bodies.
+	// get/set accessors are excluded; underscore-prefixed names are excluded.
+	const matches = [
+		...classBody.matchAll(
+			/\/\*\*((?:(?!\/\*\*)[\s\S])*?)\*\/[ \t]*\n[ \t]*(?!constructor\b)(?!get\b)(?!set\b)(?!_)(\w+)\s*\([^)]*\)\s*\{/g,
+		),
+	];
 
 	return matches.map(match => {
 		const [, jsdoc, name] = match;
@@ -162,14 +201,9 @@ function extractMethods(content) {
 			};
 		});
 
-		// Extract return information
-		const returnMatch = jsdoc.match(/^\s*\*\s*@returns?\s+{([^}]+)}\s*(.+?)(?=\s*^\s*\*\s*@|\s*^\s*\*\s*$)/ms);
-		const returnInfo = returnMatch
-			? {
-					type: returnMatch[1].trim(),
-					description: returnMatch[2].trim().replace(/\s+/g, ' '),
-				}
-			: null;
+		// Extract return information — type only; description is not used in type generation.
+		const returnMatch = jsdoc.match(/^\s*\*\s*@returns?\s+\{([^}]+)\}/m);
+		const returnInfo = returnMatch ? { type: returnMatch[1].trim() } : null;
 
 		return {
 			name,
@@ -188,8 +222,8 @@ function extractMethods(content) {
 function extractProperties(content) {
 	const properties = [];
 
-	// Extract getter properties
-	const getterMatches = [...content.matchAll(/\/\*\*\s*\n([\s\S]*?)\*\/\s*get\s+(\w+)\s*\(\)\s*{/g)];
+	// Extract getter properties — same anti-span pattern as extractMethods.
+	const getterMatches = [...content.matchAll(/\/\*\*((?:(?!\/\*\*)[\s\S])*?)\*\/[ \t]*\n[ \t]*get\s+(\w+)\s*\(\)\s*\{/g)];
 
 	getterMatches.forEach(match => {
 		const [, jsdoc, name] = match;
@@ -204,7 +238,7 @@ function extractProperties(content) {
 					.trim()
 			: '';
 
-		const returnMatch = jsdoc.match(/^\s*\*\s*@returns?\s+{([^}]+)}\s*(.+?)(?=\s*^\s*\*\s*@|\s*^\s*\*\s*$)/ms);
+		const returnMatch = jsdoc.match(/^\s*\*\s*@returns?\s+\{([^}]+)\}/m);
 		const type = returnMatch ? returnMatch[1].trim() : 'unknown';
 
 		properties.push({
@@ -291,6 +325,7 @@ function extractImports(content) {
 	];
 
 	return importMatches
+		.filter(([, , , , module]) => /^\.\.\//.test(module)) // external relative only, not same-dir ./
 		.map(match => {
 			const [, namedImports, namespaceImport, defaultImport, module] = match;
 
@@ -305,11 +340,10 @@ function extractImports(content) {
 			}
 
 			return {
-				module: module.replace(/^\.+\//, ''), // Remove relative path indicators
+				module: module.replace(/^(\.\.?\/)+/, ''),
 				imports,
 			};
-		})
-		.filter(imp => !imp.module.includes('node_modules') && !imp.module.startsWith('.'));
+		});
 }
 
 /**

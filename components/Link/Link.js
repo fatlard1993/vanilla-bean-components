@@ -32,12 +32,12 @@ class Link extends TooltipWrapper {
 		super({ ...defaultOptions, ...options }, ...children);
 	}
 
-	_setOption(key, value) {
-		if (key === 'variant') {
+	static handlers = {
+		variant(value) {
 			this.removeClass(/\bvariant-\S+\b/g);
 			this.addClass(`variant-${value}`);
-		} else super._setOption(key, value);
-	}
+		},
+	};
 }
 
 export default Link;

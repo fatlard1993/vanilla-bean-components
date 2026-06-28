@@ -2,7 +2,7 @@
 
 > ./TagList.js
 
-Editable tag collection. The key decision: read-only mode removes the editing interface entirely rather than disabling it — a read-only TagList is structurally simpler, not just interaction-blocked.
+Editable tag collection. The key decision: read-only mode removes the editing interface entirely rather than disabling it; a read-only TagList is structurally simpler, not just interaction-blocked.
 
 ## Read-only mode produces a different structure, not just disabled controls
 

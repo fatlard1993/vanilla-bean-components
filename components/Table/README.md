@@ -5,7 +5,7 @@ Data table component with configurable columns, client-side sorting, optional fo
 ## Usage
 
 ```js
-import { Table } from 'vanilla-bean-components';
+import { Table } from '@vanilla-bean/components';
 
 const table = new Table({
 	data: [
@@ -20,9 +20,9 @@ const table = new Table({
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `data` | `Array<object>` | — | Array of row data objects. Reactive — reassigning `options.data` rebuilds the tbody |
-| `columns` | `Array<string\|object>` | `[]` | Column definitions — see shape below |
-| `footer` | `Array<string\|object>` | — | Footer row cells — same shape as columns. Strings are capitalized automatically |
+| `data` | `Array<object>` | — | Array of row data objects. Reactive: reassigning `options.data` rebuilds the tbody |
+| `columns` | `Array<string\|object>` | `[]` | Column definitions; see shape below |
+| `footer` | `Array<string\|object>` | — | Footer row cells, same shape as columns. Strings are capitalized automatically |
 | `sortProperty` | `string` | — | Key of the currently sorted column |
 | `sortDirection` | `string` | — | `'asc'` or `'desc'` |
 | `onSort` | `Function` | built-in | Called with `(property, direction)` when a sortable column header is clicked. Default sorts `options.data` in place using `orderBy` |
@@ -73,8 +73,8 @@ Table does not emit custom events. Supply `onSort` to intercept sort interaction
 Sortable table with a custom column label, styled header, and footer totals:
 
 ```js
-import { Table } from 'vanilla-bean-components';
-import theme from 'vanilla-bean-components/theme';
+import { Table } from '@vanilla-bean/components';
+import theme from '@vanilla-bean/components/theme';
 
 const table = new Table({
 	data: [

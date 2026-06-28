@@ -8,11 +8,11 @@ const StyledComponent = styled(
 		margin: 6px 0;
 		padding-left: 32px;
 
-		&.noStyle {
+		&.no-style {
 			padding-left: 0;
 			list-style: none;
 
-			li {
+			& li {
 				line-height: 1;
 				text-indent: 0;
 			}
@@ -52,8 +52,11 @@ export default class List extends StyledComponent {
 		);
 	}
 
-	_setOption(key, value) {
-		if (key === 'items') {
+	static handlers = {
+		noStyle(value) {
+			this.toggleClass('no-style', !!value);
+		},
+		items(value) {
 			if (!value) {
 				this.empty();
 				return;
@@ -74,6 +77,6 @@ export default class List extends StyledComponent {
 					return listItem;
 				}),
 			);
-		} else super._setOption(key, value);
-	}
+		},
+	};
 }

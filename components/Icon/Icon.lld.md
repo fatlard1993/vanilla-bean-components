@@ -2,7 +2,7 @@
 
 > ./Icon.js
 
-FontAwesome icon wrapper that manages FA class state as options rather than raw class strings. The design decision: callers pass `icon: "star"` and the component owns the full FA class lifecycle — callers never manually add or remove FA classes.
+FontAwesome icon wrapper that manages FA class state as options rather than raw class strings. The design decision: callers pass `icon: "star"` and the component owns the full FA class lifecycle; callers never manually add or remove FA classes.
 
 ## Changing icon leaves no residual classes from the previous value
 
@@ -17,5 +17,5 @@ FontAwesome icon wrapper that manages FA class state as options rather than raw 
 
 ## Animation and icon are independent options that compose
 
-- setting `animation` applies an animation class independently of `icon`; an Icon with both options active carries both classes simultaneously — they do not interfere
+- setting `animation` applies an animation class independently of `icon`; an Icon with both options active carries both classes simultaneously; they do not interfere
   - does an Icon with both icon and animation options active carry both classes at the same time?

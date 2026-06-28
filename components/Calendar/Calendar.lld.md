@@ -2,7 +2,7 @@
 
 > ./Calendar.js
 
-Multi-view calendar that renders the same event data differently depending on scale. The key design decision: `view` is an option like any other — changing it triggers a full re-render with the same events laid out for the new context. No view-specific state accumulates.
+Multi-view calendar that renders the same event data differently depending on scale. The key design decision: `view` is an option like any other; changing it triggers a full re-render with the same events laid out for the new context. No view-specific state accumulates.
 
 ## Switching view re-renders layout without carrying forward view-specific state
 

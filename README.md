@@ -1,20 +1,29 @@
-# vanilla-bean-components
+# @vanilla-bean/components
 
 A lightweight, reactive component library for building modern web applications with vanilla JavaScript. No build steps, no framework lock-in, no virtual DOM complexity.
 
 ## Key Features
 
-- **Zero build requirements** - Import directly in browsers or bundle with any tool
-- **Reactive state management** - Automatic UI updates using native Proxy APIs
-- **Scoped CSS styling** - Theme-integrated styles with PostCSS processing
-- **Memory-safe components** - Automatic cleanup prevents memory leaks
-- **Progressive adoption** - Use individual pieces or complete reactive architecture
-- **24 pre-built components** - Forms, layouts, interactions, and data visualization
-- **Modern browser APIs** - EventTarget, Proxy, ES6 modules, Web Components compatible
+- **No build step for consumers** - Pure ES modules; import directly in browsers or bundle with any tool
+- **Reactive state management** - Proxy-based, explicit; `component.options` is reactive out of the box, no dependency tracking magic
+- **Scoped CSS styling** - Opinionated dark theme by design; override per-instance, per-class, or replace the theme entirely
+- **Cleanup on disconnect** - no listener accumulation; components clean up after themselves
+- **25 production-ready components** - A second tier of building blocks above the primitives. Button handles keyboard activation and pointer events. Dialog handles focus management and modal behavior. Form handles validation. These are composed concerns your app components build on, not reinvent.
+- **Modern browser APIs** - EventTarget, Proxy, ES6 modules, native CSS nesting
+- **Framework-agnostic** - works alongside Web Components, React islands, or any other approach; no conflicts, no opinions on your stack
+
+## Philosophy
+
+Most UI frameworks insert themselves between your code and the DOM. VDOM reconcilers, reactive dependency graphs, compile-time transforms. Each layer runs so you don't have to think about it. The trade sounds appealing until something breaks: you're debugging the framework's decisions, in execution paths that aren't yours, with failure modes that are subtle by design.
+
+VBC is built on a different premise. The DOM is stateful, and VBC accepts that and works with it directly. When data changes, you decide what updates, through `_setOption` handlers you write. Structure lives in `build()`. Data flows in through `options`. Updates happen exactly where you put them. No reconciliation loop. No dependency graph. No rerender cascade.
+
+This is a position, not a limitation. Automatic systems don't eliminate complexity. They relocate it to places that are harder to reach when they break. VBC's failures are obvious: you forgot a key in `_setOption` and the UI doesn't update. You can see that immediately. The subtle failures, stale closures, dependency cycles, batching surprises, concurrent mode edge cases, belong to a different model entirely.
 
 ## Table of Contents
 
 - [Installation](#installation)
+- [Interactive Explorer](#interactive-explorer)
 - [Quick Start](#quick-start)
 - [Core Architecture](#core-architecture)
 - [Component Library](#component-library)
@@ -38,15 +47,31 @@ npm install github:fatlard1993/vanilla-bean-components
 yarn add github:fatlard1993/vanilla-bean-components
 ```
 
+Reactive state (`Oxject`, `derive`) is included in VBC, no separate install. The HTTP examples use [hypertether](https://github.com/fatlard1993/hypertether), which is a separate package:
+
+```bash
+bun add @vanilla-bean/hypertether
+```
+
 Import in your application:
 
 ```js
-// Individual imports
-import { Component, Context, styled } from 'vanilla-bean-components';
+import { Component, Oxject, styled } from '@vanilla-bean/components';
 
 // Specific components
-import { Button, Dialog, Calendar } from 'vanilla-bean-components';
+import { Button, Dialog, Calendar } from '@vanilla-bean/components';
 ```
+
+## Interactive Explorer
+
+`bun start` launches the component explorer at `http://localhost:9999` (clone first, see [Development](#development)):
+
+- **Live option editor**: every component, every option, type-appropriate controls, updated in real time
+- **Auto-generated API docs**: options tables, method signatures, event listings pulled directly from source annotations
+- **11 real example applications**: async data tables with row actions, localStorage-backed todo, a live HTML/JS/CSS playground with iframe preview, a drawing canvas with a functioning in-game economy
+- **Ancestor chain navigation**: each component shows its full inheritance (EventTarget → Elem → Component → ...) with links to each layer's documentation
+
+The explorer is built with VBC itself. It uses the same primitives and patterns you'd use in your own app.
 
 ## Quick Start
 
@@ -55,7 +80,7 @@ import { Button, Dialog, Calendar } from 'vanilla-bean-components';
 Every component extends `EventTarget` and wraps an `HTMLElement`:
 
 ```js
-import { Component } from 'vanilla-bean-components';
+import { Component } from '@vanilla-bean/components';
 
 const button = new Component({
 	tag: 'button',
@@ -68,12 +93,12 @@ const button = new Component({
 
 ### Reactive State Management
 
-State changes automatically update connected UI elements:
+Oxject is included in VBC. Import it alongside your components:
 
 ```js
-import { Component, Context } from 'vanilla-bean-components';
+import { Component, Oxject } from '@vanilla-bean/components';
 
-const user = new Context({ name: 'Alice', online: false });
+const user = new Oxject({ name: 'Alice', online: false });
 
 new Component({
 	tag: 'div',
@@ -92,7 +117,7 @@ user.online = true;
 Create scoped, themed components:
 
 ```js
-import { Component, styled } from 'vanilla-bean-components';
+import { Component, styled } from '@vanilla-bean/components';
 
 const Card = styled(
 	Component,
@@ -121,10 +146,10 @@ new Card({
 ### Complete Reactive Application
 
 ```js
-import { Component, Context, styled } from 'vanilla-bean-components';
+import { Component, Oxject, styled } from '@vanilla-bean/components';
 
 // Reactive state
-const state = new Context({ count: 0 });
+const state = new Oxject({ count: 0 });
 
 // Styled component
 const Counter = styled(
@@ -183,28 +208,26 @@ new Component({
 });
 ```
 
-This pattern enables automatic reactivity - when options change, components update automatically.
-
 ### Core Modules
 
 | Module | Purpose | Key Features |
 | --- | --- | --- |
 | **[Component](./Component/README.md)** | Enhanced DOM elements | Lifecycle management, reactive options, automatic cleanup |
-| **[Context](./Context/README.md)** | Observable state | Proxy-based reactivity, subscription system, event emission |
-| **[styled](./styled/README.md)** | Scoped CSS | Theme integration, PostCSS processing, unique class generation |
+| **Oxject** | Reactive state | Proxy-based reactivity, subscriber system, `derive()` for computed values |
+| **[styled](./styled/README.md)** | Scoped CSS | Theme integration, native CSS nesting, unique class generation |
 | **[Theme](./theme/README.md)** | Design system | Color manipulation, font management, accessibility helpers |
-| **[Request](./request/README.md)** | HTTP client | Intelligent caching, cache invalidation, subscription-based updates |
 
-All modules work independently. Use `Component` alone for enhanced DOM manipulation, or combine for complete reactive applications.
+All four are available from `'@vanilla-bean/components'` directly. For HTTP caching, [hypertether](https://github.com/fatlard1993/hypertether) is a separate install (`bun add @vanilla-bean/hypertether`).
 
 ## Component Library
 
-24 pre-built components handle common UI patterns:
+25 pre-built components handle common UI patterns:
 
 ### Forms & Input
 
 - **Input** - All HTML input types with validation
 - **Select** - Dropdown selections with search
+- **RadioButton** - Radio group input
 - **Form** - Form management with validation
 - **Label** - Associated labels with accessibility
 
@@ -218,10 +241,12 @@ All modules work independently. Use `Component` alone for enhanced DOM manipulat
 ### Interactive Elements
 
 - **Button** - Action buttons with states
+- **BottomSheet** - Mobile bottom sheet with drag-to-close gesture
 - **Dialog** - Modal dialogs with backdrop
 - **Menu** - Context and dropdown menus
+- **Notify** - Toast-style notifications
 - **Popover** - Floating content containers
-- **Tooltip** - Contextual help and information
+- **Tooltip / TooltipWrapper** - Contextual help and information
 
 ### Specialized Components
 
@@ -237,17 +262,16 @@ All modules work independently. Use `Component` alone for enhanced DOM manipulat
 - **Link** - Enhanced anchor elements
 - **TagList** - Tag management and display
 
-Each component includes comprehensive documentation, styling options, and usage examples.
-
 ## Real-World Example
 
 Complete user management interface with data loading and state management:
 
 ```js
-import { Component, Context, styled, GET } from 'vanilla-bean-components';
+import { Component, Oxject, styled } from '@vanilla-bean/components';
+import { GET } from '@vanilla-bean/hypertether';
 
 // Application state
-const app = new Context({
+const app = new Oxject({
 	users: [],
 	loading: false,
 	selectedUserId: null,
@@ -281,7 +305,7 @@ async function loadUsers() {
 	app.loading = true;
 
 	const { body: users } = await GET('/api/users', {
-		onRefetch: ({ body }) => (app.users = body), // Auto-refresh on cache invalidation
+		onResponse: ({ body }) => (app.users = body), // Auto-refresh on cache invalidation
 	});
 
 	app.users = users;
@@ -313,21 +337,16 @@ loadUsers();
 
 ## Browser Compatibility
 
-**Modern browsers only** - Requires ES6+ support including:
+**Evergreen browsers only.** VBC uses native CSS nesting and requires no polyfills or transpilation:
 
-- Proxy objects for reactive state
-- ES6 classes and modules
-- EventTarget interface
-- Modern DOM APIs
+| Feature                     | Chrome/Edge | Firefox | Safari |
+| --------------------------- | ----------- | ------- | ------ |
+| ES6 classes, modules, Proxy | 49+         | 18+     | 10+    |
+| Native CSS nesting          | 112+        | 117+    | 16.5+  |
 
-**Supported environments:**
+**Effective minimum: Chrome/Edge 112, Firefox 117, Safari 16.5** (all released in 2023).
 
-- Chrome/Edge 49+
-- Firefox 18+
-- Safari 10+
-- Node.js 16+
-
-No polyfills provided. Use transpilation for legacy browser support if needed.
+If you need older browser support, VBC is not the right tool. The native CSS nesting requirement is not negotiable without reintroducing a build-time CSS processing step.
 
 ## Development
 
@@ -339,8 +358,8 @@ git clone https://github.com/fatlard1993/vanilla-bean-components
 cd vanilla-bean-components
 bun install
 
-# Start demo server
-bun start        # Development server at http://localhost:3000
+# Start interactive explorer
+bun start        # Component explorer at http://localhost:9999
 
 # Run tests
 bun test         # Full test suite
@@ -356,13 +375,11 @@ bun run format   # Code formatting with Prettier
 
 ```
 vanilla-bean-components/
-├── components/           # 24 pre-built UI components
-├── Component/           # Core Component class
-├── Context/            # Reactive state management
+├── components/         # 25 pre-built UI components
+├── Component/          # Core Component class
 ├── styled/             # Scoped styling system
 ├── theme/              # Design tokens and helpers
-├── request/            # HTTP client with caching
-├── demo/               # Interactive examples and documentation
+├── demo/               # Component explorer — live option editor, API docs, example apps
 └── docs/               # Additional documentation
 ```
 

@@ -6,7 +6,7 @@ const onResolve = ({ path, importer }) => {
 
 	writeFileSync(path, '');
 
-	unlink(path, error => error && console.error(error));
+	unlink(path, error => error && error.code !== 'ENOENT' && console.error(error));
 
 	return { path };
 };

@@ -15,20 +15,20 @@ const StyledComponent = styled(
 		gap: 6px;
 
 		&.month {
-			tr.title {
+			& tr.title {
 				font-size: 1.3em;
 				height: 1.3em;
 				color: ${colors.black};
 				background-color: ${colors.lightest(colors.gray)};
 
-				td {
+				& td {
 					text-align: center;
 				}
 			}
 		}
 
 		&.day {
-			div.event-container {
+			& div.event-container {
 				position: absolute;
 				height: 100%;
 				width: 90%;
@@ -36,7 +36,7 @@ const StyledComponent = styled(
 				right: 0;
 				pointer-events: none;
 
-				div.event {
+				& div.event {
 					position: absolute;
 					pointer-events: all;
 					width: 100%;
@@ -44,7 +44,7 @@ const StyledComponent = styled(
 				}
 			}
 
-			div.time-block {
+			& div.time-block {
 				height: 3em;
 				cursor: pointer;
 				color: black;
@@ -58,7 +58,7 @@ const StyledComponent = styled(
 					border-bottom: none;
 				}
 
-				span.time {
+				& span.time {
 					font-size: 12px;
 					margin: 2px;
 					pointer-events: none;
@@ -103,7 +103,7 @@ const MonthDayCell = styled(
 		cursor: pointer;
 		padding: 3px;
 
-		span.day-title {
+		& span.day-title {
 			display: block;
 			font-size: 1em;
 			padding: 2px;
@@ -115,7 +115,7 @@ const MonthDayCell = styled(
 		&:hover {
 			background-color: ${colors.blue};
 
-			span.day-title {
+			& span.day-title {
 				background-color: ${colors.white.setAlpha(0.3)};
 			}
 		}
@@ -123,7 +123,7 @@ const MonthDayCell = styled(
 		&.today {
 			background-color: ${colors.purple};
 
-			span.day-title {
+			& span.day-title {
 				background-color: ${colors.white.setAlpha(0.3)};
 			}
 		}
@@ -131,7 +131,7 @@ const MonthDayCell = styled(
 		&.not-in-month {
 			background: #222;
 
-			span.day-title {
+			& span.day-title {
 				color: ${colors.gray};
 			}
 		}
@@ -149,7 +149,7 @@ const WeekDayCell = styled(
 			background-color: ${colors.blue};
 		}
 
-		div.day-title {
+		& div.day-title {
 			cursor: pointer;
 			padding: 6px;
 			background-color: ${colors.black.setAlpha(0.2)};
@@ -157,7 +157,7 @@ const WeekDayCell = styled(
 			color: black;
 		}
 
-		.event {
+		& .event {
 			text-indent: 6px;
 		}
 	`,
@@ -197,7 +197,7 @@ export const MONTHS = [
  * Provides full calendar functionality with navigation, event display, and user interaction.
  * Supports multiple view modes, event rendering, and date selection with customizable styling.
  * @param {object} [options={}] - Calendar configuration options
- * @param {string} [options.view='month'] - Initial calendar view mode ('month', 'week', 'day')
+ * @param {('month'|'week'|'day')} [options.view='month'] - Initial calendar view mode
  * @param {string} [options.height='420px'] - Calendar component height
  * @param {number} [options.year] - Initial year to display, defaults to current year
  * @param {number} [options.month] - Initial month to display (0-11), defaults to current month
@@ -222,10 +222,11 @@ class Calendar extends StyledComponent {
 		);
 	}
 
-	_setOption(key, value) {
-		if (key === 'height') this.elem.style.height = value;
-		else super._setOption(key, value);
-	}
+	static handlers = {
+		height(value) {
+			this.elem.style.height = value;
+		},
+	};
 
 	build() {
 		this.toolbar = new Toolbar({ appendTo: this, calendar: this, views: this.options.views, view: this.options.view });
@@ -623,7 +624,11 @@ class Calendar extends StyledComponent {
 			this.options.view = view;
 
 			this.adjustDateToView();
-			this.render();
+			this.wrapper.empty();
+
+			if (view === 'day') this.renderDay();
+			else if (view === 'week') this.renderWeek();
+			else this.renderMonth();
 		}
 
 		return this;

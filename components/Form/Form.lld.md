@@ -2,7 +2,7 @@
 
 > ./Form.js
 
-Declarative form from an array of input configurations. The key design decision is that the form owns data binding — each input's changes update a shared reactive `data` context, and `hasErrors()` validates the whole form in one call.
+Declarative form from an array of input configurations. The key design decision is that the form owns data binding. Each input's changes update a shared reactive `data` context, and `hasErrors()` validates the whole form in one call.
 
 ## Label text falls back to the field key — no separate label required for obvious fields
 
@@ -11,7 +11,7 @@ Declarative form from an array of input configurations. The key design decision 
 
 ## hasErrors validates all inputs simultaneously and returns a boolean
 
-- `hasErrors()` runs all validations and returns true if any failed, false if all passed — false means submittable
+- `hasErrors()` runs all validations and returns true if any failed, false if all passed; false means submittable
   - does hasErrors return false when all inputs are valid?
   - does hasErrors return true when an input's validation fails?
 

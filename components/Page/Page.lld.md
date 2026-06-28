@@ -2,7 +2,7 @@
 
 > ./Page.js
 
-Top-level layout component that takes ownership of stylesheet loading. The design decision: Page loads FontAwesome, typography, and augmented-ui as part of mounting — application code does not import or configure these separately.
+Top-level layout component that takes ownership of stylesheet loading. The design decision: Page loads FontAwesome and typography as part of mounting; application code does not import or configure these separately.
 
 ## Required stylesheets load once — remounting does not re-fetch
 

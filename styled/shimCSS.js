@@ -1,41 +1,31 @@
-import rootContext from '../rootContext';
 import { appendStyles } from './appendStyles';
-
-import { postCSS } from './postCSS';
 import { themeStyles } from './themeStyles';
 
+let loadQueue = null;
+let loadListener = null;
+
 /**
- * Complete CSS processing pipeline: theme hydration → PostCSS processing → DOM injection
- * Handles load-time batching for performance optimization
+ * CSS pipeline: theme hydration → DOM injection.
+ * Batches configs queued before document load and flushes them on window load.
  * @param {import('./themeStyles').StyleConfig} styleConfig - Configuration object with styles function and optional scope
- * @returns {Promise<void>|void} Promise when document loaded, void when queued for load event
  */
 export const shimCSS = styleConfig => {
-	if (document.readyState === 'complete')
-		return postCSS(themeStyles(styleConfig)).then(css => appendStyles(css, styleConfig.scope?.replace(/^\./, '')));
-	else {
-		rootContext.onLoadStyleQueue = rootContext.onLoadStyleQueue || [];
-		rootContext.onLoadStyleQueue.push(styleConfig);
+	if (document.readyState === 'complete') {
+		appendStyles(themeStyles(styleConfig) || '', styleConfig.scope?.replace(/^\./, ''));
+	} else {
+		loadQueue = loadQueue || [];
+		loadQueue.push(styleConfig);
 
-		if (!rootContext.onLoadStyleListener) {
-			rootContext.onLoadStyleListener = async () => {
-				await Promise.all(
-					rootContext.onLoadStyleQueue.map(async config => {
-						try {
-							const css = await postCSS(themeStyles(config));
-							appendStyles(css, config.scope?.replace(/^\./, ''));
-						} catch (error) {
-							console.error('shimCSS: failed to process style config', error);
-						}
-					}),
-				);
+		if (!loadListener) {
+			loadListener = () => {
+				loadQueue.forEach(config => appendStyles(themeStyles(config) || '', config.scope?.replace(/^\./, '')));
 
-				rootContext.onLoadStyleQueue = null;
-				window.removeEventListener('load', rootContext.onLoadStyleListener);
-				rootContext.onLoadStyleListener = null;
+				loadQueue = null;
+				window.removeEventListener('load', loadListener);
+				loadListener = null;
 			};
 
-			window.addEventListener('load', rootContext.onLoadStyleListener);
+			window.addEventListener('load', loadListener);
 		}
 	}
 };

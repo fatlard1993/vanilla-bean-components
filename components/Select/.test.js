@@ -142,7 +142,7 @@ describe('Select', () => {
 
 		const errors = select.validate();
 		expect(errors).toHaveLength(1);
-		expect(select.elem.className).toContain('validationErrors');
+		expect(select.elem.className).toContain('validation-errors');
 
 		select.options.value = 'Valid Option'; // Set through options like other components
 		const noErrors = select.validate();

@@ -2,13 +2,13 @@
 
 > ./Router.js
 
-Hash-based router that maps URL fragments to component classes. The design decision: navigating to the current route is a no-op — the active view is not destroyed and rebuilt when the URL doesn't change.
+Hash-based router that maps URL fragments to component classes. The design decision: navigating to the current route is a no-op; the active view is not destroyed and rebuilt when the URL doesn't change.
 
 ## Query strings are stripped before route matching
 
 **method:** `hashStripsQueryString`
 
-- `#/path?foo=bar` matches the `/path` route — query strings are stripped before matching so callers write route patterns without accounting for query parameters
+- `#/path?foo=bar` matches the `/path` route; query strings are stripped before matching so callers write route patterns without accounting for query parameters
   - hashStripsQueryString() → "/path"
 
 ## Route parameters are extracted and passed to the rendered view

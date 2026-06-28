@@ -1,18 +1,20 @@
-import { appendStyles, postCSS, themeStyles } from '../styled';
-import { classSafeNanoid } from '../utils';
-import { Context } from '../Context';
+import { Oxject } from '@vanilla-bean/oxject';
+import { appendStyles, themeStyles } from '../styled';
+import { classSafeNanoid, isDev } from '../utils';
 import { Elem } from '../Elem';
 
 import { observeElementConnection } from './observeElementConnection';
 
 const _internalProperties = new Set([
 	'cleanup',
+	'_destroyCleanup',
 	'rendered',
 	'elemObserver',
 	'options',
 	'elem',
 	'tag',
 	'defaultOptions',
+	'handlers',
 	'__registeredEvents',
 	'__knownAttributes',
 	'__priorityOptions',
@@ -54,7 +56,7 @@ const defaultOptions = {
 
 /**
  * General purpose reactive component with automatic cleanup and lifecycle management.
- * Extends Elem with Context integration, event handling, and style processing.
+ * Extends Elem with Oxject-driven options, event handling, and style processing.
  * @augments Elem
  * @augments EventTarget
  */
@@ -62,7 +64,7 @@ class Component extends Elem {
 	defaultOptions = defaultOptions;
 
 	/**
-	 * Creates reactive component with Context-driven options, automatic cleanup, and lifecycle management.
+	 * Creates reactive component with Oxject-driven options, automatic cleanup, and lifecycle management.
 	 * @param {object} [options] - Component configuration object with reactive properties
 	 * @param {string} [options.tag] - HTML tag name for the root element
 	 * @param {boolean|'onload'|'animationFrame'} [options.autoRender] - Render timing: true (immediate), 'onload' (window load), 'animationFrame' (next frame), false (manual)
@@ -97,7 +99,7 @@ class Component extends Elem {
 
 		this.uniqueId = Object.freeze(classSafeNanoid());
 
-		this.options = new Context({
+		this.options = new Oxject({
 			...optionsWithoutConfig,
 			addClass: [this.uniqueId, optionsWithoutConfig.addClass],
 			append: [optionsWithoutConfig.append, children],
@@ -109,7 +111,7 @@ class Component extends Elem {
 
 		this.options.addEventListener('set', setOption);
 
-		this.addCleanup('context', () => {
+		this.addCleanup('options', () => {
 			this.options.removeEventListener('set', setOption);
 			this.options.destroy?.();
 		});
@@ -131,8 +133,15 @@ class Component extends Elem {
 			this.addCleanup('autoRender_animationFrame', () => cancelAnimationFrame(frameId));
 		}
 
-		if (process.env.NODE_ENV === 'development') {
+		if (isDev) {
 			this.addClass(...this.ancestry().map(({ constructor }) => constructor.name));
+
+			if (this.constructor !== Component && this.constructor.prototype.hasOwnProperty('render')) {
+				// eslint-disable-next-line no-console
+				console.warn(
+					`[Component] ${this.constructor.name} overrides render(). Structure belongs in build() — render() is the lifecycle orchestrator.`,
+				);
+			}
 		}
 	}
 
@@ -179,36 +188,87 @@ class Component extends Elem {
 			this.rendered = false;
 		}
 
-		this.build();
-		this._processOptions();
+		try {
+			this.build();
+			this._processOptions();
+		} catch (error) {
+			this.processCleanup();
+			throw error;
+		}
+
 		this.rendered = true;
+		this.onRendered?.();
 	}
 
 	/**
-	 * Routes option changes to appropriate handlers based on key patterns and value types.
+	 * Routes option changes through the static handlers chain, then standard routing.
 	 *
-	 * Implements the options processing pipeline determining how each property change
-	 * should be handled. Routing priority: event handlers → special keys → attributes → methods → properties.
+	 * Walks the constructor chain collecting all handlers for the given key (deepest class
+	 * first), then executes them in order. Each handler receives `next(value?)` — call it
+	 * to continue to the next handler in the chain, or to standard routing when the chain
+	 * is exhausted. Handlers that do not call `next` fully own the key.
 	 * @param {string} key - Option property name being changed
 	 * @param {*} value - New value being assigned to the option
 	 * @private
 	 */
 	_setOption(key, value) {
+		const chain = [];
+		let klass = this.constructor;
+		while (klass && klass !== Component) {
+			if (Object.prototype.hasOwnProperty.call(klass, 'handlers') && klass.handlers?.[key]) {
+				chain.push(klass.handlers[key]);
+			}
+			klass = Object.getPrototypeOf(klass);
+		}
+
+		if (chain.length > 0) {
+			let i = 0;
+			const next = (v = value) => {
+				if (i < chain.length) chain[i++].call(this, v, next);
+				else this._standardSetOption(key, v);
+			};
+			chain[i++].call(this, value, next);
+			return;
+		}
+
+		this._standardSetOption(key, value);
+	}
+
+	/**
+	 * Standard option routing pipeline — event handlers, special keys, attributes, methods, properties.
+	 * Called by _setOption when no handler claims the key, or when a handler calls next() past
+	 * the end of its chain.
+	 * @param {string} key - Option property name
+	 * @param {*} value - Value to apply
+	 * @private
+	 */
+	_standardSetOption(key, value) {
+		if (key === 'onRendered') {
+			this.onRendered = value;
+			return;
+		}
+
 		if (key.startsWith('on') && value) {
 			const targetEvent = key.replace(/^on/, '').toLowerCase();
-
 			if (this.on({ targetEvent, id: key, callback: value })) return;
+			if (typeof this[key] !== 'function') {
+				if (isDev) {
+					// eslint-disable-next-line no-console
+					console.warn(
+						`Component._setOption(): "${key}" starts with "on" but "${targetEvent}" is not a recognized event and there is no "${key}" method. Add "${targetEvent}" to registeredEvents to register it as a custom event.`,
+					);
+				}
+				return;
+			}
+			// method route — e.g. onPointerPress, onHover
 		}
 
 		if (key === 'uniqueId') this.elem.id = typeof value === 'string' ? value : this.uniqueId;
 		else if (key === 'style') this.setStyle(value);
 		else if (key === 'attributes') this.setAttributes(value);
-		else if (key === 'augmentedUI') {
-			if (value) this.elem.setAttribute('data-augmented-ui', typeof value === 'string' ? value : '');
-			else this.elem.removeAttribute('data-augmented-ui');
-		} else if (this.__knownAttributes.has(key) || key.startsWith('aria-')) {
+		else if (this.__knownAttributes.has(key) || key.startsWith('aria-') || key.startsWith('data-')) {
 			if (value === null || value === undefined || value === false) this.elem.removeAttribute(key);
-			else this.elem.setAttribute(key, value);
+			else this.elem.setAttribute(key, typeof value === 'boolean' ? '' : String(value));
 		} else if (typeof this[key] === 'function') {
 			if (_lifecycleMethods.has(key)) return;
 			this[key].call(this, value);
@@ -219,7 +279,8 @@ class Component extends Elem {
 			this.elem[key].call(this.elem, value);
 		} else if (typeof value === 'function') this[key] = value;
 		else {
-			if (process.env.NODE_ENV === 'development' && !(key in this.elem)) {
+			if (isDev && !(key in this.elem)) {
+				// eslint-disable-next-line no-console
 				console.warn(
 					`Component._setOption(): unknown key "${key}" assigned directly to elem. If intentional, add to knownAttributes.`,
 				);
@@ -246,7 +307,7 @@ class Component extends Elem {
 
 	/**
 	 * Removes all child elements after running cleanup on descendant components.
-	 * @returns {this}
+	 * @returns {this} The component instance
 	 */
 	empty() {
 		const cleanupDescendants = element => {
@@ -277,11 +338,13 @@ class Component extends Elem {
 					try {
 						existing();
 					} catch (error) {
+						// eslint-disable-next-line no-console
 						console.error('Cleanup error:', error);
 					}
 					try {
 						cleanupFunction();
 					} catch (error) {
+						// eslint-disable-next-line no-console
 						console.error('Cleanup error:', error);
 					}
 				}
@@ -299,6 +362,18 @@ class Component extends Elem {
 
 		this.cleanup[id]?.();
 		this.cleanup[id] = cleanupFunction;
+	}
+
+	/**
+	 * Register cleanup that only runs on destroy(), not on disconnect.
+	 * Use for element-level event listeners that must survive temporary DOM moves.
+	 * @param {string} id - Cleanup identifier
+	 * @param {Function} cleanupFunction - Function called during destroy
+	 */
+	replaceDestroyCleanup(id, cleanupFunction) {
+		if (!this._destroyCleanup) this._destroyCleanup = {};
+		this._destroyCleanup[id]?.();
+		this._destroyCleanup[id] = cleanupFunction;
 	}
 
 	/** @private */
@@ -329,7 +404,10 @@ class Component extends Elem {
 
 			collectCleanups(this.children);
 
-			cleanups.forEach(child => child.processCleanup());
+			cleanups.forEach(child => {
+				child.processCleanup();
+				if (child._destroyCleanup) child.processCleanup(child._destroyCleanup);
+			});
 		}
 
 		const fns = Object.values(cleanup);
@@ -339,6 +417,7 @@ class Component extends Elem {
 			try {
 				cleanupFunction();
 			} catch (error) {
+				// eslint-disable-next-line no-console
 				console.error('Cleanup error:', error);
 			}
 		});
@@ -361,6 +440,7 @@ class Component extends Elem {
 		disconnectDescendantObservers(this.children);
 
 		this.processCleanup(this.cleanup, true);
+		if (this._destroyCleanup) this.processCleanup(this._destroyCleanup);
 		this.elem?.remove();
 	}
 
@@ -379,9 +459,8 @@ class Component extends Elem {
 		if (!callback) return false;
 
 		if (commonEvents.has(targetEvent) || this.__registeredEvents.has(targetEvent)) {
+			this.replaceDestroyCleanup(id, () => this.elem.removeEventListener(targetEvent, callback));
 			this.elem.addEventListener(targetEvent, callback);
-
-			this.replaceCleanup(id, () => this.elem.removeEventListener(targetEvent, callback));
 
 			return true;
 		}
@@ -396,9 +475,8 @@ class Component extends Elem {
 				callback.call(this, event);
 			};
 
+			this.replaceDestroyCleanup(id, () => this.elem.removeEventListener(targetEvent, _callback));
 			this.elem.addEventListener(targetEvent, _callback);
-
-			this.replaceCleanup(id, () => this.elem.removeEventListener(targetEvent, _callback));
 
 			return true;
 		}
@@ -406,7 +484,6 @@ class Component extends Elem {
 		if (connectionEvents.has(targetEvent)) {
 			if (!this.elemObserver) {
 				this.elemObserver = observeElementConnection({
-					parent: this.parentElem || document,
 					target: this.elem,
 					onConnected: event => this.emit('connected', event),
 					onDisconnected: event => this.emit('disconnected', event),
@@ -415,18 +492,12 @@ class Component extends Elem {
 				this.addCleanup('elemObserver', () => this.elemObserver?.disconnect());
 			}
 
+			this.replaceDestroyCleanup(id, () => this.removeEventListener(targetEvent, callback));
 			this.addEventListener(targetEvent, callback);
-
-			this.replaceCleanup(id, () => this.removeEventListener(targetEvent, callback));
 
 			return true;
 		}
 
-		if (process.env.NODE_ENV === 'development') {
-			console.warn(
-				`Component.on(): unrecognized event "${targetEvent}". Use registeredEvents option to register custom events.`,
-			);
-		}
 		return false;
 	}
 
@@ -436,14 +507,16 @@ class Component extends Elem {
 	 * @param {*} [detail] - Event detail data
 	 */
 	emit(eventType, detail) {
+		// Two separate instances: a fired CustomEvent cannot be re-dispatched per spec.
 		this.dispatchEvent(new CustomEvent(eventType, { detail }));
+		this.elem.dispatchEvent(new CustomEvent(eventType, { detail }));
 	}
 
 	/**
 	 * Applies styles via inline properties or scoped CSS injection with theme processing.
 	 *
 	 * Object styles are applied as inline properties. String/function styles are
-	 * processed through the theme system, PostCSS, and injected as scoped CSS.
+	 * processed through the theme system and injected as scoped CSS.
 	 * @param {string|object|Function} styles - Style definition: object for inline styles, string/function for scoped CSS
 	 */
 	styles(styles) {
@@ -457,17 +530,12 @@ class Component extends Elem {
 
 		if (typeof themedStyles === 'object') {
 			this.setStyle(themedStyles);
-
 			return;
 		}
 
-		let cancelled = false;
-		postCSS(themedStyles).then(css => {
-			if (!cancelled) appendStyles(css, this.uniqueId);
-		});
+		appendStyles(themedStyles, this.uniqueId);
 
-		this.replaceCleanup(this.uniqueId, () => {
-			cancelled = true;
+		this.replaceDestroyCleanup(this.uniqueId, () => {
 			document.getElementById(this.uniqueId)?.remove();
 		});
 	}
@@ -490,49 +558,29 @@ class Component extends Elem {
 			this.elem.removeEventListener('pointermove', callback, true);
 		};
 
-		this.elem.addEventListener('pointerenter', pointerEnter);
-		this.elem.addEventListener('pointerleave', pointerLeave);
-		this.elem.addEventListener('pointercancel', pointerLeave);
-		this.elem.addEventListener('pointerout', pointerLeave);
-
-		this.replaceCleanup('onHover', () => {
+		this.replaceDestroyCleanup('onHover', () => {
 			this.elem.removeEventListener('pointerenter', pointerEnter);
 			this.elem.removeEventListener('pointerleave', pointerLeave);
 			this.elem.removeEventListener('pointercancel', pointerLeave);
 			this.elem.removeEventListener('pointerout', pointerLeave);
 			this.elem.removeEventListener('pointermove', callback, true);
 		});
+
+		this.elem.addEventListener('pointerenter', pointerEnter);
+		this.elem.addEventListener('pointerleave', pointerLeave);
+		this.elem.addEventListener('pointercancel', pointerLeave);
+		this.elem.addEventListener('pointerout', pointerLeave);
 	}
 
 	/**
-	 * Register pointer press handler for pointerdown-to-pointerup sequences.
-	 * Callback bound to component context and called on successful press completion.
-	 * @param {Function} [callback] - Handler called on pointerup after pointerdown
+	 * Register pointer press handler. Fires on pointerdown for immediate, reliable response
+	 * across all contexts including scroll containers and modal dialogs.
+	 * @param {Function} [callback] - Handler called on pointerdown on this element
 	 */
 	onPointerPress(callback = () => {}) {
 		callback = callback.bind(this);
-
-		const cleanupPointerDown = () => {
-			this.elem.removeEventListener('pointerup', callback);
-			this.elem.removeEventListener('pointerleave', cleanupPointerDown);
-			this.elem.removeEventListener('pointercancel', cleanupPointerDown);
-			this.elem.removeEventListener('pointerout', cleanupPointerDown);
-		};
-
-		const pointerDown = () => {
-			this.elem.addEventListener('pointerup', callback);
-			this.elem.addEventListener('pointerleave', cleanupPointerDown);
-			this.elem.addEventListener('pointercancel', cleanupPointerDown);
-			this.elem.addEventListener('pointerout', cleanupPointerDown);
-		};
-
-		this.elem.addEventListener('pointerdown', pointerDown);
-
-		this.replaceCleanup('onPointerPress', () => {
-			this.elem.removeEventListener('pointerdown', pointerDown);
-
-			cleanupPointerDown();
-		});
+		this.replaceDestroyCleanup('onPointerPress', () => this.elem.removeEventListener('pointerdown', callback));
+		this.elem.addEventListener('pointerdown', callback);
 	}
 
 	/**

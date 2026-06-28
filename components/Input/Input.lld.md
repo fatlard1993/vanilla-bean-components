@@ -2,7 +2,7 @@
 
 > ./Input.js
 
-Input element that infers its type from the value it receives rather than requiring callers to declare it. The deeper design decision is that `isDirty` makes unsaved-change detection a first-class property — forms don't need to track initial values themselves.
+Input element that infers its type from the value it receives rather than requiring callers to declare it. The deeper design decision is that `isDirty` makes unsaved-change detection a first-class property; forms don't need to track initial values themselves.
 
 ## Type is communicated by the value, not by a separate option
 

@@ -1,13 +1,11 @@
-import colors from './colors';
-
-export const number = `
+export const number = ({ colors }) => `
 	input[type='number'] {
 		color: ${colors.light(colors.orange)};
 		background-color: ${colors.black};
 	}
 `;
 
-export const checkbox = `
+export const checkbox = ({ colors }) => `
 	input[type='checkbox'] {
 		/* Remove most all native input styles */
 		appearance: none;
@@ -42,7 +40,7 @@ export const checkbox = `
 	}
 `;
 
-export default `
+export default ({ colors }) => `
 	display: block;
 	border-radius: 3px;
 	border: inset 3px ${colors.lightest(colors.teal).setAlpha(0.8)};
@@ -59,7 +57,7 @@ export default `
 		background-color: ${colors.darker(colors.gray)};
 	}
 
-	&:not(.syntaxHighlighting).validationErrors {
+	&:not(.syntax-highlighting).validation-errors {
 		background-color: ${colors.dark(colors.red)};
 		color: ${colors.white};
 	}

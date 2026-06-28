@@ -1,6 +1,4 @@
-import colors from './colors';
-
-export default `
+export default ({ colors }) => `
 	position: relative;
 	border-collapse: collapse;
 

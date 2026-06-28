@@ -1,4 +1,3 @@
-/* eslint-disable spellcheck/spell-checker */
 module.exports = {
 	arrowParens: 'avoid',
 	printWidth: 120,

@@ -1,5 +1,6 @@
 import theme from '../theme';
 
+import { isDev } from '../utils/browser';
 import { removeExcessIndentation } from '../utils/string';
 
 /**
@@ -20,9 +21,16 @@ export const themeStyles = ({ styles = () => '', scope }) => {
 	if (typeof themedStyles === 'object') return themedStyles;
 	if (!/\S/.test(themedStyles)) return '';
 
-	const scopedStyleText = (process.env.NODE_ENV === 'development' ? x => x : removeExcessIndentation)(
-		scope ? `${scope} { ${themedStyles} }` : themedStyles,
-	);
+	let css = themedStyles;
 
-	return scopedStyleText;
+	if (scope) {
+		const keyframes = [];
+		const inner = themedStyles.replace(/@keyframes\s+[\w-]+\s*\{(?:[^{}]|\{[^{}]*\})*\}/g, match => {
+			keyframes.push(match);
+			return '';
+		});
+		css = keyframes.length ? `${keyframes.join('\n')}\n${scope} { ${inner} }` : `${scope} { ${inner} }`;
+	}
+
+	return (isDev ? x => x : removeExcessIndentation)(css);
 };

@@ -1,3 +1,5 @@
+import { isDev } from './browser';
+
 /**
  * Creates debounced version of function that delays execution until after delay period of inactivity.
  * @param {Function} callback - Function to debounce
@@ -58,7 +60,7 @@ export const retry = async (callback, options = {}) => {
 		return await callback();
 	} catch (error) {
 		// eslint-disable-next-line no-console
-		if (process.env.NODE_ENV === 'development') console.warn('[DEV] retry error', error);
+		if (isDev) console.warn('[DEV] retry error', error);
 
 		if (index >= max) throw error;
 

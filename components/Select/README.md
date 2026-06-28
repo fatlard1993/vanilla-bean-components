@@ -5,7 +5,7 @@ Select dropdown component extending Input, with dynamic option rendering and enh
 ## Usage
 
 ```js
-import { Select } from 'vanilla-bean-components';
+import { Select } from '@vanilla-bean/components';
 
 const select = new Select({
 	options: ['one', 'two', 'three'],
@@ -20,7 +20,7 @@ Select inherits all options from `Input`. Key additions:
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `options` | `Array<string\|object>` | — | List of selectable options — see shape below. Reactive — reassigning `options.options` rebuilds the `<option>` elements |
+| `options` | `Array<string\|object>` | — | List of selectable options. See shape below. Reactive: reassigning `options.options` rebuilds the `<option>` elements |
 | `value` | `any` | — | Currently selected value. Matched against option `value` attributes |
 | `onChange` | `Function` | — | Called with an enhanced event containing `.value` (the selected value string) on change |
 
@@ -30,8 +30,8 @@ All other `Input` options (`placeholder`, `validations`, `onInput`, etc.) are av
 
 Each entry in the `options` array is either:
 
-- A **string** — used as both the `label` and `value` of the `<option>` element
-- An **object** — spread directly onto the `<option>` element. Common fields:
+- A **string**: used as both the `label` and `value` of the `<option>` element
+- An **object**: spread directly onto the `<option>` element. Common fields:
 
 | Field      | Type      | Description                               |
 | ---------- | --------- | ----------------------------------------- |
@@ -67,7 +67,7 @@ Select emits standard enhanced DOM events via inherited `Input` behavior. The `o
 Mixed string and object options with a numeric value, used inside a Form:
 
 ```js
-import { Select } from 'vanilla-bean-components';
+import { Select } from '@vanilla-bean/components';
 
 const select = new Select({
 	options: [

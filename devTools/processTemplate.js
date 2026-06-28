@@ -2,18 +2,24 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { extractJSDoc } from './extractJSDoc.js';
 
+const codeCell = str => {
+	const escaped = (str || '')
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/\|/g, '&#124;');
+	return `<code>${escaped}</code>`;
+};
+
 /**
  * Processes README templates by replacing extraction commands with JSDoc-derived content.
- *
- * Supports commands like [[extract-description Component.js]], [[extract-options Component.js]], etc.
- * Generates markdown documentation from JSDoc comments automatically.
  * @param {string} templateContent - Template content with extraction commands
  * @param {string} componentPath - Path to component directory for resolving relative paths
  * @returns {string} Processed template with commands replaced by generated content
  */
 export function processTemplate(templateContent, componentPath = '.') {
 	// Replace extraction commands that start with known command words
-	return templateContent.replace(/\[\[(extract-\w+|import)\s+([^\]]+)\]\]/g, (match, command, args) => {
+	return templateContent.replace(/\[\[(extract-[\w-]+|import)\s+([^\]]+)\]\]/g, (match, command, args) => {
 		try {
 			return processCommand(`${command} ${args}`.trim(), componentPath);
 		} catch (error) {
@@ -60,9 +66,6 @@ function processCommand(command, basePath) {
 
 		case 'extract-examples':
 			return extractExamplesMarkdown(filePath);
-
-		case 'extract-usage':
-			return extractUsageMarkdown(filePath, basePath);
 
 		case 'extract-enums':
 			return extractEnumsMarkdown(filePath);
@@ -113,16 +116,12 @@ function extractOptionsMarkdown(filePath) {
 
 	options.forEach(option => {
 		const name = option.optional ? `[${option.name}]` : option.name;
-		const type = `\`${option.type}\``;
+		const type = codeCell(option.type);
 		let defaultValue;
-		if (option.default) {
-			defaultValue = `\`${option.default}\``;
-		} else if (option.optional) {
-			defaultValue = `\`undefined\``;
-		} else {
-			defaultValue = '*required*';
-		}
-		const description = option.description || '*No description*';
+		if (option.default) defaultValue = codeCell(option.default);
+		else if (option.optional) defaultValue = codeCell('undefined');
+		else defaultValue = '*required*';
+		const description = (option.description || '*No description*').replace(/\|/g, '&#124;');
 
 		markdown += `| ${name} | ${type} | ${defaultValue} | ${description} |\n`;
 	});
@@ -200,9 +199,9 @@ function extractPropertiesMarkdown(filePath) {
 
 	properties.forEach(prop => {
 		const access = prop.access === 'readonly' ? 'Read-only' : 'Read/Write';
-		const description = prop.description || '*No description*';
+		const description = (prop.description || '*No description*').replace(/\|/g, '&#124;');
 
-		markdown += `| \`${prop.name}\` | \`${prop.type}\` | ${access} | ${description} |\n`;
+		markdown += `| ${codeCell(prop.name)} | ${codeCell(prop.type)} | ${access} | ${description} |\n`;
 	});
 
 	return markdown;
@@ -234,6 +233,24 @@ function extractEventsMarkdown(filePath) {
  * @param {string} filePath - Path to component file
  * @returns {string} Formatted imports markdown
  */
+const COMPONENT_DEMO_ROUTES = {
+	EventTarget: 'https://developer.mozilla.org/docs/Web/API/EventTarget',
+	Elem: '#/documentation/Elem',
+	Component: '#/documentation/Component',
+};
+
+const MODULE_ROUTES = {
+	utils: '#/documentation/utils',
+	styled: '#/documentation/styled',
+	'@vanilla-bean/oxject': '#/dependencies/oxject',
+	'@ctrl/tinycolor': '#/dependencies/tinycolor',
+};
+
+/**
+ * Extracts and formats component dependencies as markdown list.
+ * @param {string} filePath - Path to component file
+ * @returns {string} Formatted imports markdown
+ */
 function extractImportsMarkdown(filePath) {
 	const { imports } = extractJSDoc(filePath);
 
@@ -241,11 +258,20 @@ function extractImportsMarkdown(filePath) {
 		return '';
 	}
 
+	const seen = new Set();
 	let markdown = '';
 
 	imports.forEach(imp => {
-		const importList = imp.imports.map(item => `\`${item}\``).join(', ');
-		markdown += `- **${imp.module}** - ${importList}\n`;
+		const moduleRoot = imp.module.replace(/\/.*$/, '');
+		const moduleRoute = MODULE_ROUTES[moduleRoot] || MODULE_ROUTES[imp.module];
+
+		imp.imports.forEach(name => {
+			if (seen.has(name)) return;
+			seen.add(name);
+
+			const route = moduleRoute ?? COMPONENT_DEMO_ROUTES[name] ?? (/^[A-Z]/.test(name) ? `#/${name}` : null);
+			markdown += route ? `- [${name}](${route})\n` : `- \`${name}\`\n`;
+		});
 	});
 
 	return markdown;
@@ -286,31 +312,6 @@ function extractExamplesMarkdown(filePath) {
  * @param {string} basePath - Base path for resolving demo file
  * @returns {string} Formatted usage examples markdown
  */
-function extractUsageMarkdown(filePath, basePath) {
-	try {
-		// Look for demo.js file in same directory
-		const demoPath = join(basePath, 'demo.js');
-		const demoContent = readFileSync(demoPath, 'utf8');
-
-		// Extract new Component() calls as usage examples
-		const constructorMatches = [...demoContent.matchAll(/new\s+(\w+)\s*\(([\s\S]*?)\)/g)];
-
-		if (!constructorMatches.length) {
-			return '';
-		}
-
-		let markdown = '';
-		constructorMatches.slice(0, 3).forEach((match, index) => {
-			// Limit to 3 examples
-			if (index > 0) markdown += '\n';
-			markdown += `new ${match[1]}(${match[2]})\n`;
-		});
-
-		return markdown.trim();
-	} catch {
-		return '';
-	}
-}
 
 /**
  * Extracts enum definitions from JSDoc comments.

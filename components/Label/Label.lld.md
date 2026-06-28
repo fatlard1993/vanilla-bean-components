@@ -2,7 +2,7 @@
 
 > ./Label.js
 
-Labeling wrapper with five structural variants. The key decision is that `variant` selects a DOM structure, not just a CSS class — each variant builds a different composition of elements suited to its use case.
+Labeling wrapper with five structural variants. The key decision is that `variant` selects a DOM structure, not just a CSS class; each variant builds a different composition of elements suited to its use case.
 
 ## Each variant applies a distinct class that drives its CSS behavior
 

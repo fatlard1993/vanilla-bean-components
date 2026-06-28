@@ -5,7 +5,7 @@ Modal and non-modal dialog component built on the native `<dialog>` element with
 ## Usage
 
 ```js
-import { Dialog } from 'vanilla-bean-components';
+import { Dialog } from '@vanilla-bean/components';
 
 const dialog = new Dialog({
 	header: 'Confirm Action',
@@ -23,17 +23,16 @@ const dialog = new Dialog({
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `header` | `string` | — | Text rendered in the `<h2>` header |
-| `body` | `string\|Component\|Array` | — | Content for the scrollable body section. Reactive — updating `options.body` replaces content |
+| `body` | `string\|Component\|Array` | — | Content for the scrollable body section. Reactive: updating `options.body` replaces content |
 | `buttons` | `Array<string\|object>` | — | Shorthand footer buttons. Each entry is a string label or `{ textContent, variant?, onPointerPress?, ...buttonOptions }` |
 | `footer` | `Array<Component>` | — | Fully custom footer components. Takes precedence over `buttons` |
 | `onButtonPress` | `Function` | — | Called when any `buttons` entry is pressed. Receives `{ button, closeDialog, event }` |
 | `openOnRender` | `number\|boolean` | `16` | Auto-open delay in ms after render. Set to `false` to disable auto-open |
 | `modal` | `boolean` | `true` | Open as a modal (with backdrop) vs. non-modal |
-| `size` | `string` | `'small'` | Dialog dimensions — `'small'` (420×210px), `'standard'` (840×420px), `'large'` (90vw×90vh) |
-| `variant` | `string` | — | Color theme — `'info'`, `'success'`, `'warning'`, `'error'` |
+| `size` | `string` | `'small'` | Dialog dimensions: `'small'` (420×210px), `'standard'` (840×420px), `'large'` (90vw×90vh) |
+| `variant` | `string` | — | Color theme: `'info'`, `'success'`, `'warning'`, `'error'` |
 | `closeDialog` | `Function` | — | Override the default close behavior used inside `onButtonPress` |
 | `appendTo` | `Element` | `document.body` | Where to append the dialog in the DOM |
-| `augmentedUI` | `string` | `'tl-clip tr-2-clip-x br-clip bl-2-clip-y border'` | Augmented-UI clip configuration |
 
 ### `onButtonPress` callback signature
 
@@ -72,8 +71,8 @@ dialog.variant_enum; // ['info', 'success', 'warning', 'error']
 Dialog with reactive body content loaded asynchronously:
 
 ```js
-import { Dialog } from 'vanilla-bean-components';
-import { Button } from 'vanilla-bean-components';
+import { Dialog } from '@vanilla-bean/components';
+import { Button } from '@vanilla-bean/components';
 
 const dialog = new Dialog({
 	header: 'Results',

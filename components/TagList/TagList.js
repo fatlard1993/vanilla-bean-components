@@ -2,48 +2,33 @@ import { Component } from '../../Component';
 import { styled } from '../../styled';
 import { Button } from '../Button';
 import { Input } from '../Input';
-import { Popover } from '../Popover';
 
 import Tag from './Tag';
 
 const StyledComponent = styled(
 	Component,
 	() => `
-		margin: 1% auto;
-		border-radius: 3px;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 4px;
+		list-style: none;
+		margin: 0;
+		padding: 4px;
 		box-sizing: border-box;
-		min-height: 1em;
-		padding: 0;
-
-		&:after {
-			content: '';
-			clear: both;
-			display: table;
-		}
 
 		&.readOnly {
 			pointer-events: none;
-			border: none;
-			background: none;
-			width: 100%;
-			margin: 0;
+			padding: 0;
 		}
 	`,
 );
 
-const TagListTextInput = styled(
+const TagListInput = styled(
 	Input,
 	() => `
-		display: inline-block;
 		flex: 1;
-		margin: 3px;
-	`,
-);
-
-const TagListIconButton = styled(
-	Button,
-	() => `
-		margin: 3px 0 3px 3px;
+		min-width: 80px;
 	`,
 );
 
@@ -68,79 +53,39 @@ class TagList extends StyledComponent {
 		super({ ...options, tag: 'ul' }, ...children);
 	}
 
+	_addTag(value) {
+		value = (value || '').trim();
+		if (!value) return;
+
+		const existing = Array.from(this.elem.querySelectorAll('li[data-value]')).map(el => el.dataset.value);
+		if (existing.includes(value)) return;
+
+		this.elem.insertBefore(new Tag({ textContent: value }).elem, this.addTag.elem);
+		this.tagInput.elem.value = '';
+		this.tagInput.elem.focus();
+	}
+
 	build() {
 		if (!this.options.readOnly) {
-			this.tagInput = new TagListTextInput({
-				placeholder: 'New Tag',
-				onKeyUp: () => {
-					this.addButtonPopover[this.tagInput.elem.value.length > 0 ? 'show' : 'hide']();
+			this.tagInput = new TagListInput({ placeholder: 'New Tag' });
 
-					this.addTag.elem.style.width = `${Math.max(
-						260,
-						this.tagInput.elem.value.length *
-							Math.round(Number.parseInt(window.getComputedStyle(this.tagInput.elem).fontSize) * 0.75),
-					)}px`;
-				},
-			});
-
-			const { top, left } = this.elem.getBoundingClientRect();
-			this.addButtonPopover = new Popover(
-				{
-					autoOpen: false,
-					y: top - 6,
-					x: left - 6,
-					style: { overflow: 'visible', background: 'none', border: 'none' },
-				},
-				new Button({
-					icon: 'plus',
-					onPointerPress: () => {
-						const tags = Array.from(this.elem.children).map(elem => elem.textContent);
-
-						if (this.tagInput.elem.value.length === 0 || tags.includes(this.tagInput.elem.value)) return;
-
-						const newTag = new Tag({ textContent: this.tagInput.elem.value });
-
-						this.elem.insertBefore(newTag.elem, this.addTag.elem);
-
-						this.tagInput.elem.value = '';
-
-						this.tagInput.elem.focus();
-					},
-				}),
-			);
-
-			this.addButton = new TagListIconButton({
-				icon: 'plus',
-				onPointerPress: () => {
-					const tags = Array.from(this.elem.children).map(elem => elem.textContent);
-
-					if (this.tagInput.elem.value.length === 0 || tags.includes(this.tagInput.elem.value)) return;
-
-					const newTag = new Tag({ textContent: this.tagInput.elem.value });
-
-					this.elem.insertBefore(newTag.elem, this.addTag.elem);
-
-					this.tagInput.elem.value = '';
-
-					this.tagInput.elem.focus();
+			this.tagInput.on({
+				targetEvent: 'keyup',
+				callback: e => {
+					if (e.key === 'Enter') this._addTag(this.tagInput.elem.value);
 				},
 			});
 
 			this.addTag = new Tag(
-				{
-					readOnly: true,
-					addClass: 'addTag',
-				},
+				{ readOnly: true, addClass: 'add-tag' },
 				this.tagInput,
-				this.addButtonPopover,
+				new Button({
+					icon: 'plus',
+					onPointerPress: () => this._addTag(this.tagInput.elem.value),
+				}),
 			);
-		}
 
-		if (!this.options.readOnly) {
 			this.replaceCleanup('tagListChildren', () => {
-				this.addButtonPopover?.destroy?.();
-				this.addButton?.destroy?.();
-				this.tagInput?.destroy?.();
 				this.addTag?.destroy?.();
 			});
 		}
@@ -156,18 +101,18 @@ export default TagList;
 
 // Zero-arg scenarios for LLD verification
 export const duplicateRejected = () => {
-	const tl = new TagList({ tags: ['hello'], autoRender: false });
-	tl.render();
-	const before = tl.elem.children.length;
-	tl.tagInput.elem.value = 'hello';
-	tl.tagInput.elem.dispatchEvent(new KeyboardEvent('keyup', { code: 'Enter', bubbles: true }));
-	return tl.elem.children.length === before;
+	const tagList = new TagList({ tags: ['hello'], autoRender: false });
+	tagList.render();
+	const before = tagList.elem.children.length;
+	tagList.tagInput.elem.value = 'hello';
+	tagList.tagInput.elem.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true }));
+	return tagList.elem.children.length === before;
 };
 
 export const inputIsLastAfterAdd = () => {
-	const tl = new TagList({ tags: [], autoRender: false });
-	tl.render();
-	tl.tagInput.elem.value = 'newtag';
-	tl.tagInput.elem.dispatchEvent(new KeyboardEvent('keyup', { code: 'Enter', bubbles: true }));
-	return tl.elem.lastElementChild === tl.addTag.elem;
+	const tagList = new TagList({ tags: [], autoRender: false });
+	tagList.render();
+	tagList.tagInput.elem.value = 'new-tag';
+	tagList.tagInput.elem.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true }));
+	return tagList.elem.lastElementChild === tagList.addTag.elem;
 };

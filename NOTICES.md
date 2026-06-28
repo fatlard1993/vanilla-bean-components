@@ -14,23 +14,11 @@ This project includes the following third-party software:
 - Copyright: Scott Cooper
 - Repository: https://github.com/scttcper/tinycolor
 
-## Augmented UI
-
-- License: MIT
-- Copyright: James0x57
-- Repository: https://github.com/propjockey/augmented-ui
-
 ## FontSource Variable Kode Mono
 
 - License: SIL Open Font License 1.1
 - Copyright: Google Fonts
 - Repository: https://github.com/fontsource/fontsource
-
-## PostCSS and plugins
-
-- License: MIT
-- Various authors
-- Repositories: postcss, autoprefixer, postcss-nested
 
 ## Nanoid
 

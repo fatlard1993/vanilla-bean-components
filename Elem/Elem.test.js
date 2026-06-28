@@ -494,10 +494,62 @@ describe('Elem', () => {
 			expect(within(parentElement).getByText('First child')).toBeInTheDocument();
 		});
 
+		test('returns this for chaining appendTo', () => {
+			const parent = new Elem({ tag: 'div' });
+			elem = new Elem({ tag: 'span' });
+			document.body.appendChild(parent.elem);
+
+			expect(elem.appendTo(parent)).toBe(elem);
+		});
+
+		test('returns this for chaining prependTo', () => {
+			const parent = new Elem({ tag: 'div' });
+			elem = new Elem({ tag: 'span' });
+			document.body.appendChild(parent.elem);
+
+			expect(elem.prependTo(parent.elem)).toBe(elem);
+		});
+
 		test('handles invalid parent in appendTo', () => {
 			elem = new Elem();
 			expect(() => elem.appendTo(null)).not.toThrow();
 			expect(() => elem.appendTo({})).not.toThrow();
+		});
+
+		test('before option inserts element before reference Elem', () => {
+			const parent = new Elem({ tag: 'div' });
+			const existing = new Elem({ tag: 'p', textContent: 'Existing' });
+			parent.append(existing);
+			document.body.appendChild(parent.elem);
+
+			elem = new Elem({ tag: 'span', textContent: 'Before', before: existing });
+
+			const beforeEl = screen.getByText('Before');
+			const existingEl = screen.getByText('Existing');
+			expect(beforeEl).toBeInTheDocument();
+			expect(beforeEl.compareDocumentPosition(existingEl)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+		});
+
+		test('before option accepts raw HTMLElement', () => {
+			const parent = document.createElement('div');
+			const existing = document.createElement('p');
+			existing.textContent = 'Existing';
+			parent.appendChild(existing);
+			document.body.appendChild(parent);
+
+			elem = new Elem({ tag: 'span', textContent: 'Before', before: existing });
+
+			const beforeEl = screen.getByText('Before');
+			expect(beforeEl).toBeInTheDocument();
+			expect(beforeEl.compareDocumentPosition(existing)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+		});
+
+		test('before option is a no-op when reference has no parent', () => {
+			const orphan = new Elem({ tag: 'p' });
+			elem = new Elem({ tag: 'span' });
+			expect(() => {
+				elem = new Elem({ tag: 'span', before: orphan });
+			}).not.toThrow();
 		});
 	});
 

@@ -77,7 +77,11 @@ export default class Notify extends StyledPopover {
 			{ info: 'circle-info', success: 'check', warning: 'triangle-exclamation', error: 'skull-crossbones' }[type];
 
 		super({
-			onPointerPress: () => this.destroy(),
+			role: type === 'error' || type === 'warning' ? 'alert' : 'status',
+			'aria-atomic': 'true',
+			onPointerPress: e => {
+				if (!e.target.closest('button, [role="button"]')) this.destroy();
+			},
 			state: 'manual',
 			...options,
 			addClass: [type].concat(options.addClass),

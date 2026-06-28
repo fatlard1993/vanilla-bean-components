@@ -2,15 +2,16 @@ import { Component } from '../../Component';
 import { routeToRegex } from './utils';
 
 /**
- * Client-side router component with hash-based routing and dynamic view rendering.
+ * Client-side router component with hash-based or history API routing and dynamic view rendering.
  *
- * Provides single-page application routing using URL hash fragments with support
- * for route parameters, dynamic view rendering, and browser history integration.
+ * Provides single-page application routing with support for route parameters,
+ * dynamic view rendering, and browser history integration.
  * @param {object} [options={}] - Router configuration options
  * @param {object} options.views - Object mapping route patterns to component classes
  * @param {string} [options.defaultPath] - Default route path, uses first view key if not specified
  * @param {Component} [options.notFound] - Component class for 404/not found routes
  * @param {Function} [options.onRenderView] - Callback fired when rendering a new view
+ * @param {'hash'|'history'} [options.mode='hash'] - Routing mode: 'hash' uses URL fragments, 'history' uses pushState
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Router} Router component instance
  */
@@ -32,10 +33,12 @@ class Router extends Component {
 	}
 
 	/**
-	 * Gets the current path from the URL hash.
+	 * Gets the current path from the URL.
 	 * @returns {string} Current route path
 	 */
 	get path() {
+		if (this.options.mode === 'history') return window.location.pathname;
+
 		return window.location.hash.replace(/^#\/?/, '/').replace(/\?.*$/, '');
 	}
 
@@ -44,7 +47,11 @@ class Router extends Component {
 	 * @param {string} path - New route path to navigate to
 	 */
 	set path(path) {
-		window.location.hash = path;
+		if (this.options.mode === 'history') {
+			window.history.pushState(null, '', path);
+		} else {
+			window.location.hash = path;
+		}
 
 		this.renderView();
 	}
@@ -58,9 +65,15 @@ class Router extends Component {
 	}
 
 	pathToRoute(path) {
-		return this.options.views[path]
-			? path
-			: Object.keys(this.options.views).find(route => routeToRegex(route).test(path)) || path;
+		if (this.options.views[path]) return path;
+
+		const sorted = Object.keys(this.options.views).sort((a, b) => {
+			const aParams = (a.match(/:/g) || []).length;
+			const bParams = (b.match(/:/g) || []).length;
+			return aParams !== bParams ? aParams - bParams : b.length - a.length;
+		});
+
+		return sorted.find(route => routeToRegex(route).test(path)) || path;
 	}
 
 	/**
@@ -93,10 +106,10 @@ class Router extends Component {
 		const reRenderView = () => this.renderView();
 
 		window.addEventListener('popstate', reRenderView);
-		window.addEventListener('hashchange', reRenderView);
+		if (this.options.mode !== 'history') window.addEventListener('hashchange', reRenderView);
 		this.replaceCleanup('popstate', () => {
 			window.removeEventListener('popstate', reRenderView);
-			window.removeEventListener('hashchange', reRenderView);
+			if (this.options.mode !== 'history') window.removeEventListener('hashchange', reRenderView);
 		});
 
 		this.renderView();

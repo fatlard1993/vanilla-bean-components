@@ -2,7 +2,7 @@
 
 > ./TooltipWrapper.js
 
-Component that adds a tooltip to whatever it wraps. The Tooltip is created during the first `_setOption('tooltip', ...)` call — which runs during render — so it exists after construction but is only shown on hover after a 700ms delay.
+Component that adds a tooltip to whatever it wraps. The Tooltip is created during the first `_setOption('tooltip', ...)` call, which runs during render, so it exists after construction but is only shown on hover after a 700ms delay.
 
 ## The tooltip exists after construction with a tooltip option
 
@@ -11,7 +11,7 @@ Component that adds a tooltip to whatever it wraps. The Tooltip is created durin
 
 ## Hover shows after a delay — brief mouse-overs do not trigger the tooltip
 
-- pointerover registers a 700ms timer; pointerout cancels it and hides immediately — hovering for longer than 700ms shows the tooltip
+- pointerover registers a 700ms timer; pointerout cancels it and hides immediately; hovering for longer than 700ms shows the tooltip
   - does hovering for longer than 700ms show the tooltip?
   - does leaving before 700ms prevent the tooltip from appearing?
 

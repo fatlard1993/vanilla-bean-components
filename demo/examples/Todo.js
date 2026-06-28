@@ -18,11 +18,13 @@ class TodoListItem extends (styled.Component`
 	build() {
 		this.initialLabel = this.options.label;
 
+		const todo = this.options.todo;
+
 		this._checkbox = new Input({
 			type: 'checkbox',
 			value: this.options.subscriber('checked'),
 			onChange: ({ value }) => {
-				this.parent.parent.parent.options.items = this.parent.parent.options.items.map(item =>
+				todo.options.items = todo.options.items.map(item =>
 					item.label === this.initialLabel ? { ...item, checked: value } : item,
 				);
 			},
@@ -36,7 +38,7 @@ class TodoListItem extends (styled.Component`
 						value: this.options.label,
 						onKeyUp: ({ target: { value } }) => (this.options.label = value),
 						onChange: () => {
-							this.parent.parent.parent.options.items = this.parent.parent.options.items.map(item =>
+							todo.options.items = todo.options.items.map(item =>
 								item.label === this.initialLabel ? { ...item, label: this.options.label } : item,
 							);
 
@@ -49,9 +51,7 @@ class TodoListItem extends (styled.Component`
 		this._trash = new Button({
 			icon: 'trash-can',
 			onPointerPress: () => {
-				this.parent.parent.parent.options.items = this.parent.parent.options.items.filter(
-					item => item.label !== this.options.label,
-				);
+				todo.options.items = todo.options.items.filter(item => item.label !== this.options.label);
 			},
 		});
 
@@ -70,7 +70,11 @@ class Todo extends Component {
 	}
 
 	build() {
-		this._list = new List({ items: this.options.subscriber('items'), ListItemComponent: TodoListItem });
+		const todo = this;
+		this._list = new List({
+			items: this.options.subscriber('items', items => items.map(item => ({ ...item, todo }))),
+			ListItemComponent: TodoListItem,
+		});
 		this._input = new Input({
 			type: 'text',
 			style: { flex: 1 },

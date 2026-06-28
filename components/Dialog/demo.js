@@ -1,6 +1,6 @@
+import { GET } from '@vanilla-bean/hypertether';
 import DemoView from '../../demo/DemoView';
 import { Component } from '../../Component';
-import { GET } from '../../request';
 import { randInt } from '../../utils';
 import { Button } from '../Button';
 import { Dialog } from '.';

@@ -2,10 +2,10 @@
  * Inject CSS directly into the document head via a style element
  * @param {string} css - Raw CSS string to inject
  * @param {string} [id] - Optional element ID for the created style tag (enables later removal/updates)
- * @returns {HTMLStyleElement} The created and appended style element
+ * @returns {HTMLStyleElement | undefined} The created or updated style element, or undefined if no CSS provided
  */
 export const appendStyles = (css, id) => {
-	if (!css) return;
+	if (!css) return undefined;
 	if (id) {
 		const existing = document.getElementById(id);
 

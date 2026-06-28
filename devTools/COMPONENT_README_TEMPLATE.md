@@ -1,14 +1,6 @@
-# {ComponentName}
-
 [[extract-description {ComponentName}.js]]
 
-## Usage
-
-```js
-[[extract-usage {ComponentName}.js]]
-```
-
-## Default Options
+## Options
 
 [[extract-options {ComponentName}.js]]
 
@@ -31,10 +23,6 @@
 ## Custom Events
 
 [[extract-custom-events {ComponentName}.js]]
-
-## Dependencies
-
-[[extract-imports {ComponentName}.js]]
 
 ## Design
 

@@ -1,6 +1,4 @@
-import colors from './colors';
-
-export default `
+export default ({ colors }) => `
 	::-webkit-scrollbar {
 		width: 24px;
 		height: 24px;

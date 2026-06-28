@@ -57,7 +57,10 @@ class Elem extends EventTarget {
 	_setOption(key, value) {
 		if (key === 'style') this.setStyle(value);
 		else if (key === 'attributes') this.setAttributes(value);
-		else if (typeof this[key] === 'function') this[key].call(this, value);
+		else if (key === 'before') {
+			const target = value?.elem ?? value;
+			target?.before(this.elem);
+		} else if (typeof this[key] === 'function') this[key].call(this, value);
 		else if (typeof this.elem[key] === 'function') {
 			if (value?.elem) value = value.elem;
 
@@ -161,6 +164,20 @@ class Elem extends EventTarget {
 	}
 
 	/**
+	 * Toggle a CSS class based on a condition.
+	 * @param {string} name - Class name to toggle
+	 * @param {boolean} condition - Add class when true, remove when false
+	 * @returns {Elem} This instance for chaining
+	 * @example
+	 * elem.toggleClass('active', isActive)
+	 */
+	toggleClass(name, condition) {
+		if (condition) this.addClass(name);
+		else this.removeClass(name);
+		return this;
+	}
+
+	/**
 	 * Remove all child elements
 	 * @returns {void}
 	 */
@@ -222,22 +239,26 @@ class Elem extends EventTarget {
 	/**
 	 * Append this element to a parent
 	 * @param {Elem|HTMLElement} parentElem - Parent element to append to
-	 * @returns {void}
+	 * @returns {Elem} This instance for chaining
 	 */
 	appendTo(parentElem) {
 		if (parentElem?.append) parentElem.append(this.elem);
+
+		return this;
 	}
 
 	/**
 	 * Prepend this element to a parent
 	 * @param {Elem|HTMLElement} parentElem - Parent element to prepend to
-	 * @returns {void}
+	 * @returns {Elem} This instance for chaining
 	 */
 	prependTo(parentElem) {
-		if (!parentElem) return;
+		if (!parentElem) return this;
 		const el = parentElem.elem ?? parentElem;
 		if (el.firstChild) el.insertBefore(this.elem, el.firstChild);
 		else el.append(this.elem);
+
+		return this;
 	}
 
 	/**

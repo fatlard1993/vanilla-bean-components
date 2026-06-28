@@ -1,18 +1,18 @@
 # Component
 
-Reactive component class extending Elem with Context integration, lifecycle management, and automatic cleanup.
+Reactive component class extending Elem with Oxject-backed reactive options, lifecycle management, and automatic cleanup.
 
 ## Key Features
 
-- **Reactive options system** - Property changes backed by Context emit events and update DOM automatically
-- **Automatic memory management** - Event listeners and resources cleaned up on DOM disconnect
+- **Reactive options system** - Property changes backed by Oxject emit events and update DOM automatically
+- **Automatic memory management** - Element-level listeners persist through DOM moves, cleaned up on destroy. External resources (timers, subscriptions) cleaned up on disconnect
 - **Flexible render timing** - Immediate, onload, or animationFrame rendering modes
 - **Enhanced event handling** - Input events include `.value` property, DOM connection detection
 - **Integrated styling** - Inline objects or scoped CSS with theme system integration
 - **Lifecycle hooks** - Built-in hover and press handlers with automatic cleanup
 
 ```js
-import { Component } from 'vanilla-bean-components';
+import { Component } from '@vanilla-bean/components';
 ```
 
 ## Basic Usage
@@ -22,7 +22,7 @@ import { Component } from 'vanilla-bean-components';
 Every Component extends EventTarget and wraps an HTMLElement with reactive options:
 
 ```js
-import { Component } from 'vanilla-bean-components';
+import { Component } from '@vanilla-bean/components';
 
 const button = new Component({
 	tag: 'button',
@@ -35,7 +35,7 @@ const button = new Component({
 
 ### Reactive Property Updates
 
-Options are backed by Context - property changes trigger DOM updates automatically:
+Options are backed by Oxject. Property changes trigger DOM updates automatically:
 
 ```js
 const input = new Component({
@@ -90,7 +90,7 @@ class Button extends Component {
 Components integrate seamlessly with the styled system:
 
 ```js
-import { styled } from 'vanilla-bean-components';
+import { styled } from '@vanilla-bean/components';
 
 const StyledComponent = styled(
 	Component,
@@ -105,16 +105,16 @@ const StyledComponent = styled(
 
 ## Reactive Options System
 
-Component options are stored in a Context instance (not plain object like Elem), enabling automatic reactivity:
+Component options are stored in an Oxject instance (not a plain object like Elem), enabling automatic reactivity:
 
 ```js
 const button = new Component({ textContent: 'Click me' });
 
 // Property changes trigger DOM updates
-button.options.textContent = 'Updated'; // Updates DOM via Context
+button.options.textContent = 'Updated'; // Updates DOM reactively
 button.options.addClass = 'active'; // Adds CSS class reactively
 
-// Full Context features available
+// Full Oxject features available
 const subscription = button.options.subscribe({
 	key: 'textContent',
 	callback: value => console.log('Text changed:', value),
@@ -191,11 +191,11 @@ component.onHover(event => {
 
 #### Press Detection
 
-Detects complete press sequence (down → up):
+Fires on `pointerdown` for immediate, reliable response in all contexts including scroll containers and modal dialogs:
 
 ```js
 component.onPointerPress(event => {
-	console.log('Complete press detected');
+	console.log('Pressed');
 });
 ```
 
@@ -223,7 +223,7 @@ new Component({
 Use theme functions for scoped, processed CSS:
 
 ```js
-// Theme function with automatic scoping and PostCSS processing
+// Theme function with automatic scoping
 component.styles(
 	({ colors, fonts }) => `
 	background: ${colors.blue};
@@ -242,7 +242,7 @@ component.styles(
 );
 ```
 
-CSS is processed through PostCSS, receives unique class scope, and is injected into the DOM automatically.
+CSS is scope-wrapped and injected as a scoped <style> tag. No preprocessing.
 
 ## Lifecycle Management
 
@@ -262,7 +262,9 @@ render()
   └─ this.rendered = true
 ```
 
-**`build()` is the subclass structural hook.** Override `build()` — never `render()` — to create child elements and internal structure. Because `build()` runs before `_processOptions()`, all structure exists by the time `_setOption` receives values.
+**`build()` is the subclass structural hook.** Override `build()`, never `render()`, to create child elements and internal structure. Because `build()` runs before `_processOptions()`, all structure exists by the time `_setOption` receives values.
+
+The preferred way to handle specific options is `static handlers` — a per-class dispatch map that composes across the constructor chain without requiring `super._setOption`:
 
 ```js
 class Card extends Component {
@@ -271,18 +273,24 @@ class Card extends Component {
 		this.body = new Component({ tag: 'section', appendTo: this });
 	}
 
-	_setOption(key, value) {
-		if (key === 'title') this.header.options.textContent = value;
-		else super._setOption(key, value);
-	}
+	static handlers = {
+		title(value) {
+			this.header.options.textContent = value;
+		},
+		variant(value) {
+			this.removeClass(/variant-\S+/).addClass(`variant-${value}`);
+		},
+	};
 }
 ```
+
+Handlers that don't call `next(value)` fully own their key. Unhandled keys fall through to standard routing automatically — no `super._setOption` required. Use `_setOption` override only for enum validation or cases that need to intercept before the routing chain.
 
 **`empty()` only runs on re-render.** On the initial render it is skipped. On subsequent `render()` calls it removes all child elements and runs cleanup on all descendant components before the DOM is cleared.
 
 **`async build()` is not supported.** `render()` does not await `build()`'s return value. Asynchronous initialization belongs in `onConnected`.
 
-**Deep hierarchies must chain `super.build()` manually.** If both a parent class and its subclass define `build()`, the subclass must call `super.build()` explicitly — it is not called automatically.
+**Deep hierarchies must chain `super.build()` manually.** If both a parent class and its subclass define `build()`, the subclass must call `super.build()` explicitly. It is not called automatically.
 
 ### Rendering Process (summary)
 
@@ -315,7 +323,7 @@ component.processCleanup();
 **Automatic cleanup includes:**
 
 - Event listener removal
-- Context subscription cleanup
+- Oxject subscription cleanup
 - Style element removal from DOM
 - Recursive child component cleanup
 
@@ -363,15 +371,14 @@ new Component(options?, ...children)
 | `priorityOptions`  | `Set<string>`                         | Option keys processed first during render   |
 | `styles`           | `string\|object\|Function`            | CSS string, style object, or theme function |
 | `uniqueId`         | `string`                              | Override auto-generated unique ID           |
-| `augmentedUI`      | `string\|boolean`                     | data-augmented-ui attribute                 |
 
 #### Event Handler Options
 
 | Option           | Type       | Description                                  |
 | ---------------- | ---------- | -------------------------------------------- |
 | `onHover`        | `Function` | Hover handler with move tracking             |
-| `onPointerPress` | `Function` | Press sequence handler                       |
-| ~~`onClick`~~    | —          | Not supported — use `onPointerPress` instead |
+| `onPointerPress` | `Function` | Fires on `pointerdown`                       |
+| ~~`onClick`~~    | —          | Not supported. Use `onPointerPress` instead. |
 | `onChange`       | `Function` | Change event handler (input .value included) |
 | `onConnected`    | `Function` | DOM connection detection                     |
 | `onDisconnected` | `Function` | DOM disconnection detection                  |
@@ -406,6 +413,7 @@ component.build(); // Subclass structural hook — override to create child elem
 component.render(); // Re-render: empty → build → _processOptions → rendered = true
 component.addCleanup(id, fn); // Register cleanup function (chains with existing for same id)
 component.replaceCleanup(id, fn); // Replace cleanup, running the previous one immediately
+component.replaceDestroyCleanup(id, fn); // Destroy-only cleanup: survives disconnect, runs on destroy()
 component.processCleanup(); // Execute all cleanup functions
 component.destroy(); // Disconnect observer, run all cleanup, remove from DOM
 ```
@@ -429,7 +437,7 @@ component.ancestry(); // Prototype chain inspection
 component.parent; // Parent Component/Elem instance
 component.children; // Child Component/Elem instances
 component.uniqueId; // Frozen unique identifier
-component.options; // Reactive Context instance
+component.options; // Reactive Oxject instance
 component.elem; // Underlying HTMLElement
 component.rendered; // Boolean render status flag
 ```
@@ -439,7 +447,7 @@ component.rendered; // Boolean render status flag
 Components provide comprehensive automatic memory management:
 
 - **Event listeners** - Automatically removed on DOM disconnect
-- **Context subscriptions** - Cleaned up when component destroyed
+- **Oxject subscriptions** - Cleaned up when component destroyed
 - **Style elements** - Removed from DOM head on cleanup
 - **Child components** - Recursive cleanup propagation
 - **Custom cleanup** - Manual cleanup function registration

@@ -2,7 +2,7 @@
 
 ## Overview
 
-vanilla-bean-components is a reactive UI component library built on vanilla JavaScript. Components are plain ES classes that wrap HTMLElements, driven by a proxy-based reactive state container (Context) that automatically propagates property changes to the DOM. There is no virtual DOM, no JSX, and no build step required for consumers — direct DOM manipulation is the intentional design.
+vanilla-bean-components is a reactive UI component library built on vanilla JavaScript. Components are plain ES classes that wrap HTMLElements, driven by a proxy-based reactive state container (`Oxject`, from the `@vanilla-bean/oxject` npm package) that automatically propagates property changes to the DOM. There is no virtual DOM, no JSX, and no build step required for consumers; direct DOM manipulation is the intentional design.
 
 ---
 
@@ -16,14 +16,14 @@ EventTarget  (browser built-in)
             _setOption() router. Options are a plain object;
             no reactivity at this layer.
         └── Component
-                Replaces the plain options object with a Context
+                Replaces the plain options object with an Oxject
                 instance. Adds the render lifecycle (build/render/empty),
                 keyed cleanup system, event registration (on/emit),
                 styled CSS injection, and autoRender timing.
             └── UI Components
-                    (Button, Input, Dialog, Select, …)
+                    (Button, Input, Dialog, Select, ...)
                     Override build() to create sub-structure,
-                    extend _setOption() for custom option keys,
+                    define static handlers for custom option keys,
                     and define domain-specific behavior.
 ```
 
@@ -33,69 +33,33 @@ EventTarget  (browser built-in)
 | --- | --- |
 | `EventTarget` | `addEventListener`, `removeEventListener`, `dispatchEvent` |
 | `Elem` | `this.elem` (HTMLElement), synchronous `_setOption`, DOM helpers (`addClass`, `append`, `setStyle`, `setAttributes`, `content`, `appendTo`, `prependTo`, `prepend`) |
-| `Component` | `this.options` as a reactive `Context`, render lifecycle (`render` / `build` / `empty`), keyed cleanup (`addCleanup` / `replaceCleanup` / `processCleanup`), event routing (`on` / `emit`), `autoRender` timing, connection observation, scoped style injection |
+| `Component` | `this.options` as a reactive `Oxject`, render lifecycle (`render` / `build` / `empty`), keyed cleanup (`addCleanup` / `replaceCleanup` / `processCleanup`), destroy-only cleanup (`replaceDestroyCleanup`), event routing (`on` / `emit`), `autoRender` timing, connection observation, scoped style injection |
 
 ---
 
 ## Reactivity Model
 
-### Context: proxy-returns-from-constructor
+### Oxject: external reactive state
 
-`Context` extends `EventTarget`. Its constructor returns a `Proxy` — not `this`. Every caller receives the proxy as the object reference.
+`Component.options` is an instance of `Oxject` from the `@vanilla-bean/oxject` npm package. `Oxject` is a proxy-based reactive object: every property assignment dispatches events that the component listens to. It is not defined inside this repository.
 
-```js
-// Context constructor (simplified)
-constructor(initialState) {
-    super();
-    this.target = { ...initialState };
-    this.proxy = new Proxy(this.target, {
-        get(target, key) {
-            // contextKeys (methods like subscriber, subscribe, destroy)
-            // are redirected to the Context instance.
-            // All other keys read from target directly.
-        },
-        set(target, key, value) {
-            Reflect.set(target, key, value);
-            context.onSet(key, value);   // emits 'set' + '<key>' events
-        },
-    });
-    return this.proxy; // <-- caller gets the proxy, not the Context instance
-}
-```
-
-Every property assignment on a Context fires two CustomEvents:
-
-- `'set'` — `{ detail: { key, value } }` — generic catch-all
-- `'<key>'` — `{ detail: value }` — property-specific
-
-### Component.options is a Context
-
-In `Component`, the constructor creates `this.options` as a `new Context(...)` and immediately listens to its `'set'` event:
+In `Component`, the constructor creates `this.options` as a `new Oxject(...)` and immediately listens to its `'set'` event:
 
 ```js
-this.options = new Context({ ...optionsWithoutConfig, ... });
+this.options = new Oxject({
+	...optionsWithoutConfig,
+	addClass: [this.uniqueId, optionsWithoutConfig.addClass],
+	append: [optionsWithoutConfig.append, children],
+});
 
 const setOption = ({ detail: { key, value } }) => {
-    if (this.rendered) this._setOption(key, value);
+	if (this.rendered) this._setOption(key, value);
 };
 
 this.options.addEventListener('set', setOption);
 ```
 
 The guard `if (this.rendered)` is critical: reactive updates only flow through `_setOption` **after the initial render completes**. During the initial render, `_processOptions()` iterates all options directly.
-
-### Subscribers
-
-`Context.subscriber(key, parser)` returns a `Subscriber` object. When a `Subscriber` is passed as a value in another Context's initial state, Context wires up the subscription automatically at construction time — changes to the source property propagate to the consuming Context's property.
-
-```js
-const state = new Context({ count: 0 });
-
-const display = new Component({
-	// subscriber updates textContent whenever state.count changes
-	textContent: state.subscriber('count', n => `Count: ${n}`),
-});
-```
 
 ---
 
@@ -106,19 +70,22 @@ const display = new Component({
 ```
 render()
   │
-  ├─ if (this.rendered)        ← only on re-render
+  ├─ if (this.rendered)        <- only on re-render
   │     empty()                  clears children, runs descendant cleanup
   │     this.rendered = false
   │
-  ├─ build()                   ← subclass structural hook (no-op in base)
+  ├─ build()                   <- subclass structural hook (no-op in base)
   │
-  ├─ _processOptions()         ← routes every option through _setOption()
+  ├─ _processOptions()         <- routes every option through _setOption()
   │     priority keys first (onConnected, textContent, content,
   │     appendTo, prependTo, value)
   │     then all remaining keys
   │
   └─ this.rendered = true
+       this.onRendered?.()     <- called after every successful render
 ```
+
+If `build()` or `_processOptions()` throws, `processCleanup()` is called before rethrowing, preventing resource leaks from partial renders.
 
 ### build() is the subclass hook
 
@@ -131,13 +98,12 @@ class Card extends Component {
 		this.body = new Component({ tag: 'section', appendTo: this });
 	}
 
-	_setOption(key, value) {
-		if (key === 'title') {
+	static handlers = {
+		title(value, next) {
 			this.header.options.textContent = value;
-		} else {
-			super._setOption(key, value);
-		}
-	}
+			// does not call next() -- fully owns this key
+		},
+	};
 }
 ```
 
@@ -155,45 +121,69 @@ class Card extends Component {
 
 ## Option Processing Pipeline
 
-`_setOption(key, value)` is the single routing function for all option changes, both during initial render and on reactive updates. Priority order:
+`_setOption(key, value)` is the single routing function for all option changes, both during initial render and on reactive updates.
+
+### Step 1: static handlers chain
+
+Before standard routing, `_setOption` walks the constructor prototype chain from the most-derived class up to (but not including) `Component`, collecting any `static handlers` object that owns a handler for the given key. Handlers are ordered deepest-class-first.
+
+```js
+// Example: a subclass claims 'title'
+class MyComponent extends Component {
+	static handlers = {
+		title(value, next) {
+			this.titleElem.options.textContent = value;
+			// Call next(value?) to continue to the next handler or standard routing.
+			// Omit next() to fully own the key and stop processing.
+		},
+	};
+}
+```
+
+Each handler receives `(value, next)`. Calling `next(optionalValue)` passes control to the next handler in the chain; when the chain is exhausted `next` falls through to standard routing. If no handlers claim the key, standard routing runs directly.
+
+### Step 2: standard routing
 
 ```
-1. key starts with 'on' AND value is truthy
-      → this.on({ targetEvent, id: key, callback: value })
-        Handles: pointer events, input events, connection events,
-                 registered custom events.
-        Returns true if recognized; falls through if not.
+1. key === 'onRendered'
+      -> store as this.onRendered (called after every render)
 
-2. key === 'uniqueId'
-      → this.elem.id = value (or this.uniqueId as fallback)
+2. key starts with 'on' AND value is truthy
+      -> this.on({ targetEvent, id: key, callback: value })
+         Handles: pointer events, input events, connection events,
+                  registered custom events.
+         Returns true if recognized.
+         If not recognized and no matching method, warns in dev and returns.
 
-3. key === 'style'
-      → this.setStyle(value)
+3. key === 'uniqueId'
+      -> this.elem.id = value (or this.uniqueId as fallback)
 
-4. key === 'attributes'
-      → this.setAttributes(value)
+4. key === 'style'
+      -> this.setStyle(value)
 
-5. key === 'augmentedUI'
-      → elem.setAttribute / removeAttribute 'data-augmented-ui'
+5. key === 'attributes'
+      -> this.setAttributes(value)
 
-6. key is in knownAttributes OR starts with 'aria-'
-      → elem.setAttribute(key, value) / removeAttribute on null/false
+6. key is in knownAttributes OR starts with 'aria-' OR starts with 'data-'
+      -> elem.setAttribute(key, value) / removeAttribute on null/undefined/false
+         boolean true -> setAttribute with empty string
 
 7. typeof this[key] === 'function' AND key not in _lifecycleMethods
-      → this[key].call(this, value)
-        (e.g., addClass, append, styles, onHover, onPointerPress)
+      -> this[key].call(this, value)
+         (e.g., addClass, append, styles, onHover, onPointerPress)
 
 8. this.hasOwnProperty(key) AND key not in _internalProperties
-      → this[key] = value   (own data properties)
+      -> this[key] = value   (own data properties)
 
 9. typeof this.elem[key] === 'function'
-      → this.elem[key].call(this.elem, value)
+      -> this.elem[key].call(this.elem, value)
 
 10. typeof value === 'function'
-      → this[key] = value   (store function as component property)
+      -> this[key] = value   (store function as component property)
 
 11. default
-      → this.elem[key] = value   (direct HTMLElement property)
+      -> this.elem[key] = value   (direct HTMLElement property)
+         (warns in dev if key is not a known elem property)
 ```
 
 Lifecycle method names (`render`, `destroy`, `build`, `empty`, `processCleanup`, `addCleanup`, `replaceCleanup`) are blocked at step 7 and never called through options.
@@ -202,80 +192,85 @@ Lifecycle method names (`render`, `destroy`, `build`, `empty`, `processCleanup`,
 
 ## Styling Pipeline
 
-Styles can be scoped at class definition time (via `styled()`) or per-instance (via the `styles` option or method).
+Styles can be scoped at class definition time (via `styled()`) or per-instance (via the `styles` option or method). There is no PostCSS processing, no autoprefixer, and no nested selector expansion. Styles are plain CSS strings wrapped with a scope selector and injected as-is via a `<style>` tag in `document.head`.
 
-### styled() — class-level scoped CSS
+### styled() -- class-level scoped CSS
 
 ```
-styled(BaseComponent, themeFn)
+styled(BaseComponent, stylesFn, options?)
     │
     ├─ classSafeNanoid()         generates unique componentId
     │
-    ├─ shimCSS({ scope: '.componentId', styles: themeFn })
-    │     ├─ if document loaded → postCSS(themeStyles(config)).then(appendStyles)
-    │     └─ else → push to onLoadStyleQueue, register single 'load' listener
-    │           on load → batch process all queued configs → appendStyles each
+    ├─ shimCSS({ scope: '.componentId', styles: stylesFn })
+    │     if document loaded -> themeStyles(config) -> appendStyles(css)
+    │     else -> push to loadQueue, register single 'load' listener
+    │           on load -> process all queued configs -> appendStyles each
     │
-    └─ configured(BaseComponent, { addClass: [componentId] })
+    └─ configured(BaseComponent, { addClass: [componentId], ...options })
           returns extended class whose constructor merges componentId into addClass
 ```
 
-All `styled()` calls that happen before `window load` are batched into a single queue and processed together in one PostCSS run, avoiding repeated style injection during startup.
+`styled()` also supports a tagged template literal syntax:
+
+```js
+const StyledButton = styled(Button)`
+	color: red;
+	font-size: 1rem;
+`;
+```
+
+All `styled()` calls that happen before `window load` are batched into a single queue and flushed together on the `load` event.
+
+### themeStyles -- scope wrapping
+
+`themeStyles({ styles, scope })` calls `styles(theme)` to produce a CSS string, then wraps all non-keyframe content in `scope { ... }`. `@keyframes` blocks are extracted and placed outside the scope wrapper. The result is a plain CSS string. No preprocessing occurs.
+
+### appendStyles -- injection
+
+`appendStyles(css, id)` creates a `<style>` element in `document.head` with `style.textContent = css`. If `id` is provided and a `<style id="...">` already exists, its `textContent` is updated in place rather than creating a duplicate element.
 
 ### Per-instance styles (Component.styles method)
 
 ```
 this.styles(value)
     │
-    ├─ object → this.setStyle(value)   (inline style properties)
+    ├─ object -> this.setStyle(value)   (inline style properties)
     │
     └─ string or function
-          → themeStyles({ styles: value, scope: '.uniqueId' })
-                calls value(theme) if function, prefixes all selectors with scope
-          → postCSS(themedCSS)
-                autoprefixer + postcss-nested → flat CSS string
-          → appendStyles(css, this.uniqueId)
+          -> themeStyles({ styles: value, scope: '.uniqueId' })
+                calls value(theme) if function, wraps result in scope selector
+          -> appendStyles(css, this.uniqueId)
                 creates <style id="uniqueId"> in document.head
                 (or updates existing element if id already present)
 ```
 
 Cleanup removes the `<style>` element by ID when the component is destroyed or the styles option is replaced.
 
-### PostCSS plugins
-
-| Plugin           | Purpose                                                     |
-| ---------------- | ----------------------------------------------------------- |
-| `postcss-nested` | Expands nested selectors (`&:hover { }`, child combinators) |
-| `autoprefixer`   | Adds vendor prefixes for browser compatibility              |
-
 ---
 
 ## Connection Lifecycle
 
-`observeElementConnection` creates a `MutationObserver` watching a fixed parent node for the target element being added or removed from its subtree.
+`observeElementConnection` uses a single shared `MutationObserver` that watches the entire `document` subtree. Each registration adds a target to a module-level `Map`; mutations are fanned out to all matching targets. When the last registration is removed the observer is disconnected and the singleton is cleared.
 
 ```js
 observeElementConnection({
-	parent: this.parentElem || document, // fixed at creation, never re-anchors
 	target: this.elem,
 	onConnected: event => this.emit('connected', event),
 	onDisconnected: event => this.emit('disconnected', event),
 });
 ```
 
-The observer is lazy — created only when the first `onConnected` or `onDisconnected` handler is registered via `on()`.
+The observer is lazy, created only when the first `onConnected` or `onDisconnected` handler is registered via `on()`. The returned handle's `disconnect()` method removes the target from the registry.
 
-**Explicit constraint: the parent scope is fixed at initialization and never updates.** If the component is moved to a different parent after the observer is created, connection events will stop firing. This is not a bug; it is a known limitation of the implementation. Components that need reliable reconnection detection after re-parenting must call `this.elemObserver?.disconnect()` and re-trigger observer setup.
-
-Connection events emit on the Component's own `EventTarget` (not on `this.elem`), so listeners added via `component.addEventListener('connected', fn)` receive them.
+Connection events emit on the Component's own `EventTarget` (not on `this.elem`), so listeners added via `component.addEventListener('connected', fn)` receive them. `emit()` also re-dispatches on `this.elem` so that standard DOM listeners on the element fire as well.
 
 ---
 
 ## Cleanup System
 
-Two distinct cleanup mechanisms exist in the codebase, with different designs.
+Two cleanup tiers exist, with different lifetimes.
 
-### Component — keyed object cleanup
+### this.cleanup -- disconnect tier
 
 ```js
 this.cleanup = {};   // plain object, keys are string IDs
@@ -291,17 +286,30 @@ replaceCleanup(id, fn)
 
 processCleanup(cleanup?, rootCleanup?)
     // Snapshots Object.values(cleanup), deletes all keys, runs all fns.
-    // rootCleanup=true → recursively collects and cleans child components first.
+    // rootCleanup=true -> recursively collects and cleans child components first.
     // Called automatically on 'disconnected' event.
 ```
 
-The key-per-resource design allows targeted replacement (`replaceCleanup`) without accumulating stale closures.
+Cleanup in `this.cleanup` runs every time the component disconnects from the DOM, not only on destroy. Use this tier for subscriptions and listeners that should be re-established on the next connection.
 
-### Context — CleanupManager (array-based)
+### this.\_destroyCleanup -- destroy tier
 
-`CleanupManager` is an array of `{ fn, id }` entries. `add(fn, id)` returns a `deregister` function that removes only that entry. This is used internally by Context to manage subscriptions — each `subscribe()` call registers its `unsubscribe` function and gets back a deregister handle. `CleanupManager.destroy()` marks the manager as destroyed and runs all registered functions.
+`replaceDestroyCleanup(id, fn)` stores cleanup in `this._destroyCleanup`. This cleanup does **not** run on disconnect. It runs only when `destroy()` is called explicitly.
 
-The two systems serve different scopes: Component cleanup is imperative and resource-keyed; Context cleanup is subscription-oriented and position-keyed.
+Use this tier for element-level event listeners that must survive temporary DOM moves (e.g. pointer events registered by `on()`, `onHover`, `onPointerPress`).
+
+### destroy()
+
+`destroy()` runs both tiers in order:
+
+1. Disconnects `this.elemObserver` and all descendant `elemObserver` instances.
+2. Calls `processCleanup(this.cleanup, true)` -- runs disconnect-tier cleanup for this component and all descendants.
+3. Calls `processCleanup(this._destroyCleanup)` -- runs destroy-tier cleanup.
+4. Removes `this.elem` from the DOM.
+
+### Key design
+
+The key-per-resource design allows targeted replacement (`replaceCleanup`) without accumulating stale closures. Both objects are plain dictionaries; the snapshot-then-delete pattern in `processCleanup` prevents re-entrant cleanup from running the same function twice.
 
 ---
 
@@ -313,27 +321,24 @@ browser APIs (EventTarget, MutationObserver, document, requestAnimationFrame)
     ├── Elem/Elem.js
     │       └── utils/buildClassList
     │
-    ├── Context/Context.js
-    │       ├── Context/Subscriber.js
-    │       ├── Context/CleanupManager.js
-    │       └── Context/ErrorHandler.js
+    ├── @vanilla-bean/oxject          (external npm package)
+    │       Oxject -- proxy-based reactive object used as this.options
     │
     ├── styled/
-    │       ├── styled.js          → shimCSS, configured, classSafeNanoid, theme
-    │       ├── shimCSS.js         → postCSS, themeStyles, appendStyles, rootContext
-    │       ├── postCSS.js         → postcss, autoprefixer, postcss-nested
-    │       ├── themeStyles.js     → theme
+    │       ├── styled.js          -> shimCSS, configured, classSafeNanoid, theme
+    │       ├── shimCSS.js         -> themeStyles, appendStyles
+    │       ├── themeStyles.js     -> theme, utils/string
     │       └── appendStyles.js    (no internal deps)
     │
     └── Component/Component.js
             ├── Elem/Elem.js
-            ├── Context/Context.js
-            ├── styled/ (appendStyles, postCSS, themeStyles)
+            ├── @vanilla-bean/oxject
+            ├── styled/ (appendStyles, themeStyles)
             ├── Component/observeElementConnection.js
             └── utils/classSafeNanoid
 
-UI Components (Button, Input, Dialog, …)
-    └── Component/Component.js   (directly or through TooltipWrapper/Form)
+UI Components (Button, Input, Dialog, ...)
+    └── Component/Component.js   (directly or through wrapper components)
 ```
 
-No circular dependencies exist in this graph. `rootContext` is a shared singleton used only by `shimCSS` for the pre-load style queue.
+No circular dependencies exist in this graph.

@@ -2,20 +2,20 @@
 
 > lld/helpers/component.js
 
-Component extends Elem with a lifecycle and reactive options. The design goal is predictability: render always produces the same result for the same options, no diffing surprises, no residual state from a previous render. The options object is a Context, so any assignment to an option property is automatically reactive — subclasses don't wire this up themselves.
+Component extends Elem with a lifecycle and reactive options. The design goal is predictability: render always produces the same result for the same options, no diffing surprises, no residual state from a previous render. The options object is an Oxject instance, so any assignment to an option property is automatically reactive; subclasses don't wire this up themselves.
 
 ## Render is destructive — no diffing, no patching
 
 **method:** `destructiveRender`
 
-- `render()` empties the element completely before calling `build()`; there is no diff, no patch, no partial update — the element fully reflects current options state after every render
+- `render()` empties the element completely before calling `build()`; there is no diff, no patch, no partial update. The element fully reflects current options state after every render
   - destructiveRender() → true
 
-## Options are a reactive Context, not a plain object
+## Options are a reactive Oxject instance, not a plain object
 
 **method:** `optionReactionFires`
 
-- `this.options` is a Context proxy; assigning to any option property triggers the reactive update cycle automatically — subclasses do not register reactive wiring manually
+- `this.options` is an Oxject proxy; assigning to any option property triggers the reactive update cycle automatically; subclasses do not register reactive wiring manually
   - optionReactionFires() → 1
 
 ## `build()` runs before options are processed

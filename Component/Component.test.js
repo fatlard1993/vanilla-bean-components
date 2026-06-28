@@ -1,7 +1,8 @@
 import { screen, within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 
-import { Context } from '../Context';
+import { Oxject } from '@vanilla-bean/oxject';
+import { Elem } from '../Elem';
 import Component from './Component';
 
 const user = userEvent.setup();
@@ -71,13 +72,6 @@ describe('Component', () => {
 				color: 'red',
 				fontSize: '16px',
 			});
-		});
-
-		test('handles context option', () => {
-			const context = new Context({ count: 0, name: 'Test' });
-			component = new Component({ context });
-
-			expect(component).toBeDefined();
 		});
 	});
 
@@ -268,32 +262,6 @@ describe('Component', () => {
 		});
 	});
 
-	describe('context integration scenarios', () => {
-		test('accepts context in constructor', () => {
-			const context = new Context({ message: 'Hello' });
-
-			expect(() => {
-				component = new Component({ context });
-			}).not.toThrow();
-		});
-
-		test('handles styles with context if supported', () => {
-			const context = new Context({ color: 'blue' });
-
-			try {
-				component = new Component({
-					context,
-					styles: () => ({ color: 'red' }),
-				});
-				document.body.appendChild(component.elem);
-
-				expect(component.elem).toHaveStyle({ color: 'red' });
-			} catch (error) {
-				expect(error).toBeDefined();
-			}
-		});
-	});
-
 	describe('integration scenarios', () => {
 		test('creates basic component structure', () => {
 			component = new Component({
@@ -426,6 +394,324 @@ describe('Component', () => {
 			expect(component.elem).toHaveAttribute('role', 'article');
 			expect(component.elem).toHaveStyle({ margin: '10px', padding: '20px' });
 			expect(component.elem.textContent).toBe('Article content');
+		});
+	});
+
+	describe('reactive options', () => {
+		test('option assigned after render triggers _setOption', () => {
+			let reactions = 0;
+
+			class TestComp extends Component {
+				_setOption(key, value) {
+					if (key === 'textContent' && this.rendered) reactions++;
+					super._setOption(key, value);
+				}
+			}
+
+			const comp = new TestComp({ autoRender: false });
+			comp.render();
+
+			comp.options.textContent = 'hello';
+			expect(reactions).toBe(1);
+
+			comp.options.textContent = 'world';
+			expect(reactions).toBe(2);
+
+			comp.destroy();
+		});
+
+		test('option assigned before render is picked up by _processOptions', () => {
+			const comp = new Component({ autoRender: false });
+			comp.options.textContent = 'pre-render';
+			comp.render();
+
+			expect(comp.elem.textContent).toBe('pre-render');
+			comp.destroy();
+		});
+
+		test('subscriber as option value wires reactively', () => {
+			const ctx = new Oxject({ count: 0 });
+			const comp = new Component({
+				textContent: ctx.subscriber('count', n => `Count: ${n}`),
+				appendTo: document.body,
+			});
+
+			expect(comp.elem.textContent).toContain('0');
+
+			ctx.count = 5;
+			expect(comp.elem.textContent).toContain('5');
+
+			ctx.count = 10;
+			expect(comp.elem.textContent).toContain('10');
+
+			comp.destroy();
+			ctx.destroy();
+		});
+
+		test('subscriber cleanup runs on component destroy', () => {
+			const ctx = new Oxject({ name: 'Alice' });
+			const parser = mock(v => v.toUpperCase());
+
+			const comp = new Component({
+				textContent: ctx.subscriber('name', parser),
+				appendTo: document.body,
+			});
+
+			const callsAfterMount = parser.mock.calls.length;
+
+			ctx.name = 'Bob';
+			expect(parser.mock.calls.length).toBeGreaterThan(callsAfterMount);
+
+			comp.destroy();
+			const callsAfterDestroy = parser.mock.calls.length;
+
+			ctx.name = 'Charlie';
+			expect(parser.mock.calls.length).toBe(callsAfterDestroy);
+
+			ctx.destroy();
+		});
+	});
+
+	describe('lifecycle ordering', () => {
+		test('build() runs before _processOptions', () => {
+			let buildRanBeforeOption = false;
+			let buildRan = false;
+
+			class TestComp extends Component {
+				build() {
+					buildRan = true;
+					new Elem({ tag: 'span', appendTo: this });
+				}
+
+				_setOption(key, value) {
+					if (key === 'textContent') buildRanBeforeOption = buildRan;
+					super._setOption(key, value);
+				}
+			}
+
+			const comp = new TestComp({ textContent: 'hello', autoRender: false });
+			comp.render();
+			expect(buildRanBeforeOption).toBe(true);
+			comp.destroy();
+		});
+
+		test('re-render clears previous children via empty()', () => {
+			class TestComp extends Component {
+				build() {
+					new Elem({ tag: 'span', appendTo: this });
+				}
+			}
+
+			const comp = new TestComp({ autoRender: false });
+			comp.render();
+			// eslint-disable-next-line testing-library/no-node-access
+			expect(comp.elem.childElementCount).toBe(1);
+
+			comp.render();
+			// eslint-disable-next-line testing-library/no-node-access
+			expect(comp.elem.childElementCount).toBe(1);
+
+			comp.destroy();
+		});
+
+		test('priority options run before non-priority options', () => {
+			const order = [];
+
+			class TestComp extends Component {
+				_setOption(key, value) {
+					if (key === 'textContent' || key === 'style') order.push(key);
+					super._setOption(key, value);
+				}
+			}
+
+			const comp = new TestComp({ style: { color: 'red' }, textContent: 'hello', autoRender: false });
+			comp.render();
+
+			expect(order[0]).toBe('textContent');
+			comp.destroy();
+		});
+	});
+
+	describe('static handlers', () => {
+		test('handler is called for matching option key on render', () => {
+			const called = [];
+
+			class TestComp extends Component {
+				static handlers = {
+					label(value) {
+						called.push(value);
+					},
+				};
+			}
+
+			const comp = new TestComp({ label: 'hello' });
+			expect(called).toContain('hello');
+			comp.destroy();
+		});
+
+		test('handler is called for matching option key on reactive update', () => {
+			const called = [];
+
+			class TestComp extends Component {
+				static handlers = {
+					label(value) {
+						called.push(value);
+					},
+				};
+			}
+
+			const comp = new TestComp({ label: 'first' });
+			comp.options.label = 'second';
+			expect(called).toContain('second');
+			comp.destroy();
+		});
+
+		test('subclass handler shadows parent handler', () => {
+			const parentCalls = [];
+			const childCalls = [];
+
+			class Parent extends Component {
+				static handlers = {
+					label(value) {
+						parentCalls.push(value);
+					},
+				};
+			}
+
+			class Child extends Parent {
+				static handlers = {
+					label(value) {
+						childCalls.push(value);
+					},
+				};
+			}
+
+			const comp = new Child({ label: 'test' });
+			expect(childCalls).toContain('test');
+			expect(parentCalls).not.toContain('test');
+			comp.destroy();
+		});
+
+		test('handler can call parent handler explicitly', () => {
+			const parentCalls = [];
+			const childCalls = [];
+
+			class Parent extends Component {
+				static handlers = {
+					label(value) {
+						parentCalls.push(value);
+					},
+				};
+			}
+
+			class Child extends Parent {
+				static handlers = {
+					label(value) {
+						childCalls.push(value);
+						Parent.handlers.label.call(this, value);
+					},
+				};
+			}
+
+			const comp = new Child({ label: 'test' });
+			expect(childCalls).toContain('test');
+			expect(parentCalls).toContain('test');
+			comp.destroy();
+		});
+	});
+
+	describe('cleanup system', () => {
+		test('addCleanup chains — both functions run on processCleanup', () => {
+			const comp = new Component({ autoRender: false });
+			const calls = [];
+
+			comp.addCleanup('test', () => calls.push('first'));
+			comp.addCleanup('test', () => calls.push('second'));
+
+			comp.processCleanup();
+			expect(calls).toContain('first');
+			expect(calls).toContain('second');
+		});
+
+		test('replaceCleanup runs previous immediately and stores the new one', () => {
+			const comp = new Component({ autoRender: false });
+			let count = 0;
+
+			comp.replaceCleanup('test', () => count++);
+			comp.replaceCleanup('test', () => count++); // runs previous → count: 1
+			comp.replaceCleanup('test', () => count++); // runs previous → count: 2
+
+			const beforeFinal = count;
+			comp.processCleanup(); // runs only latest → count: 3
+			expect(count - beforeFinal).toBe(1);
+		});
+
+		test('processCleanup runs child cleanup recursively when rootCleanup=true', () => {
+			const calls = [];
+			const parent = new Component({ appendTo: document.body });
+			const child = new Component({ appendTo: parent });
+
+			child.addCleanup('test', () => calls.push('child'));
+
+			parent.processCleanup(parent.cleanup, true);
+			expect(calls).toContain('child');
+
+			parent.elem.remove();
+		});
+	});
+
+	describe('_setOption routing', () => {
+		test('aria-* routes to setAttribute', () => {
+			component = new Component({ 'aria-label': 'test label' });
+			document.body.appendChild(component.elem);
+			expect(component.elem).toHaveAttribute('aria-label', 'test label');
+		});
+
+		test('aria-* set to null removes the attribute', () => {
+			component = new Component({ 'aria-label': 'initial', appendTo: document.body });
+			component.options['aria-label'] = null;
+			expect(component.elem).not.toHaveAttribute('aria-label');
+		});
+
+		test('data-* routes to setAttribute', () => {
+			component = new Component({ 'data-testid': 'my-comp', appendTo: document.body });
+			expect(component.elem).toHaveAttribute('data-testid', 'my-comp');
+		});
+
+		test('style object routes to setStyle', () => {
+			component = new Component({ style: { color: 'red', fontSize: '14px' }, appendTo: document.body });
+			expect(component.elem).toHaveStyle({ color: 'red', fontSize: '14px' });
+		});
+
+		test('styles function routes through theme system to inline style', () => {
+			component = new Component({ styles: () => ({ color: 'red' }), appendTo: document.body });
+			expect(component.elem).toHaveStyle({ color: 'red' });
+		});
+
+		test('on* option registers a recognized pointer event', () => {
+			const handler = mock();
+			component = new Component({ tag: 'button', onPointerDown: handler, appendTo: document.body });
+			component.elem.dispatchEvent(new PointerEvent('pointerdown'));
+			expect(handler).toHaveBeenCalled();
+		});
+
+		test('on* method route — onPointerPress calls the component method', () => {
+			const handler = mock();
+			component = new Component({ tag: 'button', onPointerPress: handler, appendTo: document.body });
+
+			component.elem.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+			expect(handler).toHaveBeenCalled();
+		});
+
+		test('addClass option calls the addClass method', () => {
+			component = new Component({ addClass: ['foo', 'bar'], appendTo: document.body });
+			expect(component.elem).toHaveClass('foo', 'bar');
+		});
+
+		test('reactive aria-* update goes through setAttribute', () => {
+			component = new Component({ 'aria-expanded': false, appendTo: document.body });
+			component.options['aria-expanded'] = true;
+			expect(component.elem).toHaveAttribute('aria-expanded');
 		});
 	});
 });

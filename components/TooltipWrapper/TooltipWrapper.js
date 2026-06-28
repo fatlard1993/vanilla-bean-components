@@ -5,7 +5,7 @@ import { Tooltip } from '../Tooltip';
 const StyledIcon = styled(
 	Icon,
 	() => `
-		&.hasTooltip {
+		&.has-tooltip {
 			position: relative;
 			display: inline-block;
 
@@ -29,8 +29,8 @@ const StyledIcon = styled(
  * @returns {TooltipWrapper} TooltipWrapper component instance
  */
 export default class TooltipWrapper extends StyledIcon {
-	_setOption(key, value) {
-		if (key === 'tooltip') {
+	static handlers = {
+		tooltip(value) {
 			if (value == null) return;
 			const tooltipOptions = typeof value === 'object' ? value : { textContent: value };
 
@@ -42,12 +42,12 @@ export default class TooltipWrapper extends StyledIcon {
 					...tooltipOptions,
 				});
 
-				this.addClass('hasTooltip');
+				this.addClass('has-tooltip');
 
 				this.on({
 					targetEvent: 'pointerover',
 					callback: ({ clientX, clientY }) => {
-						this.tooltipTimeout = setTimeout(() => this._tooltip.show({ x: clientX, y: clientY }), 700);
+						this.tooltipTimeout = setTimeout(() => this._tooltip?.show({ x: clientX, y: clientY }), 700);
 					},
 				});
 
@@ -55,11 +55,27 @@ export default class TooltipWrapper extends StyledIcon {
 					targetEvent: 'pointerout',
 					callback: () => {
 						clearTimeout(this.tooltipTimeout);
-						this._tooltip.hide();
+						if (!this.elem.contains(document.activeElement)) this._tooltip?.hide();
 					},
 				});
 
-				// Add cleanup for tooltip
+				this.on({
+					targetEvent: 'focus',
+					callback: () => {
+						clearTimeout(this.tooltipTimeout);
+						const { left, bottom } = this.elem.getBoundingClientRect();
+						this._tooltip?.show({ x: left, y: bottom });
+					},
+				});
+
+				this.on({
+					targetEvent: 'blur',
+					callback: () => {
+						clearTimeout(this.tooltipTimeout);
+						this._tooltip?.hide();
+					},
+				});
+
 				this.replaceCleanup('tooltip', () => {
 					if (this._tooltip) {
 						this._tooltip.destroy?.();
@@ -68,6 +84,6 @@ export default class TooltipWrapper extends StyledIcon {
 					clearTimeout(this.tooltipTimeout);
 				});
 			}
-		} else super._setOption(key, value);
-	}
+		},
+	};
 }

@@ -1,16 +1,114 @@
 # theme
 
-Complete design system with colors, fonts, and component styles providing accessibility helpers and automatic CSS processing.
+Design tokens: colors, fonts, and component base styles, passed to every `styled()` call and available for direct use.
 
-## Key Features
+## The Default Aesthetic
 
-- **Color system with accessibility** - 9 base colors with lightness variations and WCAG compliance helpers
-- **Typography and iconography** - Complete font system with Font Awesome integration and syntax highlighting
-- **Component base styles** - Pre-built styles for buttons, forms, tables, and UI elements
-- **TinyColor integration** - Full color manipulation and conversion capabilities
-- **Automatic processing** - CSS generation with PostCSS support and scoped styling
-- **Theme integration** - Seamless integration with styled components and CSS-in-JS
-- **Performance optimized** - Efficient color calculations and reusable style objects
+VBC ships with an intentional design language: dark backgrounds, a teal accent palette, and a technical/monospace typographic voice. This is a position, not a placeholder. The components look the way they look because that's how they were designed.
+
+That said, the theme system is layered. You can work at any layer depending on how much you want to change.
+
+## Customizing the Theme
+
+### Layer 1: Per-instance styles
+
+For one-off overrides on a specific component instance, pass `styles` as an option:
+
+```js
+// Object form — applied as inline styles
+new Button({ styles: { backgroundColor: '#your-brand', borderRadius: '4px' } });
+
+// Function form — receives theme, generates scoped CSS
+new Dialog({
+	styles: ({ colors }) => `
+        border-color: ${colors.purple};
+        & .header { color: ${colors.purple}; }
+    `,
+});
+```
+
+### Layer 2: Per-class overrides with `styled()`
+
+To apply a consistent override across all instances of a component type, create a styled subclass. The style function receives the VBC theme. Ignore it and use your own tokens if you prefer:
+
+```js
+import { styled, Button } from '@vanilla-bean/components';
+
+const MY_BRAND = '#3d7aed';
+
+const BrandButton = styled(
+	Button,
+	() => `
+    background: ${MY_BRAND};
+    border: none;
+    border-radius: 4px;
+    color: white;
+
+    &:hover { background: #2f62c4; }
+`,
+);
+
+// BrandButton inherits all Button behavior; only the appearance changes
+new BrandButton({ textContent: 'Save', onPointerPress: handleSave });
+```
+
+This pattern applies to any component, including the named shorthand:
+
+```js
+const BrandDialog = styled.Dialog`
+	border-color: ${() => MY_BRAND};
+	background: #1a1a2e;
+`;
+```
+
+### Layer 3: Override theme tokens globally
+
+The theme singleton is imported once and shared across all `styled()` calls. Mutate it before your components initialize and every component that uses that token picks up the change:
+
+```js
+import { theme } from '@vanilla-bean/components';
+import { TinyColor } from '@ctrl/tinycolor';
+
+// Replace the accent color — affects every component that uses colors.teal
+theme.colors.teal = new TinyColor('#3d7aed');
+
+// Then import and use components as normal — they'll use your teal
+import { Button, Dialog } from '@vanilla-bean/components';
+```
+
+Mutate as many tokens as your design system requires. Because colors are plain properties on the object, this is straightforward JavaScript.
+
+### Layer 4: Skip the theme system entirely
+
+`styled()` is optional. Every component works without it. If you want to use your own CSS pipeline (CSS modules, Tailwind, a design token library), just don't call `styled()`. Write plain CSS that targets the component's tag or a class you add:
+
+```js
+// Add your own class; target it in your stylesheet
+new Button({ addClass: 'my-button', textContent: 'Save' });
+```
+
+```css
+/* your-styles.css */
+.my-button {
+	background: var(--brand-primary);
+	border-radius: var(--radius-md);
+}
+```
+
+Or inject scoped styles directly via `appendStyles`:
+
+```js
+import { appendStyles } from '@vanilla-bean/components/styled';
+
+appendStyles(
+	`
+    .my-button { background: #3d7aed; border-radius: 4px; }
+`,
+	'my-button-styles',
+);
+```
+
+The four layers compose freely. Per-instance `styles` always take precedence over class-level `styled()` CSS. Both are scoped and don't leak.
 
 ## Quick Start
 
@@ -19,7 +117,7 @@ Complete design system with colors, fonts, and component styles providing access
 Access colors directly or use within styled components:
 
 ```js
-import { theme } from 'vanilla-bean-components/theme';
+import { theme } from '@vanilla-bean/components';
 
 // Direct color access
 const primaryColor = theme.colors.blue;
@@ -430,129 +528,6 @@ const App = styled.Component`
 `;
 ```
 
-## Advanced Usage
-
-### Dynamic Theme Creation
-
-Create theme variations for different contexts:
-
-```js
-// Theme factory function
-const createTheme = (primaryColor, options = {}) => ({
-	...theme,
-	colors: {
-		...theme.colors,
-		primary: primaryColor,
-		primaryLight: theme.colors.lighter(primaryColor),
-		primaryDark: theme.colors.darker(primaryColor),
-
-		// Semantic overrides
-		success: options.successColor || theme.colors.green,
-		warning: options.warningColor || theme.colors.orange,
-		error: options.errorColor || theme.colors.red,
-	},
-});
-
-// Usage
-const blueTheme = createTheme(theme.colors.blue);
-const purpleTheme = createTheme(theme.colors.purple, {
-	successColor: theme.colors.teal,
-});
-```
-
-### Color Palette Generation
-
-Generate harmonious color palettes:
-
-```js
-// Monochromatic palette
-const createMonochromaticPalette = baseColor => ({
-	lightest: colors.whiteish(baseColor),
-	lighter: colors.lighter(baseColor),
-	light: colors.light(baseColor),
-	base: baseColor,
-	dark: colors.dark(baseColor),
-	darker: colors.darker(baseColor),
-	darkest: colors.blackish(baseColor),
-});
-
-// Analogous colors
-const createAnalogousPalette = baseColor => {
-	const hue = baseColor.toHsl().h;
-	return {
-		primary: baseColor,
-		secondary: colors.blue.clone().spin(30), // +30 degrees
-		tertiary: colors.blue.clone().spin(-30), // -30 degrees
-	};
-};
-```
-
-### CSS Custom Properties Integration
-
-Export theme as CSS variables:
-
-```js
-import { appendStyles } from 'vanilla-bean-components/styled';
-
-// Generate CSS custom properties
-const generateCSSProps = themeColors => {
-	const props = Object.entries(themeColors)
-		.filter(([, color]) => typeof color !== 'function')
-		.map(([name, color]) => {
-			const base = `--color-${name}: ${color.toHexString()};`;
-			const rgb = `--color-${name}-rgb: ${color.toRgb().r}, ${color.toRgb().g}, ${color.toRgb().b};`;
-			const hsl = `--color-${name}-hsl: ${color.toHsl().h}, ${color.toHsl().s}%, ${color.toHsl().l}%;`;
-			return [base, rgb, hsl].join('\n  ');
-		})
-		.join('\n  ');
-
-	return `:root {\n  ${props}\n}`;
-};
-
-// Apply to document
-appendStyles(generateCSSProps(theme.colors), 'theme-css-props');
-
-// Use in regular CSS
-/*
-.my-element {
-  background: var(--color-blue);
-  color: rgba(var(--color-white-rgb), 0.9);
-  border: 1px solid hsl(var(--color-blue-hsl));
-}
-*/
-```
-
-### Theme Context Integration
-
-Integrate with React-style context systems:
-
-```js
-// Theme provider component
-class ThemeProvider extends Component {
-	constructor({ theme: customTheme, ...options }) {
-		super({
-			...options,
-			styles: ({ colors }) => `
-        /* Provide theme as CSS custom properties */
-        ${generateCSSProps(customTheme?.colors || theme.colors)}
-      `,
-		});
-
-		this.theme = customTheme || theme;
-	}
-
-	getTheme() {
-		return this.theme;
-	}
-}
-
-// Usage
-const app = new ThemeProvider({
-	theme: createTheme(colors.purple),
-	append: [new StyledButton({ textContent: 'Themed Button' })],
-});
-```
-
 ## API Reference
 
 ### Theme Object Structure
@@ -630,75 +605,3 @@ interface FontSystem {
 	fontAwesomeBrands: string; // Brand Font Awesome icons
 }
 ```
-
-### Font Assets Required
-
-The theme system requires these font files to be available in your application:
-
-```
-fonts/
-├── FontWithASyntaxHighlighter-Regular.woff2  # Syntax highlighting
-├── KodeMonoVariable.woff2                     # Interface typography
-└── FontAwesome6/
-    ├── fa-solid-900.woff2                     # Solid icons
-    ├── fa-brands-400.woff2                    # Brand icons
-    └── fa-regular-400.woff2                   # Regular icons
-```
-
-## Performance
-
-### Color Calculation Optimization
-
-Cache expensive color operations:
-
-```js
-// Color operation cache
-const colorCache = new Map();
-
-const getCachedColor = (baseColorKey, operation, ...args) => {
-	const key = `${baseColorKey}-${operation}-${args.join(',')}`;
-
-	if (!colorCache.has(key)) {
-		const result = theme.colors[operation](theme.colors[baseColorKey], ...args);
-		colorCache.set(key, result);
-	}
-
-	return colorCache.get(key);
-};
-
-// Usage in styled components
-const OptimizedComponent = styled.Component`
-	background: ${() => getCachedColor('blue', 'lighter')};
-	border: 1px solid ${() => getCachedColor('blue', 'darker')};
-`;
-```
-
-### Efficient Theme Usage
-
-Best practices for theme performance:
-
-```js
-// ✅ Efficient: Direct color access
-const color = theme.colors.blue;
-
-// ❌ Inefficient: Function calls in render loops
-colors.lighter(colors.blue); // Called every render
-
-// ✅ Efficient: Pre-calculated values
-const lightBlue = theme.colors.lighter(theme.colors.blue);
-
-// ✅ Efficient: Reusable color objects
-const brandColors = {
-	primary: theme.colors.blue,
-	primaryHover: theme.colors.darker(theme.colors.blue),
-	primaryLight: theme.colors.lighter(theme.colors.blue),
-};
-```
-
-### Memory Management
-
-Theme objects are designed for reuse and memory efficiency:
-
-- **Immutable color objects** - Safe to share across components
-- **Cached font styles** - CSS strings generated once and reused
-- **Component style caching** - Base styles calculated once per component type

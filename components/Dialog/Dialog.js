@@ -1,14 +1,13 @@
-/* eslint-disable spellcheck/spell-checker */
 import { styled } from '../../styled';
 import { Button } from '../Button';
 import { Component } from '../../Component';
 import { Elem } from '../../Elem';
+import { isDev } from '../../utils';
 
 const DialogButton = styled(
 	Button,
 	() => `
-		margin: 9px 18px 3px 30px;
-		flex: 1;
+		margin: 4px 4px 4px 0;
 	`,
 );
 
@@ -24,8 +23,6 @@ const defaultOptions = {
 		return document.body;
 	},
 	registeredEvents: new Set(['close']),
-
-	augmentedUI: 'tl-clip tr-2-clip-x br-clip bl-2-clip-y border',
 };
 
 /**
@@ -35,8 +32,8 @@ const defaultOptions = {
  * header/body/footer sections. Supports different sizes, color variants, and button configurations.
  * @param {object} [options] - Dialog configuration options
  * @param {string} [options.tag] - HTML tag, uses native dialog element
- * @param {string} [options.size] - Dialog size ('small', 'standard', 'large')
- * @param {string} [options.variant] - Color variant ('info', 'success', 'warning', 'error')
+ * @param {('small'|'standard'|'large')} [options.size] - Dialog size
+ * @param {('info'|'success'|'warning'|'error')} [options.variant] - Color variant
  * @param {number|boolean} [options.openOnRender] - Auto-open delay in ms, or false to disable
  * @param {boolean} [options.modal] - Whether to open as modal dialog
  * @param {string} [options.header] - Header text content
@@ -45,73 +42,55 @@ const defaultOptions = {
  * @param {Array<string|object>} [options.buttons] - Button configurations for default footer
  * @param {Function} [options.onButtonPress] - Handler for button press events
  * @param {Function} [options.closeDialog] - Custom close function
- * @param {string} [options.augmentedUI] - Augmented UI styling configuration
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Dialog} Dialog component instance
  */
 class Dialog extends styled(
 	Component,
 	({ colors }) => `
-		background-color: transparent;
+		background-color: ${colors.darker(colors.gray)};
 		color: ${colors.white};
 		flex-direction: column;
-		padding: 6px;
+		padding: 0;
 		margin: 0 auto;
-		border: none;
+		border: 1px solid ${colors.alpha(colors.light(colors.teal), 0.6)};
+		box-shadow: 0 8px 40px ${colors.alpha(colors.vantablack, 0.7)};
+		border-radius: 0;
 		top: 50%;
 		transform: translateY(-50%);
 		opacity: 0;
-		transition: display 0.6s allow-discrete, overlay 0.6s allow-discrete;
-		animation: fadeOut 0.6s ease-out forwards;
-
-		--aug-border-bg: linear-gradient(-12deg, ${colors.light(colors.teal)}, ${colors.light(colors.blue)});
-		--aug-border-all: 2px;
-		--aug-tl1: 30px;
-		--aug-tr-extend1: 30%;
-		--aug-tr1: 30px;
-		--aug-bl-extend2: 32px;
-		--aug-br1: 12px;
+		transition: display 0.3s allow-discrete, overlay 0.3s allow-discrete;
+		animation: dialogFadeOut 0.3s ease-out forwards;
 
 		&[open] {
 			display: flex;
-			animation: fadeIn 0.6s ease-out forwards;
+			animation: dialogFadeIn 0.3s ease-out forwards;
 		}
 
-		.header {
-			width: 60%;
-			text-align: center;
-			font-size: 1.2em;
+		& .header {
+			padding: 8px 12px;
+			font-size: 0.9em;
+			font-weight: 600;
+			color: ${colors.white};
+			background-color: ${colors.alpha(colors.vantablack, 0.25)};
+			border-bottom: 1px solid ${colors.alpha(colors.light(colors.teal), 0.2)};
 			margin: 0;
 		}
 
-		.content {
+		& .content {
 			flex: 1;
-			padding: 6px 21px;
+			padding: 12px;
 			overflow: hidden auto;
-
-			&::-webkit-scrollbar-track {
-				margin: 24px 0 3px 0;
-			}
-
-			&:before {
-				content: "";
-				display: block;
-				position: absolute;
-				background: repeating-linear-gradient(43deg, transparent, transparent 7px, ${colors.lightest(colors.teal)} 7px, ${colors.lightest(colors.teal)} 14px );
-				width: 9px;
-				height: 56px;
-				bottom: 64px;
-				left: 9px;
-				opacity: 0.8;
-			}
 		}
 
-		.footer {
-			height: 40px;
-			border-top: 2px solid ${colors.lighter(colors.teal)};
+		& .footer {
+			border-top: 1px solid ${colors.alpha(colors.white, 0.06)};
 			display: flex;
 			flex-direction: row;
-			margin-right: -4px;
+			align-items: center;
+			justify-content: flex-end;
+			padding: 0 6px;
+			min-height: 40px;
 		}
 
 		&.size-small {
@@ -120,8 +99,8 @@ class Dialog extends styled(
 		}
 
 		&.size-standard {
-			width: 840px;
-			height: 420px;
+			width: 640px;
+			height: 360px;
 		}
 
 		&.size-large {
@@ -130,128 +109,87 @@ class Dialog extends styled(
 		}
 
 		&::backdrop {
-			background-color: ${colors.black.setAlpha(0.9)};
-			backdrop-filter: blur(3px);
+			background-color: ${colors.black.setAlpha(0.85)};
+			backdrop-filter: blur(2px);
 		}
 
 		&.variant-info {
-			--aug-border-bg: linear-gradient(-12deg, ${colors.blue}, ${colors.light(colors.blue)});
-
-			.header {
-				color: ${colors.blue};
-			}
-
-			.content:before {
-				background: repeating-linear-gradient(43deg, transparent, transparent 7px, ${colors.blue} 7px, ${colors.light(colors.blue)} 14px );
-			}
-
-			.footer {
-				border-color: ${colors.blue};
-
-				button {
-					background-color: ${colors.blue};
-				}
-			}
+			border-color: ${colors.alpha(colors.blue, 0.6)};
+			& .header { color: ${colors.lighter(colors.blue)}; border-color: ${colors.alpha(colors.blue, 0.2)}; }
+			& .footer button { background-color: ${colors.blue}; }
 		}
 
 		&.variant-success {
-			--aug-border-bg: linear-gradient(-12deg, ${colors.green}, ${colors.light(colors.green)});
-
-			.header {
-				color: ${colors.green};
-			}
-
-			.content:before {
-				background: repeating-linear-gradient(43deg, transparent, transparent 7px, ${colors.green} 7px, ${colors.light(colors.green)} 14px );
-			}
-
-			.footer {
-				border-color: ${colors.green};
-
-				button {
-					background-color: ${colors.green};
-				}
-			}
+			border-color: ${colors.alpha(colors.green, 0.6)};
+			& .header { color: ${colors.lighter(colors.green)}; border-color: ${colors.alpha(colors.green, 0.2)}; }
+			& .footer button { background-color: ${colors.green}; }
 		}
 
 		&.variant-warning {
-			--aug-border-bg: linear-gradient(-12deg, ${colors.yellow}, ${colors.light(colors.yellow)});
-
-			.header {
-				color: ${colors.yellow};
-			}
-
-			.content:before {
-				background: repeating-linear-gradient(43deg, transparent, transparent 7px, ${colors.light(colors.yellow)} 7px, ${colors.lighter(colors.yellow)} 14px );
-			}
-
-			.footer {
-				border-color: ${colors.yellow};
-
-				button {
-					background-color: ${colors.yellow};
-				}
-			}
+			border-color: ${colors.alpha(colors.yellow, 0.6)};
+			& .header { color: ${colors.lighter(colors.yellow)}; border-color: ${colors.alpha(colors.yellow, 0.2)}; }
+			& .footer button { background-color: ${colors.yellow}; }
 		}
 
 		&.variant-error {
-			--aug-border-bg: linear-gradient(-12deg, ${colors.red}, ${colors.light(colors.red)});
-
-			.header {
-				color: ${colors.red};
-			}
-
-			.content:before {
-				background: repeating-linear-gradient(43deg, transparent, transparent 7px, ${colors.red} 7px, ${colors.light(colors.red)} 14px );
-			}
-
-			.footer {
-				border-color: ${colors.red};
-
-				button {
-					background-color: ${colors.red};
-				}
-			}
+			border-color: ${colors.alpha(colors.red, 0.6)};
+			box-shadow: 0 0 32px ${colors.alpha(colors.red, 0.14)}, 0 8px 40px ${colors.alpha(colors.vantablack, 0.7)};
+			& .header { color: ${colors.lighter(colors.red)}; border-color: ${colors.alpha(colors.red, 0.2)}; }
+			& .footer button { background-color: ${colors.red}; }
 		}
 
-		@keyframes fadeIn {
-			0% {
-				opacity: 0;
-				width: 150px;
-				height: 120px;
-			}
-			30% {
-				height: revert-layer;
-			}
-			50% {
-				opacity: 1;
-			}
-			100% {
-				opacity: 1;
-				width: revert-layer;
-				height: revert-layer;
-			}
+		@keyframes dialogFadeIn {
+			from { opacity: 0; }
+			to { opacity: 1; }
 		}
 
-		@keyframes fadeOut {
-			0% {
-				opacity: 1;
-				width: revert-layer;
-				height: revert-layer;
-			}
-			60% {
-				opacity: 0.1;
-			}
-			100% {
-				opacity: 0;
-				width: 150px;
-				height: 120px;
-			}
+		@keyframes dialogFadeOut {
+			from { opacity: 1; }
+			to { opacity: 0; }
 		}
 	`,
 ) {
 	variant_enum = variant_enum;
 	size_enum = size_enum;
+
+	static handlers = {
+		openOnRender(value) {
+			const delay = typeof value === 'number' ? value : defaultOptions.openOnRender;
+			const openDelay = value ? setTimeout(() => this.open(), delay) : null;
+			this.replaceCleanup('openOnRender', () => openDelay && clearTimeout(openDelay));
+		},
+		// Claim the key so standard routing doesn't try to call elem.showModal() or set elem.modal.
+		// The value is read directly from this.options.modal in open().
+		modal() {},
+		size(value) {
+			if (value && !size_enum.includes(value)) {
+				throw new Error(
+					`"${value}" is not a valid size. The size must be one of the following values: ${size_enum.join(', ')}`,
+				);
+			}
+
+			this.removeClass(/\bsize-\S+\b/g);
+
+			if (value) this.addClass(`size-${value}`);
+		},
+		variant(value) {
+			if (value && !variant_enum.includes(value)) {
+				throw new Error(
+					`"${value}" is not a valid variant. The variant must be one of the following values: ${variant_enum.join(', ')}`,
+				);
+			}
+
+			this.removeClass(/\bvariant-\S+\b/g);
+
+			if (value) this.addClass(`variant-${value}`);
+		},
+		body(value) {
+			this.body?.content(value);
+		},
+		header(value) {
+			this._header?.content(value);
+		},
+	};
 
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
@@ -263,14 +201,14 @@ class Dialog extends styled(
 
 	build() {
 		this._header = new Elem({
-			tag: 'h2',
+			tag: 'div',
 			id: this.uniqueId,
 			addClass: ['header'],
 			content: this.options.header,
 			appendTo: this,
 		});
 
-		this._body = new Elem({ content: this.options.body, addClass: ['content'], appendTo: this });
+		this._body = new Elem({ addClass: ['content'], appendTo: this });
 
 		this._footer = new Elem({
 			addClass: ['footer'],
@@ -283,6 +221,7 @@ class Dialog extends styled(
 								this.options.onButtonPress?.({
 									event,
 									button,
+									dialog: this,
 									closeDialog: this.options.closeDialog || (() => this.close()),
 								}),
 							...(typeof button === 'object' ? button : { textContent: button }),
@@ -290,44 +229,14 @@ class Dialog extends styled(
 				),
 			appendTo: this,
 		});
-
-		if (this.options.openOnRender) {
-			const openDelay = setTimeout(
-				() => this.open(),
-				typeof this.options.openOnRender === 'number' ? this.options.openOnRender : defaultOptions.openOnRender,
-			);
-			this.replaceCleanup('openOnRender', () => clearTimeout(openDelay));
-		}
 	}
 
-	_setOption(key, value) {
-		if (key === 'openOnRender' || key === 'modal') return;
-
-		if (key === 'size') {
-			if (value && !size_enum.includes(value)) {
-				throw new Error(
-					`"${value}" is not a valid size. The size must be one of the following values: ${size_enum.join(', ')}`,
-				);
-			}
-
-			this.removeClass(/\bsize-\S+\b/g);
-
-			if (value) this.addClass(`size-${value}`);
-		} else if (key === 'variant') {
-			if (value && !variant_enum.includes(value)) {
-				throw new Error(
-					`"${value}" is not a valid variant. The variant must be one of the following values: ${variant_enum.join(', ')}`,
-				);
-			}
-
-			this.removeClass(/\bvariant-\S+\b/g);
-
-			if (value) this.addClass(`variant-${value}`);
-		} else if (key === 'body') {
-			this._body?.content(value);
-		} else if (key === 'header') {
-			this._header?.content(value);
-		} else super._setOption(key, value);
+	/**
+	 * Content container — primary injection point for subclass and consumer content.
+	 * @returns {Component} The dialog body component
+	 */
+	get body() {
+		return this._body;
 	}
 
 	/**
@@ -335,16 +244,21 @@ class Dialog extends styled(
 	 * @param {boolean} modal - Whether to open as modal dialog (default: true)
 	 */
 	open(modal = this.options.modal) {
+		this._opener = document.activeElement;
 		try {
 			this.elem[modal ? 'showModal' : 'show']();
 			this._openRetried = false;
+			const focusable = this.elem.querySelector(
+				'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+			);
+			(focusable ?? this.elem).focus();
 		} catch (error) {
 			if (this._openRetried) return;
 
 			this._openRetried = true;
 
 			// eslint-disable-next-line no-console
-			if (process.env.NODE_ENV === 'development') console.error(error, 'Retrying...');
+			if (isDev) console.error(error, 'Retrying...');
 
 			this.render();
 		}
@@ -356,6 +270,8 @@ class Dialog extends styled(
 	 */
 	close(returnValue) {
 		this.elem.close(returnValue);
+		this._opener?.focus();
+		this._opener = null;
 	}
 }
 

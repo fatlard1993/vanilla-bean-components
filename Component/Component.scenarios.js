@@ -1,4 +1,4 @@
-import Component from '../../Component/Component.js';
+import Component from './Component.js';
 
 export const __lld_api = `
   destructiveRender() -> boolean | renders a component twice; returns true if child count matches (1) — second render cleared the first

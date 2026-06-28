@@ -14,7 +14,6 @@ global.setSystemTime = setSystemTime;
 
 GlobalRegistrator.register({ width: 1920, height: 1080 });
 
-// Expose EventTarget for Context
 global.EventTarget = (await import('happy-dom')).EventTarget;
 
 expect.extend(matchers);

@@ -513,7 +513,7 @@ describe('styled system', () => {
 
 			expect(() => {
 				StyledComponent();
-			}).toThrow(/Cannot call a class constructor without|Class constructor.*cannot be invoked without/);
+			}).toThrow(/Cannot call a class constructor|Class constructor.*cannot be invoked without/);
 
 			expect(() => {
 				new StyledComponent();
@@ -526,7 +526,7 @@ describe('styled system', () => {
 
 			expect(() => {
 				NestedStyledComponent();
-			}).toThrow(/Cannot call a class constructor without|Class constructor.*cannot be invoked without/);
+			}).toThrow(/Cannot call a class constructor|Class constructor.*cannot be invoked without/);
 
 			expect(() => {
 				new NestedStyledComponent();

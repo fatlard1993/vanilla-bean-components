@@ -1,7 +1,4 @@
-import colors from './colors';
-import fonts from './fonts';
-
-export default `
+export default ({ colors, fonts }) => `
 	display: inline-block;
 	padding: 4px 6px 6px 6px;
 	margin: 0;
@@ -17,6 +14,7 @@ export default `
 	overflow: visible;
 	border: none;
 	cursor: pointer;
+	touch-action: none;
 
 	&.disabled, &:disabled {
 		background-color: ${colors.gray};

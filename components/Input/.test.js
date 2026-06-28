@@ -50,7 +50,7 @@ describe('Input', () => {
 		});
 
 		expect(textarea.elem.tagName).toBe('TEXTAREA');
-		expect(textarea.elem.className).toContain('syntaxHighlighting');
+		expect(textarea.elem.className).toContain('syntax-highlighting');
 		expect(textarea.elem.className).toContain('language-javascript');
 	});
 
@@ -92,12 +92,12 @@ describe('Input', () => {
 
 		const errors = input.validate();
 		expect(errors).toHaveLength(2);
-		expect(input.elem.className).toContain('validationErrors');
+		expect(input.elem.className).toContain('validation-errors');
 
 		input.options.value = 'wow';
 		const noErrors = input.validate();
 		expect(noErrors).toBe(undefined); // Returns undefined when no errors
-		expect(input.elem.className).not.toContain('validationErrors');
+		expect(input.elem.className).not.toContain('validation-errors');
 	});
 
 	test('handles change events', async () => {

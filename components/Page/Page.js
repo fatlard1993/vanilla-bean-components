@@ -1,12 +1,7 @@
 import { appendStyles, shimCSS } from '../../styled';
 import { Component } from '../../Component';
-import { GET } from '../../request';
 
-const dependentStyleSheets = [
-	'@fortawesome/fontawesome-free/css/all.css',
-	'@fontsource-variable/kode-mono/index.css',
-	'augmented-ui/augmented-ui.min.css',
-];
+const dependentStyleSheets = ['@fortawesome/fontawesome-free/css/all.css', '@fontsource-variable/kode-mono/index.css'];
 
 shimCSS({ styles: ({ page }) => page });
 
@@ -14,7 +9,7 @@ shimCSS({ styles: ({ page }) => page });
  * Page component that provides full-page layout with automatic stylesheet loading.
  *
  * Serves as a root container for applications with automatic loading of required stylesheets
- * including FontAwesome, fonts, and augmented-ui. Provides full viewport sizing and flexible layout.
+ * including FontAwesome and fonts. Provides full viewport sizing and flexible layout.
  * @param {object} [options={}] - Page configuration options
  * @param {Array<string|object>} [options.styleSheets=[]] - Additional stylesheets to load
  * @param {object} [options.style] - Additional CSS styles to apply
@@ -32,7 +27,9 @@ class Page extends Component {
 			const { href, scope, id } = typeof styleSheet === 'object' ? styleSheet : { href: styleSheet };
 
 			if (scope) {
-				GET(href).then(({ body }) => appendStyles(`${scope} { ${body} }`, id || scope));
+				fetch(href)
+					.then(r => r.text())
+					.then(css => appendStyles(`${scope} { ${css} }`, id || scope));
 
 				return;
 			}

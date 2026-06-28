@@ -18,20 +18,20 @@ const weekRangeString = anchorDate => {
 	const dayMs = 1000 * 60 * 60 * 24;
 	const firstDay = new Date(anchorDate.getTime() - anchorDate.getDay() * dayMs);
 	const lastDay = new Date(firstDay.getTime() + 6 * dayMs);
-	const fd = toNth(firstDay.getDate());
-	const ld = toNth(lastDay.getDate());
+	const firstSuffix = toNth(firstDay.getDate());
+	const lastSuffix = toNth(lastDay.getDate());
 
 	if (firstDay.getMonth() === lastDay.getMonth()) {
-		return `${MONTHS[firstDay.getMonth()]} ${firstDay.getDate()}${fd} - ${lastDay.getDate()}${ld}, ${firstDay.getFullYear()}`;
+		return `${MONTHS[firstDay.getMonth()]} ${firstDay.getDate()}${firstSuffix} - ${lastDay.getDate()}${lastSuffix}, ${firstDay.getFullYear()}`;
 	} else if (firstDay.getFullYear() === lastDay.getFullYear()) {
 		return (
-			`${MONTHS[firstDay.getMonth()]} ${firstDay.getDate()}${fd} - ` +
-			`${MONTHS[lastDay.getMonth()]} ${lastDay.getDate()}${ld}, ${firstDay.getFullYear()}`
+			`${MONTHS[firstDay.getMonth()]} ${firstDay.getDate()}${firstSuffix} - ` +
+			`${MONTHS[lastDay.getMonth()]} ${lastDay.getDate()}${lastSuffix}, ${firstDay.getFullYear()}`
 		);
 	}
 	return (
-		`${MONTHS[firstDay.getMonth()]} ${firstDay.getDate()}${fd}, ${firstDay.getFullYear()} - ` +
-		`${MONTHS[lastDay.getMonth()]} ${lastDay.getDate()}${ld}, ${lastDay.getFullYear()}`
+		`${MONTHS[firstDay.getMonth()]} ${firstDay.getDate()}${firstSuffix}, ${firstDay.getFullYear()} - ` +
+		`${MONTHS[lastDay.getMonth()]} ${lastDay.getDate()}${lastSuffix}, ${lastDay.getFullYear()}`
 	);
 };
 

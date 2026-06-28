@@ -99,10 +99,7 @@ describe('themeStyles', () => {
 		expect(result).toBe('');
 	});
 
-	test('removes excess indentation in development mode', () => {
-		const originalEnv = process.env.NODE_ENV;
-		process.env.NODE_ENV = 'development';
-
+	test('strips excess indentation from scoped output', () => {
 		const styleConfig = {
 			styles: () => `
 				color: red;
@@ -116,28 +113,7 @@ describe('themeStyles', () => {
 		expect(result).toContain('.test');
 		expect(result).toContain('color: red');
 		expect(result).toContain('background: blue');
-
-		process.env.NODE_ENV = originalEnv;
-	});
-
-	test('preserves indentation in production mode', () => {
-		const originalEnv = process.env.NODE_ENV;
-		process.env.NODE_ENV = 'production';
-
-		const styleConfig = {
-			styles: () => `
-				color: red;
-				background: blue;
-			`,
-			scope: '.test',
-		};
-
-		const result = themeStyles(styleConfig);
-
-		expect(result).toContain('.test');
-		expect(result).toContain('color: red');
-
-		process.env.NODE_ENV = originalEnv;
+		expect(result).not.toMatch(/\t{4}/);
 	});
 
 	test('handles whitespace-only strings correctly', () => {

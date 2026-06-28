@@ -1,4 +1,28 @@
 /**
+ * Whether the current runtime is in development mode.
+ * Checks both process.env.NODE_ENV (Node/Bun/webpack) and import.meta.env (Vite/ESBuild).
+ * Defaults to false (production-safe) when neither is set.
+ */
+export const isDev = (() => {
+	try {
+		if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') return false;
+		if (typeof import.meta !== 'undefined' && import.meta.env?.PROD === true) return false;
+		if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') return true;
+		if (
+			typeof import.meta !== 'undefined' &&
+			(import.meta.env?.DEV === true || import.meta.env?.NODE_ENV === 'development')
+		)
+			return true;
+		// Bare browser import with no bundler — treat localhost as dev so warnings surface
+		if (typeof location !== 'undefined' && (location.hostname === 'localhost' || location.hostname === '127.0.0.1'))
+			return true;
+		return false;
+	} catch {
+		return false;
+	}
+})();
+
+/**
  * Check if the current device is a mac
  * @returns {boolean} isMac
  */

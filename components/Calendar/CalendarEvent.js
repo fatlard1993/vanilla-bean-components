@@ -10,7 +10,7 @@ const StyledEvent = styled(
 		color: ${colors.black};
 		background-color: ${colors.yellow};
 
-		div {
+		& div {
 			pointer-events: none;
 		}
 	`,
@@ -46,9 +46,16 @@ export default class CalendarEvent {
 	render(type, container, calendar) {
 		const formattedTime = formatTime(this.at);
 
+		const handleSelectEvent = target => {
+			calendar.emit('selectEvent', { target, index: this.options.index });
+		};
+
 		this.eventElem = new StyledEvent({
 			data: { at: this.at },
 			className: 'event',
+			role: 'button',
+			tabindex: '0',
+			'aria-label': `${this.label}, ${formattedTime}${this.duration ? formatDuration(this.duration, ', ') : ''}`,
 			style: { backgroundColor: this.color },
 			append: [
 				new Elem({
@@ -58,8 +65,20 @@ export default class CalendarEvent {
 				new Elem({ className: 'label', textContent: this.label }),
 			],
 			appendTo: container,
-			onPointerPress: ({ target }) => {
-				calendar.emit('selectEvent', { target, index: this.options.index });
+			onPointerPress: ({ target }) => handleSelectEvent(target),
+		});
+
+		this.eventElem.on({
+			targetEvent: 'keydown',
+			callback: e => {
+				if (e.key === ' ') e.preventDefault();
+			},
+		});
+
+		this.eventElem.on({
+			targetEvent: 'keyup',
+			callback: e => {
+				if (e.key === ' ' || e.key === 'Enter') handleSelectEvent(e.target);
 			},
 		});
 

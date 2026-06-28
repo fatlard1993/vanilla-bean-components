@@ -18,13 +18,13 @@ export default class DemoOptions extends List {
 
 		super({
 			...options,
-			addClass: ['noStyle'],
+			addClass: ['no-style'],
 			items: Object.entries(component.options).map(
 				([key, value]) =>
 					new Label(
 						{ label: key, variant: 'collapsible', collapsed: true },
 						new List({
-							addClass: ['noStyle'],
+							addClass: ['no-style'],
 							items: conditionalList([
 								{
 									alwaysItem: new Label(

@@ -11,6 +11,7 @@ const menuItems = {
 	documentation: [],
 	componentDemos: [],
 	examples: [],
+	dependencies: [],
 };
 
 Object.keys(views).forEach(name => {
@@ -18,6 +19,7 @@ Object.keys(views).forEach(name => {
 	let parent = 'componentDemos';
 
 	if (name.startsWith('/examples/')) parent = 'examples';
+	else if (name.startsWith('/dependencies/')) parent = 'dependencies';
 	else if (name.startsWith('/documentation/')) parent = 'documentation';
 
 	menuItems[parent].push({
@@ -62,7 +64,11 @@ export default class DemoMenu extends StyledComponent {
 	build() {
 		this._links = [];
 
-		this.menuPopover = new Popover({ appendTo: this, style: { top: '32px', left: '32px', maxHeight: '60%' } });
+		this.menuPopover = new Popover({
+			autoOpen: false,
+			appendTo: this,
+			style: { top: '32px', left: '32px', maxHeight: '60%' },
+		});
 
 		this.menu = new Menu({
 			items: Object.keys(menuItems)
@@ -100,7 +106,8 @@ export default class DemoMenu extends StyledComponent {
 		});
 
 		document.addEventListener('keyup', ({ key }) => {
-			if (key === 'm' || key === 'Escape') this.toggle();
+			if (key === 'm') this.toggle();
+			else if (key === 'Escape') this.close();
 		});
 
 		window.addEventListener('hashchange', () => {

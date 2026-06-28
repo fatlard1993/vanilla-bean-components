@@ -100,7 +100,7 @@ const position_enum = Object.freeze([
  * Extends Popover to provide tooltip-specific styling and positioning options.
  * Supports multiple position presets and animated show/hide transitions.
  * @param {object} [options={}] - Tooltip configuration options
- * @param {string} [options.position='topRight'] - Tooltip position relative to parent
+ * @param {('center'|'top'|'bottom'|'left'|'right'|'topLeft'|'topRight'|'bottomLeft'|'bottomRight')} [options.position='topRight'] - Tooltip position relative to parent
  * @param {boolean} [options.autoOpen=false] - Whether tooltip opens automatically
  * @param {string} [options.textContent] - Tooltip text content
  * @param {string} [options.icon] - Icon to display in tooltip
@@ -122,20 +122,18 @@ class Tooltip extends StyledPopover {
 		);
 	}
 
-	_setOption(key, value) {
-		if (key === 'position') {
+	static handlers = {
+		position(value) {
 			if (!position_enum.includes(value)) {
 				throw new Error(
-					`"${value}" is not a valid position. The position must be one of the following values: ${this.position_enum.join(
-						', ',
-					)}`,
+					`"${value}" is not a valid position. The position must be one of the following values: ${position_enum.join(', ')}`,
 				);
 			}
 
 			this.removeClass(...position_enum);
 			this.addClass(value);
-		} else super._setOption(key, value);
-	}
+		},
+	};
 }
 
 export default Tooltip;

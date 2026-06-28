@@ -1,6 +1,6 @@
 # Naming Conventions
 
-This document outlines the naming conventions used throughout the vanilla-bean-components library. Consistent naming improves code readability, maintainability, and helps contributors understand the codebase structure at a glance.
+This document outlines the naming conventions used throughout the `@vanilla-bean/components` library. Consistent naming improves code readability, maintainability, and helps contributors understand the codebase structure at a glance.
 
 The library follows modern JavaScript conventions with some specific patterns that reflect its component-based architecture and options-first philosophy. These conventions ensure that the API feels natural to developers while maintaining internal consistency.
 
@@ -56,7 +56,7 @@ Component and class naming follows the library's hierarchical architecture, wher
 
 **Core Architecture Classes:**
 
-- **Base classes**: Single descriptive nouns (e.g., `Component`, `Context`, `Elem`)
+- **Base classes**: Single descriptive nouns (e.g., `Component`, `Elem`, `Oxject`)
 - **Component classes**: Descriptive nouns matching UI elements (e.g., `Button`, `Input`, `Dialog`)
 - **Wrapper classes**: Compound names ending in "Wrapper" (e.g., `TooltipWrapper`)
 
@@ -109,13 +109,13 @@ Package and module naming follows NPM conventions and JavaScript module standard
 
 **Package Identity:**
 
-- **Package name**: kebab-case following NPM conventions (`vanilla-bean-components`)
+- **Package name**: scoped NPM convention (`@vanilla-bean/components`)
 - **Module exports**: Naming matches internal conventions-PascalCase for classes, camelCase for functions
 - **File extensions**: Always lowercase following Unix conventions (`.js`, `.cjs`, `.mjs`)
 
 **Module Structure:**
 
-- **Export paths**: Follow the internal file structure (e.g., `vanilla-bean-components/Context`, `vanilla-bean-components/utils`)
+- **Export paths**: Follow the internal file structure (e.g., `@vanilla-bean/components/utils`, `@vanilla-bean/components/theme`)
 - **Named exports**: Match the internal class or function names exactly for predictable imports
 
 ## Special Cases
@@ -131,7 +131,7 @@ Certain file types and contexts have specific naming requirements that override 
 **Test and Development:**
 
 - **Test descriptions**: sentence case with spaces for readability in test output
-- **Enum values**: Context-dependent — lowercase for HTML attributes (matching web standards), snake_case with `_enum` suffix for frozen instance arrays
+- **Enum values**: Context-dependent: lowercase for HTML attributes (matching web standards), snake_case with `_enum` suffix for frozen instance arrays
 
 **Context-Sensitive Naming:**
 

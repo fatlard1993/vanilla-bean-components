@@ -1,6 +1,6 @@
 import { findByText } from '@testing-library/dom';
 
-import { Component } from '../..';
+import { Component, Button, List } from '../..';
 
 import { Dialog } from '.';
 
@@ -178,7 +178,6 @@ describe('Dialog', () => {
 		const button = await findByText(container, 'Test Button');
 		// Trigger the actual pointer events that Button components listen for
 		button.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
-		button.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
 
 		expect(onButtonPress).toHaveBeenCalledWith(
 			expect.objectContaining({
@@ -186,5 +185,70 @@ describe('Dialog', () => {
 				closeDialog: expect.any(Function),
 			}),
 		);
+	});
+
+	test('Button inside Component inside List inside Dialog fires onPointerDown', async () => {
+		const handler = mock(() => {});
+
+		class Item extends Component {
+			build() {
+				new Button({ textContent: '+', onPointerDown: handler, appendTo: this });
+			}
+		}
+
+		new Dialog({
+			openOnRender: false,
+			body: new List({ items: [{}], ListItemComponent: Item }),
+			appendTo: container,
+		});
+
+		const button = await findByText(container, '+');
+		button.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+
+		expect(handler).toHaveBeenCalled();
+	});
+
+	test('Button inside Component inside List inside Dialog fires onPointerPress', async () => {
+		const handler = mock(() => {});
+
+		class Item extends Component {
+			build() {
+				new Button({ textContent: '+', onPointerPress: handler, appendTo: this });
+			}
+		}
+
+		new Dialog({
+			openOnRender: false,
+			body: new List({ items: [{}], ListItemComponent: Item }),
+			appendTo: container,
+		});
+
+		const button = await findByText(container, '+');
+		button.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+
+		expect(handler).toHaveBeenCalled();
+	});
+
+	test('Button onPointerPress fires AFTER showModal()', async () => {
+		const handler = mock(() => {});
+
+		class Item extends Component {
+			build() {
+				new Button({ textContent: '+', onPointerPress: handler, appendTo: this });
+			}
+		}
+
+		const dialog = new Dialog({
+			openOnRender: false,
+			body: new List({ items: [{}], ListItemComponent: Item }),
+			appendTo: container,
+		});
+
+		dialog.open();
+
+		const button = await findByText(container, '+');
+		button.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+
+		expect(handler).toHaveBeenCalled();
 	});
 });

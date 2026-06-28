@@ -2,7 +2,7 @@
 
 > lld/helpers/styled.js
 
-Higher-order function that attaches scoped CSS to a component class. The scope is one of several layers in a flexible range of CSS strategies — from global theme tokens to per-definition class scopes to per-instance inline styles. `styled()` occupies the per-definition layer: one scope class, shared by all instances of the same styled component.
+Higher-order function that attaches scoped CSS to a component class. The scope is one of several layers in a flexible range of CSS strategies: from global theme tokens to per-definition class scopes to per-instance inline styles. `styled()` occupies the per-definition layer: one scope class, shared by all instances of the same styled component.
 
 ## Each call to styled() creates an independent scope
 
@@ -27,7 +27,7 @@ Higher-order function that attaches scoped CSS to a component class. The scope i
 
 ## Function syntax and template literal syntax are equivalent
 
-- both syntaxes attach a scope class — the choice is stylistic, not functional
+- both syntaxes attach a scope class; the choice is stylistic, not functional
 
 **method:** `functionSyntaxHasScope`
 

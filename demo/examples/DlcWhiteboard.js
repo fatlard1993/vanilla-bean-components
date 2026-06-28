@@ -1,5 +1,6 @@
 import {
 	Component,
+	Elem,
 	Button,
 	Whiteboard,
 	Popover,
@@ -21,13 +22,11 @@ import exampleCode from './DlcWhiteboard.js.asText';
 const CANVAS_SIZE = 400;
 
 const Inkwell = styled.Component`
-	transform-origin: 0 100%;
-	transform: rotate(-90deg);
-	position: absolute;
-	top: 400px;
-	left: 0;
-	height: 12px;
-	width: 300px;
+	writing-mode: vertical-lr;
+	transform: rotate(180deg);
+	flex: 1;
+	width: 12px;
+	margin: 0;
 `;
 
 const DlcStoreList = styled.List`
@@ -58,54 +57,48 @@ class Achievement extends Notify {
 }
 
 class DlcListItem extends Component {
+	constructor(options = {}) {
+		super({ registeredEvents: new Set(['qtychange']), ...options });
+	}
+
 	build() {
-		this._buy = new Button({
-			icon: 'cart-shopping',
-			textContent: `$${this.options.price}`,
-			style: { marginLeft: '6px' },
-			onPointerPress: ({ clientX, clientY }) => {
-				if (this.options.whiteboard.options.credits < this.options.price) {
-					if (this.parent.parent.errorNotification?.parentElem) {
-						this.parent.parent.errorNotification.edgeAwarePlacement({ x: clientX, y: clientY });
+		this._qty = 0;
 
-						return;
-					}
-
-					this.parent.parent.errorNotification = new Notify({
-						type: 'error',
-						content: 'Not enough credits',
-						timeout: 2000,
-						x: clientX,
-						y: clientY,
-					});
-
-					return;
-				}
-
-				this.options.whiteboard.options.credits -= this.options.price;
-				this.options.whiteboard.options[this.options.product] += this.options.amount;
-
-				if (this.successNotification?.parentElem) {
-					this.successNotification.count = this.successNotification.count || 1;
-					++this.successNotification.count;
-
-					this.successNotification.content(
-						`Successfully purchased ${this.options.label} (x${this.successNotification.count})`,
-					);
-
-					return;
-				}
-
-				this.successNotification = new Notify({
-					content: `Successfully purchased ${this.options.label}`,
-					timeout: 2000,
-					x: clientX,
-					y: clientY,
-				});
+		this._minus = new Button({
+			textContent: '-',
+			style: { minWidth: '28px', padding: '2px 8px' },
+			onPointerPress: () => {
+				if (this._qty <= 0) return;
+				this._qty--;
+				this._qtyDisplay.elem.textContent = this._qty;
+				this.emit('qtychange', this._qty);
 			},
 		});
 
-		this.content([this._buy, this.options.label]);
+		this._qtyDisplay = new Elem({ style: { minWidth: '20px', textAlign: 'center' }, textContent: '0' });
+
+		this._plus = new Button({
+			textContent: '+',
+			style: { minWidth: '28px', padding: '2px 8px' },
+			onPointerPress: () => {
+				this._qty++;
+				this._qtyDisplay.elem.textContent = this._qty;
+				this.emit('qtychange', this._qty);
+			},
+		});
+
+		this.setStyle({ display: 'flex', alignItems: 'center', gap: '4px', width: '100%' });
+
+		this.content([
+			new Elem({ style: { flex: '1' }, textContent: this.options.label }),
+			this._minus,
+			this._qtyDisplay,
+			this._plus,
+			new Elem({
+				style: { marginLeft: '4px', opacity: '0.6', fontSize: '0.85em', whiteSpace: 'nowrap' },
+				textContent: `$${this.options.price} ea`,
+			}),
+		]);
 	}
 }
 
@@ -131,64 +124,101 @@ class DlcWhiteboard extends (styled.Component`
 	}
 
 	build() {
+		this._lowInkNotified = false;
 		this._credits = new Component();
 		this._openStore = new Button({
 			textContent: 'Open DLC Store',
-			onPointerPress: () =>
-				new Dialog({
+			onPointerPress: () => {
+				const storeItems = conditionalList([
+					{ alwaysItem: { label: 'Ink (+10)', product: 'ink', amount: 10, price: 2 } },
+					{ alwaysItem: { label: 'Pen Sizes (+3)', product: 'maxLineWidth', amount: 3, price: 2 } },
+					{
+						if: this.options.drawThrottle > 0,
+						thenItem: { label: 'Pen Resolution (+50)', product: 'drawThrottle', amount: -50, price: 2 },
+					},
+				]);
+
+				const qtys = new Array(storeItems.length).fill(0);
+				const getTotal = () => qtys.reduce((sum, qty, i) => sum + qty * storeItems[i].price, 0);
+
+				const checkoutBtn = new Button({ textContent: 'Checkout $0' });
+				const cancelBtn = new Button({ textContent: 'Cancel' });
+				const store = {};
+
+				const updateCheckout = () => {
+					const total = getTotal();
+					checkoutBtn.elem.textContent = `Checkout $${total}`;
+					checkoutBtn.elem.disabled = total === 0;
+				};
+
+				checkoutBtn.onPointerPress(({ clientX, clientY }) => {
+					const total = getTotal();
+					if (total > this.options.credits) {
+						new Notify({ type: 'error', content: 'Not enough credits', timeout: 2000, x: clientX, y: clientY });
+						return;
+					}
+					storeItems.forEach((item, i) => {
+						if (qtys[i] > 0) {
+							this.options.credits -= qtys[i] * item.price;
+							this.options[item.product] += item.amount * qtys[i];
+						}
+					});
+					new Notify({ content: `Purchase complete! $${total} spent.`, timeout: 2000, x: clientX, y: clientY });
+					store.dialog.close();
+				});
+
+				cancelBtn.onPointerPress(() => store.dialog.close());
+
+				store.dialog = new Dialog({
 					header: 'DLC Store',
 					body: new DlcStoreList({
-						items: conditionalList([
-							{ alwaysItem: { label: 'Ink (+10)', product: 'ink', amount: 10, price: '2' } },
-							{ alwaysItem: { label: 'Pen Sizes (+3)', product: 'maxLineWidth', amount: 3, price: '2' } },
-							{
-								if: this.options.drawThrottle > 0,
-								thenItem: { label: 'Pen Resolution (+50)', product: 'drawThrottle', amount: -50, price: '2' },
+						items: storeItems.map((item, i) => ({
+							...item,
+							onQtyChange: ({ detail: qty }) => {
+								qtys[i] = qty;
+								updateCheckout();
 							},
-						]).map(item => ({ ...item, whiteboard: this })),
+						})),
 						ListItemComponent: DlcListItem,
 					}),
-					buttons: ['Close'],
-					onButtonPress: ({ closeDialog }) => closeDialog(),
-				}),
+					footer: [checkoutBtn, cancelBtn],
+				});
+			},
 		});
 		this._buyCredits = new Button({
 			textContent: 'Buy Credits',
-			onPointerPress: () =>
+			onPointerPress: () => {
+				// Create fresh input and label each time so closures capture them directly
+				const paymentInput = new Input({ type: 'text' });
+				const paymentLabel = new Label(
+					{
+						label: 'Payment',
+						style: { position: 'relative' },
+						tooltip: {
+							content: 'Almost any form of payment is accepted; Credit, Debit, Transfer, Crypto, etc.',
+							position: 'bottom',
+							style: { display: 'block', position: 'relative', margin: '6px', maxWidth: 'unset' },
+						},
+					},
+					paymentInput,
+				);
+				const dlcWhiteboard = this;
+
 				new Dialog({
 					header: 'Buy Credits',
 					size: 'standard',
-					body: new Label(
-						{
-							label: 'Payment',
-							tooltip: {
-								content: 'Almost any form of payment is accepted; Credit, Debit, Transfer, Crypto, etc.',
-								position: 'bottom',
-								style: { display: 'block', position: 'relative', margin: '6px', maxWidth: 'unset' },
-							},
-						},
-						new Input({ type: 'text' }),
-					),
+					body: paymentLabel,
 					buttons: ['Close', 'Submit'],
-					whiteboard: this,
-					onButtonPress: function ({ event, button, closeDialog }) {
+					onButtonPress: ({ event, button, closeDialog }) => {
 						if (button === 'Close') return closeDialog();
 
-						const payment = this.body.options.for.elem.value;
+						const payment = paymentInput.elem.value;
 						const paymentLength = payment.length;
 						const amount = payment === '1337' ? randInt(10, 20) : randInt(paymentLength / 4, paymentLength * 1.2);
 
 						if (paymentLength <= 1 || payment === 'love') {
-							new Notify({
-								type: 'error',
-								content: 'Stingy',
-								timeout: 500,
-								x: event.clientX,
-								y: event.clientY,
-							});
-
+							new Notify({ type: 'error', content: 'Stingy', timeout: 500, x: event.clientX, y: event.clientY });
 							closeDialog();
-
 							return;
 						}
 
@@ -196,16 +226,14 @@ class DlcWhiteboard extends (styled.Component`
 						const robot = new Icon({
 							icon: 'robot',
 							animation: 'shake',
-							style: { position: 'absolute', bottom: '16px', left: `${20 + paymentLength * 10}px` },
-							appendTo: this.body,
+							style: { position: 'absolute', bottom: '12px', left: `${24 + paymentLength * 10}px` },
+							appendTo: paymentLabel,
 						});
 
 						setTimeout(
 							() => {
 								closeDialog();
-
-								this.whiteboard.options.credits += amount;
-
+								dlcWhiteboard.options.credits += amount;
 								new Notify({
 									content: `You've been awarded $${amount}`,
 									timeout: 2000,
@@ -216,22 +244,30 @@ class DlcWhiteboard extends (styled.Component`
 							chompTime * (paymentLength + 0.5),
 						);
 
-						this.chomper = setInterval(() => {
-							const paymentLength = this.body.options.for.elem.value.length;
-							const chompSize = Math.ceil(Math.max(paymentLength / 5, 2));
-
-							if (paymentLength === 0) {
+						const chomper = setInterval(() => {
+							const remaining = paymentInput.elem.value.length;
+							const chompSize = Math.ceil(Math.max(remaining / 5, 2));
+							if (remaining === 0) {
 								robot.elem.remove();
-								clearInterval(this.chomper);
+								clearInterval(chomper);
 								return;
 							}
-
-							robot.elem.style.left = `${20 + (paymentLength - chompSize) * 10}px`;
-							this.body.options.for.elem.value = this.body.options.for.elem.value.slice(0, -chompSize);
+							robot.elem.style.left = `${20 + (remaining - chompSize) * 10}px`;
+							paymentInput.elem.value = paymentInput.elem.value.slice(0, -chompSize);
 						}, chompTime);
 					},
-				}),
+				});
+			},
 		});
+		const canvasWrapper = new Elem({
+			style: { display: 'flex', flexDirection: 'row', margin: '12px auto', width: 'fit-content' },
+		});
+
+		const sidebar = new Elem({
+			style: { display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '4px' },
+			appendTo: canvasWrapper,
+		});
+
 		this._whiteboard = new Whiteboard({
 			width: `${CANVAS_SIZE}px`,
 			height: `${CANVAS_SIZE}px`,
@@ -239,16 +275,26 @@ class DlcWhiteboard extends (styled.Component`
 			background: this.options.subscriber('background'),
 			lineWidth: this.options.subscriber('lineWidth'),
 			readOnly: this.options.subscriber('ink', ink => ink <= 0),
-			style: { margin: '12px auto' },
 			drawThrottle: this.options.subscriber('drawThrottle'),
-			onDraw: ({ detail: { from, to } }) => {
+			appendTo: canvasWrapper,
+			onDraw: ({ detail: { from, to, event } }) => {
+				const prevInk = this.options.ink;
 				const length = Math.abs(from.x - to.x) + Math.abs(from.y - to.y);
 				const inkUse = (length || this.options.lineWidth) * this.options.lineWidth * 0.0005;
 
 				this.options.ink -= inkUse;
-			},
-			onChange: ({ detail: { event } }) => {
-				if (this.options.ink <= 0) {
+
+				if (!this._lowInkNotified && prevInk > 1 && this.options.ink <= 1) {
+					this._lowInkNotified = true;
+					new Notify({
+						type: 'warning',
+						content: 'Low ink! Head to the DLC store.',
+						x: event.clientX,
+						y: event.clientY,
+					});
+				}
+
+				if (prevInk > 0 && this.options.ink <= 0) {
 					new Notify({
 						type: 'error',
 						content: "Looks like you've run out of ink, buy more in the store!",
@@ -273,6 +319,7 @@ class DlcWhiteboard extends (styled.Component`
 			style: this.options.subscriber('color', accentColor => ({ accentColor })),
 			max: 100,
 			value: this.options.subscriber('ink'),
+			appendTo: sidebar,
 		});
 
 		const colorPicker = new Popover(
@@ -304,32 +351,27 @@ class DlcWhiteboard extends (styled.Component`
 			),
 		);
 
-		const colorSwatch = new Button({
+		new Button({
 			icon: 'paintbrush',
 			style: this.options.subscriber('color', backgroundColor => ({
 				backgroundColor,
 				color: theme.colors.mostReadable(backgroundColor, [theme.colors.white, theme.colors.black]),
-				position: 'absolute',
-				top: '416px',
-				left: '-21px',
 			})),
 			onPointerPress: event => colorPicker.show({ x: event.clientX, y: event.clientY, maxHeight: 378, maxWidth: 318 }),
+			appendTo: sidebar,
 		});
 
-		this.content([
-			this._credits,
-			this._openStore,
-			this._buyCredits,
-			this._whiteboard,
-			this._inkwell,
-			colorPicker,
-			colorSwatch,
-		]);
+		// colorPicker stays in document.body — moving it would disconnect/reconnect
+		// its children and destroy their event listeners via the cleanup system
+		this.addCleanup('colorPicker', () => colorPicker.elem.remove());
+
+		this.content([this._credits, this._openStore, this._buyCredits, canvasWrapper]);
 	}
 
 	_setOption(key, value) {
 		if (key === 'credits') this._credits.content(`Credits: ${value}`);
 		else super._setOption(key, value);
+		if (key === 'ink' && value > 1) this._lowInkNotified = false;
 	}
 }
 
@@ -337,8 +379,6 @@ export default class Example extends ExampleView {
 	build() {
 		this.options.exampleCode = exampleCode;
 
-		this.demoWrapper.setStyle({ height: '100%' });
-
-		new DlcWhiteboard({ appendTo: this.demoWrapper });
+		new DlcWhiteboard({ style: { height: '70vh' }, appendTo: this.demoWrapper });
 	}
 }

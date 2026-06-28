@@ -8,8 +8,8 @@ const StyledIcon = styled(
 		background-color: ${colors.darkest(colors.gray)};
 		color: ${colors.white};
 		padding: 12px;
-		border-radius: 3px;
 		border: 1px solid ${colors.lightest(colors.gray)};
+		border-radius: 3px;
 		margin: 0;
 
 		&:popover-open {
@@ -21,6 +21,7 @@ const StyledIcon = styled(
 const defaultOptions = {
 	uniqueId: true,
 	state: 'manual',
+	outsideClose: false,
 	get viewport() {
 		return document.documentElement;
 	},
@@ -71,10 +72,11 @@ export default class Popover extends StyledIcon {
 		if (this.options.x !== undefined && this.options.y !== undefined) this.edgeAwarePlacement(this.options);
 	}
 
-	_setOption(key, value) {
-		if (key === 'state') this.elem.popover = value;
-		else super._setOption(key, value);
-	}
+	static handlers = {
+		state(value) {
+			this.elem.popover = value;
+		},
+	};
 
 	edgeAwarePlacement({
 		x,
@@ -113,7 +115,29 @@ export default class Popover extends StyledIcon {
 	show(options) {
 		if (options) this.edgeAwarePlacement(options);
 
-		if (this.elem.isConnected) this.elem.showPopover();
+		if (!this.elem.isConnected) return;
+
+		this.elem.showPopover();
+
+		if (this.options.outsideClose) {
+			// Cancel any pending registration from a previous show()
+			if (this._outsideDismissRaf) cancelAnimationFrame(this._outsideDismissRaf);
+			if (this._outsideDismissListener) {
+				document.removeEventListener('pointerdown', this._outsideDismissListener, { capture: true });
+			}
+
+			const onOutsidePress = e => {
+				if (!this.elem.contains(e.target)) this.hide();
+			};
+
+			this._outsideDismissListener = onOutsidePress;
+
+			// Defer one frame so the current press that opened us isn't immediately caught
+			this._outsideDismissRaf = requestAnimationFrame(() => {
+				this._outsideDismissRaf = null;
+				document.addEventListener('pointerdown', onOutsidePress, { capture: true });
+			});
+		}
 	}
 
 	/**
@@ -125,6 +149,15 @@ export default class Popover extends StyledIcon {
 		} catch {
 			// Popover not shown or not connected
 		}
+
+		if (this._outsideDismissRaf) {
+			cancelAnimationFrame(this._outsideDismissRaf);
+			this._outsideDismissRaf = null;
+		}
+		if (this._outsideDismissListener) {
+			document.removeEventListener('pointerdown', this._outsideDismissListener, { capture: true });
+			this._outsideDismissListener = null;
+		}
 	}
 
 	/**
@@ -133,5 +166,10 @@ export default class Popover extends StyledIcon {
 	 */
 	get isOpen() {
 		return this.elem.matches(':popover-open');
+	}
+
+	destroy() {
+		this.hide();
+		super.destroy?.();
 	}
 }

@@ -65,8 +65,8 @@ describe('Form', () => {
 		});
 	});
 
-	describe('data context creation', () => {
-		test('creates a Context from initial data', () => {
+	describe('data store creation', () => {
+		test('creates a reactive store from initial data', () => {
 			const form = new Form({
 				data: { name: 'Alice', age: 30 },
 				inputs: [{ key: 'name' }, { key: 'age' }],
@@ -78,7 +78,7 @@ describe('Form', () => {
 			expect(form.options.data.age).toBe(30);
 		});
 
-		test('creates a Context even when no initial data is provided', () => {
+		test('creates a reactive store even when no initial data is provided', () => {
 			const form = new Form({
 				inputs: [{ key: 'title' }],
 				appendTo: container,
@@ -88,7 +88,7 @@ describe('Form', () => {
 			expect(form.options.data).toBeDefined();
 		});
 
-		test('data context reflects initial input values', () => {
+		test('data store reflects initial input values', () => {
 			const form = new Form({
 				data: { username: 'jdoe' },
 				inputs: [{ key: 'username' }],
@@ -110,7 +110,7 @@ describe('Form', () => {
 	});
 
 	describe('reactive data binding', () => {
-		test('onChange updates data context', () => {
+		test('onChange updates data store', () => {
 			const form = new Form({
 				data: { name: 'Alice' },
 				inputs: [{ key: 'name' }],
@@ -167,11 +167,11 @@ describe('Form', () => {
 		});
 	});
 
-	describe('validate()', () => {
+	describe('hasErrors()', () => {
 		test('returns false when there are no inputElements', () => {
 			const form = new Form({ appendTo: container });
 
-			expect(form.validate()).toBe(false);
+			expect(form.hasErrors()).toBe(false);
 		});
 
 		test('returns false when all inputs are valid', () => {
@@ -186,7 +186,7 @@ describe('Form', () => {
 				appendTo: container,
 			});
 
-			const result = form.validate();
+			const result = form.hasErrors();
 
 			expect(result).toBe(false);
 		});
@@ -203,7 +203,7 @@ describe('Form', () => {
 				appendTo: container,
 			});
 
-			const result = form.validate();
+			const result = form.hasErrors();
 
 			expect(result).toBe(true);
 		});
@@ -218,7 +218,7 @@ describe('Form', () => {
 				appendTo: container,
 			});
 
-			const result = form.validate();
+			const result = form.hasErrors();
 
 			expect(result).toBe(true);
 		});
@@ -236,17 +236,17 @@ describe('Form', () => {
 			});
 
 			// Initially invalid
-			expect(form.validate()).toBe(true);
+			expect(form.hasErrors()).toBe(true);
 
 			// Fix the value
 			form.options.data.name = 'Alice';
 			form.inputElements.name.options.value = 'Alice';
 
 			// Now valid
-			expect(form.validate()).toBe(false);
+			expect(form.hasErrors()).toBe(false);
 		});
 
-		test('marks invalid inputs with validationErrors class', () => {
+		test('marks invalid inputs with validation-errors class', () => {
 			const form = new Form({
 				data: { name: '' },
 				inputs: [
@@ -258,12 +258,12 @@ describe('Form', () => {
 				appendTo: container,
 			});
 
-			form.validate();
+			form.hasErrors();
 
-			expect(form.inputElements.name.elem.className).toContain('validationErrors');
+			expect(form.inputElements.name.elem.className).toContain('validation-errors');
 		});
 
-		test('clears validationErrors class on valid input', () => {
+		test('clears validation-errors class on valid input', () => {
 			const form = new Form({
 				data: { name: 'Alice' },
 				inputs: [
@@ -275,24 +275,24 @@ describe('Form', () => {
 				appendTo: container,
 			});
 
-			form.validate();
+			form.hasErrors();
 
-			expect(form.inputElements.name.elem.className).not.toContain('validationErrors');
+			expect(form.inputElements.name.elem.className).not.toContain('validation-errors');
 		});
 	});
 
 	describe('input type', () => {
-		// Form passes a Subscriber object (not the raw value) to InputComponent, so
-		// Input's dataTypeToInputType inference always sees typeof === 'object' and
-		// falls back to 'text'. Explicit type options are required to override this.
-		test('defaults to text type when no type is specified', () => {
+		// Input sees through Subscriber via __isSubscriber + toJSON() and infers the type
+		// from the underlying data value. Numeric data → number input; boolean → checkbox; etc.
+		// Override with an explicit type option when the inferred type is wrong for your use case.
+		test('infers type from underlying data value when passed a subscriber', () => {
 			const form = new Form({
 				data: { age: 25 },
 				inputs: [{ key: 'age' }],
 				appendTo: container,
 			});
 
-			expect(form.inputElements.age.elem.type).toBe('text');
+			expect(form.inputElements.age.elem.type).toBe('number');
 		});
 
 		test('respects an explicit type option', () => {
@@ -347,6 +347,232 @@ describe('Form', () => {
 			});
 
 			expect(form.elem.style.overflow).toBe('hidden auto');
+		});
+	});
+
+	describe('conditional fields', () => {
+		test('hidden when condition returns false at render time', () => {
+			const form = new Form({
+				data: { type: 'basic', extra: '' },
+				inputs: [
+					{ key: 'type' },
+					{ key: 'extra', condition: data => data.type === 'advanced' },
+				],
+				appendTo: container,
+			});
+
+			// eslint-disable-next-line testing-library/no-node-access
+			const wrapper = form.inputElements.extra.elem.parentElement;
+			expect(wrapper.style.display).toBe('none');
+		});
+
+		test('visible when condition returns true at render time', () => {
+			const form = new Form({
+				data: { type: 'advanced', extra: '' },
+				inputs: [
+					{ key: 'type' },
+					{ key: 'extra', condition: data => data.type === 'advanced' },
+				],
+				appendTo: container,
+			});
+
+			// eslint-disable-next-line testing-library/no-node-access
+			const wrapper = form.inputElements.extra.elem.parentElement;
+			expect(wrapper.style.display).not.toBe('none');
+		});
+
+		test('shows field when data change satisfies condition', () => {
+			const form = new Form({
+				data: { type: 'basic', extra: '' },
+				inputs: [
+					{ key: 'type' },
+					{ key: 'extra', condition: data => data.type === 'advanced' },
+				],
+				appendTo: container,
+			});
+
+			// eslint-disable-next-line testing-library/no-node-access
+			const wrapper = form.inputElements.extra.elem.parentElement;
+			expect(wrapper.style.display).toBe('none');
+
+			form.options.data.type = 'advanced';
+
+			expect(wrapper.style.display).not.toBe('none');
+		});
+
+		test('hides field when data change fails condition', () => {
+			const form = new Form({
+				data: { type: 'advanced', extra: '' },
+				inputs: [
+					{ key: 'type' },
+					{ key: 'extra', condition: data => data.type === 'advanced' },
+				],
+				appendTo: container,
+			});
+
+			// eslint-disable-next-line testing-library/no-node-access
+			const wrapper = form.inputElements.extra.elem.parentElement;
+			expect(wrapper.style.display).not.toBe('none');
+
+			form.options.data.type = 'basic';
+
+			expect(wrapper.style.display).toBe('none');
+		});
+
+		test('hasErrors() skips hidden conditional fields', () => {
+			const form = new Form({
+				data: { type: 'basic', required: '' },
+				inputs: [
+					{ key: 'type' },
+					{
+						key: 'required',
+						condition: data => data.type === 'advanced',
+						validations: [[/.+/, 'Required']],
+					},
+				],
+				appendTo: container,
+			});
+
+			// 'required' field is hidden — hasErrors should ignore it
+			expect(form.hasErrors()).toBe(false);
+		});
+
+		test('hasErrors() validates revealed conditional fields', () => {
+			const form = new Form({
+				data: { type: 'advanced', required: '' },
+				inputs: [
+					{ key: 'type' },
+					{
+						key: 'required',
+						condition: data => data.type === 'advanced',
+						validations: [[/.+/, 'Required']],
+					},
+				],
+				appendTo: container,
+			});
+
+			// 'required' field is visible and empty — should fail
+			expect(form.hasErrors()).toBe(true);
+		});
+	});
+
+	describe('field-level validate', () => {
+		test('validate() returning a string marks field invalid', () => {
+			const form = new Form({
+				data: { age: 5 },
+				inputs: [{ key: 'age', validate: value => (value >= 18 ? null : 'Must be 18+') }],
+				appendTo: container,
+			});
+
+			expect(form.hasErrors()).toBe(true);
+			expect(form.inputElements.age.elem.classList.contains('validation-errors')).toBe(true);
+			expect(form.inputElements.age.elem.getAttribute('aria-invalid')).toBe('true');
+		});
+
+		test('validate() returning null marks field valid', () => {
+			const form = new Form({
+				data: { age: 21 },
+				inputs: [{ key: 'age', validate: value => (value >= 18 ? null : 'Must be 18+') }],
+				appendTo: container,
+			});
+
+			expect(form.hasErrors()).toBe(false);
+			expect(form.inputElements.age.elem.classList.contains('validation-errors')).toBe(false);
+			expect(form.inputElements.age.elem.getAttribute('aria-invalid')).toBeNull();
+		});
+
+		test('field validate and VBC validations both run', () => {
+			const form = new Form({
+				data: { name: '' },
+				inputs: [
+					{
+						key: 'name',
+						validations: [[/.+/, 'Cannot be empty']],
+						validate: value => (value.length > 50 ? 'Too long' : null),
+					},
+				],
+				appendTo: container,
+			});
+
+			// Empty fails VBC validation
+			expect(form.hasErrors()).toBe(true);
+		});
+	});
+
+	describe('group layout', () => {
+		test('renders grouped fields inside a shared container', () => {
+			const form = new Form({
+				data: { first: '', last: '' },
+				inputs: [
+					{
+						type: 'group',
+						style: { display: 'grid', gridTemplateColumns: '1fr 1fr' },
+						inputs: [{ key: 'first' }, { key: 'last' }],
+					},
+				],
+				appendTo: container,
+			});
+
+			expect(form.inputElements.first).toBeDefined();
+			expect(form.inputElements.last).toBeDefined();
+
+			// input.elem → label wrapper → group container — both share the same group
+			// eslint-disable-next-line testing-library/no-node-access
+			const firstGroup = form.inputElements.first.elem.parentElement?.parentElement;
+			// eslint-disable-next-line testing-library/no-node-access
+			const lastGroup = form.inputElements.last.elem.parentElement?.parentElement;
+			expect(firstGroup).toBe(lastGroup);
+			expect(firstGroup).not.toBe(form.elem);
+		});
+
+		test('group container collapses when all conditional children hide', () => {
+			const form = new Form({
+				data: { show: true, a: '', b: '' },
+				inputs: [
+					{
+						type: 'group',
+						inputs: [
+							{ key: 'a', condition: data => data.show },
+							{ key: 'b', condition: data => data.show },
+						],
+					},
+				],
+				appendTo: container,
+			});
+
+			// input.elem → label wrapper → group container
+			// eslint-disable-next-line testing-library/no-node-access
+			const groupElem = form.inputElements.a.elem.parentElement.parentElement;
+
+			// Initially all visible — group is not collapsed
+			expect(groupElem.style.display).not.toBe('none');
+
+			// Hide all conditional children — _evaluateConditions collapses the group
+			form.options.data.show = false;
+
+			expect(groupElem.style.display).toBe('none');
+		});
+
+		test('group container expands when a conditional child becomes visible', () => {
+			const form = new Form({
+				data: { show: true, a: '' },
+				inputs: [
+					{
+						type: 'group',
+						inputs: [{ key: 'a', condition: data => data.show }],
+					},
+				],
+				appendTo: container,
+			});
+
+			// eslint-disable-next-line testing-library/no-node-access
+			const groupElem = form.inputElements.a.elem.parentElement.parentElement;
+
+			form.options.data.show = false;
+			expect(groupElem.style.display).toBe('none');
+
+			form.options.data.show = true;
+			expect(groupElem.style.display).not.toBe('none');
 		});
 	});
 });

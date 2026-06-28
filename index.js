@@ -9,13 +9,11 @@ Object.entries({ Elem, Component, ...components }).forEach(([name, component]) =
 
 export * from './Component';
 export * from './components';
-export * from './Context';
+export { Oxject, derive } from '@vanilla-bean/oxject';
 export * from './Elem';
-export * from './request';
 export * from './styled';
 export * from './utils';
 
 export { default as theme } from './theme';
-export { default as rootContext } from './rootContext';
 
 export { styled };

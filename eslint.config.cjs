@@ -11,7 +11,7 @@ const writeGoodComments = require('eslint-plugin-write-good-comments');
 
 module.exports = [
 	{
-		ignores: ['**/node_modules', '**/build'],
+		ignores: ['**/node_modules', '**/build', '**/.claude'],
 	},
 	js.configs.recommended,
 	jsdoc.configs['flat/recommended'],
@@ -51,6 +51,7 @@ module.exports = [
 			'write-good-comments/write-good-comments': 'off',
 
 			'spellcheck/spell-checker': ['warn', require('./spellcheck.config.cjs')],
+			'jsdoc/no-undefined-types': ['warn', { definedTypes: ['Component', 'TemplateStringsArray'] }],
 		},
 	},
 	{
@@ -111,6 +112,7 @@ module.exports = [
 			...testingLibrary.configs.dom.rules,
 			'no-console': 'off',
 			'testing-library/prefer-screen-queries': 'off',
+			'compat/compat': 'off',
 		},
 	},
 ];

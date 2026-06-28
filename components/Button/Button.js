@@ -11,6 +11,7 @@ const defaultOptions = { tag: 'button' };
  * @param {string} [options.tag='button'] - HTML tag name, defaults to button for proper semantics
  * @param {Function} [options.onPointerPress] - Handler called when button is activated via click, touch, or keyboard
  * @param {string} [options.textContent] - Button label text
+ * @param {string} [options.icon] - FontAwesome icon name (without 'fa-' prefix)
  * @param {string} [options.tooltip] - Tooltip text shown on hover
  * @param {boolean} [options.disabled] - Whether button is disabled
  * @param {...(Component|HTMLElement|string)} children - Child elements to append

@@ -1,11 +1,8 @@
-import colors from './colors';
-import fonts from './fonts';
-
-export default `
+export default ({ colors, fonts }) => `
 	@font-face {
 		font-family: 'FontWithASyntaxHighlighter';
 		src:
-			url('vanilla-bean-components/FontWithASyntaxHighlighter-Regular.woff2')
+			url('@vanilla-bean/components/FontWithASyntaxHighlighter-Regular.woff2')
 			format('woff2')
 		;
 	}
@@ -77,17 +74,24 @@ export default `
 		padding: 12px;
 		border-radius: 3px;
 		text-decoration: inherit;
-		max-width: calc(100% - 42px);
+		max-width: 100%;
+
+		&:has(> button) {
+			padding-right: 34px;
+		}
 
 		button {
 			position: absolute !important;
-			top: -12px;
-			right: -18px;
+			top: 4px;
+			right: 4px;
+			width: 26px !important;
+			height: 26px !important;
+			font-size: 13px;
 			opacity: 0.5;
 
 			&:hover, &:focus {
 				opacity: 0.8;
-				top: -17px;
+				top: 3px;
 			}
 		}
 
@@ -98,7 +102,7 @@ export default `
 		}
 	}
 
-	code, textarea.syntaxHighlighting, input.syntaxHighlighting, pre[lang] {
+	code, textarea.syntax-highlighting, input.syntax-highlighting, pre[lang] {
 		${fonts.code}
 
 		&[class*="language-html"] {

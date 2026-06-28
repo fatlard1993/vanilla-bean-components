@@ -2,7 +2,7 @@
 
 > ./Tooltip.js
 
-Positioned popover for explanatory text with nine validated position presets. The design decision: `position` is validated immediately on assignment — invalid values fail at the point of use, not when the tooltip is shown.
+Positioned popover for explanatory text with nine validated position presets. The design decision: `position` is validated immediately on assignment; invalid values fail at the point of use, not when the tooltip is shown.
 
 ## Invalid position fails immediately, not on first show
 

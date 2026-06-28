@@ -1,16 +1,6 @@
 # styled
 
-Create Component classes with scoped styles that are automatically processed and injected into the page.
-
-## Key Features
-
-- **Automatic CSS scoping** - Generates unique class identifiers to prevent style conflicts
-- **Theme integration** - Direct access to colors, fonts, and component styles within CSS
-- **PostCSS processing** - Supports nested syntax, autoprefixing, and modern CSS features
-- **Component inheritance** - Extend styled components with template literals or function syntax
-- **Runtime style override** - Modify styles dynamically at component instantiation
-- **Load-time optimization** - Batches style processing for efficient DOM injection
-- **Memory management** - Automatic cleanup when components are removed from DOM
+Create Component subclasses with scoped CSS: each `styled()` call generates a unique class, processes the theme, and injects a `<style>` element into `<head>`.
 
 ## Basic Usage
 
@@ -159,9 +149,9 @@ const instance = new StyledInput({
 
 ## CSS Processing
 
-### PostCSS Features
+### Native CSS Nesting
 
-Nested CSS syntax processes automatically through PostCSS:
+Styles are injected as written, no transformation, no runtime compilation. VBC requires Chrome 112+, Firefox 117+, and Safari 16.5+, all of which support the `&` nesting syntax natively.
 
 ```js
 const NestedComponent = styled.Component`
@@ -229,8 +219,7 @@ The styled system processes styles through this pipeline:
 2. **Style Processing** - Converts template literals into theme functions
 3. **Theme Application** - Injects complete theme object into style functions
 4. **CSS Processing** - Processes styles through `shimCSS()` pipeline
-5. **PostCSS Transform** - Handles nested syntax and autoprefixing
-6. **DOM Injection** - Injects final CSS via `appendStyles()`
+5. **DOM Injection** - Injects final CSS via `appendStyles()`
 
 ### Load-Time Optimization
 
@@ -238,7 +227,7 @@ Style processing timing depends on document state:
 
 | Document State      | Behavior                                   |
 | ------------------- | ------------------------------------------ |
-| Complete            | Processes immediately, returns Promise     |
+| Complete            | Processes and injects immediately          |
 | Loading             | Queues for batch processing on window load |
 | Multiple Components | Batches together for efficiency            |
 
@@ -294,22 +283,6 @@ appendStyles(
 );
 ```
 
-#### postCSS(styleText)
-
-Process CSS with PostCSS plugins:
-
-```js
-const processedCSS = await postCSS(`
-  .container {
-    display: flex;
-    .item {
-      flex: 1;
-      &:hover { transform: scale(1.1); }
-    }
-  }
-`);
-```
-
 #### themeStyles({ styles, scope })
 
 Generate themed CSS with optional scoping:
@@ -331,13 +304,11 @@ shimCSS({
 	styles: ({ colors }) => `
     display: flex;
     background: ${colors.blue};
-    .item { padding: 8px; }
+    & .item { padding: 8px; }
   `,
 	scope: '.my-scoped-component',
 });
 ```
-
-**Note**: Returns `undefined` in test environments while handling full processing in production.
 
 ## Development Features
 
@@ -353,4 +324,6 @@ const StyledCustom = styled(MyCustomComponent, () => 'color: blue;');
 
 ### Memory Management
 
-Styled components automatically remove injected styles when disconnected from DOM, preventing memory leaks and style pollution.
+Class-level styles injected by `styled()` persist for the page lifetime. They are scoped to a unique class and do not interfere with other components, but are not removed when instances disconnect.
+
+Per-instance styles set via the `styles` option on a component instance are cleaned up when that component disconnects from the DOM.

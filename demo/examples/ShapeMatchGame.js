@@ -109,12 +109,22 @@ class ShapeMatchGame extends Component {
 	}
 
 	build() {
-		this._score = new Elem();
-		this._time = new Elem();
+		this._score = new Component();
+		this._time = new Component();
 		this._playPause = new Button(
 			{ onPointerPress: () => (this.options.paused = !(this.options.paused ?? true)) },
 			'Play',
 		);
+
+		const canvasWrapper = new Elem({
+			style: { display: 'flex', flexDirection: 'row', margin: '12px auto', width: 'fit-content' },
+		});
+
+		const sidebar = new Elem({
+			style: { display: 'flex', flexDirection: 'column', alignItems: 'center', marginRight: '4px' },
+			appendTo: canvasWrapper,
+		});
+
 		this._whiteboard = new Whiteboard({
 			width: `${CANVAS_SIZE}px`,
 			height: `${CANVAS_SIZE}px`,
@@ -122,14 +132,14 @@ class ShapeMatchGame extends Component {
 			background: theme.colors.white,
 			lineWidth: this.options.subscriber('lineWidth'),
 			readOnly: this.options.subscriber('inkLevel', inkLevel => inkLevel <= 0),
-			style: { margin: '12px auto' },
+			appendTo: canvasWrapper,
 			onDraw: ({ detail: { from, to } }) => {
 				const length = Math.abs(from.x - to.x) + Math.abs(from.y - to.y);
 				const inkUse = (length || this.options.lineWidth) * this.options.lineWidth * 0.0005;
 
 				this.options.inkLevel -= inkUse;
 			},
-			onChange: ({ detail: { line } }) => {
+			onLine: ({ detail: { line } }) => {
 				if (!this.shape) return;
 
 				const shapeSize = findSize(line);
@@ -158,26 +168,26 @@ class ShapeMatchGame extends Component {
 				this.newShape();
 			},
 		});
+
 		this._inkwell = new Component({
 			tag: 'progress',
-			style: this.options.subscriber('color', accentColor => ({
-				accentColor,
-				transformOrigin: '0 100%',
-				transform: 'rotate(-90deg)',
-				position: 'absolute',
-				top: '400px',
-				left: 0,
-				height: '12px',
-				width: '300px',
-			})),
+			style: this.options.subscriber('color', accentColor => ({ accentColor })),
 			max: 100,
 			value: this.options.subscriber('inkLevel'),
+			appendTo: sidebar,
 		});
+
+		this._inkwell.elem.style.writingMode = 'vertical-lr';
+		this._inkwell.elem.style.transform = 'rotate(180deg)';
+		this._inkwell.elem.style.flex = '1';
+		this._inkwell.elem.style.width = '12px';
+		this._inkwell.elem.style.margin = '0';
 
 		const colorPicker = new Popover(
 			{
 				style: { background: 'none', border: 'none', padding: 0, margin: '-6px' },
 				autoOpen: false,
+				appendTo: document.body,
 			},
 			new ColorPicker(
 				{
@@ -196,25 +206,24 @@ class ShapeMatchGame extends Component {
 						event.preventDefault();
 						event.stopPropagation();
 						this.options.lineWidth = event.value;
-						this._inkwell.elem.style.height = `${Number.parseInt(event.value) + 9}px`;
 					},
 				}),
 			),
 		);
 
-		const colorSwatch = new Button({
+		this.addCleanup('colorPicker', () => colorPicker.elem.remove());
+
+		new Button({
 			icon: 'paintbrush',
 			style: this.options.subscriber('color', backgroundColor => ({
 				backgroundColor,
 				color: theme.colors.mostReadable(backgroundColor, [theme.colors.white, theme.colors.black]),
-				position: 'absolute',
-				top: '416px',
-				left: '-21px',
 			})),
 			onPointerPress: event => colorPicker.show({ x: event.clientX, y: event.clientY, maxHeight: 378, maxWidth: 318 }),
+			appendTo: sidebar,
 		});
 
-		this.content([this._score, this._time, this._playPause, this._whiteboard, this._inkwell, colorPicker, colorSwatch]);
+		this.content([this._score, this._time, this._playPause, canvasWrapper]);
 	}
 
 	_setOption(key, value) {
@@ -228,7 +237,6 @@ class ShapeMatchGame extends Component {
 		if ((this.options.time ?? 0) <= 0) {
 			this.options.score = 0;
 			this.options.time = 3e4;
-			this.options.inkLevel = 80;
 
 			this.newShape();
 		}
@@ -239,7 +247,6 @@ class ShapeMatchGame extends Component {
 		}, 100);
 
 		this._playPause.options.content = 'Pause';
-		this._whiteboard.options.readOnly = false;
 	}
 
 	pause() {
@@ -252,6 +259,7 @@ class ShapeMatchGame extends Component {
 	}
 
 	newShape() {
+		this.options.inkLevel = 100;
 		this.shape = randomShape();
 
 		this._whiteboard.clearCanvas();
@@ -277,8 +285,6 @@ export default class Example extends ExampleView {
 	build() {
 		this.options.exampleCode = exampleCode;
 
-		this.demoWrapper.setStyle({ height: '100%' });
-
-		new ShapeMatchGame({ appendTo: this.demoWrapper });
+		new ShapeMatchGame({ style: { height: '70vh' }, appendTo: this.demoWrapper });
 	}
 }

@@ -2,7 +2,7 @@
 
 > ./Select.js
 
-Dropdown select that extends Input. The design decision: Select inherits Input's value lifecycle — `isDirty`, validations, and onChange work the same way for a Select as they do for a text Input. Callers don't learn a separate API.
+Dropdown select that extends Input. The design decision: Select inherits Input's value lifecycle; `isDirty`, validations, and onChange work the same way for a Select as they do for a text Input. Callers don't learn a separate API.
 
 ## Select inherits the full Input value contract
 
@@ -12,7 +12,7 @@ Dropdown select that extends Input. The design decision: Select inherits Input's
 
 ## Options map in order, preserving sequence
 
-- items in the `options` array become select options in the same order — no automatic sorting or reindexing
+- items in the `options` array become select options in the same order; no automatic sorting or reindexing
   - does the options array order match the dropdown order?
 
 ## The value getter returns the selected option's value, with label as fallback

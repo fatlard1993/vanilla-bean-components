@@ -2,7 +2,7 @@
 
 > lld/helpers/elem.js
 
-A lightweight DOM wrapper that gives options a defined dispatch order. The wrapper itself is invisible — callers interact with standard DOM properties and the library's own API through the same options object, without needing to know which layer handles each key. The wrapper is stable: an Elem always points at the same underlying node.
+A lightweight DOM wrapper that gives options a defined dispatch order. The wrapper itself is invisible: callers interact with standard DOM properties and the library's own API through the same options object, without needing to know which layer handles each key. The wrapper is stable: an Elem always points at the same underlying node.
 
 ## Option dispatch has a fixed precedence: Elem API → DOM properties → attributes
 

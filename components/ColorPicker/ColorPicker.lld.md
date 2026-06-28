@@ -2,7 +2,7 @@
 
 > ./ColorPicker.js
 
-HSL-based color picker where hue and saturation/lightness are controlled by separate areas. The key design decision is that `value: 'random'` is a valid state — the picker starts in a selection mode rather than requiring a starting color.
+HSL-based color picker where hue and saturation/lightness are controlled by separate areas. The key design decision is that `value: 'random'` is a valid state; the picker starts in a selection mode rather than requiring a starting color.
 
 ## Multiple input formats are accepted without the caller normalizing first
 

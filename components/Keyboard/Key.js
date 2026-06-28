@@ -14,9 +14,9 @@ const StyledButton = styled(
 		height: 32px;
 		flex: 1;
 
-		${[1.25, 1.5, 1.75, 2, 2.25, 2.75, 6, 6.25, 7].map(
-			unit => `&.u${unit.toString().replace('.', '_')} { flex: ${unit}; }`,
-		)}
+		${[1.25, 1.5, 1.75, 2, 2.25, 2.75, 6, 6.25, 7]
+			.map(unit => `&.u${unit.toString().replace('.', '_')} { flex: ${unit}; }`)
+			.join('\n\t\t')}
 	`,
 );
 

@@ -147,13 +147,27 @@ describe('List', () => {
 		expect(list.elem.className).toBeTruthy();
 	});
 
-	test('supports noStyle class', () => {
+	test('supports no-style class via addClass', () => {
 		const list = new List({
-			addClass: 'noStyle',
+			addClass: 'no-style',
 			appendTo: container,
 		});
 
-		expect(list.elem.className).toContain('noStyle');
+		expect(list.elem.className).toContain('no-style');
+	});
+
+	test('noStyle option applies no-style class', () => {
+		const list = new List({ noStyle: true, appendTo: container });
+
+		expect(list.elem.classList.contains('no-style')).toBe(true);
+	});
+
+	test('noStyle false removes no-style class', () => {
+		const list = new List({ noStyle: true, appendTo: container });
+
+		list.options.noStyle = false;
+
+		expect(list.elem.classList.contains('no-style')).toBe(false);
 	});
 
 	test('handles array items', async () => {

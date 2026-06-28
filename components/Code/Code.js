@@ -65,8 +65,8 @@ class Code extends Component {
 			);
 	}
 
-	_setOption(key, value) {
-		if (key === 'language') {
+	static handlers = {
+		language(value) {
 			if (this.options.multiline && this._code) {
 				this._code.removeClass(/\blanguage-\S+\b/g);
 				this._code.addClass(`language-${value}`);
@@ -74,10 +74,11 @@ class Code extends Component {
 
 			this.removeClass(/\blanguage-\S+\b/g);
 			this.addClass(`language-${value}`);
-		} else if (key === 'code') {
+		},
+		code(value) {
 			(this.options.multiline && this._code ? this._code : this).elem.textContent = value;
-		} else super._setOption(key, value);
-	}
+		},
+	};
 }
 
 export default Code;

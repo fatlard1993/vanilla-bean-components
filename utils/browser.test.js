@@ -1,4 +1,3 @@
-/* eslint-disable compat/compat */
 import { copyToClipboard, isMac, readClipboard, vibrate, tactileResponse } from './browser';
 
 describe('browser utilities', () => {

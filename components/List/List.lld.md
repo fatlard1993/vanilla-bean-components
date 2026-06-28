@@ -2,7 +2,7 @@
 
 > ./List.js
 
-Flexible list that meets items where they are. The core design decision: items can be strings, DOM nodes, component instances, or configuration objects — the component figures out what to do with each format. Callers don't normalize data before passing it.
+Flexible list that meets items where they are. The core design decision: items can be strings, DOM nodes, component instances, or configuration objects; the component figures out what to do with each format. Callers don't normalize data before passing it.
 
 ## Items render correctly regardless of their input format
 

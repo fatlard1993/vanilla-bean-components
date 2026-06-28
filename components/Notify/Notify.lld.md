@@ -2,7 +2,7 @@
 
 > ./Notify.js
 
-Transient notification that self-destructs. The design choice is that click-to-dismiss is always on — every notification is interactive, not a passive message. The `type` option drives icon and color selection so callers communicate intent rather than manually picking icons.
+Transient notification that self-destructs. The design choice is that click-to-dismiss is always on; every notification is interactive, not a passive message. The `type` option drives icon and color selection so callers communicate intent rather than manually picking icons.
 
 ## Type communicates intent; the component selects the appropriate icon
 

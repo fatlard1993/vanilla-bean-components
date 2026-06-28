@@ -64,11 +64,15 @@ class Keyboard extends Component {
 		this.setLayout(this.options.layout);
 	}
 
-	_setOption(key, value) {
-		if (key === 'layouts' || key === 'keyDefinitions') return;
-		else if (key === 'layout') this.setLayout(value);
-		else super._setOption(key, value);
-	}
+	static handlers = {
+		// Claim these keys so standard routing doesn't try to assign them as elem properties.
+		// Both are read directly from this.options in setLayout() and key resolution.
+		layouts() {},
+		keyDefinitions() {},
+		layout(value) {
+			this.setLayout(value);
+		},
+	};
 
 	// todo native keyboard events https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/KeyboardEvent
 

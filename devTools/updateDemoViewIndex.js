@@ -1,4 +1,5 @@
 import { basename } from 'node:path';
+import { existsSync } from 'node:fs';
 import { Glob } from 'bun';
 
 import { orderBy } from '../utils/data';
@@ -32,15 +33,30 @@ result += `const startDocumentation = styled(DocumentationView, () => '', { file
 const documentationChain = {
 	demo: `, nextLabel: 'Getting Started', nextUrl: '#/documentation/start'`,
 	Elem: `, nextLabel: 'Component', nextUrl: '#/documentation/Component'`,
-	Component: `, nextLabel: 'Context', nextUrl: '#/documentation/Context'`,
-	Context: `, nextLabel: 'styled', nextUrl: '#/documentation/styled'`,
+	Component: `, nextLabel: 'styled', nextUrl: '#/documentation/styled'`,
 	styled: `, nextLabel: 'theme', nextUrl: '#/documentation/theme'`,
-	theme: `, nextLabel: 'request', nextUrl: '#/documentation/request'`,
+	theme: `, nextLabel: 'utils', nextUrl: '#/documentation/utils'`,
+	utils: ``,
 };
 
 documentation.forEach(file => {
 	const [, , name] = file.match(/(.+?)\/(.+)\/(.+?)(\..+)?$/);
 	result += `const ${name}Documentation = styled(DocumentationView, () => '', { folderName: '${name}'${documentationChain[name] || ''} });\n`;
+});
+
+const { dependencies = {} } = JSON.parse(await Bun.file('./package.json').text());
+const npmDocs = Object.keys(dependencies)
+	.map(pkg => {
+		const name = pkg.replace(/^@[^/]+\//, '');
+		const readmePath = `node_modules/${pkg}/README.md`;
+		return existsSync(readmePath) ? { name, pkg } : null;
+	})
+	.filter(Boolean)
+	.sort((a, b) => a.name.localeCompare(b.name));
+
+npmDocs.forEach(({ name }) => {
+	const varName = name.replace(/[^a-zA-Z0-9]/g, '_');
+	result += `const dep_${varName} = styled(DocumentationView, () => '', { folderName: 'dependencies/${name}' });\n`;
 });
 
 result += '\nexport default {\n';
@@ -62,6 +78,11 @@ result += `\n\t['/documentation/start']: startDocumentation,\n\t['/documentation
 documentation.forEach(file => {
 	const match = file.match(/(.+?)\/(.+)\/(.+?)(\..+)?$/);
 	result += `\t['/documentation/${match[2]}']: ${match[2]}Documentation,\n`;
+});
+
+npmDocs.forEach(({ name }) => {
+	const varName = name.replace(/[^a-zA-Z0-9]/g, '_');
+	result += `\t['/dependencies/${name}']: dep_${varName},\n`;
 });
 
 result += '};\n';

@@ -5,7 +5,7 @@ Versatile input component supporting all HTML input types, textarea with auto-he
 ## Usage
 
 ```js
-import { Input } from 'vanilla-bean-components';
+import { Input } from '@vanilla-bean/components';
 
 const input = new Input({
 	type: 'text',
@@ -19,7 +19,7 @@ const input = new Input({
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `tag` | `string` | `'input'` | HTML tag — `'input'` or `'textarea'` |
+| `tag` | `string` | `'input'` | HTML tag: `'input'` or `'textarea'` |
 | `type` | `string` | auto-detected | Input type (see `type_enum`). Auto-detected from value: `number` → `'number'`, `boolean` → `'checkbox'`, `string` → `'text'` |
 | `value` | `any` | `''` | Initial value. Setting `options.value` reactively updates the element |
 | `placeholder` | `string` | `''` | Placeholder text |
@@ -29,7 +29,7 @@ const input = new Input({
 | `height` | `string\|number` | `'auto'` | Height for textarea. `'auto'` dynamically sizes to content; a number sets `em` units |
 | `syntaxHighlighting` | `boolean` | — | Adds `syntaxHighlighting` class and Tab key indentation handling (textarea only) |
 | `language` | `string` | — | Adds `language-<value>` class for Prism-compatible highlighting (requires `syntaxHighlighting`) |
-| `validations` | `Array` | — | Validation rules — see Validation section below |
+| `validations` | `Array` | — | Validation rules; see Validation section below |
 | `onInput` | `Function` | — | Called on every keystroke with an enhanced event containing `.value` |
 | `onChange` | `Function` | — | Called on change with an enhanced event containing `.value` |
 | `onKeyUp` | `Function` | — | Called on keyup with an enhanced event containing `.value` |
@@ -42,8 +42,8 @@ const input = new Input({
 
 Each entry in `validations` is a tuple: `[test, message]`
 
-- `test` — a `RegExp` tested against the value, or a `Function(value) => boolean` (truthy = error)
-- `message` — a `string` or `Function() => string` describing the error
+- `test`: a `RegExp` tested against the value, or a `Function(value) => boolean` (truthy = error)
+- `message`: a `string` or `Function() => string` describing the error
 
 ```js
 validations: [
@@ -76,7 +76,7 @@ The `close` event is registered by default via `registeredEvents`.
 Textarea with auto-height and syntax highlighting:
 
 ```js
-import { Input } from 'vanilla-bean-components';
+import { Input } from '@vanilla-bean/components';
 
 const editor = new Input({
 	tag: 'textarea',

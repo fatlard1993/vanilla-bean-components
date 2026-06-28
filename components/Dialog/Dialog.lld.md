@@ -6,7 +6,7 @@ Native `<dialog>` element wrapper. The decision to use the native element rather
 
 ## Auto-open delays until the element is in the DOM
 
-- `openOnRender` defaults to a small delay so the dialog is guaranteed to be attached before `showModal()` is called — opening before attachment fails silently
+- `openOnRender` defaults to a small delay so the dialog is guaranteed to be attached before `showModal()` is called; opening before attachment fails silently
   - does setting openOnRender: false prevent the dialog from opening on its own?
 
 ## Invalid sizes and variants fail loudly rather than rendering in an unknown state

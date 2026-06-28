@@ -50,8 +50,9 @@ const RadioButtonInput = styled(
 			box-shadow: inset 1em 1em ${colors.blue};
 		}
 
-		&:focus {
-			box-shadow: inset 1em 1em ${colors.blue};
+		&:focus-visible {
+			outline: 2px solid ${colors.blue};
+			outline-offset: 2px;
 		}
 	`,
 );
@@ -68,8 +69,8 @@ const RadioButtonInput = styled(
  * @returns {RadioButton} RadioButton component instance
  */
 class RadioButton extends Component {
-	_setOption(key, value) {
-		if (key === 'options') {
+	static handlers = {
+		options(value) {
 			this.empty();
 
 			if (!value) return;
@@ -95,12 +96,13 @@ class RadioButton extends Component {
 						}),
 				),
 			);
-		} else if (key === 'value') {
+		},
+		value(value) {
 			this.elem.querySelectorAll('input[type="radio"]').forEach(input => {
 				input.checked = input.value === String(value);
 			});
-		} else super._setOption(key, value);
-	}
+		},
+	};
 }
 
 export default RadioButton;

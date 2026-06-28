@@ -22,8 +22,8 @@ export const configured = function (BaseComponent, options = {}) {
 /**
  * Creates Component class with scoped styles and optional configuration.
  *
- * Generates unique class identifier, processes styles through theme system and PostCSS,
- * then injects as scoped CSS. Supports both function syntax and template literal syntax.
+ * Generates unique class identifier, processes styles through the theme system,
+ * and injects as scoped CSS. Supports both function syntax and template literal syntax.
  * @param {typeof import('../Component').default} BaseComponent - Component class to extend
  * @param {Function|TemplateStringsArray} [styles] - Theme function returning CSS string, or template literal strings array
  * @param {object} [options] - Default options embedded in component instances

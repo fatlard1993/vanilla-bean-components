@@ -1,82 +1,84 @@
-/* eslint-disable spellcheck/spell-checker */
 import { Component } from '../../Component';
 import { styled } from '../../styled';
 import { Button } from '../Button';
-import { Popover } from '../Popover';
+import { Elem } from '../../Elem';
 
 const StyledComponent = styled(
 	Component,
 	({ colors }) => `
-		padding: 6px 12px 9px 9px;
-		margin: 3px;
-		display: inline-block;
-		float: left;
-		font-size: 18px;
+		padding: 3px 6px;
+		margin: 0;
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		font-size: 0.85em;
+		line-height: 1;
 		background-color: ${colors.black};
-		cursor: pointer;
+		border: 1px solid ${colors.alpha(colors.teal, 0.35)};
+		border-radius: 3px;
+		white-space: nowrap;
+		user-select: none;
+		cursor: default;
+		list-style: none;
 
-		--aug-round-tl1: initial;
-		--aug-tl1: 3px;
-		--aug-clip-tr1: initial;
-		--aug-tr1: 6px;
-		--aug-clip-bl1: initial;
-		--aug-bl1: 9px;
-		--aug-round-br1: initial;
-		--aug-br1: 6px;
-		--aug-border: initial;
-		--aug-border-all: 2px;
-		--aug-border-bg: ${colors.white};
-
-		&.addTag {
-			display: flex;
-			flex-direction: row;
-			padding: 3px 9px;
-			min-width: 260px;
+		&:not(.readOnly):not(.add-tag):hover {
+			border-color: ${colors.light(colors.teal)};
 		}
 
-		&:after {
-			overflow: visible;
+		&.add-tag {
+			padding: 0;
+			border: none;
+			background: none;
+			gap: 4px;
+			cursor: text;
 		}
 
-		button {
-			position: absolute;
-			top: -9px;
-			left: -9px;
+		&:not(.add-tag) button {
+			width: 14px !important;
+			height: 14px !important;
+			font-size: 8px;
+			opacity: 0.4;
+			flex-shrink: 0;
+			background: transparent !important;
+
+			&:after { display: none; }
+
+			&:hover, &:focus {
+				opacity: 0.9;
+				background: transparent !important;
+				top: -1px;
+			}
 		}
 	`,
 );
 
-const defaultOptions = { tag: 'li', readOnly: false, augmentedUI: true };
+const defaultOptions = { tag: 'li', readOnly: false };
 
 class Tag extends StyledComponent {
 	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
 
 	constructor(options = {}, ...children) {
-		const onPointerPress = () => {
-			if (this.options.readOnly) return;
-
-			if (this.removeButton) {
-				this.removeButton.destroy();
-				this.removeButton = undefined;
-			} else {
-				const { top, left } = this.elem.getBoundingClientRect();
-				this.removeButton = new Popover(
-					{
-						appendTo: this,
-						y: top - 6,
-						x: left - 6,
-						style: { overflow: 'visible', background: 'none', border: 'none' },
-					},
-					new Button({
-						icon: 'close',
-						onPointerPress: () => this.destroy(),
-					}),
-				);
-			}
-		};
-
-		super({ ...defaultOptions, ...options, onPointerPress }, ...children);
+		super({ tabindex: '0', ...defaultOptions, ...options }, ...children);
 	}
+
+	build() {
+		this._textSpan = new Elem({ tag: 'span', appendTo: this });
+
+		if (!this.options.readOnly) {
+			new Button({
+				icon: 'close',
+				appendTo: this,
+				onPointerPress: () => this.destroy(),
+			});
+		}
+	}
+
+	static handlers = {
+		textContent(value) {
+			this.elem.setAttribute('data-value', value);
+			this._textSpan.elem.textContent = value;
+		},
+	};
 }
 
 export default Tag;

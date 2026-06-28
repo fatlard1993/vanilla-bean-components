@@ -23,7 +23,6 @@ describe('Button', () => {
 
 		// Trigger the actual pointer press event that Button listens for
 		fireEvent.pointerDown(element);
-		fireEvent.pointerUp(element);
 
 		expect(onPointerPress).toHaveBeenCalledTimes(1);
 	});

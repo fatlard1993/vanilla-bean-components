@@ -40,101 +40,131 @@ class Table extends Component {
 		);
 	}
 
-	_setOption(key, value) {
-		if (key === 'sortDirection' && this.rendered) {
-			this.options.onSort(this.options.sortProperty, value);
-		} else if (key === 'data' || key === 'selection') {
-			this._sortSubscribers?.forEach(sub => sub.destroy?.());
-			this._sortSubscribers = null;
+	static handlers = {
+		sortDirection(value) {
+			if (this.rendered) this.options.onSort(this.options.sortProperty, value);
+		},
+		data() {
+			this._renderTable();
+		},
+		selection() {
+			this._renderTable();
+		},
+	};
 
-			if (!value) return;
+	_renderTable() {
+		const value = this.options.data;
 
-			if (this.thead) this.thead.empty();
-			else this.thead = new Elem({ tag: 'thead', appendTo: this });
+		this._sortSubscribers?.forEach(sub => sub.destroy?.());
+		this._sortSubscribers = null;
 
-			if (this.tbody) this.tbody.empty();
-			else this.tbody = new Elem({ tag: 'tbody', appendTo: this });
+		if (!value) return;
 
-			if (this.tfoot) this.tfoot.empty();
-			else this.tfoot = new Elem({ tag: 'tfoot', appendTo: this });
+		if (this.thead) this.thead.empty();
+		else this.thead = new Elem({ tag: 'thead', appendTo: this });
 
-			this._sortSubscribers = [];
-			this.replaceCleanup('sortSubscribers', () => this._sortSubscribers?.forEach(sub => sub.destroy?.()));
+		if (this.tbody) this.tbody.empty();
+		else this.tbody = new Elem({ tag: 'tbody', appendTo: this });
 
-			this.thead.append(
-				new Component(
-					{ tag: 'tr' },
-					this.options.columns.map(column => {
-						const th = new Component({ tag: 'th', ...column });
+		if (this.tfoot) this.tfoot.empty();
+		else this.tfoot = new Elem({ tag: 'tfoot', appendTo: this });
 
-						if (column.sort) {
-							const iconSub = this.options.subscriber('sortDirection', () => {
-								if (this.options.sortProperty !== column.key) return 'sort';
+		this._sortSubscribers = [];
+		this.replaceCleanup('sortSubscribers', () => this._sortSubscribers?.forEach(sub => sub.destroy?.()));
 
-								return this.options.sortDirection === 'asc' ? 'sort-down' : 'sort-up';
-							});
-							const styleSub = this.options.subscriber('sortDirection', () => ({
-								display: 'inline',
-								marginLeft: '6px',
-								...(this.options.sortProperty !== column.key
-									? { color: theme.colors.dark(theme.colors.gray) }
-									: { color: theme.colors.white }),
-							}));
+		this.thead.append(
+			new Component(
+				{ tag: 'tr' },
+				this.options.columns.map(column => {
+					const th = new Component({ tag: 'th', ...column, scope: 'col' });
 
-							this._sortSubscribers.push(iconSub, styleSub);
+					if (column.sort) {
+						const iconSub = this.options.subscriber('sortDirection', () => {
+							if (this.options.sortProperty !== column.key) return 'sort';
 
-							new Icon({
-								icon: iconSub,
-								style: styleSub,
-								appendTo: th,
-							});
+							return this.options.sortDirection === 'asc' ? 'sort-down' : 'sort-up';
+						});
+						const styleSub = this.options.subscriber('sortDirection', () => ({
+							display: 'inline',
+							marginLeft: '6px',
+							...(this.options.sortProperty !== column.key
+								? { color: theme.colors.dark(theme.colors.gray) }
+								: { color: theme.colors.white }),
+						}));
 
-							th.onPointerPress(() => {
-								if (this.options.sortProperty === column.key) {
-									this.options.sortDirection = this.options.sortDirection === 'asc' ? 'desc' : 'asc';
-									return;
-								}
+						this._sortSubscribers.push(iconSub, styleSub);
 
-								this.options.sortProperty = column.key;
-								this.options.sortDirection = 'desc';
-							});
-						}
+						const updateAriaSort = () => {
+							let ariaSort = 'none';
+							if (this.options.sortProperty === column.key) {
+								ariaSort = this.options.sortDirection === 'asc' ? 'ascending' : 'descending';
+							}
+							th.elem.setAttribute('aria-sort', ariaSort);
+						};
+						updateAriaSort();
 
-						return th;
-					}),
-				),
-			);
+						const sortDirHandler = () => updateAriaSort();
+						const sortPropHandler = () => updateAriaSort();
+						this.options.addEventListener('sortDirection', sortDirHandler);
+						this.options.addEventListener('sortProperty', sortPropHandler);
+						this._sortSubscribers.push({
+							destroy: () => {
+								this.options.removeEventListener('sortDirection', sortDirHandler);
+								this.options.removeEventListener('sortProperty', sortPropHandler);
+							},
+						});
 
-			this.tbody.append(
-				this.options.data.map(
-					rowData =>
-						new Component(
-							{ tag: 'tr' },
-							this.options.columns.map(
-								column =>
-									new Component(
-										{
-											tag: 'td',
-											...(typeof column.dataColumn === 'function'
-												? column.dataColumn({ column, rowData, table: this })
-												: column.dataColumn),
-										},
-										column.key ? rowData[column.key]?.toString() : undefined,
-									),
-							),
-						),
-				),
-			);
+						new Icon({
+							icon: iconSub,
+							style: styleSub,
+							appendTo: th,
+						});
 
-			if (this.options.footer) {
-				this.tfoot.append(
+						th.onPointerPress(() => {
+							if (this.options.sortProperty === column.key) {
+								this.options.sortDirection = this.options.sortDirection === 'asc' ? 'desc' : 'asc';
+								return;
+							}
+
+							this.options.sortProperty = column.key;
+							this.options.sortDirection = 'desc';
+						});
+					}
+
+					return th;
+				}),
+			),
+		);
+
+		this.tbody.append(
+			this.options.data.map(
+				rowData =>
 					new Component(
 						{ tag: 'tr' },
-						this.options.footer.map(footData => new Component({ tag: 'td', ...footData })),
+						this.options.columns.map(
+							column =>
+								new Component(
+									{
+										tag: 'td',
+										...(typeof column.dataColumn === 'function'
+											? column.dataColumn({ column, rowData, table: this })
+											: column.dataColumn),
+									},
+									column.key ? rowData[column.key]?.toString() : undefined,
+								),
+						),
 					),
-				);
-			}
-		} else super._setOption(key, value);
+			),
+		);
+
+		if (this.options.footer) {
+			this.tfoot.append(
+				new Component(
+					{ tag: 'tr' },
+					this.options.footer.map(footData => new Component({ tag: 'td', ...footData })),
+				),
+			);
+		}
 	}
 }
 

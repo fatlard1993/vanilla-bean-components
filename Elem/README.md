@@ -2,15 +2,6 @@
 
 Enhanced DOM element wrapper providing fluent API methods while maintaining direct access to the underlying HTMLElement.
 
-## Key Features
-
-- **Fluent method chaining** - Chainable methods for building complex DOM structures
-- **Intelligent option routing** - Automatic routing of properties to appropriate DOM methods
-- **Enhanced class manipulation** - Regular expression support for class operations
-- **Flexible content handling** - Support for text, HTML, and nested element content
-- **Direct DOM access** - Full HTMLElement API via `.elem` property
-- **EventTarget integration** - Built-in event handling capabilities
-
 ## Basic Usage
 
 ### Simple Element Creation
@@ -18,7 +9,7 @@ Enhanced DOM element wrapper providing fluent API methods while maintaining dire
 Create DOM elements with enhanced manipulation capabilities:
 
 ```js
-import { Elem } from 'vanilla-bean-components';
+import { Elem } from '@vanilla-bean/components';
 
 const button = new Elem({
 	tag: 'button',
@@ -223,8 +214,8 @@ elem.removeClass('old-class');
 elem.removeClass(/^temp-/); // Remove all classes starting with 'temp-'
 elem.removeClass(/\bmobile-\w+/g); // Remove classes matching pattern
 
-// Toggle classes
-elem.toggleClass('active');
+// Toggle class based on a condition (add when true, remove when false)
+elem.toggleClass('active', isActive);
 ```
 
 ### Class Manipulation Examples
@@ -341,7 +332,7 @@ elem.setOptions(options); // Set multiple options at once
 elem.hasClass(...classes); // Check for classes (supports regex)
 elem.addClass(...classes); // Add CSS classes
 elem.removeClass(...classes); // Remove CSS classes (supports regex)
-elem.toggleClass(className); // Toggle CSS class
+elem.toggleClass(className, condition); // Add when condition is true, remove when false
 ```
 
 ### Properties
@@ -358,7 +349,6 @@ elem.options; // Configuration options object
 
 ```js
 elem.toString(); // Returns '[object Elem]'
-elem.ancestry(); // Get prototype chain information
 ```
 
 ## Integration with Component
@@ -366,7 +356,7 @@ elem.ancestry(); // Get prototype chain information
 Elem serves as the foundation for the Component class:
 
 ```js
-import { Component } from 'vanilla-bean-components';
+import { Component } from '@vanilla-bean/components';
 
 // Component extends Elem with reactive options
 const component = new Component({
@@ -381,10 +371,3 @@ component.setStyle({ padding: '16px' });
 // Plus Component-specific features
 component.options.textContent = 'Updated reactively!';
 ```
-
-## Performance Considerations
-
-- **Direct DOM access** - Use `elem.elem` for performance-critical operations
-- **Method chaining** - Efficient for building complex structures
-- **Class operations** - Regular expressions processed efficiently
-- **Event handling** - EventTarget integration provides optimal event performance

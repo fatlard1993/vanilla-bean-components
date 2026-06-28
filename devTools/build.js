@@ -5,20 +5,8 @@ import { buildLoader as markdownLoader } from '../plugins/markdownLoader';
 const build = async () => {
 	console.log('Building...');
 
-	// Get all markdown files for documentation
-	const markdownFiles = [
-		'Component/README.md',
-		'Context/README.md',
-		'Elem/README.md',
-		'demo/README.md',
-		'docs/GETTING_STARTED.md',
-		'request/README.md',
-		'styled/README.md',
-		'theme/README.md',
-	];
-
 	const buildResults = await Bun.build({
-		entrypoints: ['demo/index.html', ...markdownFiles],
+		entrypoints: ['demo/index.html'],
 		outdir: 'demo/build',
 		define: {
 			'process.env.AUTOPREFIXER_GRID': 'undefined',

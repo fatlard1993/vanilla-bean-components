@@ -27,30 +27,37 @@ class Select extends Input {
 		super({ ...defaultOptions, ...options }, ...children);
 	}
 
-	_setOption(key, value) {
-		if (key === 'options') {
+	static handlers = {
+		options(value) {
 			this.empty();
 
 			if (!value) return;
 
-			this.append(
-				value.map(
-					option =>
-						new Elem({
-							tag: 'option',
-							...(typeof option === 'object' ? option : { label: option, value: option }),
-						}),
-				),
-			);
-		} else super._setOption(key, value);
-	}
+			for (const option of value) {
+				// Optgroup: { label: 'Group', options: [...] }
+				if (typeof option === 'object' && Array.isArray(option.options)) {
+					const group = document.createElement('optgroup');
+					if (option.label) group.label = option.label;
+					for (const o of option.options) {
+						group.append(new Elem({ tag: 'option', ...(typeof o === 'object' ? o : { label: o, value: o }) }).elem);
+					}
+					this.elem.append(group);
+				} else {
+					this.append(
+						new Elem({ tag: 'option', ...(typeof option === 'object' ? option : { label: option, value: option }) }),
+					);
+				}
+			}
+		},
+	};
 
 	/**
 	 * Gets the currently selected value with enhanced option handling.
 	 * @returns {*} Selected option value, label, or text content
 	 */
 	get value() {
-		const selected = Array.from(this.elem.children).find(({ selected }) => selected);
+		// Use elem.options (HTMLOptionsCollection) — works across optgroups
+		const selected = Array.from(this.elem.options).find(({ selected }) => selected);
 
 		return selected?.value ?? selected?.label ?? selected?.textContent ?? this.elem.value;
 	}

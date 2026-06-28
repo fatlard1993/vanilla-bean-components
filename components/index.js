@@ -1,5 +1,6 @@
 /* This file is automatically managed (bun build:index) (updateComponentIndex.js), do not edit by hand */
 
+export * from './BottomSheet';
 export * from './Button';
 export * from './Calendar';
 export * from './Code';

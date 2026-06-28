@@ -2,7 +2,7 @@
 
 > ./Keyboard.js
 
-On-screen keyboard where layout switching rebuilds the key DOM rather than showing/hiding rows. The decision: a clean rebuild on layout change is safer than managing per-key visibility across layout transitions — no key from one layout can bleed into another.
+On-screen keyboard where layout switching rebuilds the key DOM rather than showing/hiding rows. The decision: a clean rebuild on layout change is safer than managing per-key visibility across layout transitions; no key from one layout can bleed into another.
 
 ## Layout switch produces only keys from the new layout — no residual keys remain
 

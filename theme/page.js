@@ -1,12 +1,12 @@
-import button from './button';
-import code from './code';
+import _button from './button';
+import _code from './code';
 import colors from './colors';
 import fonts from './fonts';
-import input, { number, checkbox } from './input';
-import scrollbar from './scrollbar';
-import table from './table';
+import _input, { number, checkbox } from './input';
+import _scrollbar from './scrollbar';
+import _table from './table';
 
-export default `
+export default theme => `
 	html {
 		height: 100%;
 	}
@@ -127,22 +127,22 @@ export default `
 		max-zoom: 1;
 	}
 
-	${code}
+	${_code(theme)}
 
-	${scrollbar}
+	${_scrollbar(theme)}
 
-	input, select, textarea { ${input} }
-	${number}
-	${checkbox}
+	input, select, textarea { ${_input(theme)} }
+	${number(theme)}
+	${checkbox(theme)}
 
-	button, a.variant-button, kbd { ${button} }
+	button, a.variant-button, kbd { ${_button(theme)} }
 
 	kbd {
 		background-color: ${colors.dark(colors.gray)};
 		padding: 4px 6px 6px 6px;
 	}
 
-	table { ${table} }
+	table { ${_table(theme)} }
 
 	blockquote {
 		background-color: ${colors.white.setAlpha(0.06)};
@@ -151,8 +151,8 @@ export default `
     padding: 1px 12px;
 
 		&.NOTE {
-			background-color: ${colors.blue.setAlpha(0.09)};
-			border-color: ${colors.blue.setAlpha(0.3)};
+			background-color: ${colors.alpha(colors.blue, 0.09)};
+			border-color: ${colors.alpha(colors.blue, 0.3)};
 
 			p:first-child {
 				font-weight: bold;
@@ -161,8 +161,8 @@ export default `
 		}
 
 		&.TIP {
-			background-color: ${colors.green.setAlpha(0.09)};
-			border-color: ${colors.green.setAlpha(0.3)};
+			background-color: ${colors.alpha(colors.green, 0.09)};
+			border-color: ${colors.alpha(colors.green, 0.3)};
 
 			p:first-child {
 				font-weight: bold;
@@ -171,8 +171,8 @@ export default `
 		}
 
 		&.IMPORTANT {
-			background-color: ${colors.purple.setAlpha(0.09)};
-			border-color: ${colors.purple.setAlpha(0.3)};
+			background-color: ${colors.alpha(colors.purple, 0.09)};
+			border-color: ${colors.alpha(colors.purple, 0.3)};
 
 			p:first-child {
 				font-weight: bold;
@@ -181,8 +181,8 @@ export default `
 		}
 
 		&.WARNING {
-			background-color: ${colors.yellow.setAlpha(0.09)};
-			border-color: ${colors.yellow.setAlpha(0.3)};
+			background-color: ${colors.alpha(colors.yellow, 0.09)};
+			border-color: ${colors.alpha(colors.yellow, 0.3)};
 
 			p:first-child {
 				font-weight: bold;
@@ -191,8 +191,8 @@ export default `
 		}
 
 		&.CAUTION {
-			background-color: ${colors.red.setAlpha(0.09)};
-			border-color: ${colors.red.setAlpha(0.3)};
+			background-color: ${colors.alpha(colors.red, 0.09)};
+			border-color: ${colors.alpha(colors.red, 0.3)};
 
 			p:first-child {
 				font-weight: bold;

@@ -14,18 +14,41 @@ import { Component } from '../../Component';
  * @returns {Icon} Icon component instance
  */
 export default class Icon extends Component {
-	_setOption(key, value) {
-		if (key === 'icon' || key === 'animation') {
-			this.removeClass(/\bfa-\S+\b/g);
+	static handlers = {
+		icon() {
+			this._refreshIcon();
+		},
+		animation() {
+			this._refreshIcon();
+		},
+		content(value, next) {
+			next(value);
+			this._refreshIcon();
+		},
+		textContent(value, next) {
+			next(value);
+			this._refreshIcon();
+		},
+	};
 
-			if (value) {
-				this.addClass(
-					...(this.options.content || this.options.textContent ? [] : ['icon']),
-					...['support', this.options[key === 'icon' ? 'animation' : 'icon'], value]
-						.filter(_ => !!_)
-						.map(_ => `fa-${_}`),
-				);
-			}
-		} else super._setOption(key, value);
+	_refreshIcon() {
+		this.removeClass(/\bfa-\S+\b/g);
+
+		const { icon, animation, content, textContent } = this.options;
+
+		if (icon || animation) {
+			this.addClass(
+				...(content || textContent ? [] : ['icon']),
+				...['support', animation, icon].filter(Boolean).map(v => `fa-${v}`),
+			);
+		}
+
+		const interactive = ['button', 'a', 'input', 'select', 'textarea'].includes(this.elem.tagName.toLowerCase());
+		const labeled = this.elem.hasAttribute('aria-label') || this.elem.hasAttribute('aria-labelledby');
+		if (!interactive && !content && !textContent && !labeled) {
+			this.elem.setAttribute('aria-hidden', 'true');
+		} else {
+			this.elem.removeAttribute('aria-hidden');
+		}
 	}
 }

@@ -41,8 +41,10 @@ const demoOptions = Object.entries(options)
 const testFile = `import { ${name} } from '.';
 
 describe('${name}', () => {
-	test('must render', async () => {
+	test('renders', () => {
 		new ${name}({ appendTo: container });
+
+		expect(container.firstElementChild).toBeDefined();
 	});
 });
 `;
@@ -96,15 +98,12 @@ const readMeFile = `# ${name}
 
 const componentFile = `import { Component } from '../../Component';
 
-const defaultOptions = { tag: 'div' };
-
 /**
  * [Component description - describe what this component does and its primary purpose]
  *
  * [Optional: Additional context about when to use this component or special behaviors]
  *
  * @param {object} [options={}] - Component configuration options
- * @param {string} [options.tag='div'] - HTML tag name for the root element
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {${name}} Component instance with reactive options
  * @example
@@ -113,31 +112,25 @@ const defaultOptions = { tag: 'div' };
  *   // Add example options here
  * });
  */
-class ${name} extends Component {
-	constructor(options = {}, ...children) {
-		super({ ...defaultOptions, ...options }, ...children);
-	}
-
+export default class ${name} extends Component {
 	/**
 	 * Creates component structure before options are processed.
+	 * Assign child elements to instance properties here so handlers can reference them.
 	 */
 	build() {
 		// Create child elements here — this runs before options are processed
 	}
 
-	/**
-	 * Routes option changes to appropriate handlers.
-	 *
-	 * @param {string} key - Option property name
-	 * @param {*} value - New option value
-	 * @private
-	 */
-	_setOption(key, value) {
-		super._setOption(key, value);
-	}
+	// Handle custom option keys with static handlers.
+	// Each handler receives (value, next) — call next(value) to pass through to standard
+	// routing, or omit it to fully own the key. Write to elem directly, not options:
+	//
+	// static handlers = {
+	//   myOption(value) {
+	//     this.myChild.elem.textContent = value;
+	//   },
+	// };
 }
-
-export default ${name};
 `;
 
 await Bun.write(`${componentFolder}/${name}.js`, componentFile);

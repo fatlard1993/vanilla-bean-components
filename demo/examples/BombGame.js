@@ -29,9 +29,12 @@ class BombGame extends (styled.Component`
 	display: flex;
 	flex-direction: column;
 
-	&.minefield {
+	overflow: hidden;
+
+	& .minefield {
 		position: relative;
 		flex: 1;
+		overflow: hidden;
 		background-color: ${({ colors }) => colors.black};
 	}
 `) {
@@ -138,8 +141,6 @@ export default class Example extends ExampleView {
 	build() {
 		this.options.exampleCode = exampleCode;
 
-		this.demoWrapper.setStyle({ height: '100%' });
-
-		new BombGame({ appendTo: this.demoWrapper });
+		new BombGame({ style: { height: '60vh' }, appendTo: this.demoWrapper });
 	}
 }

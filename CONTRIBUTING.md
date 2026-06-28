@@ -13,7 +13,7 @@ bun run build && bun run dev
 
 ## Development
 
-`bun run dev` starts the component playground at `http://localhost:3000` with hot reload via `bun --hot`.
+`bun run dev` starts the component playground at `http://localhost:9999` with hot reload via `bun --hot`.
 
 To rebuild the bundle on file changes without starting the dev server:
 
@@ -47,7 +47,7 @@ The generated component extends `Component` and includes a `build()` hook and a 
 
 - `render()` orchestrates the full lifecycle: `empty() → build() → _processOptions()`.
 - `build()` is the subclass hook for creating child structure. It runs before options are applied, so the DOM is ready when `_setOption()` fires.
-- Override `build()` in subclasses, not `render()`. If your subclass itself has subclasses that also define `build()`, call `super.build()` explicitly — it does not chain automatically.
+- Override `build()` in subclasses, not `render()`. If your subclass itself has subclasses that also define `build()`, call `super.build()` explicitly; it does not chain automatically.
 
 ## Testing
 
@@ -61,7 +61,7 @@ Test files follow the `.test.js` naming convention (components use `.test.js` at
 
 - Registers happy-dom via `@happy-dom/global-registrator` (1920x1080 viewport)
 - Extends `expect` with `@testing-library/jest-dom` matchers
-- Exposes `container` as `document.body` — use it as the `appendTo` target in tests
+- Exposes `container` as `document.body`; use it as the `appendTo` target in tests
 - Resets `document.body` and restores mocks in `beforeEach`
 
 Tests use `@testing-library/dom` query patterns (`getByRole`, `getByText`, etc.).
@@ -85,7 +85,7 @@ bun run format   # eslint --fix + prettier --write
 bun run lint     # lint only, no auto-fix
 ```
 
-The pre-commit hook (`.githooks/pre-commit`) runs targeted tests for every changed directory (e.g. editing a file in `Context/` runs `bun test Context`) then runs `bun run format`. The commit is aborted if any step fails.
+The pre-commit hook (`.githooks/pre-commit`) runs targeted tests for every changed directory (e.g. editing a file in `Component/` runs `bun test Component`) then runs `bun run format`. The commit is aborted if any step fails.
 
 ESLint is configured in `eslint.config.cjs` with these active plugins: `jsdoc`, `compat`, `import`, `spellcheck`, and `testing-library` (test files only).
 
@@ -95,8 +95,8 @@ See `docs/ARCHITECTURE.md` for a full writeup and `docs/ETHOS.md` for the design
 
 At a glance:
 
-- **`Elem`** — thin `EventTarget` subclass wrapping an `HTMLElement`
-- **`Component`** — extends `Elem`, adds `Context`-backed reactive options, style processing via `styled()`, and the `build()` / `render()` lifecycle
-- **`Context`** — Proxy-based reactive state; property assignments emit change events that components subscribe to for targeted DOM updates
+- **`Elem`**: thin `EventTarget` subclass wrapping an `HTMLElement`
+- **`Component`**: extends `Elem`, adds `Oxject`-backed reactive options, style processing via `styled()`, and the `build()` / `render()` lifecycle
+- **`Oxject`**: proxy-based reactive state from `@vanilla-bean/oxject`; property assignments dispatch change events that components subscribe to for targeted DOM updates
 
-Styling flows through `styled(Component, ({colors}) => css)` → PostCSS (autoprefixer + nested syntax) → scoped `<style>` tag injected into the document.
+Styling flows through `styled(Component, ({colors}) => css)` → scope-wrapped `<style>` tag injected into the document. No CSS preprocessor; native nesting requires Chrome 112+, Firefox 117+, Safari 16.5+.

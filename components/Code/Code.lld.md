@@ -2,7 +2,7 @@
 
 > ./Code.js
 
-Code display that automatically promotes from inline to block when the content spans multiple lines. The decision: callers pass code and the component determines the appropriate element — callers never choose between `code` and `pre>code` themselves.
+Code display that automatically promotes from inline to block when the content spans multiple lines. The decision: callers pass code and the component determines the appropriate element; callers never choose between `code` and `pre>code` themselves.
 
 ## Multiline content renders as a block element without the caller specifying it
 

@@ -1,4 +1,3 @@
-/* eslint-disable spellcheck/spell-checker */
 import { styled } from '../../styled';
 import { Component } from '../../Component';
 import { TooltipWrapper } from '../TooltipWrapper';
@@ -20,7 +19,7 @@ const StyledLabel = styled(
 			transition: all 0.5s;
 		}
 
-		label {
+		& label {
 			display: block;
 			margin: 0;
 			color: ${colors.white};
@@ -28,27 +27,27 @@ const StyledLabel = styled(
 		}
 
 		&.variant-overlay {
-			label {
+			& label {
 				position: relative;
 				z-index: 1;
 				transform: translate(0, 0);
 				transition: transform 0.5s, color 0.5s;
 			}
 
-			input {
+			& input {
 				transform: translate(0, 0);
 				transition: transform 0.5s;
 			}
 		}
 
 		&.variant-overlay:not(:focus-within):has(input:placeholder-shown) {
-			label {
+			& label {
 				pointer-events: none;
 				color: ${colors.gray};
 				transform: translate(12px, 20px);
 			}
 
-			input {
+			& input {
 				transform: translate(0, -12px);
 			}
 		}
@@ -56,7 +55,7 @@ const StyledLabel = styled(
 		&.variant-inline, &.variant-inline-after {
 			display: flex;
 
-			label {
+			& label {
 				display: inline-block;
 				vertical-align: top;
 				margin-top: 5px;
@@ -64,33 +63,26 @@ const StyledLabel = styled(
 				line-height: 2;
 			}
 
-			input:not([type=checkbox]), textarea, select {
+			& input:not([type=checkbox]), & textarea, & select {
 				flex: 1;
 			}
 		}
 
 		&.variant-inline-after {
-			label {
+			& label {
 				margin-left: 9px;
 				margin-right: 0;
 			}
 		}
 
 		&.variant-collapsible {
-			--aug-border-bg: linear-gradient(-66deg, ${colors.lighter(colors.teal).setAlpha(0.5)}, ${colors.blue.setAlpha(0.5)});
-			--aug-border-all: 2px;
-			--aug-tl1: 12px;
-			--aug-tr-extend1: 42%;
-			--aug-tr1: 12px;
-			--aug-bl1: 6px;
-			--aug-br1: 6px;
+			border: 2px solid ${colors.lighter(colors.teal).setAlpha(0.5)};
+			border-radius: 3px;
 
 			&.collapsed {
 				width: 50%;
 
-				--aug-tr-extend1: 0%;
-
-				> label {
+				& > label {
 					color: ${colors.superWhite};
 
 					&:before {
@@ -100,12 +92,12 @@ const StyledLabel = styled(
 					}
 				}
 
-				> *:not(label) {
+				& > *:not(label) {
 					display: none !important;
 				}
 			}
 
-			> label {
+			& > label {
 				cursor: pointer;
 
 				&:before {
@@ -122,7 +114,7 @@ const StyledLabel = styled(
 			}
 		}
 
-		> *:not(label):not(.tooltip) {
+		& > *:not(label):not(.tooltip) {
 			margin-top: 6px;
 		}
 	`,
@@ -138,7 +130,7 @@ const defaultOptions = { variant: 'simple' };
  * Provides flexible label styling with support for overlay, collapsible, inline, and simple variants.
  * Automatically associates with input components and supports interactive collapsible behavior.
  * @param {object|string} [options={}] - Label configuration options, or label text string
- * @param {string} [options.variant='simple'] - Label display variant ('overlay', 'collapsible', 'inline', 'inline-after', 'simple')
+ * @param {('overlay'|'collapsible'|'inline'|'inline-after'|'simple')} [options.variant='simple'] - Label display variant
  * @param {string|object} [options.label] - Label text content or label component options
  * @param {Component|string} [options.for] - Input component or ID to associate label with
  * @param {boolean} [options.collapsed] - Whether collapsible variant starts collapsed
@@ -164,31 +156,50 @@ class Label extends StyledLabel {
 	}
 
 	build() {
-		this._labelText = new Component({
-			tag: 'label',
-			onPointerPress: () => {
-				if (this.options.variant === 'collapsible') {
-					this[this.hasClass('collapsed') ? 'removeClass' : 'addClass']('collapsed');
-				}
-			},
-		});
+		this._labelText = new Component({ tag: 'label' });
+
+		const handleClick = () => {
+			if (this.options.variant !== 'collapsible') return;
+			const nowCollapsed = !this.hasClass('collapsed');
+			this[nowCollapsed ? 'addClass' : 'removeClass']('collapsed');
+			this._labelText.elem.setAttribute('aria-expanded', nowCollapsed ? 'false' : 'true');
+		};
+
+		this._labelText.elem.addEventListener('click', handleClick);
+		this.addCleanup('labelClick', () => this._labelText.elem.removeEventListener('click', handleClick));
+
+		if (this.options.variant === 'collapsible') {
+			this._labelText.elem.setAttribute('aria-expanded', this.options.collapsed ? 'false' : 'true');
+		}
 
 		this[this.options.variant === 'inline-after' ? 'append' : 'prepend'](this._labelText);
 	}
 
-	_setOption(key, value) {
-		if (key === 'label') {
+	static handlers = {
+		label(value) {
 			if (typeof value === 'object') this._labelText?.setOptions(value);
 			else if (this._labelText) this._labelText.options.content = value;
-		} else if (key === 'collapsed') this[value ? 'addClass' : 'removeClass']('collapsed');
-		else if (key === 'variant') {
+		},
+		collapsed(value) {
+			this[value ? 'addClass' : 'removeClass']('collapsed');
+			if (this.options.variant === 'collapsible' && this._labelText) {
+				this._labelText.elem.setAttribute('aria-expanded', value ? 'false' : 'true');
+			}
+		},
+		variant(value) {
 			this.removeClass(/\bvariant-\S+\b/g);
 			this.addClass(`variant-${value}`);
 
-			this.options.augmentedUI = value === 'collapsible' ? 'tl-clip tr-2-clip-x br-clip bl-clip border' : false;
-
-			this._labelText && this[this.options.variant === 'inline-after' ? 'append' : 'prepend'](this._labelText);
-		} else if (key === 'for') {
+			if (this._labelText) {
+				const shouldBeAfter = value === 'inline-after';
+				const isAfter = this._labelText.elem === this.elem.lastElementChild;
+				if (shouldBeAfter !== isAfter) this[shouldBeAfter ? 'append' : 'prepend'](this._labelText);
+				if (value === 'collapsible') {
+					this._labelText.elem.setAttribute('aria-expanded', this.hasClass('collapsed') ? 'false' : 'true');
+				}
+			}
+		},
+		for(value) {
 			let forId = typeof value === 'string' ? value : value?.id || value?.elem?.id;
 
 			if (!forId && value?._component) {
@@ -196,8 +207,8 @@ class Label extends StyledLabel {
 			}
 
 			if (this._labelText) this._labelText.elem.htmlFor = forId ?? '';
-		} else super._setOption(key, value);
-	}
+		},
+	};
 }
 
 export default Label;
