@@ -220,7 +220,7 @@ export declare class Button extends Component {
 
 export interface CalendarOptions extends ComponentOptions {
 	/** Initial calendar view mode */
-	view?: ('month' | 'week' | 'day');
+	view?: 'month' | 'week' | 'day';
 	/** Calendar component height */
 	height?: string;
 	/** Initial year to display, defaults to current year */
@@ -287,9 +287,9 @@ export declare class ColorPicker extends Component {
 
 export interface DialogOptions extends ComponentOptions {
 	/** Dialog size */
-	size?: ('small' | 'standard' | 'large');
+	size?: 'small' | 'standard' | 'large';
 	/** Color variant */
-	variant?: ('info' | 'success' | 'warning' | 'error');
+	variant?: 'info' | 'success' | 'warning' | 'error';
 	/** Auto-open delay in ms, or false to disable */
 	openOnRender?: number | boolean;
 	/** Whether to open as modal dialog */
@@ -398,7 +398,7 @@ export declare class Keyboard extends Component {
 
 export interface LabelOptions extends ComponentOptions {
 	/** Label display variant */
-	variant?: ('overlay' | 'collapsible' | 'inline' | 'inline-after' | 'simple');
+	variant?: 'overlay' | 'collapsible' | 'inline' | 'inline-after' | 'simple';
 	/** Label text content or label component options */
 	label?: string | Record<string, any>;
 	/** Input component or ID to associate label with */
@@ -583,7 +583,7 @@ export declare class TagList extends Component {
 
 export interface TooltipOptions extends ComponentOptions {
 	/** Tooltip position relative to parent */
-	position?: ('center' | 'top' | 'bottom' | 'left' | 'right' | 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight');
+	position?: 'center' | 'top' | 'bottom' | 'left' | 'right' | 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
 	/** Whether tooltip opens automatically */
 	autoOpen?: boolean;
 	/** Icon to display in tooltip */
