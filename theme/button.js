@@ -6,7 +6,7 @@ export default ({ colors, fonts }) => `
 	text-decoration: none;
 	color: ${colors.white};
 	background-color: ${colors.blue};
-	outline-color: ${colors.lighter(colors.orange)};
+	outline-color: ${colors.lighter(colors.selected)};
 	text-align: center;
 	position: relative;
 	white-space: nowrap;

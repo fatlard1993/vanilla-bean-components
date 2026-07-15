@@ -31,7 +31,7 @@ export const checkbox = ({ colors }) => `
 		}
 
 		&:checked:before {
-			box-shadow: inset 1em 1em ${colors.blue};
+			box-shadow: inset 1em 1em ${colors.selected};
 		}
 
 		&:focus {
@@ -47,9 +47,9 @@ export default ({ colors }) => `
 	box-sizing: border-box;
 	width: 100%;
 	color: ${colors.light(colors.red)};
-	accent-color: ${colors.blue};
+	accent-color: ${colors.selected};
 	background-color: ${colors.black};
-	outline-color: ${colors.lighter(colors.orange)};
+	outline-color: ${colors.lighter(colors.selected)};
 	padding: 2px 4px;
 
 	&:disabled {

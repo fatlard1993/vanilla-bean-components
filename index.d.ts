@@ -25,6 +25,7 @@ export interface ThemeColors {
 	teal: ThemeColor;
 	white: ThemeColor;
 	black: ThemeColor;
+	selected: ThemeColor;
 	transparent: ThemeColor;
 	superWhite: ThemeColor;
 	vantablack: ThemeColor;

@@ -1,12 +1,13 @@
 import { TinyColor, random, readability, isReadable, mostReadable } from '@ctrl/tinycolor';
 
+let selectedOverride;
+
 const colors = {
 	random,
 	readability,
 	isReadable,
 	mostReadable,
 
-	// Base colors — plain writable properties so theme.colors.X = new TinyColor(...) works
 	orange: new TinyColor('hsl(29, 55%, 45%)'),
 	gray: new TinyColor('hsl(0, 0%, 45%)'),
 	yellow: new TinyColor('hsl(44, 55%, 45%)'),
@@ -20,12 +21,18 @@ const colors = {
 	superWhite: new TinyColor('hsl(0, 100%, 100%)'),
 	vantablack: new TinyColor('hsl(0, 0%, 0%)'),
 
-	// Derived — getters so they recompute when gray is reassigned
 	get white() {
 		return colors.whiteish();
 	},
 	get black() {
-		return colors.blackish();
+		return colors.gray.darken(45);
+	},
+
+	get selected() {
+		return selectedOverride ?? colors.yellow;
+	},
+	set selected(color) {
+		selectedOverride = color;
 	},
 
 	whiteish: (color = colors.gray) => color.lighten(45),

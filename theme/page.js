@@ -9,6 +9,7 @@ import _table from './table';
 export default theme => `
 	html {
 		height: 100%;
+		color-scheme: ${colors.black.isDark() ? 'dark' : 'light'};
 	}
 
 	body {
@@ -23,6 +24,11 @@ export default theme => `
 		background: ${colors.black};
 		color: ${colors.white};
 		margin: 0;
+	}
+
+	::selection {
+		background: ${colors.lighter(colors.selected)};
+		color: ${colors.black};
 	}
 
 	* {

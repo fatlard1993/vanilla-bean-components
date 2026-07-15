@@ -42,12 +42,12 @@ export default ({ colors }) => `
 	}
 
 	tr:hover {
-		background-color: ${colors.blackish(colors.blue)};
+		background-color: ${colors.blackish(colors.selected)};
 		color: ${colors.lighter(colors.gray)};
 	}
 
 	td:hover, th:hover {
-		background-color: ${colors.blue.darken(32)};
+		background-color: ${colors.selected.darken(32)};
 		color: ${colors.white};
 	}
 `;

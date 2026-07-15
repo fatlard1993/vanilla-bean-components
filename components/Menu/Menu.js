@@ -18,12 +18,12 @@ const StyledList = styled(
 			}
 
 			&:hover, &:focus, &:focus-visible, & a:hover, & a:focus, & a:focus-visible  {
-				color: ${colors.light(colors.blue)} !important;
-				border-color: ${colors.light(colors.blue)};
+				color: ${colors.light(colors.selected)} !important;
+				border-color: ${colors.light(colors.selected)};
 			}
 
 			&:focus-visible, & a:focus-visible {
-				outline: 2px solid ${colors.light(colors.blue)};
+				outline: 2px solid ${colors.light(colors.selected)};
 				outline-offset: -2px;
 			}
 		}

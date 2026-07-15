@@ -284,6 +284,12 @@ colors.black; // Pure black - text on light backgrounds
 colors.superWhite; // #fefefe - slightly warmer white
 colors.vantablack; // #0a0a0a - rich black alternative
 
+// Semantic accent - the "focused/selected/active" color (focus outlines,
+// ::selection, hover highlights, checked controls, scrollbar thumbs).
+// Follows colors.yellow unless assigned its own color:
+colors.selected;
+theme.colors.selected = new TinyColor('#3d7aed'); // decouple from yellow
+
 // Accessibility functions
 colors.mostReadable(baseColor, [colors.white, colors.black]);
 // Returns the highest contrast color for optimal readability
@@ -566,6 +572,7 @@ interface ColorSystem {
 	transparent: TinyColor;
 	white: TinyColor;
 	black: TinyColor;
+	selected: TinyColor;
 	superWhite: TinyColor;
 	vantablack: TinyColor;
 
