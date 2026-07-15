@@ -18,7 +18,7 @@ const clients = {};
 
 // ─── Collaborative form state ─────────────────────────────────────────────────
 // Tracks presence and focus for the CollaborativeForm example.
-// Values are relayed but not stored — they live in each client's state.
+// Values are relayed but not stored - they live in each client's state.
 
 const formUsers = {};
 

@@ -118,11 +118,11 @@ export default class ${name} extends Component {
 	 * Assign child elements to instance properties here so handlers can reference them.
 	 */
 	build() {
-		// Create child elements here — this runs before options are processed
+		// Create child elements here - this runs before options are processed
 	}
 
 	// Handle custom option keys with static handlers.
-	// Each handler receives (value, next) — call next(value) to pass through to standard
+	// Each handler receives (value, next) - call next(value) to pass through to standard
 	// routing, or omit it to fully own the key. Write to elem directly, not options:
 	//
 	// static handlers = {

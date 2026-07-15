@@ -14,7 +14,7 @@ Native `<dialog>` element wrapper. The decision to use the native element rather
 - an unrecognized size or variant throws at the point of assignment, not later when layout breaks
   - does an unrecognized size value throw?
 
-## Header, body, and footer are stable references — options update them in place
+## Header, body, and footer are stable references - options update them in place
 
 - the structural elements are created once in `build()` and persist across option updates; assigning a new `header` value changes the header's content, not the dialog's structure
   - does updating the header option change the header's content without replacing the dialog structure?

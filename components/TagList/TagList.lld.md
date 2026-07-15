@@ -10,7 +10,7 @@ Editable tag collection. The key decision: read-only mode removes the editing in
   - does a readOnly TagList contain no input element?
   - does a non-readOnly TagList contain both an input and an add button?
 
-## Duplicate tags are silently rejected — adding them does nothing
+## Duplicate tags are silently rejected - adding them does nothing
 
 **method:** `duplicateRejected`
 

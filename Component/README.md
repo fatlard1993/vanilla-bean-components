@@ -264,7 +264,7 @@ render()
 
 **`build()` is the subclass structural hook.** Override `build()`, never `render()`, to create child elements and internal structure. Because `build()` runs before `_processOptions()`, all structure exists by the time `_setOption` receives values.
 
-The preferred way to handle specific options is `static handlers` — a per-class dispatch map that composes across the constructor chain without requiring `super._setOption`:
+The preferred way to handle specific options is `static handlers` - a per-class dispatch map that composes across the constructor chain without requiring `super._setOption`:
 
 ```js
 class Card extends Component {
@@ -284,7 +284,7 @@ class Card extends Component {
 }
 ```
 
-Handlers that don't call `next(value)` fully own their key. Unhandled keys fall through to standard routing automatically — no `super._setOption` required. Use `_setOption` override only for enum validation or cases that need to intercept before the routing chain.
+Handlers that don't call `next(value)` fully own their key. Unhandled keys fall through to standard routing automatically - no `super._setOption` required. Use `_setOption` override only for enum validation or cases that need to intercept before the routing chain.
 
 **`empty()` only runs on re-render.** On the initial render it is skipped. On subsequent `render()` calls it removes all child elements and runs cleanup on all descendant components before the DOM is cleared.
 
@@ -378,7 +378,7 @@ new Component(options?, ...children)
 | ---------------- | ---------- | -------------------------------------------- |
 | `onHover`        | `Function` | Hover handler with move tracking             |
 | `onPointerPress` | `Function` | Fires on `pointerdown`                       |
-| ~~`onClick`~~    | —          | Not supported. Use `onPointerPress` instead. |
+| ~~`onClick`~~    | -          | Not supported. Use `onPointerPress` instead. |
 | `onChange`       | `Function` | Change event handler (input .value included) |
 | `onConnected`    | `Function` | DOM connection detection                     |
 | `onDisconnected` | `Function` | DOM disconnection detection                  |
@@ -409,7 +409,7 @@ new Component({
 #### Lifecycle Methods
 
 ```js
-component.build(); // Subclass structural hook — override to create child elements
+component.build(); // Subclass structural hook - override to create child elements
 component.render(); // Re-render: empty → build → _processOptions → rendered = true
 component.addCleanup(id, fn); // Register cleanup function (chains with existing for same id)
 component.replaceCleanup(id, fn); // Replace cleanup, running the previous one immediately

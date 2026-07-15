@@ -22,25 +22,25 @@ const dialog = new Dialog({
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `header` | `string` | — | Text rendered in the `<h2>` header |
-| `body` | `string\|Component\|Array` | — | Content for the scrollable body section. Reactive: updating `options.body` replaces content |
-| `buttons` | `Array<string\|object>` | — | Shorthand footer buttons. Each entry is a string label or `{ textContent, variant?, onPointerPress?, ...buttonOptions }` |
-| `footer` | `Array<Component>` | — | Fully custom footer components. Takes precedence over `buttons` |
-| `onButtonPress` | `Function` | — | Called when any `buttons` entry is pressed. Receives `{ button, closeDialog, event }` |
+| `header` | `string` | - | Text rendered in the `<h2>` header |
+| `body` | `string\|Component\|Array` | - | Content for the scrollable body section. Reactive: updating `options.body` replaces content |
+| `buttons` | `Array<string\|object>` | - | Shorthand footer buttons. Each entry is a string label or `{ textContent, variant?, onPointerPress?, ...buttonOptions }` |
+| `footer` | `Array<Component>` | - | Fully custom footer components. Takes precedence over `buttons` |
+| `onButtonPress` | `Function` | - | Called when any `buttons` entry is pressed. Receives `{ button, closeDialog, event }` |
 | `openOnRender` | `number\|boolean` | `16` | Auto-open delay in ms after render. Set to `false` to disable auto-open |
 | `modal` | `boolean` | `true` | Open as a modal (with backdrop) vs. non-modal |
 | `size` | `string` | `'small'` | Dialog dimensions: `'small'` (420×210px), `'standard'` (840×420px), `'large'` (90vw×90vh) |
-| `variant` | `string` | — | Color theme: `'info'`, `'success'`, `'warning'`, `'error'` |
-| `closeDialog` | `Function` | — | Override the default close behavior used inside `onButtonPress` |
+| `variant` | `string` | - | Color theme: `'info'`, `'success'`, `'warning'`, `'error'` |
+| `closeDialog` | `Function` | - | Override the default close behavior used inside `onButtonPress` |
 | `appendTo` | `Element` | `document.body` | Where to append the dialog in the DOM |
 
 ### `onButtonPress` callback signature
 
 ```js
 onButtonPress: ({ button, closeDialog, event }) => { ... }
-// button      — the original entry from the buttons array (string or object)
-// closeDialog — function that closes the dialog (calls dialog.close() by default)
-// event       — the pointer event that triggered the press
+// button      - the original entry from the buttons array (string or object)
+// closeDialog - function that closes the dialog (calls dialog.close() by default)
+// event       - the pointer event that triggered the press
 ```
 
 ## Methods

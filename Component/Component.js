@@ -139,7 +139,7 @@ class Component extends Elem {
 			if (this.constructor !== Component && this.constructor.prototype.hasOwnProperty('render')) {
 				// eslint-disable-next-line no-console
 				console.warn(
-					`[Component] ${this.constructor.name} overrides render(). Structure belongs in build() — render() is the lifecycle orchestrator.`,
+					`[Component] ${this.constructor.name} overrides render(). Structure belongs in build() - render() is the lifecycle orchestrator.`,
 				);
 			}
 		}
@@ -154,7 +154,7 @@ class Component extends Elem {
 	}
 
 	/**
-	 * Subclass structural hook — override to create child elements and component structure.
+	 * Subclass structural hook - override to create child elements and component structure.
 	 * Called by render() before options are processed, so all structure exists
 	 * before _setOption receives values.
 	 */
@@ -204,7 +204,7 @@ class Component extends Elem {
 	 * Routes option changes through the static handlers chain, then standard routing.
 	 *
 	 * Walks the constructor chain collecting all handlers for the given key (deepest class
-	 * first), then executes them in order. Each handler receives `next(value?)` — call it
+	 * first), then executes them in order. Each handler receives `next(value?)` - call it
 	 * to continue to the next handler in the chain, or to standard routing when the chain
 	 * is exhausted. Handlers that do not call `next` fully own the key.
 	 * @param {string} key - Option property name being changed
@@ -235,7 +235,7 @@ class Component extends Elem {
 	}
 
 	/**
-	 * Standard option routing pipeline — event handlers, special keys, attributes, methods, properties.
+	 * Standard option routing pipeline - event handlers, special keys, attributes, methods, properties.
 	 * Called by _setOption when no handler claims the key, or when a handler calls next() past
 	 * the end of its chain.
 	 * @param {string} key - Option property name
@@ -260,7 +260,7 @@ class Component extends Elem {
 				}
 				return;
 			}
-			// method route — e.g. onPointerPress, onHover
+			// method route - e.g. onPointerPress, onHover
 		}
 
 		if (key === 'uniqueId') this.elem.id = typeof value === 'string' ? value : this.uniqueId;

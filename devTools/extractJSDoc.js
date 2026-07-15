@@ -116,7 +116,7 @@ function extractOptions(content) {
 
 /**
  * Reads the `defaultOptions` object literal from source and extracts simple key→value pairs.
- * Only captures string, number, and boolean literals — skips getters and complex values.
+ * Only captures string, number, and boolean literals - skips getters and complex values.
  * @param {string} content - File content
  * @returns {object} Map of option name → default value string
  */
@@ -158,7 +158,7 @@ function extractMethods(content) {
 	const classBody = classBodyMatch[1];
 
 	// Match each JSDoc block with the method that IMMEDIATELY follows it.
-	// `(?:(?!\/\*\*)[\s\S])*?` — non-greedy content that cannot cross into a new `/**`,
+	// `(?:(?!\/\*\*)[\s\S])*?` - non-greedy content that cannot cross into a new `/**`,
 	// so the captured block can never span multiple JSDoc comments or method bodies.
 	// get/set accessors are excluded; underscore-prefixed names are excluded.
 	const matches = [
@@ -201,7 +201,7 @@ function extractMethods(content) {
 			};
 		});
 
-		// Extract return information — type only; description is not used in type generation.
+		// Extract return information - type only; description is not used in type generation.
 		const returnMatch = jsdoc.match(/^\s*\*\s*@returns?\s+\{([^}]+)\}/m);
 		const returnInfo = returnMatch ? { type: returnMatch[1].trim() } : null;
 
@@ -222,7 +222,7 @@ function extractMethods(content) {
 function extractProperties(content) {
 	const properties = [];
 
-	// Extract getter properties — same anti-span pattern as extractMethods.
+	// Extract getter properties - same anti-span pattern as extractMethods.
 	const getterMatches = [
 		...content.matchAll(/\/\*\*((?:(?!\/\*\*)[\s\S])*?)\*\/[ \t]*\n[ \t]*get\s+(\w+)\s*\(\)\s*\{/g),
 	];

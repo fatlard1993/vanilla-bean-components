@@ -421,7 +421,7 @@ describe('Form', () => {
 				appendTo: container,
 			});
 
-			// 'required' field is hidden — hasErrors should ignore it
+			// 'required' field is hidden - hasErrors should ignore it
 			expect(form.hasErrors()).toBe(false);
 		});
 
@@ -439,7 +439,7 @@ describe('Form', () => {
 				appendTo: container,
 			});
 
-			// 'required' field is visible and empty — should fail
+			// 'required' field is visible and empty - should fail
 			expect(form.hasErrors()).toBe(true);
 		});
 	});
@@ -504,7 +504,7 @@ describe('Form', () => {
 			expect(form.inputElements.first).toBeDefined();
 			expect(form.inputElements.last).toBeDefined();
 
-			// input.elem → label wrapper → group container — both share the same group
+			// input.elem → label wrapper → group container - both share the same group
 			// eslint-disable-next-line testing-library/no-node-access
 			const firstGroup = form.inputElements.first.elem.parentElement?.parentElement;
 			// eslint-disable-next-line testing-library/no-node-access
@@ -532,10 +532,10 @@ describe('Form', () => {
 			// eslint-disable-next-line testing-library/no-node-access
 			const groupElem = form.inputElements.a.elem.parentElement.parentElement;
 
-			// Initially all visible — group is not collapsed
+			// Initially all visible - group is not collapsed
 			expect(groupElem.style.display).not.toBe('none');
 
-			// Hide all conditional children — _evaluateConditions collapses the group
+			// Hide all conditional children - _evaluateConditions collapses the group
 			form.options.data.show = false;
 
 			expect(groupElem.style.display).toBe('none');

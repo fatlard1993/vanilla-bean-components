@@ -232,7 +232,7 @@ class Dialog extends styled(
 	}
 
 	/**
-	 * Content container — primary injection point for subclass and consumer content.
+	 * Content container - primary injection point for subclass and consumer content.
 	 * @returns {Component} The dialog body component
 	 */
 	get body() {

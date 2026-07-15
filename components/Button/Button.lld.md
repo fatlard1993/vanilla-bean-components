@@ -15,7 +15,7 @@ Activatable element that unifies pointer and keyboard interaction under one hand
 - a caller-provided `onKeyUp` runs alongside the built-in keyboard activation; registering both handlers does not suppress either
   - does providing a custom onKeyUp still trigger onPointerPress on Space/Enter?
 
-## Tooltip is automatic — no setup beyond the tooltip option
+## Tooltip is automatic - no setup beyond the tooltip option
 
 - Button extends TooltipWrapper; a `tooltip` option produces tooltip behavior with no additional wiring
   - does a Button with a tooltip option show a tooltip on hover?

@@ -11,7 +11,7 @@ A lightweight DOM wrapper that gives options a defined dispatch order. The wrapp
 - Elem's own methods are checked first; known DOM properties like `id` are assigned as element properties; unknown keys fall through to direct property assignment
   - getIdProperty("test-id") → "test-id"
 
-## One wrapper, one node — the reference never changes
+## One wrapper, one node - the reference never changes
 
 **method:** `elemRefStable`
 

@@ -33,7 +33,7 @@ function ensureObserver() {
  * @param {Node} config.target - Target element to watch for add/remove
  * @param {Function} config.onConnected - Called when target is added to the document
  * @param {Function} config.onDisconnected - Called when target is removed from the document
- * @returns {{ disconnect: Function }} Handle — call disconnect() to deregister
+ * @returns {{ disconnect: Function }} Handle - call disconnect() to deregister
  */
 export const observeElementConnection = ({ target, onConnected, onDisconnected }) => {
 	ensureObserver();

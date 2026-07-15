@@ -15,10 +15,10 @@ That said, the theme system is layered. You can work at any layer depending on h
 For one-off overrides on a specific component instance, pass `styles` as an option:
 
 ```js
-// Object form — applied as inline styles
+// Object form - applied as inline styles
 new Button({ styles: { backgroundColor: '#your-brand', borderRadius: '4px' } });
 
-// Function form — receives theme, generates scoped CSS
+// Function form - receives theme, generates scoped CSS
 new Dialog({
 	styles: ({ colors }) => `
         border-color: ${colors.purple};
@@ -69,10 +69,10 @@ The theme singleton is imported once and shared across all `styled()` calls. Mut
 import { theme } from '@vanilla-bean/components';
 import { TinyColor } from '@ctrl/tinycolor';
 
-// Replace the accent color — affects every component that uses colors.teal
+// Replace the accent color - affects every component that uses colors.teal
 theme.colors.teal = new TinyColor('#3d7aed');
 
-// Then import and use components as normal — they'll use your teal
+// Then import and use components as normal - they'll use your teal
 import { Button, Dialog } from '@vanilla-bean/components';
 ```
 
@@ -279,10 +279,10 @@ Special utility colors and WCAG compliance helpers:
 ```js
 // Utility colors
 colors.transparent; // Transparent - for overlays, hidden elements
-colors.white; // Pure white - text on dark backgrounds
-colors.black; // Pure black - text on light backgrounds
-colors.superWhite; // #fefefe - slightly warmer white
-colors.vantablack; // #0a0a0a - rich black alternative
+colors.white; // Near-white derived from gray (gray lightened 45%) - text on dark backgrounds
+colors.black; // Near-black derived from gray (gray darkened 35%) - backgrounds, text on light surfaces
+colors.superWhite; // #ffffff - pure white constant, independent of gray
+colors.vantablack; // #000000 - pure black constant, independent of gray
 
 // Semantic accent - the "focused/selected/active" color (focus outlines,
 // ::selection, hover highlights, checked controls, scrollbar thumbs).

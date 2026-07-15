@@ -56,7 +56,7 @@ class Select extends Input {
 	 * @returns {*} Selected option value, label, or text content
 	 */
 	get value() {
-		// Use elem.options (HTMLOptionsCollection) — works across optgroups
+		// Use elem.options (HTMLOptionsCollection) - works across optgroups
 		const selected = Array.from(this.elem.options).find(({ selected }) => selected);
 
 		return selected?.value ?? selected?.label ?? selected?.textContent ?? this.elem.value;

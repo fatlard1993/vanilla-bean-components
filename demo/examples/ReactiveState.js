@@ -48,7 +48,7 @@ const Controls = styled(
 // ─── UserCard ─────────────────────────────────────────────────────────────────
 
 // Each child component receives a subscriber as its textContent option value.
-// The subscriber wires up during construction — no reactive code inside build().
+// The subscriber wires up during construction - no reactive code inside build().
 // When state changes, only the subscribed key's display updates.
 class UserCard extends Panel {
 	build() {

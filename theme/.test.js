@@ -19,13 +19,13 @@ describe('theme colors', () => {
 		expect(theme.colors.blue.toString()).not.toBe(before);
 	});
 
-	test('white derives from gray — updates when gray is reassigned', () => {
+	test('white derives from gray - updates when gray is reassigned', () => {
 		const before = theme.colors.white.toString();
 		theme.colors.gray = new TinyColor('hsl(200, 30%, 45%)');
 		expect(theme.colors.white.toString()).not.toBe(before);
 	});
 
-	test('selected follows yellow — updates when yellow is reassigned', () => {
+	test('selected follows yellow - updates when yellow is reassigned', () => {
 		const custom = new TinyColor('hsl(120, 55%, 45%)');
 		theme.colors.yellow = custom;
 		expect(theme.colors.selected.toString()).toBe(custom.toString());

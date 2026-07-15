@@ -379,7 +379,7 @@ vanilla-bean-components/
 ├── Component/          # Core Component class
 ├── styled/             # Scoped styling system
 ├── theme/              # Design tokens and helpers
-├── demo/               # Component explorer — live option editor, API docs, example apps
+├── demo/               # Component explorer - live option editor, API docs, example apps
 └── docs/               # Additional documentation
 ```
 

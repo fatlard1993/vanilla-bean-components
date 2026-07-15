@@ -20,9 +20,9 @@ Select inherits all options from `Input`. Key additions:
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `options` | `Array<string\|object>` | — | List of selectable options. See shape below. Reactive: reassigning `options.options` rebuilds the `<option>` elements |
-| `value` | `any` | — | Currently selected value. Matched against option `value` attributes |
-| `onChange` | `Function` | — | Called with an enhanced event containing `.value` (the selected value string) on change |
+| `options` | `Array<string\|object>` | - | List of selectable options. See shape below. Reactive: reassigning `options.options` rebuilds the `<option>` elements |
+| `value` | `any` | - | Currently selected value. Matched against option `value` attributes |
+| `onChange` | `Function` | - | Called with an enhanced event containing `.value` (the selected value string) on change |
 
 All other `Input` options (`placeholder`, `validations`, `onInput`, etc.) are available but less commonly used with Select.
 
@@ -46,8 +46,8 @@ options: ['plain string', { label: 'Display Text', value: 42 }, { label: 'Unavai
 ## Methods
 
 ```js
-select.value          // getter — returns value, label, or textContent of the selected <option>
-select.value = newVal // setter — sets elem.value directly
+select.value          // getter - returns value, label, or textContent of the selected <option>
+select.value = newVal // setter - sets elem.value directly
 
 // Inherited from Input:
 select.validate({ validations?, value? }): Array | undefined

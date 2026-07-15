@@ -14,18 +14,18 @@ import { Label } from '../Label';
  * **Field definition:**
  * ```js
  * {
- * key: 'name',                          // required — data key
- * label: 'Full Name',                   // optional — defaults to formatted key
- * InputComponent: Select,               // optional — defaults to Input
- * onChange: event => {},                // optional — called after data update
- * parse: value => value.trim(),         // optional — transform before storing
- * condition: data => data.type === 'x', // optional — hide field when false
- * validate: value => value ? null : 'Required', // optional — field-level validator
+ * key: 'name',                          // required - data key
+ * label: 'Full Name',                   // optional - defaults to formatted key
+ * InputComponent: Select,               // optional - defaults to Input
+ * onChange: event => {},                // optional - called after data update
+ * parse: value => value.trim(),         // optional - transform before storing
+ * condition: data => data.type === 'x', // optional - hide field when false
+ * validate: value => value ? null : 'Required', // optional - field-level validator
  * // ...any other InputComponent options
  * }
  * ```
  *
- * **Group definition** — renders inputs side-by-side in a layout container:
+ * **Group definition** - renders inputs side-by-side in a layout container:
  * ```js
  * {
  * type: 'group',
@@ -91,7 +91,7 @@ export default class Form extends Component {
 		if (!this._conditionals.length) return;
 		const evaluate = () => this._evaluateConditions();
 		this.options.data.addEventListener('set', evaluate);
-		// replaceCleanup — safe to call multiple times (inputs handler re-wires on rebuild)
+		// replaceCleanup - safe to call multiple times (inputs handler re-wires on rebuild)
 		this.replaceCleanup('conditions', () => this.options.data.removeEventListener('set', evaluate));
 	}
 

@@ -4,7 +4,7 @@
 
 Top-level layout component that takes ownership of stylesheet loading. The design decision: Page loads FontAwesome and typography as part of mounting; application code does not import or configure these separately.
 
-## Required stylesheets load once — remounting does not re-fetch
+## Required stylesheets load once - remounting does not re-fetch
 
 - Page checks whether each stylesheet is already present before injecting; remounting in a single-page app does not duplicate link elements or re-trigger network requests
   - does mounting a Page a second time leave the stylesheet count unchanged?

@@ -224,7 +224,7 @@ class CollaborativeForm extends FormWrap {
 		const myName = pick(NAMES);
 
 		// All remote presence and field values live here.
-		// Local field values stay in the DOM — we only push remote updates in.
+		// Local field values stay in the DOM - we only push remote updates in.
 		const state = new Oxject({
 			users: new Map(),
 			values: Object.fromEntries(FIELDS.map(f => [f.id, ''])),

@@ -9,7 +9,7 @@ export class Counter extends Component {
 	}
 
 	build() {
-		// Structure created once — only the display updates on count change
+		// Structure created once - only the display updates on count change
 		new Component({
 			tag: 'span',
 			appendTo: this,

@@ -4,7 +4,7 @@
 
 Component extends Elem with a lifecycle and reactive options. The design goal is predictability: render always produces the same result for the same options, no diffing surprises, no residual state from a previous render. The options object is an Oxject instance, so any assignment to an option property is automatically reactive; subclasses don't wire this up themselves.
 
-## Render is destructive — no diffing, no patching
+## Render is destructive - no diffing, no patching
 
 **method:** `destructiveRender`
 

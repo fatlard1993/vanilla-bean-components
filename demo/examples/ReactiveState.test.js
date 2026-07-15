@@ -39,7 +39,7 @@ describe('ReactiveState example', () => {
 		comp.destroy();
 	});
 
-	test('each subscriber fires independently — updating one key does not affect others', () => {
+	test('each subscriber fires independently - updating one key does not affect others', () => {
 		let nameFires = 0;
 		let unreadFires = 0;
 

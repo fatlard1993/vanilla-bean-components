@@ -20,7 +20,7 @@ const form = new Form({
 
 | Option   | Type            | Default | Description                                                             |
 | -------- | --------------- | ------- | ----------------------------------------------------------------------- |
-| `inputs` | `Array<object>` | —       | Input configuration array; see shape below                              |
+| `inputs` | `Array<object>` | -       | Input configuration array; see shape below                              |
 | `data`   | `object`        | `{}`    | Initial form data. Replaced with an `Oxject` instance on each `build()` |
 
 ### `inputs` entry shape
@@ -32,8 +32,8 @@ const form = new Form({
 | `InputComponent` | `Component class` | `Input` | Component class to instantiate. Can be `Select`, `ColorPicker`, or any component that accepts `value` and `onChange` |
 | `onChange` | `Function` | `() => {}` | Called after the data context is updated with the new value |
 | `parse` | `Function(value, input)` | `v => v` | Transforms the raw event value before storing it in `options.data` |
-| `validations` | `Array` | — | Passed directly to the `InputComponent` (see Input validation format) |
-| `...inputOptions` | `any` | — | Any additional options forwarded to the `InputComponent` constructor |
+| `validations` | `Array` | - | Passed directly to the `InputComponent` (see Input validation format) |
+| `...inputOptions` | `any` | - | Any additional options forwarded to the `InputComponent` constructor |
 
 ### `data` Oxject lifecycle
 

@@ -15,7 +15,7 @@ Code display that automatically promotes from inline to block when the content s
 - the `language` option adds a `language-{name}` class; highlighting libraries target this class by convention
   - does the language option add an identifiable class to the code element?
 
-## Copy confirms success visually — clipboard writes can fail silently
+## Copy confirms success visually - clipboard writes can fail silently
 
 - the copy button shows a notification on success so the user knows the copy worked rather than discovering it failed on paste
   - does a successful copy show the user a confirmation?

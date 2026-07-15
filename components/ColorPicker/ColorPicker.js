@@ -283,7 +283,7 @@ class ColorPicker extends StyledInput {
 
 		const clamp = (val, min, max) => Math.min(max, Math.max(min, val));
 
-		// HSV: x = saturation, y = (1 - value) — matches the gradient exactly
+		// HSV: x = saturation, y = (1 - value) - matches the gradient exactly
 		const pickerX = clamp((this.sv ?? 0) * pickerW, 0, pickerW);
 		const pickerY = clamp((1 - (this.v ?? 1)) * pickerH, 0, pickerH);
 		this.pickerIndicator.elem.style.transform = `translate3d(${pickerX}px, ${pickerY}px, 0)`;

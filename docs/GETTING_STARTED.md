@@ -123,16 +123,16 @@ const state = new Oxject({
 	notifications: [],
 });
 
-// You declare the transformation — this function runs when 'user' changes, nothing else
+// You declare the transformation - this function runs when 'user' changes, nothing else
 const greeting = state.subscriber('user', user => `Welcome, ${user.name}!`);
 
-// Assign to state — triggers only the subscribers you registered for this key
+// Assign to state - triggers only the subscribers you registered for this key
 state.user = { name: 'Alice', email: 'alice@example.com' };
 ```
 
 The subscriber is not a magic dependency tracker. It's a named transformation: "when `user` changes, produce this value." You wrote it. There's no framework inferring what depends on what.
 
-### Reactive updates — layered by complexity
+### Reactive updates - layered by complexity
 
 VBC offers several approaches for wiring data to DOM, in order of simplicity. Reach for the simplest one that expresses what you need.
 
@@ -231,7 +231,7 @@ _renderUsers(users) { /* ... */ }
 
 Most cases don't reach 5. Subscribers handle simple reactive updates. `handlers` covers moderate complexity without the `super._setOption` footgun. `_setOption` override is for validation and edge cases that need the full routing chain.
 
-## The intended model — three tiers
+## The intended model - three tiers
 
 VBC is structured in three tiers, each building on the one below:
 
@@ -244,7 +244,7 @@ VBC is structured in three tiers, each building on the one below:
 The intended way to use VBC in an application is to build that third tier. Your app's `FieldList`, `AnimalPanel`, `SeasonChart`, built on the primitives for structure and reactivity, reaching into the component tier for concerns those components handle well.
 
 ```js
-// Your app's component — not a generic one from the library
+// Your app's component - not a generic one from the library
 import { Component, Elem, styled } from '@vanilla-bean/components';
 import { getFields, updateField } from '../api';
 
@@ -375,7 +375,7 @@ class UserList extends Component {
 
 const userList = new UserList({ appendTo: document.body });
 
-// Data arrives after render — push in via options, subscriber fires
+// Data arrives after render - push in via options, subscriber fires
 const { body } = await GET('/api/users');
 userList.options.users = body;
 ```
@@ -401,7 +401,7 @@ When a POST invalidates `'users'`, `onResponse` runs and the list rebuilds, no r
 ```js
 import { GET, POST } from '@vanilla-bean/hypertether';
 
-// Cached GET — onResponse fires whenever 'users' is invalidated
+// Cached GET - onResponse fires whenever 'users' is invalidated
 const { body: users } = await GET('/api/users', {
 	apiId: 'users',
 	onResponse: ({ body }) => {

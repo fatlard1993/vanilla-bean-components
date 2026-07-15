@@ -13,7 +13,7 @@ export const isDev = (() => {
 			(import.meta.env?.DEV === true || import.meta.env?.NODE_ENV === 'development')
 		)
 			return true;
-		// Bare browser import with no bundler — treat localhost as dev so warnings surface
+		// Bare browser import with no bundler - treat localhost as dev so warnings surface
 		if (typeof location !== 'undefined' && (location.hostname === 'localhost' || location.hostname === '127.0.0.1'))
 			return true;
 		return false;

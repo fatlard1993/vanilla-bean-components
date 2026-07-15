@@ -27,12 +27,12 @@ const input = new Input({
 | `autocapitalize` | `string` | `'off'` | Native autocapitalize attribute |
 | `autocorrect` | `string` | `'off'` | Native autocorrect attribute |
 | `height` | `string\|number` | `'auto'` | Height for textarea. `'auto'` dynamically sizes to content; a number sets `em` units |
-| `syntaxHighlighting` | `boolean` | — | Adds `syntaxHighlighting` class and Tab key indentation handling (textarea only) |
-| `language` | `string` | — | Adds `language-<value>` class for Prism-compatible highlighting (requires `syntaxHighlighting`) |
-| `validations` | `Array` | — | Validation rules; see Validation section below |
-| `onInput` | `Function` | — | Called on every keystroke with an enhanced event containing `.value` |
-| `onChange` | `Function` | — | Called on change with an enhanced event containing `.value` |
-| `onKeyUp` | `Function` | — | Called on keyup with an enhanced event containing `.value` |
+| `syntaxHighlighting` | `boolean` | - | Adds `syntaxHighlighting` class and Tab key indentation handling (textarea only) |
+| `language` | `string` | - | Adds `language-<value>` class for Prism-compatible highlighting (requires `syntaxHighlighting`) |
+| `validations` | `Array` | - | Validation rules; see Validation section below |
+| `onInput` | `Function` | - | Called on every keystroke with an enhanced event containing `.value` |
+| `onChange` | `Function` | - | Called on change with an enhanced event containing `.value` |
+| `onKeyUp` | `Function` | - | Called on keyup with an enhanced event containing `.value` |
 
 ### Supported `type` values
 
@@ -62,7 +62,7 @@ input.validate({ validations?, value? }): Array | undefined
 // Runs validation rules. Returns array of error messages if invalid, undefined if valid.
 // Calling with no args uses options.validations and options.value.
 
-input.isDirty: boolean  // getter — true if current value differs from the initial value
+input.isDirty: boolean  // getter - true if current value differs from the initial value
 ```
 
 ## Events

@@ -20,7 +20,7 @@ sheet.show();
 | Option     | Type       | Default         | Description                                                       |
 | ---------- | ---------- | --------------- | ----------------------------------------------------------------- |
 | `appendTo` | `Element`  | `document.body` | Where to mount the sheet in the DOM                               |
-| `onClose`  | `Function` | —               | Called when the sheet is dismissed — by drag or explicit `hide()` |
+| `onClose`  | `Function` | -               | Called when the sheet is dismissed - by drag or explicit `hide()` |
 
 All standard `Component` options are supported.
 

@@ -25,7 +25,7 @@ const colors = {
 		return colors.whiteish();
 	},
 	get black() {
-		return colors.gray.darken(45);
+		return colors.blackish();
 	},
 
 	get selected() {

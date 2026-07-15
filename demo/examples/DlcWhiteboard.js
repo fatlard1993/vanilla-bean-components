@@ -361,7 +361,7 @@ class DlcWhiteboard extends (styled.Component`
 			appendTo: sidebar,
 		});
 
-		// colorPicker stays in document.body — moving it would disconnect/reconnect
+		// colorPicker stays in document.body - moving it would disconnect/reconnect
 		// its children and destroy their event listeners via the cleanup system
 		this.addCleanup('colorPicker', () => colorPicker.elem.remove());
 

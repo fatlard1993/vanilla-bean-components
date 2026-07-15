@@ -10,7 +10,7 @@ Multi-touch drawing canvas that tracks each pointer independently. The design de
 - the whiteboard tracks each active pointer by its ID
   - does a second finger touching the canvas start a separate line from the first?
 
-## Draw throttle rate adapts to line width — no separate configuration needed
+## Draw throttle rate adapts to line width - no separate configuration needed
 
 - the throttle delay is derived from `lineWidth + 3` (clamped to a range); thicker lines are visually coarser and tolerate a longer delay
 - callers set `lineWidth` and the draw rate adjusts automatically; they do not configure throttle separately

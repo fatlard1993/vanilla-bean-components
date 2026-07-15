@@ -1,7 +1,7 @@
 import Component from './Component.js';
 
 export const __lld_api = `
-  destructiveRender() -> boolean | renders a component twice; returns true if child count matches (1) — second render cleared the first
+  destructiveRender() -> boolean | renders a component twice; returns true if child count matches (1) - second render cleared the first
   optionReactionFires() -> number | assigns to option after render; returns how many times _setOption was called (1 = reactive)
   buildBeforeOptions() -> boolean | verifies build() DOM structure exists when _setOption runs (true = ordering is correct)
   priorityRunsFirst() -> boolean | textContent (priority option) runs before style (non-priority); returns true if correct order
@@ -84,5 +84,5 @@ export const replaceCleanupRunsOnce = () => {
 	}); // runs previous = 2, stores latest
 	const countBeforeCleanup = count;
 	comp.processCleanup(); // runs only the latest = 3
-	return count - countBeforeCleanup; // 1 — only latest ran at cleanup time
+	return count - countBeforeCleanup; // 1 - only latest ran at cleanup time
 };

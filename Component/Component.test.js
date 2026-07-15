@@ -621,7 +621,7 @@ describe('Component', () => {
 	});
 
 	describe('cleanup system', () => {
-		test('addCleanup chains — both functions run on processCleanup', () => {
+		test('addCleanup chains - both functions run on processCleanup', () => {
 			const comp = new Component({ autoRender: false });
 			const calls = [];
 
@@ -695,7 +695,7 @@ describe('Component', () => {
 			expect(handler).toHaveBeenCalled();
 		});
 
-		test('on* method route — onPointerPress calls the component method', () => {
+		test('on* method route - onPointerPress calls the component method', () => {
 			const handler = mock();
 			component = new Component({ tag: 'button', onPointerPress: handler, appendTo: document.body });
 

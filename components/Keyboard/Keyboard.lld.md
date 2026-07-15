@@ -4,7 +4,7 @@
 
 On-screen keyboard where layout switching rebuilds the key DOM rather than showing/hiding rows. The decision: a clean rebuild on layout change is safer than managing per-key visibility across layout transitions; no key from one layout can bleed into another.
 
-## Layout switch produces only keys from the new layout — no residual keys remain
+## Layout switch produces only keys from the new layout - no residual keys remain
 
 - changing `layout` removes all existing keys and builds the new set from scratch; a key that exists in layout A but not layout B is definitively absent after the switch
   - does switching layout remove keys from the previous layout?

@@ -4,7 +4,7 @@
 
 Radio group from an array of options. The design decision: the HTML `name` coordination that makes radios mutually exclusive is handled automatically; callers pass values and get a working group without managing name attributes.
 
-## All radios in the group share one name — mutual exclusivity is provided by the browser
+## All radios in the group share one name - mutual exclusivity is provided by the browser
 
 - the component generates a shared `name` attribute; the browser enforces that only one radio in the group can be checked at a time
   - does each radio input in the group share the same name attribute?

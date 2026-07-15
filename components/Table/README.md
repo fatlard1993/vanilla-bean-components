@@ -20,11 +20,11 @@ const table = new Table({
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `data` | `Array<object>` | — | Array of row data objects. Reactive: reassigning `options.data` rebuilds the tbody |
+| `data` | `Array<object>` | - | Array of row data objects. Reactive: reassigning `options.data` rebuilds the tbody |
 | `columns` | `Array<string\|object>` | `[]` | Column definitions; see shape below |
-| `footer` | `Array<string\|object>` | — | Footer row cells, same shape as columns. Strings are capitalized automatically |
-| `sortProperty` | `string` | — | Key of the currently sorted column |
-| `sortDirection` | `string` | — | `'asc'` or `'desc'` |
+| `footer` | `Array<string\|object>` | - | Footer row cells, same shape as columns. Strings are capitalized automatically |
+| `sortProperty` | `string` | - | Key of the currently sorted column |
+| `sortDirection` | `string` | - | `'asc'` or `'desc'` |
 | `onSort` | `Function` | built-in | Called with `(property, direction)` when a sortable column header is clicked. Default sorts `options.data` in place using `orderBy` |
 
 ### `columns` entry shape

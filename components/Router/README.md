@@ -9,7 +9,7 @@ import { Router, View, Page } from '@vanilla-bean/components';
 
 class HomeView extends View {
 	build() {
-		// render view content here — no Page needed, the shell provides it
+		// render view content here - no Page needed, the shell provides it
 	}
 }
 
@@ -43,20 +43,20 @@ new Router({
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `views` | `object` | — | **Required.** Maps route patterns to component classes. Patterns may contain `:param` segments. |
+| `views` | `object` | - | **Required.** Maps route patterns to component classes. Patterns may contain `:param` segments. |
 | `defaultPath` | `string` | First key of `views` | Route used when the hash is empty and for fallback on unmatched routes. |
-| `notFound` | `typeof Component` | — | Component class rendered when no route matches and `defaultPath` fallback also fails. Receives `{ route }` as an option. |
-| `onRenderView` | `Function` | — | Called with the matched route string whenever a new view is rendered. |
+| `notFound` | `typeof Component` | - | Component class rendered when no route matches and `defaultPath` fallback also fails. Receives `{ route }` as an option. |
+| `onRenderView` | `Function` | - | Called with the matched route string whenever a new view is rendered. |
 | `mode` | `'hash' \| 'history'` | `'hash'` | `'hash'` uses URL fragments (`#/path`). `'history'` uses `pushState` and real pathnames (`/path`). History mode requires the server to serve `index.html` for all routes. |
 
 ## Properties
 
 ```js
-router.path; // string — current URL hash, stripped of '#/', '/', and query strings
+router.path; // string - current URL hash, stripped of '#/', '/', and query strings
 router.path = '/users/42'; // navigate; sets window.location.hash and re-renders
 
-router.route; // string — the matched route pattern for the current path (e.g. '/users/:id')
-router.currentRoute; // string — the last successfully rendered route pattern
+router.route; // string - the matched route pattern for the current path (e.g. '/users/:id')
+router.currentRoute; // string - the last successfully rendered route pattern
 ```
 
 ## Methods
@@ -77,9 +77,9 @@ Routes are matched using exact string equality first, then by replacing `:param`
 
 ```js
 views: {
-  '/users/new':    NewUserView,   // exact match — always wins
-  '/users/:id':    UserView,      // one param — tested before /:section/:id
-  '/:section/:id': SectionView,   // two params — tested last
+  '/users/new':    NewUserView,   // exact match - always wins
+  '/users/:id':    UserView,      // one param - tested before /:section/:id
+  '/:section/:id': SectionView,   // two params - tested last
 }
 ```
 
@@ -121,7 +121,7 @@ class SettingsView extends View {
 }
 ```
 
-## Example — full SPA shell
+## Example - full SPA shell
 
 ```js
 import { Router, View, Nav, NavItem, Page } from '@vanilla-bean/components';
@@ -138,7 +138,7 @@ class ArticleView extends View {
 	}
 }
 
-// Page is the app shell — Router and Nav live inside it, not inside each view
+// Page is the app shell - Router and Nav live inside it, not inside each view
 const page = new Page({ title: 'My App', appendTo: document.body });
 
 const router = new Router({
