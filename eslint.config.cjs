@@ -26,7 +26,7 @@ module.exports = [
 	{
 		files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
 		plugins: {
-			import: importPlugin,
+			import: fixupPluginRules(importPlugin),
 			'write-good-comments': fixupPluginRules(writeGoodComments),
 			spellcheck: fixupPluginRules(spellcheck),
 		},

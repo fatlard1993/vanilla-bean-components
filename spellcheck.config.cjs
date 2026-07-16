@@ -25,6 +25,7 @@ module.exports = {
 		'rgb',
 		'whitespace',
 		'schemas',
+		'expando',
 		'subclasses',
 		'destructured',
 		'splitter',
