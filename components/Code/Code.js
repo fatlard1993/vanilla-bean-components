@@ -4,8 +4,6 @@ import { Component } from '../../Component';
 import { Button } from '../Button';
 import { Notify } from '../Notify';
 
-const defaultOptions = { tag: 'code', language: 'javascript', multiline: 'auto' };
-
 /**
  * Code display component with syntax highlighting and optional copy functionality.
  *
@@ -21,21 +19,34 @@ const defaultOptions = { tag: 'code', language: 'javascript', multiline: 'auto' 
  * @returns {Code} Code component instance
  */
 class Code extends Component {
-	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
+	static schema = {
+		language: {
+			default: 'javascript',
+			set(value) {
+				if (this.options.multiline && this._code) {
+					this._code.removeClass(/\blanguage-\S+\b/g);
+					this._code.addClass(`language-${value}`);
+				}
 
-	constructor(options = {}, ...children) {
-		if ((options.multiline || defaultOptions.multiline) === 'auto') {
-			options.multiline = (options.code || '').includes('\n');
-		}
-
-		super(
-			{
-				...defaultOptions,
-				...options,
-				...(options.multiline ? { tag: 'pre' } : { tag: 'code' }),
+				this.removeClass(/\blanguage-\S+\b/g);
+				this.addClass(`language-${value}`);
 			},
-			...children,
-		);
+		},
+		code: {
+			set(value) {
+				(this.options.multiline && this._code ? this._code : this).elem.textContent = value;
+			},
+		},
+		// Resolved in prepareOptions (decides the tag); read from this.options in build()
+		multiline: { default: 'auto' },
+		copyButton: { default: false },
+	};
+
+	static prepareOptions(options) {
+		const multiline =
+			(options.multiline ?? 'auto') === 'auto' ? (options.code || '').includes('\n') : options.multiline;
+
+		return { ...options, multiline, tag: multiline ? 'pre' : 'code' };
 	}
 
 	build() {
@@ -64,21 +75,6 @@ class Code extends Component {
 				}),
 			);
 	}
-
-	static handlers = {
-		language(value) {
-			if (this.options.multiline && this._code) {
-				this._code.removeClass(/\blanguage-\S+\b/g);
-				this._code.addClass(`language-${value}`);
-			}
-
-			this.removeClass(/\blanguage-\S+\b/g);
-			this.addClass(`language-${value}`);
-		},
-		code(value) {
-			(this.options.multiline && this._code ? this._code : this).elem.textContent = value;
-		},
-	};
 }
 
 export default Code;

@@ -172,7 +172,7 @@ list.options.users = fetchedUsers; // list rebuilds
 
 `content` with an array calls `replaceChildren()`, clears and replaces in one shot.
 
-**3. `static handlers`**: for multiple keys or class management. Component walks the constructor chain checking for handlers before standard routing, unhandled keys fall through automatically, no `super._setOption` required. Use shorthand methods so `this` is correctly bound to the component instance:
+**3. `static schema`**: for multiple keys or class management, declare the option schema once - defaults, valid values, and change behavior per key. Component walks the constructor chain checking schemas before standard routing, unhandled keys fall through automatically, no `super._setOption` required. Use shorthand methods so `this` is bound to the component instance:
 
 ```js
 class Card extends Component {
@@ -181,21 +181,29 @@ class Card extends Component {
 		this.body = new Component({ tag: 'section', appendTo: this });
 	}
 
-	static handlers = {
-		title(value) {
-			this.header.options.textContent = value;
+	static schema = {
+		title: {
+			set(value) {
+				this.header.options.textContent = value;
+			},
 		},
-		variant(value) {
-			this.removeClass(/variant-\S+/).addClass(`variant-${value}`);
+		variant: {
+			default: 'plain',
+			enum: ['plain', 'fancy'],
+			set(value) {
+				this.removeClass(/variant-\S+/).addClass(`variant-${value}`);
+			},
 		},
-		content(value) {
-			this.body.options.content = value;
+		content: {
+			set(value) {
+				this.body.options.content = value;
+			},
 		},
 	};
 }
 ```
 
-Static handlers compose across inheritance. A subclass's `static handlers` adds to the parent's without shadowing it.
+Schemas compose across inheritance: a subclass declares its own keys alongside the parent's, and a subclass `set` for the same key runs first - call `next(value)` to continue to the parent's.
 
 **4. `this.options.subscribe()` in `build()`**: when the update needs to coordinate multiple things:
 
@@ -453,7 +461,7 @@ const StyledCard = styled.Component`
 	background: ${({ colors }) => colors.darker(colors.gray)};
 	border-radius: 8px;
 	padding: 20px;
-	box-shadow: 0 4px 12px ${({ colors }) => colors.black.setAlpha(0.2)};
+	box-shadow: 0 4px 12px ${({ colors }) => colors.alpha(colors.black, 0.2)};
 
 	h2 {
 		color: ${({ colors }) => colors.light(colors.blue)};

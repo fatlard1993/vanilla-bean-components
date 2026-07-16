@@ -51,6 +51,10 @@ const Controls = styled(
 // The subscriber wires up during construction - no reactive code inside build().
 // When state changes, only the subscribed key's display updates.
 class UserCard extends Panel {
+	static schema = {
+		state: {},
+	};
+
 	build() {
 		const state = this.options.state;
 

@@ -29,7 +29,7 @@ Component extends Elem with a lifecycle and reactive options. The design goal is
 
 **method:** `priorityRunsFirst`
 
-- `priorityOptions` is a set of option names that run first in `processOptions`; this handles cases where one option's correct behavior depends on another having already been applied
+- priority option names (framework base keys plus schema keys flagged `priority: true`) run first in `processOptions`; this handles cases where one option's correct behavior depends on another having already been applied
   - priorityRunsFirst() → true
 
 ## Cleanup prevents accumulation on re-render

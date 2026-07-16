@@ -32,8 +32,6 @@ const TagListInput = styled(
 	`,
 );
 
-const defaultOptions = { readOnly: false };
-
 /**
  * Interactive tag list component with add/remove functionality and input support.
  *
@@ -47,11 +45,20 @@ const defaultOptions = { readOnly: false };
  * @returns {TagList} TagList component instance
  */
 class TagList extends StyledComponent {
-	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
-
-	constructor(options = {}, ...children) {
-		super({ ...options, tag: 'ul' }, ...children);
-	}
+	static schema = {
+		tag: { default: 'ul' },
+		readOnly: {
+			default: false,
+			set(value) {
+				this.toggleClass('readOnly', !!value);
+			},
+		},
+		tags: {
+			get default() {
+				return [];
+			},
+		},
+	};
 
 	_addTag(value) {
 		value = (value || '').trim();
@@ -91,7 +98,7 @@ class TagList extends StyledComponent {
 		}
 
 		this.append([
-			...(this.options.tags || []).map(textContent => new Tag({ readOnly: this.options.readOnly, textContent })),
+			...this.options.tags.map(textContent => new Tag({ readOnly: this.options.readOnly, textContent })),
 			...(this.addTag ? [this.addTag] : []),
 		]);
 	}

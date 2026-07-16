@@ -124,7 +124,7 @@ const Card = styled(
 	({ colors }) => `
 	background: ${colors.white};
 	border-radius: 8px;
-	box-shadow: 0 2px 8px ${colors.black.setAlpha(0.1)};
+	box-shadow: 0 2px 8px ${colors.alpha(colors.black, 0.1)};
 	padding: 24px;
 
 	&:hover {

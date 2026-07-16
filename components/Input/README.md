@@ -69,8 +69,6 @@ input.isDirty: boolean  // getter - true if current value differs from the initi
 
 Input components emit enhanced native events. All handlers (`onInput`, `onChange`, `onKeyUp`, etc.) receive a standard DOM event augmented with a `.value` property containing the current input value.
 
-The `close` event is registered by default via `registeredEvents`.
-
 ## Example
 
 Textarea with auto-height and syntax highlighting:

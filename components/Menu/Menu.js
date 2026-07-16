@@ -37,23 +37,32 @@ const StyledList = styled(
  * borders, and click handling. Provides consistent menu appearance and behavior.
  * @param {object} [options={}] - Menu configuration options
  * @param {Array<*>} [options.items] - Array of menu items to render
- * @param {Function} [options.onSelect] - Handler called when menu item is selected
+ * @param {Function} [options.onSelect] - Handler for the "select" CustomEvent fired when a menu item is activated; the activation event is in event.detail
  * @param {Component} [options.ListItemComponent] - Custom component class for rendering menu items
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Menu} Menu component instance
  */
 export default class Menu extends StyledList {
-	static handlers = {
-		items(value, next) {
-			next(value);
-			if (!value) return;
-			const items = Array.from(this.elem.children).filter(el => el.tagName === 'LI');
-			items.forEach((li, i) => li.setAttribute('tabindex', i === 0 ? '0' : '-1'));
+	static schema = {
+		role: { default: 'menu' },
+		items: {
+			set(value, next) {
+				next(value);
+				if (!value) return;
+				const items = Array.from(this.elem.children).filter(el => el.tagName === 'LI');
+				items.forEach((li, i) => li.setAttribute('tabindex', i === 0 ? '0' : '-1'));
+			},
 		},
 	};
 
-	constructor(options = {}, ...children) {
-		super({ role: 'menu', ...options, onPointerPress: options.onSelect }, ...children);
+	static events = ['select'];
+
+	build() {
+		this.on({
+			targetEvent: 'pointerdown',
+			id: 'menuSelect',
+			callback: event => this.emit('select', event),
+		});
 
 		this.on({
 			targetEvent: 'keydown',
@@ -78,7 +87,7 @@ export default class Menu extends StyledList {
 					next = items[items.length - 1];
 				} else if ((e.key === 'Enter' || e.key === ' ') && currentIndex >= 0) {
 					e.preventDefault();
-					this.options.onSelect?.(e);
+					this.emit('select', e);
 					return;
 				}
 

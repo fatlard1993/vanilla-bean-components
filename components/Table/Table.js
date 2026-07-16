@@ -4,8 +4,6 @@ import { Elem } from '../../Elem';
 import { Component } from '../../Component';
 import { Icon } from '../Icon';
 
-const defaultOptions = { tag: 'table' };
-
 /**
  * Data table component with sorting, column configuration, and footer support.
  *
@@ -23,37 +21,55 @@ const defaultOptions = { tag: 'table' };
  * @returns {Table} Table component instance
  */
 class Table extends Component {
-	constructor(options = {}, ...children) {
-		super(
-			{
-				...defaultOptions,
-				onSort: (property, direction) => {
-					this.options.data = this.options.data.sort(orderBy({ property, direction }));
-				},
-				...options,
-				columns: (options.columns || []).map(column =>
-					typeof column === 'string' ? { key: column, content: capitalize(column) } : column,
-				),
-				footer: options.footer?.map(column => (typeof column === 'string' ? { content: capitalize(column) } : column)),
+	static schema = {
+		tag: { default: 'table' },
+		sortDirection: {
+			enum: ['asc', 'desc'],
+			set(value) {
+				if (!this.rendered) return;
+				if (this.options.onSort) this.options.onSort(this.options.sortProperty, value);
+				else
+					this.options.data = this.options.data.sort(
+						orderBy({ property: this.options.sortProperty, direction: value }),
+					);
 			},
-			...children,
-		);
-	}
-
-	static handlers = {
-		sortDirection(value) {
-			if (this.rendered) this.options.onSort(this.options.sortProperty, value);
 		},
-		data() {
-			this._renderTable();
+		data: {
+			set() {
+				this._renderTable();
+			},
 		},
-		selection() {
-			this._renderTable();
+		selection: {
+			set() {
+				this._renderTable();
+			},
 		},
+		columns: {
+			set() {
+				if (this.rendered) this._renderTable();
+			},
+		},
+		footer: {
+			set() {
+				if (this.rendered) this._renderTable();
+			},
+		},
+		// Read from this.options at sort time; sortProperty changes are always followed
+		// by a sortDirection change, which drives the re-render
+		sortProperty: {},
+		onSort: {},
 	};
 
 	_renderTable() {
 		const value = this.options.data;
+		// Columns and footer accept string shorthand - normalized at read time so
+		// construction and reactive assignment take the same path
+		const columns = (this.options.columns || []).map(column =>
+			typeof column === 'string' ? { key: column, content: capitalize(column) } : column,
+		);
+		const footer = this.options.footer?.map(column =>
+			typeof column === 'string' ? { content: capitalize(column) } : column,
+		);
 
 		this._sortSubscribers?.forEach(sub => sub.destroy?.());
 		this._sortSubscribers = null;
@@ -75,19 +91,22 @@ class Table extends Component {
 		this.thead.append(
 			new Component(
 				{ tag: 'tr' },
-				this.options.columns.map(column => {
-					const th = new Component({ tag: 'th', ...column, scope: 'col' });
+				columns.map(column => {
+					// key/sort/dataColumn are column config for the Table itself - keep them off the th elem
+					const { key, sort, ...columnOptions } = column;
+					delete columnOptions.dataColumn;
+					const th = new Component({ tag: 'th', ...columnOptions, scope: 'col' });
 
-					if (column.sort) {
+					if (sort) {
 						const iconSub = this.options.subscriber('sortDirection', () => {
-							if (this.options.sortProperty !== column.key) return 'sort';
+							if (this.options.sortProperty !== key) return 'sort';
 
 							return this.options.sortDirection === 'asc' ? 'sort-down' : 'sort-up';
 						});
 						const styleSub = this.options.subscriber('sortDirection', () => ({
 							display: 'inline',
 							marginLeft: '6px',
-							...(this.options.sortProperty !== column.key
+							...(this.options.sortProperty !== key
 								? { color: theme.colors.dark(theme.colors.gray) }
 								: { color: theme.colors.white }),
 						}));
@@ -96,7 +115,7 @@ class Table extends Component {
 
 						const updateAriaSort = () => {
 							let ariaSort = 'none';
-							if (this.options.sortProperty === column.key) {
+							if (this.options.sortProperty === key) {
 								ariaSort = this.options.sortDirection === 'asc' ? 'ascending' : 'descending';
 							}
 							th.elem.setAttribute('aria-sort', ariaSort);
@@ -121,12 +140,12 @@ class Table extends Component {
 						});
 
 						th.onPointerPress(() => {
-							if (this.options.sortProperty === column.key) {
+							if (this.options.sortProperty === key) {
 								this.options.sortDirection = this.options.sortDirection === 'asc' ? 'desc' : 'asc';
 								return;
 							}
 
-							this.options.sortProperty = column.key;
+							this.options.sortProperty = key;
 							this.options.sortDirection = 'desc';
 						});
 					}
@@ -141,7 +160,7 @@ class Table extends Component {
 				rowData =>
 					new Component(
 						{ tag: 'tr' },
-						this.options.columns.map(
+						columns.map(
 							column =>
 								new Component(
 									{
@@ -157,11 +176,11 @@ class Table extends Component {
 			),
 		);
 
-		if (this.options.footer) {
+		if (footer) {
 			this.tfoot.append(
 				new Component(
 					{ tag: 'tr' },
-					this.options.footer.map(footData => new Component({ tag: 'td', ...footData })),
+					footer.map(footData => new Component({ tag: 'td', ...footData })),
 				),
 			);
 		}

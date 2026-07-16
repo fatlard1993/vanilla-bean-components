@@ -357,7 +357,7 @@ function extractEnumsMarkdown(filePath) {
 }
 
 /**
- * Extracts custom event definitions from JSDoc @fires tags and CustomEvent calls.
+ * Extracts custom event definitions from JSDoc `@fires` tags and CustomEvent calls.
  * @param {string} filePath - Path to component file
  * @returns {string} Formatted custom events markdown
  */
@@ -406,7 +406,7 @@ function extractCustomEventsMarkdown(filePath) {
 }
 
 /**
- * Extracts design information from DESIGN.md file or JSDoc @design tags.
+ * Extracts design information from DESIGN.md file or JSDoc `@design` tags.
  * @param {string} filePath - Path to component file
  * @param {string} basePath - Base path for resolving design file
  * @returns {string} Formatted design information markdown

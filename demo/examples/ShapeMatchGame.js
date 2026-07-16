@@ -93,6 +93,12 @@ const randomShape = ({
 };
 
 class ShapeMatchGame extends Component {
+	static schema = {
+		inkLevel: {},
+		color: {},
+		lineWidth: {},
+	};
+
 	constructor(options) {
 		super({
 			...options,

@@ -1,8 +1,6 @@
 import { styled } from '../../styled';
 import { Popover } from '../Popover';
 
-const type_enum = Object.freeze(['info', 'success', 'warning', 'error']);
-
 const StyledPopover = styled(
 	Popover,
 	({ colors, fonts }) => `
@@ -68,29 +66,41 @@ const StyledPopover = styled(
  * @returns {Notify} Notify component instance
  */
 export default class Notify extends StyledPopover {
-	type_enum = type_enum;
+	static schema = {
+		type: { default: 'success', enum: ['info', 'success', 'warning', 'error'] },
+		timeout: {
+			set(value) {
+				clearTimeout(this.timeout);
+				if (!value) return;
+				this.timeout = setTimeout(() => this.destroy(), value);
+				this.replaceCleanup('timeout', () => clearTimeout(this.timeout));
+			},
+		},
+	};
 
-	constructor(options = {}) {
-		const { timeout, type = 'success' } = options;
-		const icon =
-			options.icon ||
-			{ info: 'circle-info', success: 'check', warning: 'triangle-exclamation', error: 'skull-crossbones' }[type];
+	static prepareOptions(options) {
+		const { type } = options;
 
-		super({
+		return {
 			role: type === 'error' || type === 'warning' ? 'alert' : 'status',
 			'aria-atomic': 'true',
-			onPointerPress: e => {
-				if (!e.target.closest('button, [role="button"]')) this.destroy();
-			},
-			state: 'manual',
 			...options,
 			addClass: [type].concat(options.addClass),
-			icon,
-		});
+			icon:
+				options.icon ||
+				{ info: 'circle-info', success: 'check', warning: 'triangle-exclamation', error: 'skull-crossbones' }[type],
+		};
+	}
 
-		if (timeout) {
-			this.timeout = setTimeout(() => this.destroy(), timeout);
-			this.addCleanup('timeout', () => clearTimeout(this.timeout));
-		}
+	build() {
+		super.build();
+
+		this.on({
+			targetEvent: 'pointerdown',
+			id: 'notifyDismiss',
+			callback: e => {
+				if (!e.target.closest('button, [role="button"]')) this.destroy();
+			},
+		});
 	}
 }

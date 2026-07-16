@@ -129,7 +129,7 @@ describe('Input', () => {
 
 	test('supports all input types from enum', () => {
 		const input = new Input({ type: 'email', appendTo: container });
-		expect(input.type_enum).toContain('email');
+		expect(input.optionEnum('type')).toContain('email');
 		expect(input.elem.type).toBe('email');
 	});
 

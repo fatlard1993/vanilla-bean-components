@@ -532,90 +532,477 @@ describe('Component', () => {
 		});
 	});
 
-	describe('static handlers', () => {
-		test('handler is called for matching option key on render', () => {
-			const called = [];
-
+	describe('static schema', () => {
+		test('schema defaults are merged automatically', () => {
 			class TestComp extends Component {
-				static handlers = {
-					label(value) {
-						called.push(value);
-					},
+				static schema = {
+					label: { default: 'default label' },
 				};
 			}
 
-			const comp = new TestComp({ label: 'hello' });
-			expect(called).toContain('hello');
+			const comp = new TestComp();
+			expect(comp.options.label).toBe('default label');
 			comp.destroy();
 		});
 
-		test('handler is called for matching option key on reactive update', () => {
-			const called = [];
+		test('instance options override schema defaults', () => {
+			class TestComp extends Component {
+				static schema = {
+					label: { default: 'default label' },
+				};
+			}
+
+			const comp = new TestComp({ label: 'custom' });
+			expect(comp.options.label).toBe('custom');
+			comp.destroy();
+		});
+
+		test('child class schema defaults override parent defaults per-key', () => {
+			class Parent extends Component {
+				static schema = {
+					label: { default: 'parent' },
+					size: { default: 'small' },
+				};
+			}
+
+			class Child extends Parent {
+				static schema = {
+					label: { default: 'child' },
+				};
+			}
+
+			const comp = new Child();
+			expect(comp.options.label).toBe('child');
+			expect(comp.options.size).toBe('small');
+			comp.destroy();
+		});
+
+		test('getter defaults evaluate fresh per instance', () => {
+			let evaluations = 0;
 
 			class TestComp extends Component {
-				static handlers = {
-					label(value) {
-						called.push(value);
+				static schema = {
+					stamp: {
+						get default() {
+							return ++evaluations;
+						},
 					},
 				};
 			}
 
-			const comp = new TestComp({ label: 'first' });
+			const first = new TestComp();
+			const second = new TestComp();
+			expect(first.options.stamp).toBe(1);
+			expect(second.options.stamp).toBe(2);
+			first.destroy();
+			second.destroy();
+		});
+
+		test('set runs on render and reactive update', () => {
+			const called = [];
+
+			class TestComp extends Component {
+				static schema = {
+					label: {
+						default: 'first',
+						set(value) {
+							called.push(value);
+						},
+					},
+				};
+			}
+
+			const comp = new TestComp();
 			comp.options.label = 'second';
-			expect(called).toContain('second');
+			expect(called).toEqual(['first', 'second']);
 			comp.destroy();
 		});
 
-		test('subclass handler shadows parent handler', () => {
-			const parentCalls = [];
-			const childCalls = [];
+		test('declared keys with no DOM match are stored silently', () => {
+			class TestComp extends Component {
+				static schema = {
+					gameState: {},
+				};
+			}
+
+			const comp = new TestComp({ gameState: { score: 0 } });
+			comp.options.gameState = { score: 5 };
+			expect(comp.options.gameState).toEqual({ score: 5 });
+			expect(comp.elem.gameState).toBeUndefined();
+			comp.destroy();
+		});
+
+		test('declared callback options are stored without event registration or warning', () => {
+			const warnings = [];
+			const originalWarn = console.warn;
+			console.warn = (...args) => warnings.push(args.join(' '));
+
+			class TestComp extends Component {
+				static schema = {
+					onCustomAction: {},
+				};
+			}
+
+			const callback = () => {};
+			const comp = new TestComp({ onCustomAction: callback });
+			console.warn = originalWarn;
+
+			expect(comp.options.onCustomAction).toBe(callback);
+			expect(comp.onCustomAction).toBeUndefined();
+			expect(warnings.filter(warning => warning.includes('onCustomAction'))).toEqual([]);
+			comp.destroy();
+		});
+
+		test('data: true forces store-only routing for DOM-colliding names', () => {
+			class TestComp extends Component {
+				static schema = {
+					title: { data: true },
+				};
+			}
+
+			const comp = new TestComp({ title: 'component data' });
+			expect(comp.options.title).toBe('component data');
+			expect(comp.elem.title).toBe('');
+			comp.destroy();
+		});
+
+		test('subclass set shadows parent set when next is not called', () => {
+			const order = [];
 
 			class Parent extends Component {
-				static handlers = {
-					label(value) {
-						parentCalls.push(value);
+				static schema = {
+					label: {
+						set(value) {
+							order.push(`parent:${value}`);
+						},
 					},
 				};
 			}
 
 			class Child extends Parent {
-				static handlers = {
-					label(value) {
-						childCalls.push(value);
+				static schema = {
+					label: {
+						set(value) {
+							order.push(`child:${value}`);
+						},
 					},
 				};
 			}
 
 			const comp = new Child({ label: 'test' });
-			expect(childCalls).toContain('test');
-			expect(parentCalls).not.toContain('test');
+			expect(order).toEqual(['child:test']);
 			comp.destroy();
 		});
 
-		test('handler can call parent handler explicitly', () => {
-			const parentCalls = [];
-			const childCalls = [];
+		test('subclass set chains into parent set via next', () => {
+			const order = [];
 
 			class Parent extends Component {
-				static handlers = {
-					label(value) {
-						parentCalls.push(value);
+				static schema = {
+					label: {
+						set(value) {
+							order.push(`parent:${value}`);
+						},
 					},
 				};
 			}
 
 			class Child extends Parent {
-				static handlers = {
-					label(value) {
-						childCalls.push(value);
-						Parent.handlers.label.call(this, value);
+				static schema = {
+					label: {
+						set(value, next) {
+							order.push(`child:${value}`);
+							next(value);
+						},
 					},
 				};
 			}
 
 			const comp = new Child({ label: 'test' });
-			expect(childCalls).toContain('test');
-			expect(parentCalls).toContain('test');
+			expect(order).toEqual(['child:test', 'parent:test']);
+			comp.destroy();
+		});
+
+		test('defaultOptions getter reflects merged schema defaults', () => {
+			class TestComp extends Component {
+				static schema = {
+					label: { default: 'from schema' },
+				};
+			}
+
+			const comp = new TestComp();
+			expect(comp.defaultOptions.label).toBe('from schema');
+			expect(comp.defaultOptions.tag).toBe('div');
+			comp.destroy();
+		});
+
+		test('attribute: true routes the key through setAttribute', () => {
+			class TestComp extends Component {
+				static schema = {
+					colspan: { attribute: true },
+				};
+			}
+
+			const comp = new TestComp({ colspan: '2' });
+			expect(comp.elem.getAttribute('colspan')).toBe('2');
+			comp.destroy();
+		});
+
+		test('priority: true keys process before other keys', () => {
+			const order = [];
+
+			class TestComp extends Component {
+				static schema = {
+					first: {
+						priority: true,
+						set() {
+							order.push('first');
+						},
+					},
+					second: {
+						set() {
+							order.push('second');
+						},
+					},
+				};
+			}
+
+			const comp = new TestComp({ second: 'b', first: 'a' });
+			expect(order).toEqual(['first', 'second']);
+			comp.destroy();
+		});
+	});
+
+	describe('schema field inheritance', () => {
+		test('subclass can opt out of a parent data flag with data: false', () => {
+			class Parent extends Component {
+				static schema = {
+					title: { data: true },
+				};
+			}
+
+			class Child extends Parent {
+				static schema = {
+					title: { data: false },
+				};
+			}
+
+			const parent = new Parent({ title: 'stored-only' });
+			const child = new Child({ title: 'routed' });
+			expect(parent.elem.title).toBe('');
+			expect(child.elem.title).toBe('routed');
+			parent.destroy();
+			child.destroy();
+		});
+
+		test('subclass set without a data field keeps the parent data flag', () => {
+			const seen = [];
+
+			class Parent extends Component {
+				static schema = {
+					title: { data: true },
+				};
+			}
+
+			class Child extends Parent {
+				static schema = {
+					title: {
+						set(value, next) {
+							seen.push(value);
+							next(value);
+						},
+					},
+				};
+			}
+
+			const child = new Child({ title: 'stored-only' });
+			expect(seen).toEqual(['stored-only']);
+			expect(child.elem.title).toBe('');
+			child.destroy();
+		});
+
+		test('subclass can lift a parent enum with enum: null', () => {
+			class Parent extends Component {
+				static schema = {
+					variant: { enum: ['plain'], data: true },
+				};
+			}
+
+			class Child extends Parent {
+				static schema = {
+					variant: { enum: null },
+				};
+			}
+
+			expect(() => new Parent({ variant: 'wild' })).toThrow();
+			const child = new Child({ variant: 'wild' });
+			expect(child.options.variant).toBe('wild');
+			child.destroy();
+		});
+	});
+
+	describe('schema enum', () => {
+		class EnumComp extends Component {
+			static schema = {
+				variant: { default: 'plain', enum: ['plain', 'fancy'] },
+			};
+		}
+
+		test('valid values pass on construction and reactive update', () => {
+			const comp = new EnumComp({ variant: 'fancy' });
+			comp.options.variant = 'plain';
+			expect(comp.options.variant).toBe('plain');
+			comp.destroy();
+		});
+
+		test('invalid values throw with the valid values listed', () => {
+			expect(() => new EnumComp({ variant: 'bogus' })).toThrow(
+				'"bogus" is not a valid variant. The variant must be one of the following values: plain, fancy',
+			);
+		});
+
+		test('invalid reactive assignment throws', () => {
+			const comp = new EnumComp();
+			expect(() => (comp.options.variant = 'bogus')).toThrow();
+			comp.destroy();
+		});
+
+		test('null and undefined bypass enum validation', () => {
+			class OptionalEnumComp extends Component {
+				static schema = {
+					variant: { enum: ['plain', 'fancy'] },
+				};
+			}
+
+			const comp = new OptionalEnumComp({ variant: undefined });
+			comp.options.variant = null;
+			comp.destroy();
+		});
+
+		test('optionEnum exposes the declared values, nearest class first', () => {
+			class Wider extends EnumComp {
+				static schema = {
+					variant: { enum: ['plain', 'fancy', 'wild'] },
+				};
+			}
+
+			const base = new EnumComp();
+			const wider = new Wider({ variant: 'wild' });
+			expect(base.optionEnum('variant')).toEqual(['plain', 'fancy']);
+			expect(wider.optionEnum('variant')).toEqual(['plain', 'fancy', 'wild']);
+			expect(base.optionEnum('missing')).toBeUndefined();
+			base.destroy();
+			wider.destroy();
+		});
+	});
+
+	describe('static events', () => {
+		test('declared events register via on() and fire via emit()', () => {
+			const received = [];
+
+			class TestComp extends Component {
+				static events = ['activate'];
+			}
+
+			const comp = new TestComp({ onActivate: event => received.push(event.detail) });
+			comp.emit('activate', 'payload');
+			expect(received).toEqual(['payload']);
+			comp.destroy();
+		});
+
+		test('subclass events union with parent events instead of replacing', () => {
+			class Parent extends Component {
+				static events = ['open'];
+			}
+
+			class Child extends Parent {
+				static events = ['close'];
+			}
+
+			const received = [];
+			const comp = new Child({
+				onOpen: () => received.push('open'),
+				onClose: () => received.push('close'),
+			});
+			comp.emit('open');
+			comp.emit('close');
+			expect(received).toEqual(['open', 'close']);
+			comp.destroy();
+		});
+	});
+
+	describe('static prepareOptions', () => {
+		test('transforms merged options before processing', () => {
+			class TestComp extends Component {
+				static schema = {
+					label: { default: 'raw' },
+				};
+
+				static prepareOptions(options) {
+					return { ...options, textContent: `prepared:${options.label}` };
+				}
+			}
+
+			const comp = new TestComp();
+			expect(comp.elem.textContent).toBe('prepared:raw');
+			comp.destroy();
+		});
+
+		test('sees schema defaults from child classes (merged view)', () => {
+			const seen = [];
+
+			class Parent extends Component {
+				static prepareOptions(options) {
+					seen.push(options.mode);
+					return options;
+				}
+			}
+
+			class Child extends Parent {
+				static schema = {
+					mode: { default: 'child-mode', data: true },
+				};
+			}
+
+			const comp = new Child();
+			expect(seen).toEqual(['child-mode']);
+			comp.destroy();
+		});
+
+		test('runs leaf-first so child transforms feed parent hooks', () => {
+			const order = [];
+
+			class Parent extends Component {
+				static prepareOptions(options) {
+					order.push(`parent:${options.stage}`);
+					return options;
+				}
+			}
+
+			class Child extends Parent {
+				static prepareOptions(options) {
+					order.push(`child:${options.stage}`);
+					return { ...options, stage: 'transformed' };
+				}
+			}
+
+			const comp = new Child({ stage: 'raw', 'data-stage': 'x' });
+			expect(order).toEqual(['child:raw', 'parent:transformed']);
+			comp.destroy();
+		});
+
+		test('receives constructor children', () => {
+			let receivedChildren;
+
+			class TestComp extends Component {
+				static prepareOptions(options, children) {
+					receivedChildren = children;
+					return options;
+				}
+			}
+
+			const comp = new TestComp({}, 'child content');
+			expect(receivedChildren).toEqual(['child content']);
 			comp.destroy();
 		});
 	});

@@ -5,7 +5,7 @@
  * @returns {number} Zero-based index position within parent element
  */
 export const getElementIndex = (element, index = 0) => {
-	if (element.previousElementSibling) return getElementIndex(element.previousElementSibling, ++index);
+	if (element.previousElementSibling) return getElementIndex(element.previousElementSibling, index + 1);
 
 	return index;
 };
@@ -44,7 +44,7 @@ export const getElementsContainingText = (text, options = {}) => {
 	const xPath = `.//${xPathElement}[contains(${caseSensitive ? `text(),${esc(text)}` : `translate(.,${esc(text.toUpperCase())},${esc(text.toLowerCase())}),${esc(text.toLowerCase())}`})]`;
 	const result = document.evaluate(xPath, scope, null, XPathResult.ANY_TYPE, null);
 
-	let node = null;
+	let node;
 	const nodes = [];
 	while ((node = result.iterateNext())) {
 		if (nodes.length > 0 && nodes.at(-1).contains(node)) nodes[nodes.length - 1] = node;

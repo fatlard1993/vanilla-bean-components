@@ -65,7 +65,7 @@ function extractDescription(content) {
 }
 
 /**
- * Extracts constructor options from JSDoc @param tags.
+ * Extracts constructor options from JSDoc `@param` tags.
  * @param {string} content - File content to parse
  * @returns {Array} Array of option objects with name, type, description, and default
  */
@@ -282,7 +282,7 @@ function extractProperties(content) {
 }
 
 /**
- * Extracts event information from emit() calls and JSDoc @fires tags.
+ * Extracts event information from emit() calls and JSDoc `@fires` tags.
  * @param {string} content - File content to parse
  * @returns {Array} Array of event objects with name and description
  */
@@ -349,7 +349,7 @@ function extractImports(content) {
 }
 
 /**
- * Extracts example code from JSDoc @example tags.
+ * Extracts example code from JSDoc `@example` tags.
  * @param {string} content - File content to parse
  * @returns {Array} Array of example objects with code and optional description
  */

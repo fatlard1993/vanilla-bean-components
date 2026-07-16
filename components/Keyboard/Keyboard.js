@@ -24,54 +24,46 @@ const KeyRow = styled(
  * @returns {Keyboard} Keyboard component instance
  */
 class Keyboard extends Component {
-	constructor(options = {}, ...children) {
-		super(
-			{
-				layout: 'simple',
-				tactileResponse: true,
-				keyDefinitions: {
-					simple: { text: 'ABC' },
-					number: { text: '123' },
-					shift: { class: 'u1_5' },
-					return: { class: 'u1_5' },
-					backspace: { class: 'u1_5' },
-					clear: { class: 'u1_5' },
-					done: { class: 'u1_5' },
-					exponent: { key: 'e', text: 'e', class: 'u1_5' },
-					space: { key: ' ', text: ' ', class: 'u6' },
-				},
-				layouts: {
-					simple: [
-						['simple', 'number'],
-						['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
-						['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
-						['shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'backspace'],
-						[',', '.', 'space', '!', 'return'],
-					],
-					number: [
-						['simple', 'number'],
-						['1', '2', '3', 'backspace'],
-						['4', '5', '6', 'clear'],
-						['7', '8', '9', 'done'],
-						['.', '0', '-', 'exponent'],
-					],
-				},
-				...options,
+	static schema = {
+		layout: {
+			default: 'simple',
+			set(value) {
+				this.setLayout(value);
 			},
-			...children,
-		);
-
-		this.setLayout(this.options.layout);
-	}
-
-	static handlers = {
-		// Claim these keys so standard routing doesn't try to assign them as elem properties.
-		// Both are read directly from this.options in setLayout() and key resolution.
-		layouts() {},
-		keyDefinitions() {},
-		layout(value) {
-			this.setLayout(value);
 		},
+		// Read directly from this.options in setLayout() and key press handling
+		layouts: {
+			default: {
+				simple: [
+					['simple', 'number'],
+					['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+					['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+					['shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'backspace'],
+					[',', '.', 'space', '!', 'return'],
+				],
+				number: [
+					['simple', 'number'],
+					['1', '2', '3', 'backspace'],
+					['4', '5', '6', 'clear'],
+					['7', '8', '9', 'done'],
+					['.', '0', '-', 'exponent'],
+				],
+			},
+		},
+		keyDefinitions: {
+			default: {
+				simple: { text: 'ABC' },
+				number: { text: '123' },
+				shift: { class: 'u1_5' },
+				return: { class: 'u1_5' },
+				backspace: { class: 'u1_5' },
+				clear: { class: 'u1_5' },
+				done: { class: 'u1_5' },
+				exponent: { key: 'e', text: 'e', class: 'u1_5' },
+				space: { key: ' ', text: ' ', class: 'u6' },
+			},
+		},
+		tactileResponse: { default: true },
 	};
 
 	// todo native keyboard events https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/KeyboardEvent

@@ -1,13 +1,6 @@
 import { Elem } from '../../Elem';
 import { Input } from '../Input';
 
-const defaultOptions = {
-	tag: 'select',
-	get priorityOptions() {
-		return new Set(['textContent', 'content', 'appendTo', 'prependTo', 'options']);
-	},
-};
-
 /**
  * Select dropdown component extending Input with dynamic option management.
  *
@@ -21,33 +14,34 @@ const defaultOptions = {
  * @returns {Select} Select component instance
  */
 class Select extends Input {
-	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
+	static schema = {
+		tag: { default: 'select' },
+		autocomplete: { default: 'off' },
+		options: {
+			set(value) {
+				this.empty();
 
-	constructor(options = {}, ...children) {
-		super({ ...defaultOptions, ...options }, ...children);
-	}
+				if (!value) return;
 
-	static handlers = {
-		options(value) {
-			this.empty();
-
-			if (!value) return;
-
-			for (const option of value) {
-				// Optgroup: { label: 'Group', options: [...] }
-				if (typeof option === 'object' && Array.isArray(option.options)) {
-					const group = document.createElement('optgroup');
-					if (option.label) group.label = option.label;
-					for (const o of option.options) {
-						group.append(new Elem({ tag: 'option', ...(typeof o === 'object' ? o : { label: o, value: o }) }).elem);
+				for (const option of value) {
+					// Optgroup: { label: 'Group', options: [...] }
+					if (typeof option === 'object' && Array.isArray(option.options)) {
+						const group = document.createElement('optgroup');
+						if (option.label) group.label = option.label;
+						for (const o of option.options) {
+							group.append(new Elem({ tag: 'option', ...(typeof o === 'object' ? o : { label: o, value: o }) }).elem);
+						}
+						this.elem.append(group);
+					} else {
+						this.append(
+							new Elem({ tag: 'option', ...(typeof option === 'object' ? option : { label: option, value: option }) }),
+						);
 					}
-					this.elem.append(group);
-				} else {
-					this.append(
-						new Elem({ tag: 'option', ...(typeof option === 'object' ? option : { label: option, value: option }) }),
-					);
 				}
-			}
+
+				// Re-apply the current value - option elements may not have existed when value was processed
+				if (this.options.value !== undefined) this.elem.value = this.options.value;
+			},
 		},
 	};
 

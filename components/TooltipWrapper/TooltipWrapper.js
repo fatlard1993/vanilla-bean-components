@@ -29,61 +29,67 @@ const StyledIcon = styled(
  * @returns {TooltipWrapper} TooltipWrapper component instance
  */
 export default class TooltipWrapper extends StyledIcon {
-	static handlers = {
-		tooltip(value) {
-			if (value == null) return;
-			const tooltipOptions = typeof value === 'object' ? value : { textContent: value };
-
-			if (this._tooltip) {
-				this._tooltip.setOptions(tooltipOptions);
-			} else {
-				this._tooltip = new Tooltip({
-					appendTo: this.elem,
-					...tooltipOptions,
-				});
-
-				this.addClass('has-tooltip');
-
-				this.on({
-					targetEvent: 'pointerover',
-					callback: ({ clientX, clientY }) => {
-						this.tooltipTimeout = setTimeout(() => this._tooltip?.show({ x: clientX, y: clientY }), 700);
-					},
-				});
-
-				this.on({
-					targetEvent: 'pointerout',
-					callback: () => {
-						clearTimeout(this.tooltipTimeout);
-						if (!this.elem.contains(document.activeElement)) this._tooltip?.hide();
-					},
-				});
-
-				this.on({
-					targetEvent: 'focus',
-					callback: () => {
-						clearTimeout(this.tooltipTimeout);
-						const { left, bottom } = this.elem.getBoundingClientRect();
-						this._tooltip?.show({ x: left, y: bottom });
-					},
-				});
-
-				this.on({
-					targetEvent: 'blur',
-					callback: () => {
-						clearTimeout(this.tooltipTimeout);
-						this._tooltip?.hide();
-					},
-				});
-
-				this.replaceCleanup('tooltip', () => {
-					if (this._tooltip) {
-						this._tooltip.destroy?.();
-						this._tooltip = null;
-					}
-					clearTimeout(this.tooltipTimeout);
-				});
-			}
+	static schema = {
+		tooltip: {
+			set(value) {
+				this._applyTooltip(value);
+			},
 		},
 	};
+
+	_applyTooltip(value) {
+		if (value == null) return;
+		const tooltipOptions = typeof value === 'object' ? value : { textContent: value };
+
+		if (this._tooltip) {
+			this._tooltip.setOptions(tooltipOptions);
+		} else {
+			this._tooltip = new Tooltip({
+				appendTo: this.elem,
+				...tooltipOptions,
+			});
+
+			this.addClass('has-tooltip');
+
+			this.on({
+				targetEvent: 'pointerover',
+				callback: ({ clientX, clientY }) => {
+					this.tooltipTimeout = setTimeout(() => this._tooltip?.show({ x: clientX, y: clientY }), 700);
+				},
+			});
+
+			this.on({
+				targetEvent: 'pointerout',
+				callback: () => {
+					clearTimeout(this.tooltipTimeout);
+					if (!this.elem.contains(document.activeElement)) this._tooltip?.hide();
+				},
+			});
+
+			this.on({
+				targetEvent: 'focus',
+				callback: () => {
+					clearTimeout(this.tooltipTimeout);
+					const { left, bottom } = this.elem.getBoundingClientRect();
+					this._tooltip?.show({ x: left, y: bottom });
+				},
+			});
+
+			this.on({
+				targetEvent: 'blur',
+				callback: () => {
+					clearTimeout(this.tooltipTimeout);
+					this._tooltip?.hide();
+				},
+			});
+
+			this.replaceCleanup('tooltip', () => {
+				if (this._tooltip) {
+					this._tooltip.destroy?.();
+					this._tooltip = null;
+				}
+				clearTimeout(this.tooltipTimeout);
+			});
+		}
+	}
 }

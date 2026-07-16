@@ -73,9 +73,9 @@ describe('Link', () => {
 	test('supports variant enum values', () => {
 		const link = new Link({ appendTo: container });
 
-		expect(link.variant_enum).toContain('link');
-		expect(link.variant_enum).toContain('button');
-		expect(link.variant_enum).toHaveLength(2);
+		expect(link.optionEnum('variant')).toContain('link');
+		expect(link.optionEnum('variant')).toContain('button');
+		expect(link.optionEnum('variant')).toHaveLength(2);
 	});
 
 	test('accepts custom href and target attributes', () => {

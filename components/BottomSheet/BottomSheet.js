@@ -2,12 +2,6 @@ import { styled } from '../../styled';
 import { Component } from '../../Component';
 import { Elem } from '../../Elem';
 
-const defaultOptions = {
-	get appendTo() {
-		return document.body;
-	},
-};
-
 /**
  * Mobile-friendly bottom sheet with drag-to-close gesture.
  *
@@ -65,17 +59,15 @@ class BottomSheet extends styled(
 		}
 	`,
 ) {
-	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
-
-	// Empty handler prevents _standardSetOption from routing onClose through the event system.
-	// The value is accessed directly as this.options.onClose in hide().
-	static handlers = {
-		onClose() {},
+	static schema = {
+		appendTo: {
+			get default() {
+				return document.body;
+			},
+		},
+		// Read directly as this.options.onClose in hide()
+		onClose: {},
 	};
-
-	constructor(options = {}, ...children) {
-		super({ ...defaultOptions, ...options }, ...children);
-	}
 
 	build() {
 		this._dragZone = new Elem({ tag: 'div', appendTo: this, addClass: 'sheet-drag-zone' });

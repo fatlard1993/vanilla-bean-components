@@ -119,6 +119,13 @@ const Hint = styled(
 // ─── FormField ────────────────────────────────────────────────────────────────
 
 class FormField extends FieldWrap {
+	static schema = {
+		state: {},
+		field: {},
+		myId: {},
+		send: {},
+	};
+
 	build() {
 		const { state, field, myId, send } = this.options;
 
@@ -183,6 +190,13 @@ class FormField extends FieldWrap {
 // ─── Presence bar ─────────────────────────────────────────────────────────────
 
 class Presence extends PresenceRow {
+	static schema = {
+		state: {},
+		myId: {},
+		myName: {},
+		myColor: {},
+	};
+
 	build() {
 		const { state, myId, myName, myColor } = this.options;
 

@@ -7,11 +7,17 @@ const StyledEvent = styled(
 	Component,
 	({ colors }) => `
 		cursor: pointer;
-		color: ${colors.black};
-		background-color: ${colors.yellow};
+		color: ${colors.mostReadable(colors.selected, [colors.white, colors.black])};
+		background-color: ${colors.selected};
 
 		& div {
 			pointer-events: none;
+		}
+
+		&:hover,
+		&:focus-visible {
+			outline: 2px solid ${colors.light(colors.selected)};
+			outline-offset: -2px;
 		}
 	`,
 );
@@ -51,10 +57,9 @@ export default class CalendarEvent {
 		};
 
 		this.eventElem = new StyledEvent({
-			data: { at: this.at },
 			className: 'event',
 			role: 'button',
-			tabindex: '0',
+			tabIndex: 0,
 			'aria-label': `${this.label}, ${formattedTime}${this.duration ? formatDuration(this.duration, ', ') : ''}`,
 			style: { backgroundColor: this.color },
 			append: [

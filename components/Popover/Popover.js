@@ -18,19 +18,6 @@ const StyledIcon = styled(
 	`,
 );
 
-const defaultOptions = {
-	uniqueId: true,
-	state: 'manual',
-	outsideClose: false,
-	get viewport() {
-		return document.documentElement;
-	},
-	get appendTo() {
-		return document.body;
-	},
-};
-const state_enum = Object.freeze(['auto', 'manual']);
-
 /**
  * Popover component using native HTML popover API with edge-aware positioning.
  *
@@ -50,45 +37,63 @@ const state_enum = Object.freeze(['auto', 'manual']);
  * @returns {Popover} Popover component instance
  */
 export default class Popover extends StyledIcon {
-	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
-	state_enum = state_enum;
-
-	constructor({ autoOpen = true, onConnected: userOnConnected, ...options } = {}, ...children) {
-		super(
-			{
-				...defaultOptions,
-				onConnected: () => {
-					if (autoOpen) {
-						const timeoutId = setTimeout(() => this.show(), 200);
-						this.replaceCleanup('autoOpen', () => clearTimeout(timeoutId));
-					}
-					userOnConnected?.();
-				},
-				...options,
+	static schema = {
+		uniqueId: { default: true },
+		state: {
+			default: 'manual',
+			enum: ['auto', 'manual'],
+			set(value) {
+				this.elem.popover = value;
 			},
-			...children,
-		);
+		},
+		autoOpen: { default: true },
+		// Positioning and dismissal config read from this.options by show()/edgeAwarePlacement()
+		outsideClose: { default: false },
+		viewport: {
+			get default() {
+				return document.documentElement;
+			},
+		},
+		appendTo: {
+			get default() {
+				return document.body;
+			},
+		},
+		maxWidth: { default: 264 },
+		maxHeight: { default: 132 },
+		x: {
+			set() {
+				this._placeAtPoint();
+			},
+		},
+		y: {
+			set() {
+				this._placeAtPoint();
+			},
+		},
+	};
 
-		if (this.options.x !== undefined && this.options.y !== undefined) this.edgeAwarePlacement(this.options);
+	build() {
+		this.on({
+			targetEvent: 'connected',
+			id: 'popoverAutoOpen',
+			callback: () => {
+				if (!this.options.autoOpen) return;
+				const timeoutId = setTimeout(() => this.show(), 200);
+				this.replaceCleanup('autoOpen', () => clearTimeout(timeoutId));
+			},
+		});
 	}
 
-	static handlers = {
-		state(value) {
-			this.elem.popover = value;
-		},
-		outsideClose() {},
-		viewport() {},
-		maxWidth() {},
-		maxHeight() {},
-		x() {},
-		y() {},
-	};
+	_placeAtPoint() {
+		if (this.options.x !== undefined && this.options.y !== undefined) this.edgeAwarePlacement(this.options);
+	}
 
 	edgeAwarePlacement({
 		x,
 		y,
-		maxHeight = this.options.maxHeight ?? 132,
-		maxWidth = this.options.maxWidth ?? 264,
+		maxHeight = this.options.maxHeight,
+		maxWidth = this.options.maxWidth,
 		padding = 24,
 		viewport = this.options.viewport || this.options.appendTo,
 	}) {

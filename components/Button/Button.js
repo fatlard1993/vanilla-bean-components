@@ -1,7 +1,5 @@
 import { TooltipWrapper } from '../TooltipWrapper';
 
-const defaultOptions = { tag: 'button' };
-
 /**
  * Interactive button component with keyboard accessibility and tooltip support.
  *
@@ -31,23 +29,19 @@ const defaultOptions = { tag: 'button' };
  * });
  */
 export default class Button extends TooltipWrapper {
-	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
+	static schema = {
+		tag: { default: 'button' },
+	};
 
-	constructor(options = {}, ...children) {
-		const userOnKeyUp = options.onKeyUp;
-
-		super(
-			{
-				...defaultOptions,
-				...options,
-				onKeyUp: event => {
-					userOnKeyUp?.call(this, event);
-					if (event.code === 'Space' || event.code === 'Enter') {
-						this.options.onPointerPress?.(event);
-					}
-				},
+	build() {
+		this.on({
+			targetEvent: 'keyup',
+			id: 'buttonKeyboardActivate',
+			callback: event => {
+				if (event.code === 'Space' || event.code === 'Enter') {
+					this.options.onPointerPress?.(event);
+				}
 			},
-			...children,
-		);
+		});
 	}
 }

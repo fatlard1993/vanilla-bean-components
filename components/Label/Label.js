@@ -120,10 +120,6 @@ const StyledLabel = styled(
 	`,
 );
 
-const variant_enum = Object.freeze(['overlay', 'collapsible', 'inline', 'inline-after', 'simple']);
-
-const defaultOptions = { variant: 'simple' };
-
 /**
  * Label component with multiple display variants and input association.
  *
@@ -139,20 +135,61 @@ const defaultOptions = { variant: 'simple' };
  * @returns {Label} Label component instance
  */
 class Label extends StyledLabel {
-	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
-	variant_enum = variant_enum;
+	static schema = {
+		variant: {
+			default: 'simple',
+			enum: ['overlay', 'collapsible', 'inline', 'inline-after', 'simple'],
+			set(value) {
+				this.removeClass(/\bvariant-\S+\b/g);
+				this.addClass(`variant-${value}`);
+
+				if (this._labelText) {
+					const shouldBeAfter = value === 'inline-after';
+					const isAfter = this._labelText.elem === this.elem.lastElementChild;
+					if (shouldBeAfter !== isAfter) this[shouldBeAfter ? 'append' : 'prepend'](this._labelText);
+					if (value === 'collapsible') {
+						this._labelText.elem.setAttribute('aria-expanded', this.hasClass('collapsed') ? 'false' : 'true');
+					}
+				}
+			},
+		},
+		label: {
+			set(value) {
+				if (typeof value === 'object') this._labelText?.setOptions(value);
+				else if (this._labelText) this._labelText.options.content = value;
+			},
+		},
+		collapsed: {
+			set(value) {
+				this[value ? 'addClass' : 'removeClass']('collapsed');
+				if (this.options.variant === 'collapsible' && this._labelText) {
+					this._labelText.elem.setAttribute('aria-expanded', value ? 'false' : 'true');
+				}
+			},
+		},
+		for: {
+			set(value) {
+				let forId = typeof value === 'string' ? value : value?.id || value?.elem?.id;
+
+				if (!forId && value?._component) {
+					forId = value.elem.id = value.uniqueId;
+				}
+
+				if (this._labelText) this._labelText.elem.htmlFor = forId ?? '';
+			},
+		},
+	};
+
+	static prepareOptions(options, children) {
+		return {
+			...(children.length > 0 && { for: children[0] }),
+			...options,
+		};
+	}
 
 	constructor(options = {}, ...children) {
-		if (typeof options === 'string') options = { label: options };
-
-		super(
-			{
-				...(children.length > 0 && { for: children[0] }),
-				...defaultOptions,
-				...options,
-			},
-			...children,
-		);
+		// String shorthand must resolve before Component spreads options
+		super(typeof options === 'string' ? { label: options } : options, ...children);
 	}
 
 	build() {
@@ -174,41 +211,6 @@ class Label extends StyledLabel {
 
 		this[this.options.variant === 'inline-after' ? 'append' : 'prepend'](this._labelText);
 	}
-
-	static handlers = {
-		label(value) {
-			if (typeof value === 'object') this._labelText?.setOptions(value);
-			else if (this._labelText) this._labelText.options.content = value;
-		},
-		collapsed(value) {
-			this[value ? 'addClass' : 'removeClass']('collapsed');
-			if (this.options.variant === 'collapsible' && this._labelText) {
-				this._labelText.elem.setAttribute('aria-expanded', value ? 'false' : 'true');
-			}
-		},
-		variant(value) {
-			this.removeClass(/\bvariant-\S+\b/g);
-			this.addClass(`variant-${value}`);
-
-			if (this._labelText) {
-				const shouldBeAfter = value === 'inline-after';
-				const isAfter = this._labelText.elem === this.elem.lastElementChild;
-				if (shouldBeAfter !== isAfter) this[shouldBeAfter ? 'append' : 'prepend'](this._labelText);
-				if (value === 'collapsible') {
-					this._labelText.elem.setAttribute('aria-expanded', this.hasClass('collapsed') ? 'false' : 'true');
-				}
-			}
-		},
-		for(value) {
-			let forId = typeof value === 'string' ? value : value?.id || value?.elem?.id;
-
-			if (!forId && value?._component) {
-				forId = value.elem.id = value.uniqueId;
-			}
-
-			if (this._labelText) this._labelText.elem.htmlFor = forId ?? '';
-		},
-	};
 }
 
 export default Label;

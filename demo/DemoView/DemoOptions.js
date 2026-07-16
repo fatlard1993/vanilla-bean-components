@@ -19,87 +19,88 @@ export default class DemoOptions extends List {
 		super({
 			...options,
 			addClass: ['no-style'],
-			items: Object.entries(component.options).map(
-				([key, value]) =>
-					new Label(
-						{ label: key, variant: 'collapsible', collapsed: true },
-						new List({
-							addClass: ['no-style'],
-							items: conditionalList([
-								{
-									alwaysItem: new Label(
-										'Type',
-										new CodeForLabel({
-											code: stringifyValue(typeof value === 'object' ? value : typeof value),
-										}),
-									),
-								},
-								{
-									if: !isMethod(key) && component.defaultOptions?.[key] !== undefined,
-									thenItem: new Label(
-										'Default',
-										new CodeForLabel({ code: stringifyValue(component.defaultOptions?.[key]) }),
-									),
-								},
-								{
-									if: component[`${key}_enum`] || typeof value === 'boolean',
-									thenItem: new Label(
-										'Current',
-										new Select({
-											value: component.options.subscriber?.(key) ?? value,
-											options: component[`${key}_enum`] || [
-												{ label: 'True', value: true },
-												{ label: 'False', value: false },
-											],
-											onChange:
-												typeof value === 'boolean'
-													? ({ value: newValue }) => (component.options[key] = newValue === 'true')
-													: ({ value: newValue }) => (component.options[key] = newValue),
-										}),
-									),
-								},
-								{
-									if:
-										!isMethod(key) &&
-										!component[`${key}_enum`] &&
-										typeof value !== 'boolean' &&
-										!stringifyValue(value).startsWith('[object HTML') &&
-										stringifyValue(value) !== '[object Component]' &&
-										stringifyValue(value) !== '[object Elem]',
-									thenItem: new Label(
-										'Current',
-										new Input({
-											tag: typeof value === 'object' || value?.includes?.('\n') ? 'textarea' : 'input',
-											syntaxHighlighting: typeof value !== 'string' || key === 'code',
-											style: { width: '100%' },
-											value:
-												component.options.subscriber?.(key, _ => {
-													try {
-														return ['[object Object]', '[object Array]'].includes(stringifyValue(_))
-															? JSON.stringify(
-																	_,
-																	(_key, _value) => {
-																		if (_value?._component || _value?.prototype instanceof Component)
-																			return '[object Component]';
-																		if (typeof _value === 'function') return _value.toString();
+			items: Object.entries(component.options).map(([key, value]) => {
+				const keyEnum = component.optionEnum(key);
 
-																		return _value;
-																	},
-																	2,
-																)
-															: _;
-													} catch {
-														return stringifyValue(_);
-													}
-												}) ?? value,
-											onChange: ({ value: newValue }) => (component.options[key] = newValue),
-										}),
-									),
-								},
-							]).map(append => ({ append })),
-						}),
-					),
-			),
+				return new Label(
+					{ label: key, variant: 'collapsible', collapsed: true },
+					new List({
+						addClass: ['no-style'],
+						items: conditionalList([
+							{
+								alwaysItem: new Label(
+									'Type',
+									new CodeForLabel({
+										code: stringifyValue(typeof value === 'object' ? value : typeof value),
+									}),
+								),
+							},
+							{
+								if: !isMethod(key) && component.defaultOptions?.[key] !== undefined,
+								thenItem: new Label(
+									'Default',
+									new CodeForLabel({ code: stringifyValue(component.defaultOptions?.[key]) }),
+								),
+							},
+							{
+								if: keyEnum || typeof value === 'boolean',
+								thenItem: new Label(
+									'Current',
+									new Select({
+										value: component.options.subscriber?.(key) ?? value,
+										options: keyEnum || [
+											{ label: 'True', value: true },
+											{ label: 'False', value: false },
+										],
+										onChange:
+											typeof value === 'boolean'
+												? ({ value: newValue }) => (component.options[key] = newValue === 'true')
+												: ({ value: newValue }) => (component.options[key] = newValue),
+									}),
+								),
+							},
+							{
+								if:
+									!isMethod(key) &&
+									!keyEnum &&
+									typeof value !== 'boolean' &&
+									!stringifyValue(value).startsWith('[object HTML') &&
+									stringifyValue(value) !== '[object Component]' &&
+									stringifyValue(value) !== '[object Elem]',
+								thenItem: new Label(
+									'Current',
+									new Input({
+										tag: typeof value === 'object' || value?.includes?.('\n') ? 'textarea' : 'input',
+										syntaxHighlighting: typeof value !== 'string' || key === 'code',
+										style: { width: '100%' },
+										value:
+											component.options.subscriber?.(key, _ => {
+												try {
+													return ['[object Object]', '[object Array]'].includes(stringifyValue(_))
+														? JSON.stringify(
+																_,
+																(_key, _value) => {
+																	if (_value?._component || _value?.prototype instanceof Component)
+																		return '[object Component]';
+																	if (typeof _value === 'function') return _value.toString();
+
+																	return _value;
+																},
+																2,
+															)
+														: _;
+												} catch {
+													return stringifyValue(_);
+												}
+											}) ?? value,
+										onChange: ({ value: newValue }) => (component.options[key] = newValue),
+									}),
+								),
+							},
+						]).map(append => ({ append })),
+					}),
+				);
+			}),
 		});
 	}
 }

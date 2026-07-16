@@ -61,27 +61,16 @@ Create reusable component classes with custom behavior:
 
 ```js
 class Button extends Component {
-	constructor(options = {}, ...children) {
-		super(
-			{
-				tag: 'button',
-				...options,
-				styles: ({ button }) => `
-				${button}
-				${options.styles?.({ button }) || ''}
-			`,
+	static schema = {
+		tag: { default: 'button' },
+		mode: {
+			default: 'primary',
+			enum: ['primary', 'secondary'],
+			set(value) {
+				this.removeClass(/\bmode-\S+/g).addClass(`mode-${value}`);
 			},
-			...children,
-		);
-	}
-
-	_setOption(key, value) {
-		if (key === 'mode') {
-			this.removeClass(/\bmode-\S+/g).addClass(`mode-${value}`);
-		} else {
-			super._setOption(key, value);
-		}
-	}
+		},
+	};
 }
 ```
 
@@ -125,14 +114,15 @@ const subscription = button.options.subscribe({
 
 Options are routed through `_setOption` based on key and value type:
 
-| Condition                | Routing                    | Example                   |
-| ------------------------ | -------------------------- | ------------------------- |
-| Key starts with 'on'     | Event handler registration | `onPointerPress: handler` |
-| Key in `knownAttributes` | `elem.setAttribute()`      | `id: 'my-id'`             |
-| Component has method     | Method call with value     | `addClass: 'active'`      |
-| HTMLElement has property | Direct elem property       | `textContent: 'hello'`    |
-| Value is function        | Component property         | `customMethod: fn`        |
-| Default                  | Elem property assignment   | `customProp: value`       |
+| Condition                      | Routing                    | Example                   |
+| ------------------------------ | -------------------------- | ------------------------- |
+| Schema `set` / `data` / `enum` | Schema chain (see below)   | `variant: 'button'`       |
+| Key starts with 'on'           | Event handler registration | `onPointerPress: handler` |
+| Schema `attribute: true`       | `elem.setAttribute()`      | `colspan: '2'`            |
+| Component has method           | Method call with value     | `addClass: 'active'`      |
+| HTMLElement has property       | Direct elem property       | `textContent: 'hello'`    |
+| Value is function              | Component property         | `customMethod: fn`        |
+| Default                        | Elem property assignment   | `customProp: value`       |
 
 ## Event Handling
 
@@ -264,7 +254,7 @@ render()
 
 **`build()` is the subclass structural hook.** Override `build()`, never `render()`, to create child elements and internal structure. Because `build()` runs before `_processOptions()`, all structure exists by the time `_setOption` receives values.
 
-The preferred way to handle specific options is `static handlers` - a per-class dispatch map that composes across the constructor chain without requiring `super._setOption`:
+The preferred way to declare options is `static schema` - a per-class schema defining each key once: what can exist, its default, and how it routes. Schemas compose across the constructor chain, with child classes overriding parents per-key:
 
 ```js
 class Card extends Component {
@@ -273,18 +263,54 @@ class Card extends Component {
 		this.body = new Component({ tag: 'section', appendTo: this });
 	}
 
-	static handlers = {
-		title(value) {
-			this.header.options.textContent = value;
+	static schema = {
+		title: {
+			default: 'Untitled',
+			set(value) {
+				this.header.options.textContent = value;
+			},
 		},
-		variant(value) {
-			this.removeClass(/variant-\S+/).addClass(`variant-${value}`);
+		variant: {
+			set(value) {
+				this.removeClass(/variant-\S+/).addClass(`variant-${value}`);
+			},
 		},
+		// Component data only - stored in this.options, never routed to the elem
+		records: {},
 	};
 }
 ```
 
-Handlers that don't call `next(value)` fully own their key. Unhandled keys fall through to standard routing automatically - no `super._setOption` required. Use `_setOption` override only for enum validation or cases that need to intercept before the routing chain.
+Descriptor fields:
+
+- `default` - initial value, merged automatically at construction (no manual `{ ...defaultOptions, ...options }` spread needed). Use a getter (`get default() { return document.body; }`) for values that must evaluate fresh per instance.
+- `set(value, next)` - change handler, called on initial render and every reactive update. Not calling `next(value)` fully owns the key; calling it continues down the chain to parent handlers, then standard routing.
+- A bare `{}` declares a data-only key: declared keys never fall through to fallback guessing, so with no DOM match they live in `this.options` - stored, subscribable, silent. Keys with a real DOM match (Input's `type`, an `onChange` default) still route to it. Reserve bare `{}` for keys whose initial state is genuinely dynamic (computed from other state at use time), optional callbacks where absence is meaningful, and required inputs - everything else declares its `default`, so the read contract lives in the schema instead of scattered `||` fallbacks at consumers. Use a getter default (`get default() { return []; }`) for mutable containers so instances never share one.
+- `data: true` - force store-only routing. Only needed when a data key's name collides with a real DOM property or method that standard routing would otherwise hit (e.g. a data key named `title`).
+- `enum: ['small', 'large']` - the closed set of valid values. Assigning anything else (other than null/undefined) throws, listing the valid values. Readable via `component.optionEnum(key)` - the demo's options editor uses this to render value pickers.
+
+Inheritance semantics: `set` functions chain across the class hierarchy (deepest first), while scalar fields (`default`, `enum`, `data`, `attribute`, `priority`) are decided by the nearest class whose descriptor declares them - so a subclass can override a parent default, opt out of a flag with `data: false`, or lift a constraint with `enum: null`, and a subclass that only adds a `set` leaves the parent's scalars intact.
+
+Two keys are construction-only: `tag` and `autoRender` accept schema defaults but are consumed before the reactive store is created, so they never appear in `this.options` and cannot change after construction.
+
+Unhandled keys fall through to standard routing automatically - no `super._setOption` required.
+
+Two more statics complete the declaration surface, and together they eliminate the need for component constructors in almost every case:
+
+- `static events = ['select']` - custom event names usable with `on()`/`emit()`. Unioned up the class chain, so a subclass adds to its parent's events instead of replacing them.
+- `static prepareOptions(options, children)` - a pure transform run on the merged (schema defaults + user) options before processing, leaf-first up the class chain. This is the home for computed defaults: Input derives `type` from the value's type here, Code decides its tag from `multiline`, Table normalizes string columns. Because the hook sees merged options, ancestor hooks see subclass schema defaults (Input's hook sees Select's `tag: 'select'`).
+
+A fully declared component needs no constructor at all: `static schema` + `static events` + `prepareOptions` + `build()` cover declaration, wiring, and structure. Constructors remain only for genuine construction-time work (Page's eager stylesheet loading, Label's string-shorthand normalization).
+
+`_setOption` override still exists for cases that must intercept before the routing chain.
+
+### Derived option patterns
+
+There is deliberately no `derive` descriptor. When one option's value depends on another, pick the pattern that matches when the derivation must hold:
+
+- **Construction-time** - compute in `prepareOptions`. Right when the result feeds construction itself and never changes after (Code decides its `tag` from `multiline`; Notify picks `icon` and `role` from `type`).
+- **Read-time** - normalize where the value is consumed. Right when the option accepts shorthand and can change reactively; construction and reactive assignment then share one path (Table normalizes string columns inside `_renderTable`).
+- **Change-time** - recompute inside the source key's `set`. Right when a change to one option must immediately update dependent state (Table's `sortDirection` re-sorts `data`).
 
 **`empty()` only runs on re-render.** On the initial render it is skipped. On subsequent `render()` calls it removes all child elements and runs cleanup on all descendant components before the DOM is cleared.
 
@@ -302,7 +328,7 @@ Rendering behavior:
 
 1. **Content clearing** - `empty()` removes existing children on re-render only (skipped on first render)
 2. **Structure creation** - `build()` creates sub-elements before options are applied
-3. **Priority processing** - `_processOptions()` applies `priorityOptions` keys first
+3. **Priority processing** - `_processOptions()` applies `priority: true` schema keys (and framework priority keys) first
 4. **Option routing** - Each option processed via `_setOption`
 5. **Completion flag** - Sets `rendered = true`
 
@@ -362,15 +388,14 @@ new Component(options?, ...children)
 
 #### Component-Specific Options
 
-| Option             | Type                                  | Description                                 |
-| ------------------ | ------------------------------------- | ------------------------------------------- |
-| `tag`              | `string`                              | HTML tag name (default: 'div')              |
-| `autoRender`       | `boolean\|'onload'\|'animationFrame'` | Render timing control                       |
-| `registeredEvents` | `Set<string>`                         | Custom event types for on() method          |
-| `knownAttributes`  | `Set<string>`                         | Attribute names for elem.setAttribute()     |
-| `priorityOptions`  | `Set<string>`                         | Option keys processed first during render   |
-| `styles`           | `string\|object\|Function`            | CSS string, style object, or theme function |
-| `uniqueId`         | `string`                              | Override auto-generated unique ID           |
+| Option       | Type                                  | Description                                 |
+| ------------ | ------------------------------------- | ------------------------------------------- |
+| `tag`        | `string`                              | HTML tag name (default: 'div')              |
+| `autoRender` | `boolean\|'onload'\|'animationFrame'` | Render timing control                       |
+| `styles`     | `string\|object\|Function`            | CSS string, style object, or theme function |
+| `uniqueId`   | `string`                              | Override auto-generated unique ID           |
+
+Custom events (`static events`), attribute routing (`attribute: true`), and processing priority (`priority: true`) are declared in the class, not passed as options.
 
 #### Event Handler Options
 

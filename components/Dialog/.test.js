@@ -187,6 +187,19 @@ describe('Dialog', () => {
 		);
 	});
 
+	test('rebuilds footer when buttons option changes', async () => {
+		const dialog = new Dialog({ buttons: ['One'], openOnRender: false, appendTo: container });
+
+		// eslint-disable-next-line testing-library/no-node-access
+		expect(container.querySelectorAll('.footer button').length).toBe(1);
+
+		dialog.options.buttons = ['One', 'Two'];
+
+		await findByText(container, 'Two');
+		// eslint-disable-next-line testing-library/no-node-access
+		expect(container.querySelectorAll('.footer button').length).toBe(2);
+	});
+
 	test('Button inside Component inside List inside Dialog fires onPointerDown', async () => {
 		const handler = mock(() => {});
 

@@ -39,67 +39,73 @@ export default class ExampleView extends DemoView {
 		return this._runOutput;
 	}
 
-	static handlers = {
-		exampleCode(code) {
-			if (!code) return;
+	static schema = {
+		exampleCode: {
+			set(code) {
+				this._buildExampleEditor(code);
+			},
+		},
+	};
 
-			const keys = Object.keys(vbc);
-			const values = Object.values(vbc);
+	_buildExampleEditor(code) {
+		if (!code) return;
 
-			const run = () => {
-				this._runOutput.empty();
-				this._errorDisplay?.destroy?.();
-				this._errorDisplay = null;
+		const keys = Object.keys(vbc);
+		const values = Object.values(vbc);
 
-				try {
-					const fn = new Function(...keys, `return (async()=>{ ${editor.elem.value} })()`);
-					fn.call(this, ...values).catch(e => {
-						this._errorDisplay = new vbc.Component({
-							tag: 'pre',
-							textContent: `${e.name}: ${e.message}`,
-							style: { color: '#f55', padding: '8px 12px', fontSize: '12px', flexShrink: 0 },
-							appendTo: this,
-						});
-					});
-				} catch (e) {
+		const run = () => {
+			this._runOutput.empty();
+			this._errorDisplay?.destroy?.();
+			this._errorDisplay = null;
+
+			try {
+				const fn = new Function(...keys, `return (async()=>{ ${editor.elem.value} })()`);
+				fn.call(this, ...values).catch(e => {
 					this._errorDisplay = new vbc.Component({
 						tag: 'pre',
 						textContent: `${e.name}: ${e.message}`,
 						style: { color: '#f55', padding: '8px 12px', fontSize: '12px', flexShrink: 0 },
 						appendTo: this,
 					});
-				}
-			};
-
-			const editor = new Input({
-				tag: 'textarea',
-				syntaxHighlighting: true,
-				language: 'javascript',
-				value: toEditableCode(code),
-				style: { minHeight: '180px', maxHeight: '70vh', width: '100%', resize: 'vertical' },
-			});
-
-			editor.on({
-				targetEvent: 'keydown',
-				callback: e => {
-					if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-						e.preventDefault();
-						run();
-					}
-				},
-			});
-
-			new Label(
-				{
-					variant: 'collapsible',
-					collapsed: true,
-					label: 'Example Code',
-					style: { margin: '2% 4%', width: 'calc(100% - 8%)', flexShrink: 0 },
+				});
+			} catch (e) {
+				this._errorDisplay = new vbc.Component({
+					tag: 'pre',
+					textContent: `${e.name}: ${e.message}`,
+					style: { color: '#f55', padding: '8px 12px', fontSize: '12px', flexShrink: 0 },
 					appendTo: this,
-				},
-				editor,
-				new Button({ textContent: 'Run', icon: 'play', style: { marginTop: '6px' }, onPointerPress: run }),
-			);
-		},
-	};
+				});
+			}
+		};
+
+		const editor = new Input({
+			tag: 'textarea',
+			syntaxHighlighting: true,
+			language: 'javascript',
+			value: toEditableCode(code),
+			style: { minHeight: '180px', maxHeight: '70vh', width: '100%', resize: 'vertical' },
+		});
+
+		editor.on({
+			targetEvent: 'keydown',
+			callback: e => {
+				if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+					e.preventDefault();
+					run();
+				}
+			},
+		});
+
+		new Label(
+			{
+				variant: 'collapsible',
+				collapsed: true,
+				label: 'Example Code',
+				style: { margin: '2% 4%', width: 'calc(100% - 8%)', flexShrink: 0 },
+				appendTo: this,
+			},
+			editor,
+			new Button({ textContent: 'Run', icon: 'play', style: { marginTop: '6px' }, onPointerPress: run }),
+		);
+	}
 }

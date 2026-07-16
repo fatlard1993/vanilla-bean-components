@@ -4,8 +4,19 @@ import ExampleView from '../DemoView/ExampleView';
 import exampleCode from './Stopwatch.js.asText';
 
 export class Stopwatch extends Component {
+	static schema = {
+		time: {
+			default: 0,
+			set(value) {
+				this._time.content(`${value}ms `);
+			},
+		},
+		// Read by start()
+		interval: { default: 10 },
+	};
+
 	constructor(options = {}) {
-		super({ tag: 'span', time: 0, interval: 10, ...options });
+		super({ tag: 'span', ...options });
 	}
 
 	build() {
@@ -16,11 +27,6 @@ export class Stopwatch extends Component {
 		const reset = new Button({ content: 'Reset', onPointerPress: this.reset.bind(this) });
 
 		this.content([this._time, start, stop, reset]);
-	}
-
-	_setOption(key, value) {
-		if (key === 'time') this._time.content(`${value}ms `);
-		else super._setOption(key, value);
 	}
 
 	start() {

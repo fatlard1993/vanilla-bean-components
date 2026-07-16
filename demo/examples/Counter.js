@@ -4,8 +4,12 @@ import ExampleView from '../DemoView/ExampleView';
 import exampleCode from './Counter.js.asText';
 
 export class Counter extends Component {
+	static schema = {
+		count: { default: 0 },
+	};
+
 	constructor(options = {}) {
-		super({ tag: 'span', count: 0, ...options });
+		super({ tag: 'span', ...options });
 	}
 
 	build() {

@@ -8,18 +8,21 @@ const colors = {
 	isReadable,
 	mostReadable,
 
-	orange: new TinyColor('hsl(29, 55%, 45%)'),
-	gray: new TinyColor('hsl(0, 0%, 45%)'),
-	yellow: new TinyColor('hsl(44, 55%, 45%)'),
-	green: new TinyColor('hsl(74, 55%, 45%)'),
-	teal: new TinyColor('hsl(164, 55%, 45%)'),
-	blue: new TinyColor('hsl(209, 55%, 45%)'),
-	purple: new TinyColor('hsl(254, 55%, 45%)'),
-	pink: new TinyColor('hsl(314, 55%, 45%)'),
-	red: new TinyColor('hsl(359, 55%, 45%)'),
-	transparent: new TinyColor('rgba(255, 255, 255, 0)'),
-	superWhite: new TinyColor('hsl(0, 100%, 100%)'),
-	vantablack: new TinyColor('hsl(0, 0%, 0%)'),
+	// Shared instances for speed (cloning per access proved too slow) - frozen so an
+	// accidental mutation (e.g. setAlpha) throws instead of silently recoloring the app.
+	// Use colors.alpha(color, alpha) for transparency.
+	orange: Object.freeze(new TinyColor('hsl(29, 55%, 45%)')),
+	gray: Object.freeze(new TinyColor('hsl(0, 0%, 45%)')),
+	yellow: Object.freeze(new TinyColor('hsl(44, 55%, 45%)')),
+	green: Object.freeze(new TinyColor('hsl(74, 55%, 45%)')),
+	teal: Object.freeze(new TinyColor('hsl(164, 55%, 45%)')),
+	blue: Object.freeze(new TinyColor('hsl(209, 55%, 45%)')),
+	purple: Object.freeze(new TinyColor('hsl(254, 55%, 45%)')),
+	pink: Object.freeze(new TinyColor('hsl(314, 55%, 45%)')),
+	red: Object.freeze(new TinyColor('hsl(359, 55%, 45%)')),
+	transparent: Object.freeze(new TinyColor('rgba(255, 255, 255, 0)')),
+	superWhite: Object.freeze(new TinyColor('hsl(0, 100%, 100%)')),
+	vantablack: Object.freeze(new TinyColor('hsl(0, 0%, 0%)')),
 
 	get white() {
 		return colors.whiteish();

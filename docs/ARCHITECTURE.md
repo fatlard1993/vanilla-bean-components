@@ -23,7 +23,7 @@ EventTarget  (browser built-in)
             └── UI Components
                     (Button, Input, Dialog, Select, ...)
                     Override build() to create sub-structure,
-                    define static handlers for custom option keys,
+                    declare a static schema for their keys,
                     and define domain-specific behavior.
 ```
 
@@ -98,10 +98,12 @@ class Card extends Component {
 		this.body = new Component({ tag: 'section', appendTo: this });
 	}
 
-	static handlers = {
-		title(value, next) {
-			this.header.options.textContent = value;
-			// does not call next() -- fully owns this key
+	static schema = {
+		title: {
+			set(value, next) {
+				this.header.options.textContent = value;
+				// does not call next() -- fully owns this key
+			},
 		},
 	};
 }
@@ -123,24 +125,28 @@ class Card extends Component {
 
 `_setOption(key, value)` is the single routing function for all option changes, both during initial render and on reactive updates.
 
-### Step 1: static handlers chain
+### Step 1: schema chain
 
-Before standard routing, `_setOption` walks the constructor prototype chain from the most-derived class up to (but not including) `Component`, collecting any `static handlers` object that owns a handler for the given key. Handlers are ordered deepest-class-first.
+Before standard routing, `_setOption` walks the constructor prototype chain from the most-derived class up to (but not including) `Component`, collecting the `static schema` descriptor for the given key from each class. `set` functions are ordered deepest-class-first; `enum` values are validated (nearest class wins) before any `set` runs; a `data: true` flag (nearest class wins) stops the key from ever reaching standard routing.
 
 ```js
 // Example: a subclass claims 'title'
 class MyComponent extends Component {
-	static handlers = {
-		title(value, next) {
-			this.titleElem.options.textContent = value;
-			// Call next(value?) to continue to the next handler or standard routing.
-			// Omit next() to fully own the key and stop processing.
+	static schema = {
+		title: {
+			set(value, next) {
+				this.titleElem.options.textContent = value;
+				// Call next(value?) to continue to the next set in the chain or standard routing.
+				// Omit next() to fully own the key and stop processing.
+			},
 		},
 	};
 }
 ```
 
-Each handler receives `(value, next)`. Calling `next(optionalValue)` passes control to the next handler in the chain; when the chain is exhausted `next` falls through to standard routing. If no handlers claim the key, standard routing runs directly.
+Each `set` receives `(value, next)`. Calling `next(optionalValue)` passes control to the next `set` in the chain; when the chain is exhausted `next` falls through to standard routing (unless the key is `data: true`). If no schema claims the key, standard routing runs directly.
+
+Declared keys are exempt from fallback guessing in standard routing: they route to a real match (elem property, registered event, attribute flag) or stay store-only, silently. The unknown-key warning and elem expando assignment apply only to undeclared keys, so a bare `{}` descriptor is how a component declares a data-only key.
 
 ### Step 2: standard routing
 
@@ -164,7 +170,7 @@ Each handler receives `(value, next)`. Calling `next(optionalValue)` passes cont
 5. key === 'attributes'
       -> this.setAttributes(value)
 
-6. key is in knownAttributes OR starts with 'aria-' OR starts with 'data-'
+6. key is attribute-flagged in a schema (or a base attribute name) OR starts with 'aria-' OR starts with 'data-'
       -> elem.setAttribute(key, value) / removeAttribute on null/undefined/false
          boolean true -> setAttribute with empty string
 

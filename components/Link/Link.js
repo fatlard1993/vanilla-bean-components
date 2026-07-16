@@ -1,14 +1,5 @@
 import { TooltipWrapper } from '../TooltipWrapper';
 
-const defaultOptions = {
-	tag: 'a',
-	variant: 'link',
-	get tooltip() {
-		return { icon: 'link', style: { fontSize: '12px' } };
-	},
-};
-const variant_enum = Object.freeze(['link', 'button']);
-
 /**
  * Link component with tooltip support and display variants.
  *
@@ -25,17 +16,20 @@ const variant_enum = Object.freeze(['link', 'button']);
  * @returns {Link} Link component instance
  */
 class Link extends TooltipWrapper {
-	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
-	variant_enum = variant_enum;
-
-	constructor(options = {}, ...children) {
-		super({ ...defaultOptions, ...options }, ...children);
-	}
-
-	static handlers = {
-		variant(value) {
-			this.removeClass(/\bvariant-\S+\b/g);
-			this.addClass(`variant-${value}`);
+	static schema = {
+		tag: { default: 'a' },
+		variant: {
+			default: 'link',
+			enum: ['link', 'button'],
+			set(value) {
+				this.removeClass(/\bvariant-\S+\b/g);
+				this.addClass(`variant-${value}`);
+			},
+		},
+		tooltip: {
+			get default() {
+				return { icon: 'link', style: { fontSize: '12px' } };
+			},
 		},
 	};
 }

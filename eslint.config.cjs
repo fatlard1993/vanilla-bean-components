@@ -27,8 +27,8 @@ module.exports = [
 		files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
 		plugins: {
 			import: importPlugin,
-			'write-good-comments': writeGoodComments,
-			spellcheck,
+			'write-good-comments': fixupPluginRules(writeGoodComments),
+			spellcheck: fixupPluginRules(spellcheck),
 		},
 		rules: {
 			'no-console': 'warn',
@@ -52,6 +52,9 @@ module.exports = [
 
 			'spellcheck/spell-checker': ['warn', require('./spellcheck.config.cjs')],
 			'jsdoc/no-undefined-types': ['warn', { definedTypes: ['Component', 'TemplateStringsArray'] }],
+			// {*} and {Function} are deliberate here - buildTypes maps them to TS types
+			'jsdoc/reject-any-type': 'off',
+			'jsdoc/reject-function-type': 'off',
 		},
 	},
 	{

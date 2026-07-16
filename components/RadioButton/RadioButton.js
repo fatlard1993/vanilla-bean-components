@@ -69,38 +69,42 @@ const RadioButtonInput = styled(
  * @returns {RadioButton} RadioButton component instance
  */
 class RadioButton extends Component {
-	static handlers = {
-		options(value) {
-			this.empty();
+	static schema = {
+		options: {
+			set(value) {
+				this.empty();
 
-			if (!value) return;
+				if (!value) return;
 
-			this.append(
-				value.map(
-					option =>
-						new RadioButtonLabel({
-							tag: 'label',
-							append: [
-								new RadioButtonInput({
-									tag: 'input',
-									type: 'radio',
-									value: option?.value || option,
-									name: this.uniqueId,
-									checked: this.options.value === (option?.value || option),
-									onChange: event => {
-										if (event.target.checked) this.options.value = event.target.value;
-									},
-								}),
-								option?.label || option,
-							],
-						}),
-				),
-			);
+				this.append(
+					value.map(
+						option =>
+							new RadioButtonLabel({
+								tag: 'label',
+								append: [
+									new RadioButtonInput({
+										tag: 'input',
+										type: 'radio',
+										value: option?.value || option,
+										name: this.uniqueId,
+										checked: this.options.value === (option?.value || option),
+										onChange: event => {
+											if (event.target.checked) this.options.value = event.target.value;
+										},
+									}),
+									option?.label || option,
+								],
+							}),
+					),
+				);
+			},
 		},
-		value(value) {
-			this.elem.querySelectorAll('input[type="radio"]').forEach(input => {
-				input.checked = input.value === String(value);
-			});
+		value: {
+			set(value) {
+				this.elem.querySelectorAll('input[type="radio"]').forEach(input => {
+					input.checked = input.value === String(value);
+				});
+			},
 		},
 	};
 }

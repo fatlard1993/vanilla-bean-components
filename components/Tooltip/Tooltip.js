@@ -80,8 +80,6 @@ const StyledPopover = styled(
 	`,
 );
 
-const defaultOptions = { position: 'topRight', autoOpen: false };
-
 const position_enum = Object.freeze([
 	'center',
 	'top',
@@ -108,32 +106,21 @@ const position_enum = Object.freeze([
  * @returns {Tooltip} Tooltip component instance
  */
 class Tooltip extends StyledPopover {
-	position_enum = position_enum;
-	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
-
-	constructor(options = {}, ...children) {
-		super(
-			{
-				...defaultOptions,
-				...options,
-				addClass: ['tooltip'].concat(options.addClass),
+	static schema = {
+		autoOpen: { default: false },
+		position: {
+			default: 'topRight',
+			enum: position_enum,
+			set(value) {
+				this.removeClass(...position_enum);
+				this.addClass(value);
 			},
-			...children,
-		);
-	}
-
-	static handlers = {
-		position(value) {
-			if (!position_enum.includes(value)) {
-				throw new Error(
-					`"${value}" is not a valid position. The position must be one of the following values: ${position_enum.join(', ')}`,
-				);
-			}
-
-			this.removeClass(...position_enum);
-			this.addClass(value);
 		},
 	};
+
+	static prepareOptions(options) {
+		return { ...options, addClass: ['tooltip'].concat(options.addClass) };
+	}
 }
 
 export default Tooltip;

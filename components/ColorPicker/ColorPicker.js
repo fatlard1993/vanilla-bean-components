@@ -143,8 +143,6 @@ const ColorSwatch = styled(
 	{ icon: 'fill-drip' },
 );
 
-const defaultOptions = { tag: 'div', value: '#666', onChange: () => {} };
-
 /**
  * Interactive color picker component with HSL controls and color swatches.
  *
@@ -159,19 +157,53 @@ const defaultOptions = { tag: 'div', value: '#666', onChange: () => {} };
  * @returns {ColorPicker} ColorPicker component instance
  */
 class ColorPicker extends StyledInput {
-	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
+	static schema = {
+		tag: { default: 'div' },
+		value: {
+			default: '#666',
+			set(value) {
+				if (!value) return;
 
-	constructor(options = {}, ...children) {
-		options = { ...defaultOptions, ...options };
+				const { h, sv, v, color, hslString } = this.parseValue(value);
 
-		if (options.value === 'random') options.value = randomColor().toHslString();
+				this.hslString = hslString;
+				this.color = color;
+				// Preserve hue when achromatic (sv=0 loses hue info) or when TinyColor
+				// wraps 360 to 0 (same color, different position on the slider)
+				const isCircularWrap = sv > 0 && h === 0 && this.hue > 350;
+				if (!isCircularWrap) this.hue = sv > 0 ? h : (this.hue ?? h);
+				this.sv = sv;
+				this.v = v;
 
-		super(options, ...children);
+				this.elem.style.backgroundColor = hslString;
 
-		this.pointers = {};
+				this.pickerArea?.elem && (this.pickerArea.elem.style.backgroundColor = `hsl(${this.hue}, 100%, 50%)`);
+
+				const tryPosition = () => {
+					if (this.pickerArea?.elem?.clientWidth > 0) {
+						this._positionIndicators();
+					} else {
+						requestAnimationFrame(tryPosition);
+					}
+				};
+				requestAnimationFrame(tryPosition);
+			},
+		},
+		onChange: { default: () => {} },
+		swatches: {
+			get default() {
+				return [];
+			},
+		},
+	};
+
+	static prepareOptions(options) {
+		return options.value === 'random' ? { ...options, value: randomColor().toHslString() } : options;
 	}
 
 	build() {
+		this.pointers = {};
+
 		this.textInput = new Input({
 			type: 'text',
 			value: this.options.subscriber('value', value => this.hslString || value),
@@ -204,23 +236,21 @@ class ColorPicker extends StyledInput {
 		sizeObserver.observe(this.pickerArea.elem);
 		this.addCleanup('sizeObserver', () => sizeObserver.disconnect());
 
-		if (this.options.swatches) {
-			this.options.swatches.forEach(color => {
-				new ColorSwatch({
-					appendTo: this.elem,
+		this.options.swatches.forEach(color => {
+			new ColorSwatch({
+				appendTo: this.elem,
 
-					onPointerPress: () => this.change(color),
-					...(color === 'random'
-						? { addClass: ['rainbow'] }
-						: {
-								style: {
-									backgroundColor: color,
-									color: theme.colors.mostReadable(color, [theme.colors.white, theme.colors.black]),
-								},
-							}),
-				});
+				onPointerPress: () => this.change(color),
+				...(color === 'random'
+					? { addClass: ['rainbow'] }
+					: {
+							style: {
+								backgroundColor: color,
+								color: theme.colors.mostReadable(color, [theme.colors.white, theme.colors.black]),
+							},
+						}),
 			});
-		}
+		});
 	}
 
 	/**
@@ -291,36 +321,6 @@ class ColorPicker extends StyledInput {
 		// Hue: shift the gradient so selected hue appears under the center needle
 		this._setHueBackground(this.hue ?? 0, hueW);
 	}
-
-	static handlers = {
-		value(value) {
-			if (!value) return;
-
-			const { h, sv, v, color, hslString } = this.parseValue(value);
-
-			this.hslString = hslString;
-			this.color = color;
-			// Preserve hue when achromatic (sv=0 loses hue info) or when TinyColor
-			// wraps 360 to 0 (same color, different position on the slider)
-			const isCircularWrap = sv > 0 && h === 0 && this.hue > 350;
-			if (!isCircularWrap) this.hue = sv > 0 ? h : (this.hue ?? h);
-			this.sv = sv;
-			this.v = v;
-
-			this.elem.style.backgroundColor = hslString;
-
-			this.pickerArea?.elem && (this.pickerArea.elem.style.backgroundColor = `hsl(${this.hue}, 100%, 50%)`);
-
-			const tryPosition = () => {
-				if (this.pickerArea?.elem?.clientWidth > 0) {
-					this._positionIndicators();
-				} else {
-					requestAnimationFrame(tryPosition);
-				}
-			};
-			requestAnimationFrame(tryPosition);
-		},
-	};
 
 	getPosition({ clientX, clientY }) {
 		return { x: clientX, y: clientY };

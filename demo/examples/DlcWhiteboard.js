@@ -57,9 +57,7 @@ class Achievement extends Notify {
 }
 
 class DlcListItem extends Component {
-	constructor(options = {}) {
-		super({ registeredEvents: new Set(['qtychange']), ...options });
-	}
+	static events = ['qtychange'];
 
 	build() {
 		this._qty = 0;
@@ -122,6 +120,25 @@ class DlcWhiteboard extends (styled.Component`
 
 		super({ ...database, ...options });
 	}
+
+	static schema = {
+		credits: {
+			set(value) {
+				this._credits.content(`Credits: ${value}`);
+			},
+		},
+		ink: {
+			set(value) {
+				if (value > 1) this._lowInkNotified = false;
+			},
+		},
+		color: {},
+		background: {},
+		lineWidth: {},
+		maxLineWidth: {},
+		drawThrottle: {},
+		firstInkRunOut: {},
+	};
 
 	build() {
 		this._lowInkNotified = false;
@@ -366,12 +383,6 @@ class DlcWhiteboard extends (styled.Component`
 		this.addCleanup('colorPicker', () => colorPicker.elem.remove());
 
 		this.content([this._credits, this._openStore, this._buyCredits, canvasWrapper]);
-	}
-
-	_setOption(key, value) {
-		if (key === 'credits') this._credits.content(`Credits: ${value}`);
-		else super._setOption(key, value);
-		if (key === 'ink' && value > 1) this._lowInkNotified = false;
 	}
 }
 

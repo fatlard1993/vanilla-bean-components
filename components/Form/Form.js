@@ -65,15 +65,19 @@ export default class Form extends Component {
 	 * Rebuild the form when inputs change without recreating the data store.
 	 * Existing data is preserved; new keys are added with their initial values.
 	 */
-	static handlers = {
-		inputs(value) {
-			if (!this.rendered || !value || !this.options.data) return;
-			this.empty();
-			this._resetState();
-			this._processInputs(value, this);
-			this._wireConditions();
-			this._setupAnnouncer();
+	static schema = {
+		inputs: {
+			set(value) {
+				if (!this.rendered || !value || !this.options.data) return;
+				this.empty();
+				this._resetState();
+				this._processInputs(value, this);
+				this._wireConditions();
+				this._setupAnnouncer();
+			},
 		},
+		// Data store managed by build()
+		data: {},
 	};
 
 	/** @private */

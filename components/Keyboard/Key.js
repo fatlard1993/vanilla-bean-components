@@ -21,17 +21,14 @@ const StyledButton = styled(
 );
 
 class Key extends StyledButton {
-	constructor(options = {}, ...children) {
-		const { key, text, class: keyClass, ...optionsWithoutConfig } = options;
+	static prepareOptions(options) {
+		const { key, text, class: keyClass, ...rest } = options;
 
-		super(
-			{
-				textContent: text ?? key,
-				...optionsWithoutConfig,
-				addClass: [key, keyClass].concat(options.addClass),
-			},
-			...children,
-		);
+		return {
+			textContent: text ?? key,
+			...rest,
+			addClass: [key, keyClass].concat(options.addClass),
+		};
 	}
 }
 

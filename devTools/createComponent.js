@@ -121,15 +121,27 @@ export default class ${name} extends Component {
 		// Create child elements here - this runs before options are processed
 	}
 
-	// Handle custom option keys with static handlers.
-	// Each handler receives (value, next) - call next(value) to pass through to standard
-	// routing, or omit it to fully own the key. Write to elem directly, not options:
+	// Declare the option schema once with static schema - what can exist, the defaults,
+	// and how each key routes. Descriptor fields:
+	//   default - initial value, merged automatically (child classes override per-key)
+	//   set(value, next) - change handler; omit next() to own the key, call it to continue
+	//   enum: [...] - valid values; anything else throws
+	//   attribute: true / priority: true - setAttribute routing / processed first
+	//   Declared keys with no DOM match live in this.options silently - a bare {} declares
+	//   a data-only key. data: true exists only to force store-only on DOM-name collisions.
 	//
-	// static handlers = {
-	//   myOption(value) {
-	//     this.myChild.elem.textContent = value;
+	// static schema = {
+	//   label: {
+	//     default: 'Untitled',
+	//     set(value) {
+	//       this.myChild.elem.textContent = value;
+	//     },
 	//   },
+	//   items: {},
 	// };
+	//
+	// Custom events: static events = ['select'];
+	// Computed defaults (no constructor needed): static prepareOptions(options, children) { return options; }
 }
 `;
 

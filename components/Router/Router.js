@@ -16,20 +16,26 @@ import { routeToRegex } from './utils';
  * @returns {Router} Router component instance
  */
 class Router extends Component {
-	constructor(options = {}, ...children) {
-		super(
-			{
-				defaultPath: Object.keys(options.views)[0],
-				...options,
-				style: {
-					display: 'flex',
-					flex: 1,
-					overflow: 'hidden',
-					...options.style,
-				},
+	// Routing config read from this.options by the path getters and renderView()
+	static schema = {
+		views: {},
+		defaultPath: {},
+		notFound: {},
+		onRenderView: {},
+		mode: { default: 'hash', enum: ['hash', 'history'] },
+	};
+
+	static prepareOptions(options) {
+		return {
+			defaultPath: Object.keys(options.views || {})[0],
+			...options,
+			style: {
+				display: 'flex',
+				flex: 1,
+				overflow: 'hidden',
+				...options.style,
 			},
-			...children,
-		);
+		};
 	}
 
 	/**
@@ -101,14 +107,6 @@ class Router extends Component {
 
 		return parameters;
 	}
-
-	static handlers = {
-		views() {},
-		defaultPath() {},
-		notFound() {},
-		onRenderView() {},
-		mode() {},
-	};
 
 	build() {
 		const reRenderView = () => this.renderView();

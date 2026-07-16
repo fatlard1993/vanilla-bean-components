@@ -100,13 +100,13 @@ class Todo extends Component {
 		]);
 	}
 
-	_setOption(key, value) {
-		if (key === 'items') {
-			localStorage.setItem('todo_items', JSON.stringify(value));
-		}
-
-		super._setOption(key, value);
-	}
+	static schema = {
+		items: {
+			set(value) {
+				localStorage.setItem('todo_items', JSON.stringify(value));
+			},
+		},
+	};
 }
 
 export default class Example extends ExampleView {

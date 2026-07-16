@@ -42,41 +42,39 @@ const ListItem = styled(
  * @returns {List} List component instance
  */
 export default class List extends StyledComponent {
-	constructor(options = {}, ...children) {
-		super(
-			{
-				...options,
-				tag: 'ul',
+	static schema = {
+		tag: { default: 'ul' },
+		noStyle: {
+			set(value) {
+				this.toggleClass('no-style', !!value);
 			},
-			...children,
-		);
-	}
-
-	static handlers = {
-		noStyle(value) {
-			this.toggleClass('no-style', !!value);
 		},
-		items(value) {
-			if (!value) {
-				this.empty();
-				return;
-			}
+		items: {
+			set(value) {
+				if (!value) {
+					this.empty();
+					return;
+				}
 
-			this.content(
-				value.map(item => {
-					const isContent = typeof item === 'string' || item?.elem || Array.isArray(item);
-					const listItem = new ListItem({ tag: 'li', ...item?.listItemOptions });
+				this.content(
+					value.map(item => {
+						const isContent = typeof item === 'string' || item?.elem || Array.isArray(item);
+						const listItem = new ListItem({ tag: 'li', ...item?.listItemOptions });
+						// listItemOptions belongs to the li wrapper - strip it before passing item options along.
+						const itemOptions = isContent ? item : { ...item };
+						if (!isContent) delete itemOptions.listItemOptions;
 
-					if (this.options.ListItemComponent) {
-						listItem.content(new this.options.ListItemComponent(isContent ? { content: item } : item));
-					} else if (item.ListItemComponent) {
-						listItem.content(new item.ListItemComponent(item));
-					} else if (isContent) listItem.content(item);
-					else listItem.setOptions(item);
+						if (this.options.ListItemComponent) {
+							listItem.content(new this.options.ListItemComponent(isContent ? { content: item } : itemOptions));
+						} else if (item.ListItemComponent) {
+							listItem.content(new item.ListItemComponent(itemOptions));
+						} else if (isContent) listItem.content(item);
+						else listItem.setOptions(itemOptions);
 
-					return listItem;
-				}),
-			);
+						return listItem;
+					}),
+				);
+			},
 		},
 	};
 }

@@ -24,6 +24,13 @@ const StyledLabel = styled(
 );
 
 export default class DocumentationView extends DemoView {
+	static schema = {
+		folderName: {},
+		fileName: {},
+		nextLabel: {},
+		nextUrl: {},
+	};
+
 	async build() {
 		this.elem.style.overflowY = 'auto';
 		this.elem.style.overflowX = 'hidden';

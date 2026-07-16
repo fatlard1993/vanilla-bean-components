@@ -11,19 +11,7 @@ const DialogButton = styled(
 	`,
 );
 
-const size_enum = Object.freeze(['small', 'standard', 'large']);
-const variant_enum = Object.freeze(['info', 'success', 'warning', 'error']);
-
-const defaultOptions = {
-	tag: 'dialog',
-	size: 'small',
-	openOnRender: 16,
-	modal: true,
-	get appendTo() {
-		return document.body;
-	},
-	registeredEvents: new Set(['close']),
-};
+const defaultOpenDelay = 16;
 
 /**
  * Modal and non-modal dialog component with customizable appearance and behavior.
@@ -149,57 +137,70 @@ class Dialog extends styled(
 		}
 	`,
 ) {
-	variant_enum = variant_enum;
-	size_enum = size_enum;
-
-	static handlers = {
-		openOnRender(value) {
-			const delay = typeof value === 'number' ? value : defaultOptions.openOnRender;
-			const openDelay = value ? setTimeout(() => this.open(), delay) : null;
-			this.replaceCleanup('openOnRender', () => openDelay && clearTimeout(openDelay));
+	static schema = {
+		tag: { default: 'dialog' },
+		appendTo: {
+			get default() {
+				return document.body;
+			},
 		},
-		// Claim the key so standard routing doesn't try to call elem.showModal() or set elem.modal.
-		// The value is read directly from this.options.modal in open().
-		modal() {},
-		size(value) {
-			if (value && !size_enum.includes(value)) {
-				throw new Error(
-					`"${value}" is not a valid size. The size must be one of the following values: ${size_enum.join(', ')}`,
-				);
-			}
-
-			this.removeClass(/\bsize-\S+\b/g);
-
-			if (value) this.addClass(`size-${value}`);
+		openOnRender: {
+			default: defaultOpenDelay,
+			set(value) {
+				const delay = typeof value === 'number' ? value : defaultOpenDelay;
+				const openDelay = value ? setTimeout(() => this.open(), delay) : null;
+				this.replaceCleanup('openOnRender', () => openDelay && clearTimeout(openDelay));
+			},
 		},
-		variant(value) {
-			if (value && !variant_enum.includes(value)) {
-				throw new Error(
-					`"${value}" is not a valid variant. The variant must be one of the following values: ${variant_enum.join(', ')}`,
-				);
-			}
+		// Read directly from this.options.modal in open()
+		modal: { default: true },
+		size: {
+			default: 'small',
+			enum: ['small', 'standard', 'large'],
+			set(value) {
+				this.removeClass(/\bsize-\S+\b/g);
 
-			this.removeClass(/\bvariant-\S+\b/g);
+				if (value) this.addClass(`size-${value}`);
+			},
+		},
+		variant: {
+			enum: ['info', 'success', 'warning', 'error'],
+			set(value) {
+				this.removeClass(/\bvariant-\S+\b/g);
 
-			if (value) this.addClass(`variant-${value}`);
+				if (value) this.addClass(`variant-${value}`);
+			},
 		},
-		body(value) {
-			this.body?.content(value);
+		body: {
+			set(value) {
+				this.body?.content(value);
+			},
 		},
-		header(value) {
-			this._header?.content(value);
+		header: {
+			set(value) {
+				this._header?.content(value);
+			},
 		},
+		buttons: {
+			set() {
+				this._refreshFooter();
+			},
+		},
+		footer: {
+			set() {
+				this._refreshFooter();
+			},
+		},
+		// Read from this.options at button-press time
+		closeDialog: {},
+		onButtonPress: {},
 	};
 
-	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
-
-	constructor(options = {}, ...children) {
-		super({ ...defaultOptions, ...options }, ...children);
-
-		this.options['aria-labelledby'] = this.uniqueId;
-	}
+	static events = ['close'];
 
 	build() {
+		this.options['aria-labelledby'] = this.uniqueId;
+
 		this._header = new Elem({
 			tag: 'div',
 			id: this.uniqueId,
@@ -210,25 +211,30 @@ class Dialog extends styled(
 
 		this._body = new Elem({ addClass: ['content'], appendTo: this });
 
-		this._footer = new Elem({
-			addClass: ['footer'],
-			append:
-				this.options.footer ||
-				this.options.buttons?.map(
-					button =>
-						new DialogButton({
-							onPointerPress: event =>
-								this.options.onButtonPress?.({
-									event,
-									button,
-									dialog: this,
-									closeDialog: this.options.closeDialog || (() => this.close()),
-								}),
-							...(typeof button === 'object' ? button : { textContent: button }),
-						}),
-				),
-			appendTo: this,
-		});
+		this._footer = new Elem({ addClass: ['footer'], append: this._footerContent(), appendTo: this });
+	}
+
+	_refreshFooter() {
+		if (this.rendered) this._footer?.content(this._footerContent() || []);
+	}
+
+	_footerContent() {
+		return (
+			this.options.footer ||
+			this.options.buttons?.map(
+				button =>
+					new DialogButton({
+						onPointerPress: event =>
+							this.options.onButtonPress?.({
+								event,
+								button,
+								dialog: this,
+								closeDialog: this.options.closeDialog || (() => this.close()),
+							}),
+						...(typeof button === 'object' ? button : { textContent: button }),
+					}),
+			)
+		);
 	}
 
 	/**

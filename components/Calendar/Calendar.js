@@ -3,7 +3,7 @@ import { styled } from '../../styled';
 import { Component } from '../../Component';
 
 import CalendarEvent from './CalendarEvent';
-import Toolbar from './Toolbar';
+import Toolbar, { VIEWS } from './Toolbar';
 import { getDaysInMonth, toNth } from './utils';
 
 const StyledComponent = styled(
@@ -18,11 +18,16 @@ const StyledComponent = styled(
 			& tr.title {
 				font-size: 1.3em;
 				height: 1.3em;
-				color: ${colors.black};
-				background-color: ${colors.lightest(colors.gray)};
+				color: ${colors.lightest(colors.gray)};
+				background-color: ${colors.darkest(colors.gray)};
 
 				& td {
 					text-align: center;
+				}
+
+				& td:hover {
+					background-color: unset;
+					color: unset;
 				}
 			}
 		}
@@ -47,11 +52,11 @@ const StyledComponent = styled(
 			& div.time-block {
 				height: 3em;
 				cursor: pointer;
-				color: black;
-				background-color: ${colors.light(colors.gray)};
+				color: ${colors.lighter(colors.gray)};
+				background-color: ${colors.darker(colors.gray)};
 
 				&:nth-child(odd) {
-					background-color: ${colors.lighter(colors.gray)};
+					background-color: ${colors.darkest(colors.gray)};
 				}
 
 				&:last-of-type{
@@ -61,7 +66,14 @@ const StyledComponent = styled(
 				& span.time {
 					font-size: 12px;
 					margin: 2px;
+					padding: 1px 3px;
 					pointer-events: none;
+				}
+
+				&:hover span.time {
+					background-color: ${colors.light(colors.selected)};
+					color: ${colors.mostReadable(colors.light(colors.selected), [colors.white, colors.black])};
+					font-weight: 700;
 				}
 			}
 		}
@@ -99,40 +111,63 @@ const MonthDayCell = styled(
 		position: relative;
 		border-collapse: collapse;
 		vertical-align: top;
-		background-color: ${colors.lighter(colors.gray)};
+		background-color: ${colors.darker(colors.gray)};
 		cursor: pointer;
 		padding: 3px;
+		/* definite height so the inner flex column can fill the cell */
+		height: 1px;
+
+		& div.cell-body {
+			display: flex;
+			flex-direction: column;
+			height: 100%;
+		}
 
 		& span.day-title {
 			display: block;
 			font-size: 1em;
 			padding: 2px;
-			background-color: ${colors.black.setAlpha(0.2)};
-			color: ${colors.black};
+			background-color: ${colors.alpha(colors.black, 0.2)};
+			color: ${colors.lightest(colors.gray)};
 			cursor: pointer;
 		}
 
-		&:hover {
-			background-color: ${colors.blue};
-
-			& span.day-title {
-				background-color: ${colors.white.setAlpha(0.3)};
-			}
+		& div.event-container {
+			background: ${colors.alpha(colors.black, 0.05)};
+			flex: 1;
+			min-height: 0;
+			margin-top: 2px;
+			border-radius: 6px;
+			padding: 3px;
 		}
 
-		&.today {
-			background-color: ${colors.purple};
+		/* Pin the box color - the page theme's global td:hover darkening must not show through */
+		&:hover {
+			background-color: ${colors.darker(colors.gray)};
+		}
 
-			& span.day-title {
-				background-color: ${colors.white.setAlpha(0.3)};
-			}
+		&:hover span.day-title,
+		&.today:hover span.day-title,
+		&.not-in-month:hover span.day-title {
+			background-color: ${colors.light(colors.selected)};
+			color: ${colors.mostReadable(colors.light(colors.selected), [colors.white, colors.black])};
+			font-weight: 700;
+		}
+
+		&.today span.day-title {
+			box-shadow: inset 0 -3px 0 ${colors.selected};
+			color: ${colors.white};
+			font-weight: 700;
 		}
 
 		&.not-in-month {
-			background: #222;
-
 			& span.day-title {
 				color: ${colors.gray};
+				background: ${colors.alpha(colors.black, 0.3)};
+			}
+
+			& div.event-container {
+				background: ${colors.alpha(colors.black, 0.3)};
 			}
 		}
 	`,
@@ -142,19 +177,28 @@ const WeekDayCell = styled(
 	Component,
 	({ colors }) => `
 		cursor: pointer;
-		background-color: ${colors.lighter(colors.gray)};
+		background-color: ${colors.darker(colors.gray)};
 		min-height: 14.285714285714286%;
-
-		&.today {
-			background-color: ${colors.blue};
-		}
 
 		& div.day-title {
 			cursor: pointer;
 			padding: 6px;
-			background-color: ${colors.black.setAlpha(0.2)};
+			background-color: ${colors.alpha(colors.black, 0.2)};
 			font-size: 1em;
-			color: black;
+			color: ${colors.lightest(colors.gray)};
+		}
+
+		&:hover div.day-title,
+		&.today:hover div.day-title {
+			background-color: ${colors.light(colors.selected)};
+			color: ${colors.mostReadable(colors.light(colors.selected), [colors.white, colors.black])};
+			font-weight: 700;
+		}
+
+		&.today div.day-title {
+			box-shadow: inset 0 -3px 0 ${colors.selected};
+			color: ${colors.white};
+			font-weight: 700;
 		}
 
 		& .event {
@@ -209,27 +253,64 @@ export const MONTHS = [
  * @returns {Calendar} Calendar component instance
  */
 class Calendar extends StyledComponent {
-	constructor(options = {}, ...children) {
-		super(
-			{
-				view: 'month',
-				height: '420px',
-				registeredEvents: new Set(['selectDay', 'selectTime', 'selectEvent', 'newEvent']),
-				...options,
-				events: (options.events || []).map(eventItem => new CalendarEvent(eventItem)),
+	static schema = {
+		height: {
+			default: '420px',
+			set(value) {
+				this.elem.style.height = value;
 			},
-			...children,
-		);
-	}
-
-	static handlers = {
-		height(value) {
-			this.elem.style.height = value;
 		},
+		// Date state read from this.options by the view renderers; navigation methods
+		// (setDate, next, previous) mutate several keys then re-render once
+		view: {
+			default: 'month',
+			enum: ['month', 'week', 'day'],
+			set() {
+				if (!this.rendered) return;
+				this.adjustDateToView();
+				this.renderView();
+			},
+		},
+		views: { default: VIEWS },
+		events: {
+			get default() {
+				return [];
+			},
+			set(value) {
+				// Normalize raw event objects; the re-assignment re-enters this set with instances only
+				if (value?.some(eventItem => !(eventItem instanceof CalendarEvent))) {
+					this.options.events = value.map(eventItem =>
+						eventItem instanceof CalendarEvent ? eventItem : new CalendarEvent(eventItem),
+					);
+					return;
+				}
+
+				if (this.rendered) this.renderView();
+			},
+		},
+		year: {},
+		month: {},
+		day: {},
+		weekday: {},
+		display24h: { default: false },
 	};
 
+	static events = ['selectDay', 'selectTime', 'selectEvent', 'newEvent'];
+
+	static prepareOptions(options) {
+		return {
+			...options,
+			events: options.events.map(eventItem => new CalendarEvent(eventItem)),
+		};
+	}
+
 	build() {
-		this.toolbar = new Toolbar({ appendTo: this, calendar: this, views: this.options.views, view: this.options.view });
+		this.toolbar = new Toolbar({
+			appendTo: this,
+			calendar: this,
+			views: this.options.views,
+			view: this.options.subscriber('view'),
+		});
 		this.wrapper = new CalendarWrapper({ appendTo: this });
 
 		if (this.options.month == null) {
@@ -240,9 +321,7 @@ class Calendar extends StyledComponent {
 			this.adjustDateToView();
 		}
 
-		if (this.options.view === 'day') this.renderDay();
-		else if (this.options.view === 'week') this.renderWeek();
-		else this.renderMonth();
+		this.renderView();
 
 		this.wrapper.elem.scrollTop = 0;
 
@@ -360,7 +439,6 @@ class Calendar extends StyledComponent {
 
 			const weekdayCell = new WeekDayCell({
 				addClass: isToday ? 'today' : undefined,
-				data: { at: cDay.getTime() },
 				onPointerPress: ({ target }) => {
 					this.emit('selectDay', { target, date: cellDate });
 				},
@@ -449,12 +527,12 @@ class Calendar extends StyledComponent {
 				const td = new MonthDayCell({
 					tag: 'td',
 					addClass: isCurrentMonth && currentDay === dayX ? 'today' : undefined,
-					data: { at: date.getTime() },
 					appendTo: tr,
 					onPointerPress: event => {
 						this.emit('selectDay', { target: event.target, date });
 					},
-					append: [
+					append: new Component(
+						{ addClass: 'cell-body' },
 						new Component({
 							tag: 'span',
 							textContent: date.getDate(),
@@ -464,7 +542,7 @@ class Calendar extends StyledComponent {
 							},
 						}),
 						eventContainer,
-					],
+					),
 				});
 
 				if (dayX <= 0 || dayX > month.numberOfDays) td.addClass('not-in-month');
@@ -620,18 +698,20 @@ class Calendar extends StyledComponent {
 	 * @returns {Calendar} This calendar instance for method chaining
 	 */
 	setView(view) {
-		if (this.options.view !== view) {
-			this.options.view = view;
-
-			this.adjustDateToView();
-			this.wrapper.empty();
-
-			if (view === 'day') this.renderDay();
-			else if (view === 'week') this.renderWeek();
-			else this.renderMonth();
-		}
+		if (this.options.view !== view) this.options.view = view;
 
 		return this;
+	}
+
+	/**
+	 * Clears the wrapper and renders the current view.
+	 */
+	renderView() {
+		this.wrapper.empty();
+
+		if (this.options.view === 'day') this.renderDay();
+		else if (this.options.view === 'week') this.renderWeek();
+		else this.renderMonth();
 	}
 
 	/**

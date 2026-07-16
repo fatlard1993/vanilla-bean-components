@@ -52,14 +52,23 @@ const StyledComponent = styled(
 	`,
 );
 
-const defaultOptions = { tag: 'li', readOnly: false };
-
 class Tag extends StyledComponent {
-	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
-
-	constructor(options = {}, ...children) {
-		super({ tabindex: '0', ...defaultOptions, ...options }, ...children);
-	}
+	static schema = {
+		tag: { default: 'li' },
+		tabIndex: { default: 0 },
+		readOnly: {
+			default: false,
+			set(value) {
+				this.toggleClass('readOnly', !!value);
+			},
+		},
+		textContent: {
+			set(value) {
+				this.elem.setAttribute('data-value', value);
+				this._textSpan.elem.textContent = value;
+			},
+		},
+	};
 
 	build() {
 		this._textSpan = new Elem({ tag: 'span', appendTo: this });
@@ -72,13 +81,6 @@ class Tag extends StyledComponent {
 			});
 		}
 	}
-
-	static handlers = {
-		textContent(value) {
-			this.elem.setAttribute('data-value', value);
-			this._textSpan.elem.textContent = value;
-		},
-	};
 }
 
 export default Tag;

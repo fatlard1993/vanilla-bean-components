@@ -22,24 +22,30 @@ const Right = styled(
 	`,
 );
 
-const VIEWS = ['day', 'week', 'month'];
+export const VIEWS = Object.freeze(['day', 'week', 'month']);
 
 class Toolbar extends Component {
-	constructor({ calendar, view, ...options } = {}, ...children) {
-		super(
-			{
-				...options,
-				style: {
-					display: 'flex',
-					justifyContent: 'space-between',
-					...options.style,
-				},
+	static schema = {
+		views: { default: VIEWS },
+		calendar: {},
+		view: {
+			set(value) {
+				for (const [view, button] of Object.entries(this._viewButtons || {})) {
+					button.toggleClass('pressed', view === value);
+				}
 			},
-			...children,
-		);
+		},
+	};
 
-		this.calendar = calendar;
-		this._currentView = view;
+	static prepareOptions(options) {
+		return {
+			...options,
+			style: {
+				display: 'flex',
+				justifyContent: 'space-between',
+				...options.style,
+			},
+		};
 	}
 
 	build() {
@@ -51,7 +57,7 @@ class Toolbar extends Component {
 						textContent: { next: '>', today: 'Today', previous: '<' }[action],
 						'aria-label': action,
 						onPointerPress: () => {
-							this.calendar[action]();
+							this.options.calendar[action]();
 						},
 					}),
 			),
@@ -59,17 +65,19 @@ class Toolbar extends Component {
 
 		this.title = new Title({ appendTo: this });
 
+		this._viewButtons = {};
+
 		new Right({
 			appendTo: this,
-			append: (this.options.views || VIEWS).map(
+			append: this.options.views.map(
 				view =>
-					new Button({
-						addClass: [`set-${view}`, ...(view === this._currentView ? ['pressed'] : [])],
+					(this._viewButtons[view] = new Button({
+						addClass: [`set-${view}`],
 						textContent: capitalize(view),
 						onPointerPress: () => {
-							this.calendar.setView(view);
+							this.options.calendar.setView(view);
 						},
-					}),
+					})),
 			),
 		});
 	}

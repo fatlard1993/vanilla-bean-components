@@ -14,7 +14,6 @@ const _internalProperties = new Set([
 	'elem',
 	'tag',
 	'defaultOptions',
-	'handlers',
 	'__registeredEvents',
 	'__knownAttributes',
 	'__priorityOptions',
@@ -47,30 +46,169 @@ const commonEvents = new Set([
 const defaultOptions = {
 	tag: 'div',
 	autoRender: true,
-	registeredEvents: new Set([]),
-	knownAttributes: new Set(['role', 'name', 'colspan', 'anchor', 'popover', 'popovertarget', 'popovertargetaction']),
-	get priorityOptions() {
-		return new Set(['onConnected', 'textContent', 'content', 'appendTo', 'prependTo', 'value']);
-	},
 };
+
+const baseKnownAttributes = new Set([
+	'role',
+	'name',
+	'colspan',
+	'anchor',
+	'popover',
+	'popovertarget',
+	'popovertargetaction',
+]);
+const basePriorityOptions = new Set(['onConnected', 'textContent', 'content', 'appendTo', 'prependTo', 'value']);
+
+const _staticsCache = new WeakMap();
+
+/**
+ * Collects a static field's own values up the constructor chain, leaf class first,
+ * stopping before Component. The single walk behind every schema mechanism.
+ * Results are cached per leaf class - static declarations are treated as immutable
+ * after a class's first construction.
+ * @param {Function} klass - Leaf constructor (new.target or this.constructor) to walk from
+ * @param {string} name - Static field name ('schema', 'events', 'prepareOptions')
+ * @returns {Array<*>} Own static values from leaf to root
+ */
+const collectStatics = (klass, name) => {
+	let cache = _staticsCache.get(klass);
+	if (cache?.[name]) return cache[name];
+
+	const values = [];
+	let current = klass;
+
+	while (current && current !== Component) {
+		if (Object.prototype.hasOwnProperty.call(current, name) && current[name]) values.push(current[name]);
+		current = Object.getPrototypeOf(current);
+	}
+
+	if (!cache) _staticsCache.set(klass, (cache = {}));
+	cache[name] = values;
+
+	return values;
+};
+
+/**
+ * Collects `default` values from static schemas up the constructor chain.
+ * Parent schemas apply first so child classes override per-key. Descriptor `default`
+ * is read at construction time, so getter defaults (e.g. `get default() { return document.body; }`)
+ * evaluate fresh per instance.
+ * @param {Function} klass - Leaf constructor (new.target) to walk from
+ * @returns {object} Merged default values keyed by option name
+ */
+const collectSchemaDefaults = klass => {
+	const defaults = {};
+
+	// Copied before reversing - the collected array is cached and must stay leaf-first
+	for (const schema of [...collectStatics(klass, 'schema')].reverse()) {
+		for (const [key, descriptor] of Object.entries(schema)) {
+			if (descriptor && 'default' in descriptor) defaults[key] = descriptor.default;
+		}
+	}
+
+	return defaults;
+};
+
+/**
+ * Collects schema keys carrying a given flag (e.g. `attribute`, `priority`) up the constructor chain.
+ * The nearest class whose descriptor declares the flag decides, so a subclass can opt out
+ * of a parent's flag with e.g. `attribute: false`.
+ * @param {Function} klass - Leaf constructor to walk from
+ * @param {string} flag - Descriptor flag name to collect
+ * @returns {Set<string>} Option keys with the flag enabled
+ */
+const collectSchemaFlags = (klass, flag) => {
+	const keys = new Set();
+	const decided = new Set();
+
+	for (const schema of collectStatics(klass, 'schema')) {
+		for (const [key, descriptor] of Object.entries(schema)) {
+			if (descriptor && flag in descriptor && !decided.has(key)) {
+				decided.add(key);
+				if (descriptor[flag]) keys.add(key);
+			}
+		}
+	}
+
+	return keys;
+};
+
+/**
+ * Collects `static events` declarations up the constructor chain into one union.
+ * @param {Function} klass - Leaf constructor to walk from
+ * @returns {Set<string>} Union of every class's declared event names
+ */
+const collectStaticEvents = klass => new Set(collectStatics(klass, 'events').flat());
+
+/**
+ * Runs `static prepareOptions(options, children)` hooks leaf-first up the constructor chain.
+ * Hooks receive the merged (schema defaults + user) options and return a transformed copy,
+ * which handles computed defaults that previously required a constructor.
+ * @param {Function} klass - Leaf constructor to walk from
+ * @param {object} options - Merged options to transform
+ * @param {Array} children - Constructor children, for hooks that derive options from them
+ * @returns {object} Transformed options
+ */
+const runPrepareOptions = (klass, options, children) => {
+	for (const prepare of collectStatics(klass, 'prepareOptions')) {
+		options = prepare(options, children) ?? options;
+	}
+
+	return options;
+};
+
+const union = (base, additions) => (additions.size > 0 ? new Set([...(base || []), ...additions]) : base);
 
 /**
  * General purpose reactive component with automatic cleanup and lifecycle management.
  * Extends Elem with Oxject-driven options, event handling, and style processing.
+ *
+ * Subclasses declare their option schema once via `static schema` - each key maps to a
+ * descriptor defining what the option is:
+ * - `default` - initial value, merged automatically (child classes override parents per-key)
+ * - `set(value, next)` - change handler, chained deepest-class-first;
+ *   omit `next()` to own the key, call it to continue down the chain
+ * - `attribute: true` - routed to elem.setAttribute
+ * - `priority: true` - processed before other keys during render
+ * - `data: true` - force store-only routing; needed only when a data key's name collides
+ *   with a real DOM property that standard routing would otherwise hit
+ * - `enum: [...]` - valid values; assigning anything else (other than null/undefined) throws.
+ *   Readable via optionEnum(key)
+ *
+ * Declared keys route through standard option processing (elem properties, events, methods)
+ * when a real match exists, so DOM-bound defaults still reach the element - but they never
+ * fall through to guessing: with no match they live in this.options, silently. Undeclared
+ * keys keep the full fallback behavior including the dev warning.
+ *
+ * Two more statics:
+ * - `static events = ['select']` - custom event names usable with on()/emit(); collected as a
+ *   union up the class chain, so subclasses add to their parents' events instead of replacing them
+ * - `static prepareOptions(options, children)` - pure transform of the merged
+ *   (schema defaults + user) options, run leaf-first, for computed defaults that
+ *   would otherwise require a constructor
+ * @example
+ * static schema = {
+ *   tag: { default: 'canvas' },
+ *   background: { default: '#FFF', set(value) { this.elem.style.background = value; } },
+ *   color: { default: '#000' },
+ * };
+ * static events = ['line', 'draw'];
+ * static prepareOptions(options) {
+ *   return { ...options, style: { cursor: 'crosshair', ...options.style } };
+ * }
  * @augments Elem
  * @augments EventTarget
  */
 class Component extends Elem {
-	defaultOptions = defaultOptions;
+	get defaultOptions() {
+		return { ...defaultOptions, ...collectSchemaDefaults(this.constructor) };
+	}
 
 	/**
 	 * Creates reactive component with Oxject-driven options, automatic cleanup, and lifecycle management.
 	 * @param {object} [options] - Component configuration object with reactive properties
 	 * @param {string} [options.tag] - HTML tag name for the root element
 	 * @param {boolean|'onload'|'animationFrame'} [options.autoRender] - Render timing: true (immediate), 'onload' (window load), 'animationFrame' (next frame), false (manual)
-	 * @param {Set<string>} [options.registeredEvents] - Additional event types to handle via on() method
-	 * @param {Set<string>} [options.knownAttributes] - Attribute names routed to elem.setAttribute() instead of property assignment
-	 * @param {Set<string>} [options.priorityOptions] - Option keys processed first during render
 	 * @param {object} [options.style] - Inline CSS properties applied as HTMLElement.style
 	 * @param {object} [options.attributes] - HTML attributes applied via setAttribute()
 	 * @param {string|object|Function} [options.styles] - CSS definition: string/function processed through theme system, object applied inline
@@ -84,16 +222,21 @@ class Component extends Elem {
 	 * @returns {Component} Component instance with reactive options accessible via this.options
 	 */
 	constructor(options = {}, ...children) {
-		const { tag, autoRender, registeredEvents, knownAttributes, priorityOptions, ...optionsWithoutConfig } = {
-			...defaultOptions,
-			...options,
-		};
+		const { tag, autoRender, ...optionsWithoutConfig } = runPrepareOptions(
+			new.target,
+			{
+				...defaultOptions,
+				...collectSchemaDefaults(new.target),
+				...options,
+			},
+			children,
+		);
 
 		super({ tag });
 
-		this.__registeredEvents = registeredEvents;
-		this.__knownAttributes = knownAttributes;
-		this.__priorityOptions = priorityOptions;
+		this.__registeredEvents = collectStaticEvents(new.target);
+		this.__knownAttributes = union(baseKnownAttributes, collectSchemaFlags(new.target, 'attribute'));
+		this.__priorityOptions = union(basePriorityOptions, collectSchemaFlags(new.target, 'priority'));
 
 		this.elem._component = this;
 
@@ -201,48 +344,73 @@ class Component extends Elem {
 	}
 
 	/**
-	 * Routes option changes through the static handlers chain, then standard routing.
+	 * Routes option changes through the schema set chain, then standard routing.
 	 *
-	 * Walks the constructor chain collecting all handlers for the given key (deepest class
-	 * first), then executes them in order. Each handler receives `next(value?)` - call it
-	 * to continue to the next handler in the chain, or to standard routing when the chain
-	 * is exhausted. Handlers that do not call `next` fully own the key.
+	 * Walks the constructor chain collecting every `static schema` set function for the
+	 * given key (deepest class first), then executes them in order. Each receives
+	 * `next(value?)` - call it to continue to the next in the chain, or to standard
+	 * routing when the chain is exhausted. Not calling `next` fully owns the key.
+	 * Keys flagged `data: true` never reach standard routing at all.
 	 * @param {string} key - Option property name being changed
 	 * @param {*} value - New value being assigned to the option
 	 * @private
 	 */
 	_setOption(key, value) {
 		const chain = [];
-		let klass = this.constructor;
-		while (klass && klass !== Component) {
-			if (Object.prototype.hasOwnProperty.call(klass, 'handlers') && klass.handlers?.[key]) {
-				chain.push(klass.handlers[key]);
+		let dataOption;
+		let enumValues;
+		let enumDecided = false;
+
+		// set functions chain across the class hierarchy; scalar fields (data, enum) are
+		// decided by the nearest class whose descriptor declares them, so subclasses can
+		// opt out with data: false or enum: null
+		let declared = false;
+		for (const schema of collectStatics(this.constructor, 'schema')) {
+			const descriptor = schema[key];
+			if (!descriptor) continue;
+			declared = true;
+			if (descriptor.set) chain.push(descriptor.set);
+			if (dataOption === undefined && 'data' in descriptor) dataOption = !!descriptor.data;
+			if (!enumDecided && 'enum' in descriptor) {
+				enumDecided = true;
+				enumValues = descriptor.enum;
 			}
-			klass = Object.getPrototypeOf(klass);
+		}
+
+		if (enumValues && value !== undefined && value !== null && !enumValues.includes(value)) {
+			throw new Error(
+				`"${value}" is not a valid ${key}. The ${key} must be one of the following values: ${enumValues.join(', ')}`,
+			);
 		}
 
 		if (chain.length > 0) {
 			let i = 0;
 			const next = (v = value) => {
 				if (i < chain.length) chain[i++].call(this, v, next);
-				else this._standardSetOption(key, v);
+				else if (!dataOption) this._standardSetOption(key, v, declared);
 			};
 			chain[i++].call(this, value, next);
 			return;
 		}
 
-		this._standardSetOption(key, value);
+		if (dataOption) return;
+		this._standardSetOption(key, value, declared);
 	}
 
 	/**
 	 * Standard option routing pipeline - event handlers, special keys, attributes, methods, properties.
-	 * Called by _setOption when no handler claims the key, or when a handler calls next() past
+	 * Called by _setOption when no set claims the key, or when a set calls next() past
 	 * the end of its chain.
+	 *
+	 * Declared keys never fall through to guessing: they route to a real match (elem property,
+	 * registered event, attribute) or stay store-only, silently. The unknown-key warning and
+	 * elem expando assignment apply only to undeclared keys.
 	 * @param {string} key - Option property name
 	 * @param {*} value - Value to apply
+	 * @param {boolean} [declared] - Whether any class's schema declares this key
 	 * @private
 	 */
-	_standardSetOption(key, value) {
+	_standardSetOption(key, value, declared = false) {
 		if (key === 'onRendered') {
 			this.onRendered = value;
 			return;
@@ -252,10 +420,12 @@ class Component extends Elem {
 			const targetEvent = key.replace(/^on/, '').toLowerCase();
 			if (this.on({ targetEvent, id: key, callback: value })) return;
 			if (typeof this[key] !== 'function') {
-				if (isDev) {
+				// Declared callback options (e.g. onSort, onButtonPress) live in this.options,
+				// invoked by the component itself rather than the event system
+				if (!declared && isDev) {
 					// eslint-disable-next-line no-console
 					console.warn(
-						`Component._setOption(): "${key}" starts with "on" but "${targetEvent}" is not a recognized event and there is no "${key}" method. Add "${targetEvent}" to registeredEvents to register it as a custom event.`,
+						`Component._setOption(): "${key}" starts with "on" but "${targetEvent}" is not a recognized event and there is no "${key}" method. Add "${targetEvent}" to static events to register it as a custom event.`,
 					);
 				}
 				return;
@@ -277,16 +447,32 @@ class Component extends Elem {
 			if (value?.elem) value = value.elem;
 
 			this.elem[key].call(this.elem, value);
-		} else if (typeof value === 'function') this[key] = value;
-		else {
+		} else if (typeof value === 'function') {
+			if (declared) return;
+			this[key] = value;
+		} else {
+			if (!(key in this.elem) && declared) return;
 			if (isDev && !(key in this.elem)) {
 				// eslint-disable-next-line no-console
 				console.warn(
-					`Component._setOption(): unknown key "${key}" assigned directly to elem. If intentional, add to knownAttributes.`,
+					`Component._setOption(): unknown key "${key}" assigned directly to elem. If intentional, declare it in the static schema.`,
 				);
 			}
 			this.elem[key] = value;
 		}
+	}
+
+	/**
+	 * Looks up the declared enum for an option key from the schema chain (nearest class wins).
+	 * @param {string} key - Option property name
+	 * @returns {Array<*>|undefined} Valid values declared for the key, or undefined if unconstrained
+	 */
+	optionEnum(key) {
+		for (const schema of collectStatics(this.constructor, 'schema')) {
+			if (schema[key]?.enum) return schema[key].enum;
+		}
+
+		return undefined;
 	}
 
 	/**

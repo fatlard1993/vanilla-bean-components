@@ -14,20 +14,28 @@ import { Component } from '../../Component';
  * @returns {Icon} Icon component instance
  */
 export default class Icon extends Component {
-	static handlers = {
-		icon() {
-			this._refreshIcon();
+	static schema = {
+		icon: {
+			set() {
+				this._refreshIcon();
+			},
 		},
-		animation() {
-			this._refreshIcon();
+		animation: {
+			set() {
+				this._refreshIcon();
+			},
 		},
-		content(value, next) {
-			next(value);
-			this._refreshIcon();
+		content: {
+			set(value, next) {
+				next(value);
+				this._refreshIcon();
+			},
 		},
-		textContent(value, next) {
-			next(value);
-			this._refreshIcon();
+		textContent: {
+			set(value, next) {
+				next(value);
+				this._refreshIcon();
+			},
 		},
 	};
 

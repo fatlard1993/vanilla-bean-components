@@ -43,10 +43,10 @@ class Post extends (styled.Component`
 	padding: 12px;
 	border: 1px solid;
 `) {
-	constructor(options) {
+	constructor({ heading, body, ...options }) {
 		super({
 			tag: 'p',
-			content: [new PostHeading({ content: options.heading }), new PostBody(options.body)],
+			content: [new PostHeading({ content: heading }), new PostBody(body)],
 			...options,
 		});
 	}

@@ -1,17 +1,6 @@
 import { throttle } from '../../utils/data';
 import { Component } from '../../Component';
 
-const defaultOptions = {
-	tag: 'canvas',
-	background: '#FFF',
-	color: '#000',
-	lineWidth: 3,
-	width: '200px',
-	height: '200px',
-	readOnly: false,
-	registeredEvents: new Set(['line', 'draw']),
-};
-
 /**
  * Interactive drawing canvas component with multi-touch support and line rendering.
  *
@@ -31,22 +20,52 @@ const defaultOptions = {
  * @returns {Whiteboard} Whiteboard component instance
  */
 export default class Whiteboard extends Component {
-	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
-
-	constructor(options = {}, ...children) {
-		super(
-			{
-				...defaultOptions,
-				...options,
-				style: {
-					cursor: 'crosshair',
-					touchAction: 'none',
-					borderRadius: '3px',
-					...options.style,
-				},
+	static schema = {
+		tag: { default: 'canvas' },
+		width: {
+			default: '200px',
+			set(value) {
+				this.elem.width = Number.parseInt(value);
+				this.elem.style.width = value;
 			},
-			...children,
-		);
+		},
+		height: {
+			default: '200px',
+			set(value) {
+				this.elem.height = Number.parseInt(value);
+				this.elem.style.height = value;
+			},
+		},
+		background: {
+			default: '#FFF',
+			set(value) {
+				this.elem.style.background = value;
+			},
+		},
+		lines: {
+			set(value) {
+				value.forEach(line => this.drawLine(line));
+			},
+		},
+		// Drawing config read from this.options during draw interactions
+		color: { default: '#000' },
+		lineWidth: { default: 3 },
+		readOnly: { default: false },
+		drawThrottle: {},
+	};
+
+	static events = ['line', 'draw'];
+
+	static prepareOptions(options) {
+		return {
+			...options,
+			style: {
+				cursor: 'crosshair',
+				touchAction: 'none',
+				borderRadius: '3px',
+				...options.style,
+			},
+		};
 	}
 
 	build() {
@@ -58,23 +77,6 @@ export default class Whiteboard extends Component {
 		this.elem.addEventListener('pointerdown', boundInteractionInit);
 		this.replaceCleanup('pointerdown', () => this.elem.removeEventListener('pointerdown', boundInteractionInit));
 	}
-
-	static handlers = {
-		width(value) {
-			this.elem.width = Number.parseInt(value);
-			this.elem.style.width = value;
-		},
-		height(value) {
-			this.elem.height = Number.parseInt(value);
-			this.elem.style.height = value;
-		},
-		lines(value) {
-			value.forEach(line => this.drawLine(line));
-		},
-		background(value) {
-			this.elem.style.background = value;
-		},
-	};
 
 	getPosition({ offsetX, offsetY }) {
 		return { x: offsetX.toFixed(3), y: offsetY.toFixed(3) };

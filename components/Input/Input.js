@@ -26,13 +26,11 @@ const type_enum = Object.freeze([
 	'url',
 	'week',
 ]);
-const defaultOptions = {
-	tag: 'input',
-	value: '',
+// Only meaningful on input/textarea elements - child classes rendering other tags (e.g. ColorPicker's div) must not receive them
+const textInputDefaults = {
 	autocomplete: 'off',
 	autocapitalize: 'off',
 	autocorrect: 'off',
-	height: 'auto',
 	placeholder: '',
 };
 
@@ -59,19 +57,91 @@ const dataTypeToInputType = { number: 'number', boolean: 'checkbox', string: 'te
  * @returns {Input} Input component instance
  */
 export default class Input extends Component {
-	defaultOptions = { ...super.defaultOptions, ...defaultOptions };
-	type_enum = type_enum;
+	static schema = {
+		tag: { default: 'input' },
+		type: { enum: type_enum },
+		height: {
+			default: 'auto',
+			set(value) {
+				if (this.tag !== 'textarea') return;
+
+				if (value === 'auto') {
+					this.__updateAutoHeight = () => {
+						this.elem.style.height = this.options.syntaxHighlighting
+							? `calc(${((this.elem.value?.match(/\n/g) || '').length + 1) * 1.19}em + 10px)`
+							: `calc(${((this.elem.value?.match(/\n/g) || '').length + 1) * 1.25}em + 16px)`;
+					};
+
+					this.__debouncedUpdateAutoHeight =
+						this.__debouncedUpdateAutoHeight ||
+						(() => {
+							clearTimeout(this.__autoHeightTimeout);
+							this.__autoHeightTimeout = setTimeout(this.__updateAutoHeight, 16);
+						});
+
+					this.__updateAutoHeight();
+
+					this.elem.addEventListener('input', this.__debouncedUpdateAutoHeight);
+
+					this.replaceCleanup('autoHeight', () => {
+						clearTimeout(this.__autoHeightTimeout);
+						this.elem.removeEventListener?.('input', this.__debouncedUpdateAutoHeight);
+					});
+				} else {
+					this.elem.removeEventListener('input', this.__debouncedUpdateAutoHeight);
+					clearTimeout(this.__autoHeightTimeout);
+
+					this.elem.style.height = typeof value === 'number' ? `${value + 1}em` : value;
+				}
+			},
+		},
+		value: {
+			default: '',
+			set(value) {
+				if (this.options.type === 'checkbox') this.elem.checked = value;
+				else this.elem.value = value;
+
+				if (this.rendered && this.options.validations?.length) retry(() => this.validate(), { delay: 500, max: 1 });
+			},
+		},
+		syntaxHighlighting: {
+			set(value) {
+				this[value ? 'addClass' : 'removeClass']('syntax-highlighting');
+			},
+		},
+		language: {
+			set(value) {
+				if (!this.options.syntaxHighlighting) return;
+				this.removeClass(/\blanguage-\S+\b/g);
+				this.addClass(`language-${value}`);
+			},
+		},
+		autocorrect: {
+			set(value) {
+				this.elem.autocorrect = value;
+			},
+		},
+		// Read by validate() and the value handler
+		validations: {
+			get default() {
+				return [];
+			},
+		},
+	};
+
+	static prepareOptions(options) {
+		const rawValue = options.value?.__isDerived ? options.value.toJSON() : options.value;
+		const tag = options.tag || 'input';
+
+		return {
+			...(tag === 'input' ? { type: dataTypeToInputType[typeof rawValue] || 'text' } : {}),
+			...(tag === 'input' || tag === 'textarea' ? textInputDefaults : {}),
+			...options,
+		};
+	}
 
 	constructor(options = {}, ...children) {
-		const rawValue = options.value?.__isDerived ? options.value.toJSON() : options.value;
-		super(
-			{
-				...((options.tag || 'input') === 'input' ? { type: dataTypeToInputType[typeof rawValue] || 'text' } : {}),
-				...defaultOptions,
-				...options,
-			},
-			...children,
-		);
+		super(options, ...children);
 
 		this.initialValue = this.options.value;
 	}
@@ -92,58 +162,6 @@ export default class Input extends Component {
 			this.replaceCleanup('syntaxHighlightingKeydown', () => this.elem.removeEventListener('keydown', handleKeydown));
 		}
 	}
-
-	static handlers = {
-		height(value) {
-			if (this.tag !== 'textarea') return;
-
-			if (value === 'auto') {
-				this.__updateAutoHeight = () => {
-					this.elem.style.height = this.options.syntaxHighlighting
-						? `calc(${((this.elem.value?.match(/\n/g) || '').length + 1) * 1.19}em + 10px)`
-						: `calc(${((this.elem.value?.match(/\n/g) || '').length + 1) * 1.25}em + 16px)`;
-				};
-
-				this.__debouncedUpdateAutoHeight =
-					this.__debouncedUpdateAutoHeight ||
-					(() => {
-						clearTimeout(this.__autoHeightTimeout);
-						this.__autoHeightTimeout = setTimeout(this.__updateAutoHeight, 16);
-					});
-
-				this.__updateAutoHeight();
-
-				this.elem.addEventListener('input', this.__debouncedUpdateAutoHeight);
-
-				this.replaceCleanup('autoHeight', () => {
-					clearTimeout(this.__autoHeightTimeout);
-					this.elem.removeEventListener?.('input', this.__debouncedUpdateAutoHeight);
-				});
-			} else {
-				this.elem.removeEventListener('input', this.__debouncedUpdateAutoHeight);
-				clearTimeout(this.__autoHeightTimeout);
-
-				this.elem.style.height = typeof value === 'number' ? `${value + 1}em` : value;
-			}
-		},
-		value(value) {
-			if (this.options.type === 'checkbox') this.elem.checked = value;
-			else this.elem.value = value;
-
-			if (this.rendered && this.options.validations?.length) retry(() => this.validate(), { delay: 500, max: 1 });
-		},
-		syntaxHighlighting(value) {
-			this[value ? 'addClass' : 'removeClass']('syntax-highlighting');
-		},
-		language(value) {
-			if (!this.options.syntaxHighlighting) return;
-			this.removeClass(/\blanguage-\S+\b/g);
-			this.addClass(`language-${value}`);
-		},
-		autocorrect(value) {
-			this.elem.autocorrect = value;
-		},
-	};
 
 	/**
 	 * Checks if the input value has changed from its initial value
