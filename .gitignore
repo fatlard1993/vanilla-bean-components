@@ -7,3 +7,8 @@ build
 *.asText
 
 .vscode
+
+# lldtdd scratch dir - generated test files for DOM-component suites (see devTools/lldRunner.js)
+.lldtdd-tmp/
+# Per-machine Claude Code session state, never part of the project.
+.claude/

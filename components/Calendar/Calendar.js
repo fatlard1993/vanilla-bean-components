@@ -44,7 +44,14 @@ const StyledComponent = styled(
 				& div.event {
 					position: absolute;
 					pointer-events: all;
-					width: 100%;
+					/* Offsets, not a width. Overlap resolution assigns left/right percentages so
+					   simultaneous events share the row, and an explicit width over-constrained the
+					   box against them — 'right' was dropped, so every event rendered full-width and
+					   sat on top of its neighbours. Defaulting both offsets to 0 keeps a lone event
+					   spanning the container, which is what the width was for, while letting the
+					   assigned percentages actually narrow the box. */
+					left: 0;
+					right: 0;
 					text-indent: 6px;
 				}
 			}
@@ -246,6 +253,7 @@ export const MONTHS = [
  * @param {number} [options.year] - Initial year to display, defaults to current year
  * @param {number} [options.month] - Initial month to display (0-11), defaults to current month
  * @param {number} [options.day] - Initial day to display, defaults to current day
+ * @param {number} [options.weekday] - Day-of-week index (0-6, Sunday first) as returned by Date.getDay(); set from the selected date and read by the week view
  * @param {Array<object>} [options.events=[]] - Calendar events array, automatically converted to CalendarEvent instances
  * @param {Array<string>} [options.views] - Available view modes for toolbar
  * @param {boolean} [options.display24h] - Whether to display time in 24-hour format in day view
@@ -376,6 +384,11 @@ class Calendar extends StyledComponent {
 			event.elem = elem;
 			event.ratio = 100;
 			elem.style.left = '0';
+
+			// Which gap slot the event starts in (fractional - a start time that falls mid-slot
+			// spills into the next one below), and how many slots its duration spans.
+			event.gapCell = (event.hour * 60 + event.minute) / minGap;
+			event.gapCount = Math.max(1, Math.ceil((event.duration || minGap) / minGap));
 
 			let totalGaps = event.gapCount;
 
@@ -557,7 +570,19 @@ class Calendar extends StyledComponent {
 	}
 
 	adjustDateToView() {
-		if (this.options.view !== 'week' || this.options.weekday >= this.options.day || this.options.day > 8) return;
+		// Week view anchors on the month the week *starts* in, so a week spanning a month boundary is
+		// rendered from the earlier month. The week starts in the previous month exactly when its
+		// Sunday falls before the 1st -- `day - weekday < 1`. The guard used to ask whether
+		// `weekday < day`, which holds for most of any month's first week, so an ordinary date like
+		// Tuesday the 4th was pulled back a month and the calendar opened on the wrong week entirely.
+		// Derived, not read from `options.weekday`: that option is only populated by `setDate()`, so a
+		// caller who constructs with an explicit year/month/day leaves it undefined and any arithmetic
+		// on it yields NaN -- which compares false against everything and silently drops through.
+		if (this.options.view !== 'week') return;
+
+		const weekday = new Date(this.options.year, this.options.month, this.options.day).getDay();
+
+		if (this.options.day - weekday >= 1) return;
 
 		let { year, month } = this.options;
 		--month;
@@ -790,11 +815,3 @@ class Calendar extends StyledComponent {
 }
 
 export default Calendar;
-
-// Zero-arg scenarios for LLD verification
-export const navigateBackFromJanuary = () => {
-	const c = new Calendar({ view: 'month', year: 2024, month: 0, autoRender: false });
-	c.render();
-	c.previous();
-	return { month: c.options.month, year: c.options.year };
-};

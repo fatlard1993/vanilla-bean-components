@@ -171,8 +171,16 @@ class Label extends StyledLabel {
 			set(value) {
 				let forId = typeof value === 'string' ? value : value?.id || value?.elem?.id;
 
-				if (!forId && value?._component) {
-					forId = value.elem.id = value.uniqueId;
+				if (!forId) {
+					// Two shapes reach here: a component, which carries `elem` and `uniqueId`, and a raw
+					// element, which carries a `_component` backreference. The guard tested for the element
+					// shape while the body used the component shape, so neither worked -- a component
+					// produced an empty `for` and an element threw on `value.elem.id`. A label that looks
+					// associated but is not is worse than one that never claimed to be.
+					const component = value?.uniqueId ? value : value?._component;
+					const elem = value?.elem ?? (value?._component ? value : undefined);
+
+					if (component && elem) forId = elem.id = component.uniqueId;
 				}
 
 				if (this._labelText) this._labelText.elem.htmlFor = forId ?? '';

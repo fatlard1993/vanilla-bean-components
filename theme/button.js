@@ -29,6 +29,15 @@ export default ({ colors, fonts }) => `
 		padding: 0 6px 0 3px;
 	}
 
+	/*
+	 * An animated glyph turns about the center of its own box, and the padding above is heavier on
+	 * one side, which would swing it off-center. Evening it out keeps the same total width, so
+	 * starting an animation never shifts the label beside it.
+	 */
+	&[class*='icon-animation-']:before {
+		padding: 0 4.5px;
+	}
+
 	&:after {
 		content: '';
 		position: absolute;

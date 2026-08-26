@@ -6,6 +6,7 @@ module.exports = {
 	templates: true,
 	lang: 'en_US',
 	skipWords: [
+		'bezier',
 		'ecma',
 		'compat',
 		'eslintrc',

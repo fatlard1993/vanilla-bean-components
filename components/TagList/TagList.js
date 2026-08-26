@@ -105,21 +105,3 @@ class TagList extends StyledComponent {
 }
 
 export default TagList;
-
-// Zero-arg scenarios for LLD verification
-export const duplicateRejected = () => {
-	const tagList = new TagList({ tags: ['hello'], autoRender: false });
-	tagList.render();
-	const before = tagList.elem.children.length;
-	tagList.tagInput.elem.value = 'hello';
-	tagList.tagInput.elem.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true }));
-	return tagList.elem.children.length === before;
-};
-
-export const inputIsLastAfterAdd = () => {
-	const tagList = new TagList({ tags: [], autoRender: false });
-	tagList.render();
-	tagList.tagInput.elem.value = 'new-tag';
-	tagList.tagInput.elem.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', bubbles: true }));
-	return tagList.elem.lastElementChild === tagList.addTag.elem;
-};

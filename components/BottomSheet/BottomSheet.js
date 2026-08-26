@@ -104,9 +104,15 @@ class BottomSheet extends styled(
 	}
 
 	/**
-	 * Slides the sheet out of view and calls onClose if set.
+	 * Slides the sheet out of view. Calls `onClose` only if the sheet was actually open — hiding an
+	 * already-closed sheet dismisses nothing, so there is nothing to announce.
 	 */
 	hide() {
+		// `onClose` reports a dismissal. Firing it unconditionally meant a sheet that had never been
+		// shown reported being closed, and `hide()` called twice reported it twice — so a caller
+		// hiding defensively, or wiring hide() to more than one dismissal path, got spurious closes.
+		const wasOpen = this.elem.classList.contains('open');
+
 		this.removeClass('open');
 		if (this._hideOnNavigate) {
 			window.removeEventListener('hashchange', this._hideOnNavigate);
@@ -114,7 +120,7 @@ class BottomSheet extends styled(
 			this._hideOnNavigate = null;
 			this.replaceDestroyCleanup('hideOnNavigate', () => {});
 		}
-		this.options.onClose?.();
+		if (wasOpen) this.options.onClose?.();
 	}
 
 	_initDragToClose() {

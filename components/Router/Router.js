@@ -135,22 +135,14 @@ class Router extends Component {
 
 		if (this.options.views[route]) {
 			this.view = new this.options.views[route]({ appendTo: this.elem, ...this.parseRouteParameters() });
+		} else if (
+			this.options.defaultPath &&
+			this.options.views[this.options.defaultPath] &&
+			this.path !== this.options.defaultPath
+		) {
+			this.path = this.options.defaultPath;
 		} else if (this.options.notFound) this.view = new this.options.notFound({ appendTo: this.elem, route });
-		else if (this.options.defaultPath && this.path !== this.options.defaultPath) this.path = this.options.defaultPath;
 	}
 }
 
 export default Router;
-
-// Zero-arg scenarios for LLD verification
-export const hashStripsQueryString = () => {
-	const r = new Router({ views: { '/path': Component }, autoRender: false });
-	window.location.hash = '#/path?query=1&sort=name';
-	return r.path;
-};
-
-export const paramExtractedFromRoute = () => {
-	const r = new Router({ views: { '/users/:id': Component }, autoRender: false });
-	window.location.hash = '#/users/42';
-	return r.parseRouteParameters('/users/42')?.id;
-};

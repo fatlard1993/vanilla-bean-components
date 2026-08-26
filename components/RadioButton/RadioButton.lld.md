@@ -12,4 +12,17 @@ Radio group from an array of options. The design decision: the HTML `name` coord
 ## Options can separate their stored value from their display label
 
 - a string option uses its value as both the label and stored datum; an object with `label` and `value` lets them differ, useful when the stored value (an ID, a code) would be confusing as a visible label
-  - does an object option with a separate label display the label rather than the raw value?
+  - new Subject({ options: [{ label: "Visible", value: "v" }], value: "v" }) captures r -> r.elem.textContent.includes("Visible") && r.elem.textContent.includes("v") === false
+
+## The selected option is named by `value`, in both directions
+
+A radio group has one value, and it is the option's own value -- not the browser's default `on`, which would make every option report the same string. Assigning `value` moves the selection; picking an option reports that option back.
+
+- each option's value reaches its input, so the group's value identifies which option is selected
+  - new Subject({ options: ["a", "b", "c"], value: "b", appendTo: document.body }) captures r then Array.from(r.elem.querySelectorAll("input")).map(i => i.value + (i.checked ? "*" : "")) captures state -> state.join() === "a,b*,c"
+- assigning `value` moves the selection to the matching option rather than clearing it
+  - new Subject({ options: ["a", "b", "c"], value: "b", appendTo: document.body }) captures r then r.options.value = "c" then Array.from(r.elem.querySelectorAll("input")).map(i => i.value + (i.checked ? "*" : "")) captures state -> state.join() === "a,b,c*"
+- choosing an option reports that option's value, not a shared default
+  - new Subject({ options: ["a", "b", "c"], value: "b", appendTo: document.body }) captures r then r.elem.querySelectorAll("input")[0] captures first then first.checked = true then first.dispatchEvent(new Event("change", { bubbles: true })) -> r.options.value === "a"
+- an options list that is absent renders an empty group rather than throwing
+  - new Subject({ options: undefined, appendTo: document.body }) captures missing then new Subject({ options: null, appendTo: document.body }) captures empty -> missing.elem.querySelectorAll("input").length === 0 && empty.elem.querySelectorAll("input").length === 0

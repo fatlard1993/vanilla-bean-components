@@ -17,6 +17,10 @@ import { Icon } from '../Icon';
  * @param {Function} [options.onSort] - Custom sort function, defaults to built-in sorting
  * @param {string} [options.sortProperty] - Currently sorted column key
  * @param {string} [options.sortDirection] - Sort direction ('asc' or 'desc')
+ * @param {*} [options.selection] - Caller-owned selection state. The table stores it and re-renders
+ *   when it is reassigned, but never interprets it; `dataColumn` functions read it back off
+ *   `table.options.selection` to render per-row state. Mutating a property of it deliberately does
+ *   not re-render, so toggling one row's checkbox does not rebuild the table under the pointer
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Table} Table component instance
  */
@@ -67,9 +71,14 @@ class Table extends Component {
 		const columns = (this.options.columns || []).map(column =>
 			typeof column === 'string' ? { key: column, content: capitalize(column) } : column,
 		);
-		const footer = this.options.footer?.map(column =>
-			typeof column === 'string' ? { content: capitalize(column) } : column,
-		);
+		// Footer entries pair with columns by key, not by declaration order - an entry may
+		// declare its own `key`; otherwise it falls back to the column at the same index, so
+		// existing footer configs that never set `key` keep working unless columns are reordered.
+		const footer = this.options.footer?.map((column, index) => {
+			const normalized = typeof column === 'string' ? { content: capitalize(column) } : column;
+
+			return { key: columns[index]?.key, ...normalized };
+		});
 
 		this._sortSubscribers?.forEach(sub => sub.destroy?.());
 		this._sortSubscribers = null;
@@ -177,10 +186,16 @@ class Table extends Component {
 		);
 
 		if (footer) {
+			const footerByKey = new Map(footer.map(footData => [footData.key, footData]));
+
 			this.tfoot.append(
 				new Component(
 					{ tag: 'tr' },
-					footer.map(footData => new Component({ tag: 'td', ...footData })),
+					columns.map(column => {
+						const { key: _footKey, ...footOptions } = footerByKey.get(column.key) || {};
+
+						return new Component({ tag: 'td', ...footOptions });
+					}),
 				),
 			);
 		}

@@ -229,7 +229,7 @@ export declare class BottomSheet extends Component {
 	readonly body: Component;
 	/** Slides the sheet into view and registers navigation listeners to auto-dismiss. */
 	show(): void;
-	/** Slides the sheet out of view and calls onClose if set. */
+	/** Slides the sheet out of view. Calls `onClose` only if the sheet was actually open — hiding an */
 	hide(): void;
 }
 
@@ -255,12 +255,13 @@ export interface CalendarOptions extends ComponentOptions {
 	month?: number;
 	/** Initial day to display, defaults to current day */
 	day?: number;
+	/** Day-of-week index (0-6, Sunday first) as returned by Date.getDay(); set from the selected date and read by the week view */
+	weekday?: number;
 	/** Available view modes for toolbar */
 	views?: Array<string>;
 	/** Whether to display time in 24-hour format in day view (default: false) */
 	display24h?: boolean;
 	events?: Array<any>;
-	weekday?: any;
 }
 
 export declare class Calendar extends Component {
@@ -364,8 +365,10 @@ export declare class Form extends Component {
 export interface IconOptions extends ComponentOptions {
 	/** FontAwesome icon name (without 'fa-' prefix) */
 	icon?: string;
-	/** FontAwesome animation name (without 'fa-' prefix) */
+	/** FontAwesome animation name (without 'fa-' prefix), run on the whole element */
 	animation?: string;
+	/** FontAwesome animation name (without 'fa-' prefix), run on the glyph alone */
+	iconAnimation?: string;
 }
 
 export declare class Icon extends Component {
@@ -622,6 +625,7 @@ export interface TableOptions extends ComponentOptions {
 	sortProperty?: string;
 	/** Sort direction ('asc' or 'desc') */
 	sortDirection?: 'asc' | 'desc';
+	/** Caller-owned selection state. The table stores it and re-renders * when it is reassigned, but never interprets it; `dataColumn` functions read it back off * `table.options.selection` to render per-row state. Mutating a property of it deliberately does * not re-render, so toggling one row's checkbox does not rebuild the table under the pointer */
 	selection?: any;
 }
 
@@ -687,7 +691,7 @@ export declare class Whiteboard extends Component {
 	constructor(options?: WhiteboardOptions, ...children: Array<Elem | HTMLElement | string>);
 	/** Draws a line on the canvas with specified properties. */
 	drawLine(options: Record<string, any>): void;
-	/** Clears the entire canvas. */
+	/** Clears the entire canvas and discards any stroke currently being tracked. */
 	clearCanvas(): void;
 }
 

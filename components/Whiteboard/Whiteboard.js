@@ -107,7 +107,10 @@ export default class Whiteboard extends Component {
 
 				this.drawEvent.call(this, event);
 			}).bind(this),
-			this.options.drawThrottle || Math.max(Math.min(this.options.lineWidth + 3, 24), 6),
+			// `??`, not `||`: 0 is a legitimate throttle meaning "draw every move event", and `||`
+			// discarded it in favour of the derived rate -- so the one value a caller reaching for
+			// maximum fidelity would pass was the one value that silently did nothing.
+			this.options.drawThrottle ?? Math.max(Math.min(this.options.lineWidth + 3, 24), 6),
 		);
 		const removePointer = event => {
 			if (!this.pointers[event.pointerId]) return;
@@ -192,9 +195,14 @@ export default class Whiteboard extends Component {
 	}
 
 	/**
-	 * Clears the entire canvas.
+	 * Clears the entire canvas and discards any stroke currently being tracked.
 	 */
 	clearCanvas() {
 		this.canvas.clearRect(0, 0, this.elem.width, this.elem.height);
+
+		// Erasing the picture and forgetting the in-progress gesture are two separate jobs. Clearing
+		// only the pixels left every active pointer still registered, so the next pointermove resumed
+		// the old stroke and drew a line from wherever the pointer had been before the clear.
+		this.pointers = {};
 	}
 }

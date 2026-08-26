@@ -13,9 +13,17 @@ Activatable element that unifies pointer and keyboard interaction under one hand
 ## Caller-provided onKeyUp is preserved alongside activation logic
 
 - a caller-provided `onKeyUp` runs alongside the built-in keyboard activation; registering both handlers does not suppress either
-  - does providing a custom onKeyUp still trigger onPointerPress on Space/Enter?
+  - new Array() captures calls then new Subject({ onPointerPress: () => calls.push("press"), onKeyUp: () => calls.push("custom") }) captures b then document.body.append(b.elem) then b.elem.dispatchEvent(new KeyboardEvent("keyup", { key: "Enter", code: "Enter", bubbles: true })) -> calls.includes("press") && calls.includes("custom")
 
 ## Tooltip is automatic - no setup beyond the tooltip option
 
-- Button extends TooltipWrapper; a `tooltip` option produces tooltip behavior with no additional wiring
-  - does a Button with a tooltip option show a tooltip on hover?
+- a `tooltip` option produces tooltip behaviour with no additional wiring at the call site
+  - new Subject({ tooltip: "Save changes", appendTo: document.body }) captures b then b.elem.querySelector("[popover]") captures tip -> !!tip && tip.textContent === "Save changes"
+  - new Subject({ tooltip: "Save changes", appendTo: document.body }) captures b then b.elem.querySelector("[popover]") captures tip then tip.style.display captures before then b.elem.dispatchEvent(new PointerEvent("pointerover", { bubbles: true, clientX: 10, clientY: 10 })) then await new Promise(r => setTimeout(r, 760)) -> before === "" && tip.style.display === "block"
+
+## Only Space and Enter activate; every other key passes through
+
+Keyboard activation is deliberately two keys, not "any key". A button that fired on arrows or Tab would steal navigation from the page around it, which is the failure that makes keyboard users avoid custom controls.
+
+- Space and Enter invoke `onPointerPress`; other keys leave it uninvoked
+  - new Array() captures fired then new Subject({ onPointerPress: e => fired.push(e.code), appendTo: document.body }) captures b then ["Enter", "Space", "KeyA", "Tab", "Escape"].forEach(code => b.elem.dispatchEvent(new KeyboardEvent("keyup", { key: code, code, bubbles: true }))) -> fired.join() === "Enter,Space"

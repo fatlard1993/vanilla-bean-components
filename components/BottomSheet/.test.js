@@ -55,13 +55,27 @@ describe('BottomSheet', () => {
 	});
 
 	describe('onClose', () => {
-		test('onClose fires when hide() is called', () => {
+		test('onClose fires when an open sheet is hidden', () => {
+			const onClose = mock();
+			const sheet = new BottomSheet({ onClose });
+
+			sheet.show();
+			sheet.hide();
+
+			expect(onClose).toHaveBeenCalledTimes(1);
+		});
+
+		test('onClose does not fire when hiding a sheet that is already closed', () => {
+			// onClose announces a dismissal. A sheet that was never shown has nothing to dismiss, so
+			// a caller hiding defensively — or wiring hide() to several dismissal paths — should not
+			// receive a close it did not cause.
 			const onClose = mock();
 			const sheet = new BottomSheet({ onClose });
 
 			sheet.hide();
+			sheet.hide();
 
-			expect(onClose).toHaveBeenCalledTimes(1);
+			expect(onClose).not.toHaveBeenCalled();
 		});
 
 		test('onClose does not fire when show() is called', () => {

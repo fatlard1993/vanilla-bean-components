@@ -211,4 +211,66 @@ export default theme => `
 		${fonts.fontAwesomeSolid}
 		content: var(--fa);
 	}
+
+	/*
+	 * Icon's iconAnimation option. FontAwesome's own animation classes animate the element that
+	 * carries them, which is what you want on a bare Icon and not what you want on anything that
+	 * also renders a label — Button and Link extend Icon, so an fa animation there spins the
+	 * control, background and text included. These aim the same animations at the :before that
+	 * draws the glyph, reusing FontAwesome's keyframes and honoring the same --fa-animation-*
+	 * overrides, so a caller can animate the glyph and the element independently.
+	 */
+	[class*='icon-animation-']:before {
+		animation-delay: var(--fa-animation-delay, 0s);
+		animation-direction: var(--fa-animation-direction, normal);
+		animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+	}
+
+	.icon-animation-spin:before {
+		animation-name: fa-spin;
+		animation-duration: var(--fa-animation-duration, 2s);
+		animation-timing-function: var(--fa-animation-timing, linear);
+	}
+
+	.icon-animation-spin-pulse:before {
+		animation-name: fa-spin;
+		animation-duration: var(--fa-animation-duration, 1s);
+		animation-timing-function: var(--fa-animation-timing, steps(8));
+	}
+
+	.icon-animation-beat:before {
+		animation-name: fa-beat;
+		animation-duration: var(--fa-animation-duration, 1s);
+		animation-timing-function: var(--fa-animation-timing, ease-in-out);
+	}
+
+	.icon-animation-fade:before {
+		animation-name: fa-fade;
+		animation-duration: var(--fa-animation-duration, 1s);
+		animation-timing-function: var(--fa-animation-timing, ease-in-out);
+	}
+
+	.icon-animation-beat-fade:before {
+		animation-name: fa-beat-fade;
+		animation-duration: var(--fa-animation-duration, 1s);
+		animation-timing-function: var(--fa-animation-timing, ease-in-out);
+	}
+
+	.icon-animation-bounce:before {
+		animation-name: fa-bounce;
+		animation-duration: var(--fa-animation-duration, 1s);
+		animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.28, 0.84, 0.42, 1));
+	}
+
+	.icon-animation-flip:before {
+		animation-name: fa-flip;
+		animation-duration: var(--fa-animation-duration, 1.5s);
+		animation-timing-function: var(--fa-animation-timing, ease-in-out);
+	}
+
+	.icon-animation-shake:before {
+		animation-name: fa-shake;
+		animation-duration: var(--fa-animation-duration, 0.75s);
+		animation-timing-function: var(--fa-animation-timing, ease-in-out);
+	}
 `;

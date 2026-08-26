@@ -39,8 +39,21 @@ class Select extends Input {
 					}
 				}
 
-				// Re-apply the current value - option elements may not have existed when value was processed
-				if (this.options.value !== undefined) this.elem.value = this.options.value;
+				// Re-apply the current value - option elements may not have existed when value was processed.
+				//
+				// The empty case is excluded because `value` is inherited from Input with a default of
+				// '', so by the time this runs there is no way to tell an unset value from one the
+				// caller chose. Assigning '' to a select whose options all carry real values sets
+				// selectedIndex to -1: nothing is highlighted, and `select.value` reports '' for a
+				// control the user sees as populated. Skipping leaves the platform's own selection --
+				// the first option -- which is what the control actually displays.
+				//
+				// An explicit '' is still honoured when an option carries it, since then it names a real
+				// choice rather than "no value at all".
+				const selected = this.options.value;
+				const emptyIsSelectable = () => Array.from(this.elem.options).some(option => option.value === '');
+
+				if (selected !== undefined && (selected !== '' || emptyIsSelectable())) this.elem.value = selected;
 			},
 		},
 	};
@@ -53,7 +66,13 @@ class Select extends Input {
 		// Use elem.options (HTMLOptionsCollection) - works across optgroups
 		const selected = Array.from(this.elem.options).find(({ selected }) => selected);
 
-		return selected?.value ?? selected?.label ?? selected?.textContent ?? this.elem.value;
+		if (!selected) return this.elem.value;
+
+		// option.value is never null/undefined per spec (it's the value attribute, or
+		// textContent when absent) - hasAttribute is required to actually reach the label fallback
+		if (selected.hasAttribute('value')) return selected.value;
+
+		return selected.label || selected.textContent;
 	}
 
 	/**

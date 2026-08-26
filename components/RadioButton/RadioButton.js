@@ -85,7 +85,12 @@ class RadioButton extends Component {
 									new RadioButtonInput({
 										tag: 'input',
 										type: 'radio',
-										value: option?.value || option,
+										// As an attribute, not a bare option: `value` is an own property on Component, so
+										// the plain option set it on the component and never reached the element. Every
+										// radio kept the browser default of "on", which made `event.target.value` the
+										// same string for all of them and left the `value` setter below unable to match
+										// any input -- assigning a value cleared the selection instead of moving it.
+										attributes: { value: option?.value || option },
 										name: this.uniqueId,
 										checked: this.options.value === (option?.value || option),
 										onChange: event => {

@@ -1,5 +1,8 @@
 import { TooltipWrapper } from '../TooltipWrapper';
 
+/** The decoration every Link tooltip carries, merged onto whatever the caller passed. */
+const linkTooltip = { icon: 'link', style: { fontSize: '12px' } };
+
 /**
  * Link component with tooltip support and display variants.
  *
@@ -27,8 +30,22 @@ class Link extends TooltipWrapper {
 			},
 		},
 		tooltip: {
+			// One source for the decoration, read by both the default and the merge below; it used to
+			// be spelled out twice, once here and once inline in `set()`.
+			//
+			// The `default` has to stay. Replacing its *contents* with null changes no rendered
+			// tooltip -- `set()` supplies the decoration either way -- but removing the descriptor
+			// entirely means `set()` never runs for a Link that was given no tooltip, and the link
+			// decoration disappears. What the default provides is the presence of a value to set,
+			// not the value itself.
 			get default() {
-				return { icon: 'link', style: { fontSize: '12px' } };
+				return linkTooltip;
+			},
+			// Merge the decoration onto the caller's value so a plain string tooltip still gets the
+			// link icon, not just the object form. `next` continues the schema chain to
+			// TooltipWrapper's own tooltip set(), which expects an object or a string.
+			set(value, next) {
+				next(typeof value === 'object' ? { ...linkTooltip, ...value } : { ...linkTooltip, textContent: value });
 			},
 		},
 	};

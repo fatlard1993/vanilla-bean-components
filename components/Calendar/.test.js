@@ -287,7 +287,7 @@ describe('Calendar', () => {
 
 	describe('setView()', () => {
 		test('switches from month to week view', async () => {
-			// Seed day=15 to prevent adjustDateToView() from shifting to the prior month.
+			// Seeded mid-month so the expected week range does not depend on when the suite runs.
 			const cal = new Calendar({
 				year: thisYear,
 				month: thisMonth,

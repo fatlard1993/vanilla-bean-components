@@ -32,6 +32,10 @@ module.exports = [
 		},
 		rules: {
 			'no-console': 'warn',
+			// Destructure-to-omit (`const { key: _omitted, ...rest } = x`) is the idiomatic way to
+			// exclude a field while spreading, and the recommended config flags the discarded
+			// binding as unused. ignoreRestSiblings is the rule's own carve-out for exactly this.
+			'no-unused-vars': ['error', { ignoreRestSiblings: true }],
 			'no-nested-ternary': 'error',
 			'no-var': 'error',
 			'prefer-const': 'error',
