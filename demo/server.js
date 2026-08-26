@@ -85,6 +85,40 @@ const server = Bun.serve({
 			return Response.json(response);
 		}
 
+		if (path.match(/\.lld\.md$/)) {
+			const filePath = path.slice(1);
+			if (await Bun.file(filePath).exists()) {
+				return Response.json({ raw: await Bun.file(filePath).text() });
+			}
+
+			return Response.json({ error: `Not found: ${filePath}` }, { status: 404 });
+		}
+
+		if (path.match(/^\/components\/[^/]+\/lld-run\.json$/)) {
+			const componentName = path.match(/^\/components\/([^/]+)\//)[1];
+			const lldFile = `components/${componentName}/${componentName}.lld.md`;
+
+			if (!(await Bun.file(lldFile).exists())) {
+				return Response.json({ error: `Not found: ${lldFile}` }, { status: 404 });
+			}
+
+			const proc = Bun.spawn(['bun', 'run', 'devTools/lldRunner.js', lldFile], {
+				stdout: 'pipe',
+				stderr: 'ignore',
+				cwd: process.cwd(),
+			});
+
+			await proc.exited;
+
+			const out = await new Response(proc.stdout).text();
+
+			try {
+				return Response.json(JSON.parse(out));
+			} catch {
+				return Response.json({ error: `lldRunner produced no parseable output: ${out.slice(0, 500)}` });
+			}
+		}
+
 		if (path.match(/^\/components\/[^/]+\/dependencies\.json$/)) {
 			const componentName = path.match(/^\/components\/([^/]+)\//)[1];
 			const { imports } = extractJSDoc(`components/${componentName}/${componentName}.js`);

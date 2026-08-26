@@ -1,6 +1,7 @@
-import { GET } from '@vanilla-bean/hypertether';
+import { GET, POST } from '@vanilla-bean/hypertether';
 import * as vbc from '../..';
 import { Elem, Link, View, styled, Label, Button, Icon, Input, removeExcessIndentation } from '../..';
+import { renderLLD, resultsByDescription } from './lldMarkdown';
 
 const extractBuildBody = source =>
 	removeExcessIndentation(
@@ -173,6 +174,43 @@ export class DemoView extends View {
 		}
 
 		if (lld.response.ok) {
+			const lldContent = new Elem({
+				style: { overflow: 'auto', padding: '4%' },
+				innerHTML: renderLLD(lld.body.raw),
+			});
+
+			const runNote = new Elem({ style: { fontSize: '0.85em', color: 'inherit', opacity: 0.7 } });
+
+			const runLLD = async () => {
+				runButton.elem.disabled = true;
+				runButton.options.icon = 'spinner';
+				runButton.options.animation = 'spin';
+				runNote.content('');
+
+				try {
+					const { body } = await POST(`components/${componentName}/lld-run.json`);
+
+					if (body?.error) {
+						runNote.content(`Live run unavailable: ${body.error}`);
+					} else {
+						lldContent.elem.innerHTML = renderLLD(lld.body.raw, resultsByDescription(body));
+					}
+				} catch (error) {
+					runNote.content(`Live run failed: ${error.message}`);
+				} finally {
+					runButton.elem.disabled = false;
+					runButton.options.icon = 'play';
+					runButton.options.animation = undefined;
+				}
+			};
+
+			const runButton = new Button({
+				textContent: 'Run',
+				icon: 'play',
+				style: { marginBottom: '6px' },
+				onPointerPress: runLLD,
+			});
+
 			new Label(
 				{
 					variant: 'collapsible',
@@ -181,7 +219,9 @@ export class DemoView extends View {
 					style: { margin: '2% 4%', width: 'calc(100% - 8%)', flexShrink: 0 },
 					appendTo: this,
 				},
-				new Elem({ style: { overflow: 'auto', padding: '4%' }, innerHTML: lld.body }),
+				runButton,
+				runNote,
+				lldContent,
 			);
 		}
 	}
