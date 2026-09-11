@@ -96,8 +96,8 @@ class Keyboard extends Component {
 				}
 
 				new Key({
-					key,
 					...keyDefinition,
+					key,
 					appendTo: row,
 					onPointerDown: event => {
 						if (this.options.tactileResponse) tactileResponse();

@@ -15,6 +15,15 @@ On-screen keyboard where layout switching rebuilds the key DOM rather than showi
 - `keyDown`, `keyUp`, and `keyPress` emit with both the key name and its configuration object, so handlers can respond to semantic meaning rather than just the character pressed
   - new Array() captures seen then new Subject({ layout: "simple", appendTo: document.body, onKeyPress: e => seen.push(e.detail) }) captures k then Array.from(k.elem.querySelectorAll("button")).find(b => b.textContent === "ABC") captures key then key.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })) then key.dispatchEvent(new PointerEvent("pointerup", { bubbles: true })) -> seen.length === 1 && seen[0].key === "simple" && seen[0].keyDefinition.text === "ABC"
 
+## A key is named by its layout entry, not by what it sends
+
+A definition's `key` is what a press sends; the layout entry is the key's name. Styling and labels hang off the name, so two entries that send the same key stay distinct buttons, and a definition that only changes what is sent keeps its own label and class.
+
+- a definition's `key` does not rename the button: its class and fallback label come from the layout entry
+  - new Subject({ layout: "media", keyDefinitions: { volUp: { key: "audio_vol_up", text: "" }, "!": { mod: "shift", key: "1" } }, layouts: { media: [["volUp", "!"]] }, appendTo: document.body }) captures k then Array.from(k.elem.querySelectorAll("button")) captures keys -> keys[0].classList.contains("volUp") && !keys[0].classList.contains("audio_vol_up") && keys[1].textContent === "!"
+- a press on a renamed key still emits the definition's `key`, so the handler receives what the definition sends
+  - new Array() captures seen then new Subject({ layout: "media", keyDefinitions: { volUp: { key: "audio_vol_up", text: "" } }, layouts: { media: [["volUp"]] }, appendTo: document.body, onKeyPress: e => seen.push(e.detail) }) captures k then k.elem.querySelector("button.volUp") captures key then key.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })) then key.dispatchEvent(new PointerEvent("pointerup", { bubbles: true })) -> seen.length === 1 && seen[0].key === "audio_vol_up"
+
 ## Regex-named keys match families of keys to one definition
 
 - a key definition whose name is a regex pattern matches all physical keys that satisfy it; modifier handling and key families are expressed as patterns, not enumerated one by one
