@@ -11,12 +11,12 @@ function ensureObserver() {
 		for (const mutation of mutations) {
 			for (const node of mutation.removedNodes) {
 				for (const [target, callbacks] of registry) {
-					if (node === target || node.contains?.(target)) callbacks.onDisconnected(mutation);
+					if ((node === target || node.contains?.(target)) && !target.isConnected) callbacks.onDisconnected(mutation);
 				}
 			}
 			for (const node of mutation.addedNodes) {
 				for (const [target, callbacks] of registry) {
-					if (node === target || node.contains?.(target)) callbacks.onConnected(mutation);
+					if ((node === target || node.contains?.(target)) && target.isConnected) callbacks.onConnected(mutation);
 				}
 			}
 		}
@@ -28,7 +28,7 @@ function ensureObserver() {
 /**
  * Observe DOM connection/disconnection of an element via a shared MutationObserver.
  * All registrations share one observer; the observer is torn down when no targets remain.
- * Fires correctly when the target itself or any ancestor is moved.
+ * Fires when the target itself or any ancestor is added or removed; a move within the document is not a disconnect.
  * @param {object} config - Observer registration options
  * @param {Node} config.target - Target element to watch for add/remove
  * @param {Function} config.onConnected - Called when target is added to the document

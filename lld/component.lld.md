@@ -31,6 +31,13 @@ The ordering is driven by a set of priority option names -- framework base keys,
 - `replaceCleanup` replaces any existing cleanup registered under the same key, preventing duplicate handlers when the component re-renders; `addCleanup` chains, `replaceCleanup` replaces
   - new Array() captures ran then new Array() captures chained then new Subject({}) captures c then c.replaceCleanup("k", () => ran.push("a")) then c.replaceCleanup("k", () => ran.push("b")) then ran.join() captures atReplace then c.processCleanup() then new Subject({}) captures d then d.addCleanup("k", () => chained.push("a")) then d.addCleanup("k", () => chained.push("b")) then chained.join() captures atAdd then d.processCleanup() -> atReplace === "a" && ran.join() === "a,b" && atAdd === "" && chained.join() === "a,b"
 
+## Moving within the document is not a disconnect
+
+A re-render re-applies `appendTo`, and appending an element to the parent it already has is a move: the DOM records it as a removal plus an addition. Disconnect cleanup is for leaving the document, so a component that never left keeps its options and handlers.
+
+- re-rendering a component that is in the document leaves its options alive
+  - new Subject({ appendTo: document.body }) captures c then c.render() then await new Promise(r => setTimeout(r, 0)) -> c.options.isDestroyed === false
+
 ## autoRender controls whether construction renders immediately or waits for an explicit call
 - the default (`autoRender: true`) renders the component as part of construction, so callers get a fully-built element without a separate step
   - new Subject({ textContent: "hi" }) captures c -> c.rendered === true

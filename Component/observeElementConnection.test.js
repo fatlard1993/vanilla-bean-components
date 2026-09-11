@@ -66,6 +66,21 @@ describe('observeElementConnection', () => {
 		handle.disconnect();
 	});
 
+	test('does not fire onDisconnected when the target moves within the document', async () => {
+		const target = document.createElement('div');
+		document.body.appendChild(target);
+		await tick();
+
+		const onDisconnected = mock();
+		const handle = observeElementConnection({ target, onConnected: mock(), onDisconnected });
+
+		document.body.appendChild(target);
+		await tick();
+
+		expect(onDisconnected).not.toHaveBeenCalled();
+		handle.disconnect();
+	});
+
 	test('does not fire after disconnect', async () => {
 		const target = document.createElement('div');
 		const onConnected = mock();
