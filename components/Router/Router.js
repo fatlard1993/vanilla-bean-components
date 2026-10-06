@@ -122,7 +122,8 @@ class Router extends Component {
 	}
 
 	renderView(route = this.route || this.options.defaultPath) {
-		if (this.currentRoute === route) return;
+		// The same route with different parameters (/items/a to /items/b) is a different view
+		if (this.currentRoute === route && this.currentPath === this.path) return;
 
 		this.options.onRenderView?.(route);
 
@@ -132,6 +133,7 @@ class Router extends Component {
 		if (!this.path) return (this.path = route);
 
 		this.currentRoute = route;
+		this.currentPath = this.path;
 
 		if (this.options.views[route]) {
 			this.view = new this.options.views[route]({ appendTo: this.elem, ...this.parseRouteParameters() });
