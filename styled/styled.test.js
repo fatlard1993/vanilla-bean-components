@@ -2,18 +2,28 @@
 
 import { Component } from '../Component';
 import theme from '../theme';
+import * as utils from '../utils';
 import { styled, configured } from './styled';
 
 const mockShimCSS = mock(() => {});
 mock.module('./shimCSS', () => ({ shimCSS: mockShimCSS }));
 
-const mockNanoid = mock(() => 'test-id-1234567890');
-mock.module('../utils', () => ({ classSafeNanoid: mockNanoid }));
+// bun's module mocks outlive this file, so the rest of utils passes through and the real id generator comes back
+// once these tests are done
+const realNanoid = utils.classSafeNanoid;
+const testNanoid = () => 'test-id-1234567890';
+const mockNanoid = mock(testNanoid);
+mock.module('../utils', () => ({ ...utils, classSafeNanoid: mockNanoid }));
 
 describe('styled system', () => {
 	beforeEach(() => {
 		mockShimCSS.mockClear();
 		mockNanoid.mockClear();
+		mockNanoid.mockImplementation(testNanoid);
+	});
+
+	afterAll(() => {
+		mockNanoid.mockImplementation(realNanoid);
 	});
 
 	describe('configured()', () => {
