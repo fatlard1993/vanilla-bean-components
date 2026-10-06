@@ -611,19 +611,20 @@ class Component extends Elem {
 
 	/**
 	 * Destroys this component and all children. Runs all cleanup functions,
-	 * clears registries, and removes from DOM.
+	 * clears registries, and removes from DOM. Removal from the document is a disconnect: components listening for
+	 * one (onDisconnected) hear it here, once, with no event detail.
 	 */
 	destroy() {
-		this.elemObserver?.disconnect();
+		// Innermost first: a component's own disconnect runs its descendants' cleanup, which takes their listeners away
+		const watching = [
+			...Array.from(this.elem?.querySelectorAll('*') ?? [], node => node._component).reverse(),
+			this,
+		].filter(component => component?.elemObserver);
+		const wasConnected = Boolean(this.elem?.isConnected);
 
-		// Disconnect descendant elemObservers before running cleanup
-		const disconnectDescendantObservers = children => {
-			children.forEach(child => {
-				child.elemObserver?.disconnect();
-				disconnectDescendantObservers(child.children);
-			});
-		};
-		disconnectDescendantObservers(this.children);
+		// Their observers are let go first, so the removal below reports nothing and this is the only disconnect
+		for (const component of watching) component.elemObserver.disconnect();
+		if (wasConnected) for (const component of watching) component.emit('disconnected');
 
 		this.processCleanup(this.cleanup, true);
 		if (this._destroyCleanup) this.processCleanup(this._destroyCleanup);

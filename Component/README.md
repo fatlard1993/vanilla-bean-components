@@ -440,7 +440,7 @@ component.addCleanup(id, fn); // Register cleanup function (chains with existing
 component.replaceCleanup(id, fn); // Replace cleanup, running the previous one immediately
 component.replaceDestroyCleanup(id, fn); // Destroy-only cleanup: survives disconnect, runs on destroy()
 component.processCleanup(); // Execute all cleanup functions
-component.destroy(); // Disconnect observer, run all cleanup, remove from DOM
+component.destroy(); // Remove from DOM: onDisconnected fires (innermost first), then all cleanup runs
 ```
 
 #### Event Methods

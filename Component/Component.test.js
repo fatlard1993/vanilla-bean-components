@@ -1047,6 +1047,47 @@ describe('Component', () => {
 		});
 	});
 
+	describe('destroy', () => {
+		const settle = () => new Promise(resolve => setTimeout(resolve, 0));
+
+		test('a component in the document hears its own removal once', async () => {
+			const onDisconnected = mock();
+			const comp = new Component({ appendTo: document.body, onDisconnected });
+
+			comp.destroy();
+			await settle();
+
+			expect(onDisconnected).toHaveBeenCalledTimes(1);
+		});
+
+		test('components inside it hear it too, nested in plain elements or not', async () => {
+			const parent = new Component({ appendTo: document.body });
+			const wrapper = document.createElement('div');
+			const direct = mock();
+			const nested = mock();
+
+			new Component({ appendTo: parent, onDisconnected: direct });
+			parent.elem.append(wrapper);
+			new Component({ appendTo: wrapper, onDisconnected: nested });
+
+			parent.destroy();
+			await settle();
+
+			expect(direct).toHaveBeenCalledTimes(1);
+			expect(nested).toHaveBeenCalledTimes(1);
+		});
+
+		test('one never in the document hears nothing', async () => {
+			const onDisconnected = mock();
+			const comp = new Component({ autoRender: false, onDisconnected });
+
+			comp.destroy();
+			await settle();
+
+			expect(onDisconnected).not.toHaveBeenCalled();
+		});
+	});
+
 	describe('_setOption routing', () => {
 		test('aria-* routes to setAttribute', () => {
 			component = new Component({ 'aria-label': 'test label' });
