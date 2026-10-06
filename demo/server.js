@@ -38,8 +38,36 @@ const reloadClients = () => {
 	});
 };
 
+const BUILD_WATCHER = 'devTools/build.js --watch';
+const WATCHER_PID_FILE = 'demo/build/build-watch.pid';
+
+// A server that was killed, or replaced by a restart, leaves its watcher running; it goes first. The pid is checked
+// against what it runs before anything is killed, in case the number has been reused since.
+const stopPreviousWatcher = async () => {
+	const file = Bun.file(WATCHER_PID_FILE);
+	const pid = Number((await file.exists()) ? (await file.text()).trim() : '');
+
+	if (!pid) return;
+
+	const running = Bun.spawnSync(['ps', '-o', 'command=', '-p', String(pid)], { stdout: 'pipe', stderr: 'ignore' });
+
+	if (running.stdout.toString().includes(BUILD_WATCHER)) process.kill(pid, 'SIGTERM');
+};
+
+// One build watcher for the demo's life: bun --hot runs this module again on every change, and each run used to
+// start another. The live one is kept on globalThis, which survives a hot reload.
 const spawnBuild = async () => {
-	const buildProcess = Bun.spawn(['bun', 'run', 'build:watch']);
+	if (globalThis.demoBuildWatcher) return;
+
+	await stopPreviousWatcher();
+
+	const buildProcess = Bun.spawn(['bun', ...BUILD_WATCHER.split(' ')], { stdout: 'pipe' });
+
+	globalThis.demoBuildWatcher = buildProcess;
+	await Bun.write(WATCHER_PID_FILE, String(buildProcess.pid));
+	process.on('exit', () => buildProcess.kill());
+	// A signal ends Bun without its exit handlers; exiting on it runs them, and the watcher goes with the server
+	for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => process.exit(0));
 
 	for await (const chunk of buildProcess.stdout) {
 		const line = new TextDecoder().decode(chunk);
