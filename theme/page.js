@@ -10,6 +10,8 @@ export default theme => `
 	html {
 		height: 100%;
 		color-scheme: ${colors.black.isDark() ? 'dark' : 'light'};
+		font-size: 16px;
+		${fonts.kodeMono}
 	}
 
 	body {
@@ -34,13 +36,17 @@ export default theme => `
 	* {
 		touch-action: manipulation;
 		-webkit-text-size-adjust: none;
+	}
 
-		font-size: 16px;
-		${fonts.kodeMono}
+	/* The page's font is inherited, so content that sets its own (a terminal, an embedded editor) keeps it. These are
+	   the elements the browser gives a font or size of their own. */
+	:where(h1, h2, h3, h4, h5, h6, small, big, code, kbd, pre, samp, tt, var, button, input, select, textarea, optgroup, option, legend) {
+		font-family: inherit;
+		font-size: inherit;
+	}
 
-		sub, sup {
-			font-size: smaller;
-		}
+	:where(sub, sup) {
+		font-size: smaller;
 	}
 
 	#app {
