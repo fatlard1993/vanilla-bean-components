@@ -14,7 +14,7 @@ export default ({ colors, fonts }) => `
 	overflow: visible;
 	border: none;
 	cursor: pointer;
-	touch-action: none;
+	touch-action: manipulation;
 
 	&.disabled, &:disabled {
 		background-color: ${colors.gray};
