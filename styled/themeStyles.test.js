@@ -1,6 +1,7 @@
 /// <reference lib="dom" />
 
 import theme from '../theme';
+import { isDev } from '../utils/browser';
 import { themeStyles } from './themeStyles';
 
 describe('themeStyles', () => {
@@ -99,7 +100,8 @@ describe('themeStyles', () => {
 		expect(result).toBe('');
 	});
 
-	test('strips excess indentation from scoped output', () => {
+	// Development keeps the indentation so injected styles read as written; any other build strips it
+	test(`${isDev ? 'keeps' : 'strips'} excess indentation in scoped output (NODE_ENV ${process.env.NODE_ENV})`, () => {
 		const styleConfig = {
 			styles: () => `
 				color: red;
@@ -113,7 +115,8 @@ describe('themeStyles', () => {
 		expect(result).toContain('.test');
 		expect(result).toContain('color: red');
 		expect(result).toContain('background: blue');
-		expect(result).not.toMatch(/\t{4}/);
+		if (isDev) expect(result).toMatch(/\t{4}/);
+		else expect(result).not.toMatch(/\t{4}/);
 	});
 
 	test('handles whitespace-only strings correctly', () => {
