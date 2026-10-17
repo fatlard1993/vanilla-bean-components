@@ -32,16 +32,23 @@ describe('Menu', () => {
 			expect(received[0].detail.target).toBe(li);
 		});
 
-		test('keyboard Enter fires select with the keydown event in detail', () => {
+		test('Enter and Space press the focused item: its own handler runs, and select comes from that click', () => {
 			const received = [];
-			menu = new Menu({ items: ['one', 'two'], onSelect: event => received.push(event), appendTo: document.body });
+			const pressed = [];
+			menu = new Menu({
+				items: [{ textContent: 'one', onPointerPress: () => pressed.push('one') }, 'two'],
+				onSelect: event => received.push(event),
+				appendTo: document.body,
+			});
 
 			const li = menu.elem.querySelector('li');
 			li.focus();
 			menu.elem.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+			menu.elem.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
 
-			expect(received.length).toBe(1);
-			expect(received[0].detail.key).toBe('Enter');
+			expect(pressed).toEqual(['one', 'one']);
+			expect(received.map(event => event.detail.type)).toEqual(['click', 'click']);
+			expect(received[0].detail.target).toBe(li);
 		});
 	});
 });

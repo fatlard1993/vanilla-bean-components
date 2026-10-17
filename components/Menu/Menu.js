@@ -95,8 +95,9 @@ export default class Menu extends StyledList {
 					e.preventDefault();
 					next = items[items.length - 1];
 				} else if ((e.key === 'Enter' || e.key === ' ') && currentIndex >= 0) {
+					// The keyboard presses the item, so its own handler runs and select comes from the one click path
 					e.preventDefault();
-					this.emit('select', e);
+					items[currentIndex].click();
 					return;
 				}
 
