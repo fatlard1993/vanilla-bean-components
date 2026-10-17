@@ -87,7 +87,7 @@ module.exports = [
 		},
 	},
 	{
-		files: ['demo/server.js', 'devTools/*', 'plugins/*'],
+		files: ['app/*', 'demo/server.js', 'devTools/*', 'plugins/*'],
 		languageOptions: {
 			globals: {
 				...globals.node,

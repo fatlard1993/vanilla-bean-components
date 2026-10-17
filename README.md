@@ -219,6 +219,8 @@ new Component({
 
 All four are available from `'@vanilla-bean/components'` directly. For HTTP caching, [hypertether](https://github.com/fatlard1993/hypertether) is a separate install (`bun add @vanilla-bean/hypertether`).
 
+Serving an app on Bun? **[app](./app/README.md)** (`'@vanilla-bean/components/app'`) builds the client, reloads pages while you work, and serves the files the components load at runtime.
+
 ## Component Library
 
 25 pre-built components handle common UI patterns:
@@ -375,6 +377,7 @@ bun run format   # Code formatting with Prettier
 
 ```
 vanilla-bean-components/
+├── app/                # Bun app kit - client build, hot reload, static serving, request matching
 ├── components/         # 25 pre-built UI components
 ├── Component/          # Core Component class
 ├── styled/             # Scoped styling system

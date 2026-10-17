@@ -1,6 +1,8 @@
 import { nanoid } from 'nanoid';
+import { hotReload, serveStatic } from '../app';
 import { parseMarkdown } from '../plugins/markdownLoader';
 import { extractJSDoc } from '../devTools/extractJSDoc.js';
+import { buildOptions } from '../devTools/build.js';
 
 const DEP_MODULE_ROUTES = {
 	utils: '#/documentation/utils',
@@ -30,61 +32,13 @@ function broadcastForm(message, excludeClientId = null) {
 	}
 }
 
-const reloadClients = () => {
-	Object.entries(clients).forEach(([clientId, socket]) => {
-		console.log(`Reloading ${clientId}`);
-
-		socket.send('hotReload');
-	});
-};
-
-const BUILD_WATCHER = 'devTools/build.js --watch';
-const WATCHER_PID_FILE = 'demo/build/build-watch.pid';
-
-// A server that was killed, or replaced by a restart, leaves its watcher running; it goes first. The pid is checked
-// against what it runs before anything is killed, in case the number has been reused since.
-const stopPreviousWatcher = async () => {
-	const file = Bun.file(WATCHER_PID_FILE);
-	const pid = Number((await file.exists()) ? (await file.text()).trim() : '');
-
-	if (!pid) return;
-
-	const running = Bun.spawnSync(['ps', '-o', 'command=', '-p', String(pid)], { stdout: 'pipe', stderr: 'ignore' });
-
-	if (running.stdout.toString().includes(BUILD_WATCHER)) process.kill(pid, 'SIGTERM');
-};
-
-// One build watcher for the demo's life: bun --hot runs this module again on every change, and each run used to
-// start another. The live one is kept on globalThis, which survives a hot reload.
-const spawnBuild = async () => {
-	if (globalThis.demoBuildWatcher) return;
-
-	await stopPreviousWatcher();
-
-	const buildProcess = Bun.spawn(['bun', ...BUILD_WATCHER.split(' ')], { stdout: 'pipe' });
-
-	globalThis.demoBuildWatcher = buildProcess;
-	await Bun.write(WATCHER_PID_FILE, String(buildProcess.pid));
-	process.on('exit', () => buildProcess.kill());
-	// A signal ends Bun without its exit handlers; exiting on it runs them, and the watcher goes with the server
-	for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => process.exit(0));
-
-	for await (const chunk of buildProcess.stdout) {
-		const line = new TextDecoder().decode(chunk);
-
-		console.log(line);
-
-		if (line === 'build.success\n') reloadClients();
-	}
-};
-
 const server = Bun.serve({
 	port: 9999,
 	fetch: async request => {
-		const url = new URL(request.url);
-		const path = url.pathname.replace(/^\/img/, '/../img').replace('@vanilla-bean/components', '..');
+		if (hotReload.upgrade(request, server)) return;
 
-		if (request.method === 'GET' && path === '/') return new Response(Bun.file('demo/build/index.html'));
+		const url = new URL(request.url);
+		const path = url.pathname;
 
 		if (request.method === 'GET' && path === '/ws') {
 			const success = server.upgrade(request, { data: { clientId: nanoid() } });
@@ -227,16 +181,21 @@ const server = Bun.serve({
 			}
 		}
 
-		let file = Bun.file(`demo/build${path}`);
+		if (path.startsWith('/img/')) {
+			const image = Bun.file(path.slice(1));
 
-		if (!(await file.exists())) file = Bun.file(`node_modules${path}`);
-		if (!(await file.exists())) return new Response(`File Not Found: ${path}`, { status: 404 });
+			if (await image.exists()) return new Response(image);
+		}
 
-		return new Response(file);
+		return (
+			(await serveStatic(request, { root: 'demo/build', packages: ['emoji-js'] })) ??
+			new Response(`File Not Found: ${path}`, { status: 404 })
+		);
 	},
 	websocket: {
 		open(socket) {
-			clients[socket.data.clientId] = socket;
+			if (socket.data.hotReload) hotReload.websocket.open(socket);
+			else clients[socket.data.clientId] = socket;
 		},
 		message(socket, raw) {
 			const { clientId } = socket.data;
@@ -273,6 +232,8 @@ const server = Bun.serve({
 			}
 		},
 		close(socket) {
+			hotReload.websocket.close(socket);
+
 			const { clientId } = socket.data;
 
 			if (formUsers[clientId]) {
@@ -288,4 +249,4 @@ const server = Bun.serve({
 
 console.log(`Listening on ${server.hostname}:${server.port}`);
 
-await spawnBuild();
+if (process.env.NODE_ENV === 'development') await hotReload.watch(buildOptions);

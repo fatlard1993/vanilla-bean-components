@@ -5,6 +5,8 @@
 	"module": "./index.js",
 	"types": "./index.d.ts",
 	"exports": {
+		"./app": "./app/index.js",
+		"./app/reloadOnBuild": "./app/reloadOnBuild.js",
 		"./Component": "./Component/index.js",
 		"./Elem": "./Elem/index.js",
 		"./styled": "./styled/index.js",
@@ -22,6 +24,8 @@
 		".": "./index.js"
 	},
 	"files": [
+		"/app/*.js",
+		"!/app/*.test.js",
 		"/Elem/*.js",
 		"/Component/*.js",
 		"/styled/*.js",
@@ -64,12 +68,11 @@
 		"prepare": "bun run prepare:githooks && bun run build",
 		"prepare:githooks": "[ -n \"$CI\" ] && exit 0 || (git config --local core.hooksPath .githooks || echo 'Can not set git hooks')",
 		"start": "bun run dev",
-		"dev": "bun run devTools/build.js && bun --hot demo/server.js",
+		"dev": "NODE_ENV=development bun --hot demo/server.js",
 		"build": "bun run build:clean && bun run build:index && bun run devTools/build.js",
 		"build:index": "bun run devTools/updateComponentIndex.js && bun run devTools/updateDemoViewIndex.js && bun run build:types && bun run format",
 		"build:types": "bun run devTools/buildTypes.js",
 		"build:clean": "rm -rf ./*.asText ./demo/build/",
-		"build:watch": "bun run build -- --watch",
 		"create:component": "bun run devTools/createComponent.js",
 		"lint": "bun --bun eslint",
 		"lint:fix": "bun --bun eslint --fix",
