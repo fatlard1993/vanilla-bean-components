@@ -124,6 +124,8 @@ export default class Popover extends StyledIcon {
 	 * @param {object} [options] - Position and sizing options
 	 */
 	show(options) {
+		clearTimeout(this._outsideHide);
+
 		if (options) this.edgeAwarePlacement(options);
 
 		if (!this.elem.isConnected) return;
@@ -134,11 +136,13 @@ export default class Popover extends StyledIcon {
 			// Cancel any pending registration from a previous show()
 			if (this._outsideDismissRaf) cancelAnimationFrame(this._outsideDismissRaf);
 			if (this._outsideDismissListener) {
-				document.removeEventListener('pointerdown', this._outsideDismissListener, { capture: true });
+				document.removeEventListener('click', this._outsideDismissListener, { capture: true });
 			}
 
+			// Hides once the press has been handled, so a toggle that closes us, or a press that shows us somewhere new,
+			// decides first
 			const onOutsidePress = e => {
-				if (!this.elem.contains(e.target)) this.hide();
+				if (!this.elem.contains(e.target)) this._outsideHide = setTimeout(() => this.hide());
 			};
 
 			this._outsideDismissListener = onOutsidePress;
@@ -146,7 +150,7 @@ export default class Popover extends StyledIcon {
 			// Defer one frame so the current press that opened us isn't immediately caught
 			this._outsideDismissRaf = requestAnimationFrame(() => {
 				this._outsideDismissRaf = null;
-				document.addEventListener('pointerdown', onOutsidePress, { capture: true });
+				document.addEventListener('click', onOutsidePress, { capture: true });
 			});
 		}
 	}
@@ -155,6 +159,8 @@ export default class Popover extends StyledIcon {
 	 * Hides the popover.
 	 */
 	hide() {
+		clearTimeout(this._outsideHide);
+
 		try {
 			this.elem.hidePopover();
 		} catch {
@@ -166,7 +172,7 @@ export default class Popover extends StyledIcon {
 			this._outsideDismissRaf = null;
 		}
 		if (this._outsideDismissListener) {
-			document.removeEventListener('pointerdown', this._outsideDismissListener, { capture: true });
+			document.removeEventListener('click', this._outsideDismissListener, { capture: true });
 			this._outsideDismissListener = null;
 		}
 	}
