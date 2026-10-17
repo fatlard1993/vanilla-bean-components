@@ -237,7 +237,7 @@ _setOption(key, value) {
 _renderUsers(users) { /* ... */ }
 ```
 
-Most cases don't reach 5. Subscribers handle simple reactive updates. `handlers` covers moderate complexity without the `super._setOption` footgun. `_setOption` override is for validation and edge cases that need the full routing chain.
+Most cases don't reach 5. Subscribers handle simple reactive updates. `static schema` covers moderate complexity without the `super._setOption` footgun. `_setOption` override is for validation and edge cases that need the full routing chain.
 
 ## The intended model - three tiers
 

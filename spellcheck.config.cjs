@@ -15,6 +15,7 @@ module.exports = {
 		'gitignore',
 		'latin',
 		'metafile',
+		'microtask',
 		'minify',
 		'minifies',
 		'mkdtemp',

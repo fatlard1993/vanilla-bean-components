@@ -50,6 +50,7 @@ const startDocumentation = styled(DocumentationView, () => '', {
 	nextUrl: '#/documentation/Elem',
 });
 const MarkdownDocumentation = styled(DocumentationView, () => '', { folderName: 'markdown' });
+const appDocumentation = styled(DocumentationView, () => '', { folderName: 'app' });
 const ComponentDocumentation = styled(DocumentationView, () => '', {
 	folderName: 'Component',
 	nextLabel: 'styled',
@@ -125,6 +126,7 @@ export default {
 
 	['/documentation/start']: startDocumentation,
 	['/documentation/markdown']: MarkdownDocumentation,
+	['/documentation/app']: appDocumentation,
 	['/documentation/Component']: ComponentDocumentation,
 	['/documentation/demo']: demoDocumentation,
 	['/documentation/Elem']: ElemDocumentation,

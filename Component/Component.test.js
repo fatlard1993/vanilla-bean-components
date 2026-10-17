@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 
 import { Oxject } from '@vanilla-bean/oxject';
 import { Elem } from '../Elem';
-import Component from './Component';
+import Component, { warnOfRetiredOptions } from './Component';
 
 const user = userEvent.setup();
 
@@ -893,6 +893,31 @@ describe('Component', () => {
 			expect(base.optionEnum('missing')).toBeUndefined();
 			base.destroy();
 			wider.destroy();
+		});
+	});
+
+	describe('retired 1.x declarations', () => {
+		test('a class declaring static handlers or a defaultOptions field is warned of, once per class', async () => {
+			const warn = spyOn(console, 'warn').mockImplementation(() => {});
+
+			class Handled extends Component {
+				static handlers = { title() {} };
+			}
+			class Defaulted extends Component {
+				defaultOptions = { title: 'untitled' };
+			}
+			class Declared extends Component {
+				static schema = { title: { default: 'untitled' } };
+			}
+
+			for (const Klass of [Handled, Handled, Defaulted, Declared]) warnOfRetiredOptions(new Klass());
+
+			await Promise.resolve();
+
+			expect(warn.mock.calls.map(([message]) => message.match(/\w+ declares [^,]+/)?.[0])).toEqual([
+				'Handled declares `static handlers`',
+				'Defaulted declares a `defaultOptions` class field',
+			]);
 		});
 	});
 

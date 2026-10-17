@@ -159,6 +159,35 @@ const runPrepareOptions = (klass, options, children) => {
 
 const union = (base, additions) => (additions.size > 0 ? new Set([...(base || []), ...additions]) : base);
 
+const _warnedOfRetiredOptions = new WeakSet();
+
+/**
+ * Dev warning, once per class, for the 1.x option declarations 2.x ignores: `static handlers` and a `defaultOptions`
+ * class field. Class fields are assigned after the constructor chain returns, hence the microtask.
+ * @param {Component} component - A newly constructed component
+ */
+const warnOfRetiredOptions = component => {
+	const klass = component.constructor;
+
+	if (_warnedOfRetiredOptions.has(klass)) return;
+
+	_warnedOfRetiredOptions.add(klass);
+
+	queueMicrotask(() => {
+		const retired = [
+			collectStatics(klass, 'handlers').length > 0 && '`static handlers`',
+			Object.prototype.hasOwnProperty.call(component, 'defaultOptions') && 'a `defaultOptions` class field',
+		].filter(Boolean);
+
+		if (retired.length === 0) return;
+
+		// eslint-disable-next-line no-console
+		console.warn(
+			`[Component] ${klass.name} declares ${retired.join(' and ')}, which 2.x ignores: its options get no defaults or handlers from it. Declare them in \`static schema\` (default and set per key).`,
+		);
+	});
+};
+
 /**
  * General purpose reactive component with automatic cleanup and lifecycle management.
  * Extends Elem with Oxject-driven options, event handling, and style processing.
@@ -285,6 +314,8 @@ class Component extends Elem {
 					`[Component] ${this.constructor.name} overrides render(). Structure belongs in build() - render() is the lifecycle orchestrator.`,
 				);
 			}
+
+			warnOfRetiredOptions(this);
 		}
 	}
 
@@ -781,5 +812,7 @@ class Component extends Elem {
 		return [targetClass, ...this.ancestry(Object.getPrototypeOf(targetClass))];
 	}
 }
+
+export { warnOfRetiredOptions };
 
 export default Component;
