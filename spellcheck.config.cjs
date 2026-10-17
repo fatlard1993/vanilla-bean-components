@@ -20,6 +20,7 @@ module.exports = {
 		'svg',
 		'cx',
 		'cy',
+		'lowdb',
 		'minify',
 		'minifies',
 		'mkdtemp',
