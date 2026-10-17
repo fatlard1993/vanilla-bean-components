@@ -1,13 +1,19 @@
 /**
  * Whether the current runtime is in development mode.
- * Checks both process.env.NODE_ENV (Node/Bun/webpack) and import.meta.env (Vite/ESBuild).
+ * Checks process.env.NODE_ENV (Node/Bun, or a bundler's define of it) and import.meta.env (Vite/ESBuild).
  * Defaults to false (production-safe) when neither is set.
  */
 export const isDev = (() => {
+	// Read plainly, with no typeof guard or optional chaining, so a bundler's define replaces it with the build's mode
 	try {
-		if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') return false;
+		if (process.env.NODE_ENV === 'production') return false;
+		if (process.env.NODE_ENV === 'development') return true;
+	} catch {
+		// no process in this runtime and no define for it
+	}
+
+	try {
 		if (typeof import.meta !== 'undefined' && import.meta.env?.PROD === true) return false;
-		if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') return true;
 		if (
 			typeof import.meta !== 'undefined' &&
 			(import.meta.env?.DEV === true || import.meta.env?.NODE_ENV === 'development')

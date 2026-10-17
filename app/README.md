@@ -78,3 +78,5 @@ requestMatch('GET', '/games/:id', request); // → { id: '12', ...searchParams }
 ```
 
 It matches the whole path, so `/games/:id` doesn't match `/games/12/join`. Pattern characters are literal, and segments are decoded.
+
+It's the one piece that runs in a browser too. Code shared with the client imports it from `@vanilla-bean/components/app/requestMatch`, which brings none of the server code along.
