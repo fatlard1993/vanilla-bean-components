@@ -326,6 +326,27 @@ export declare class ColorPicker extends Input {
 	parseValue(value: string | Record<string, any>): Record<string, any>;
 }
 
+export interface ContextMenuOptions extends PopoverOptions {
+	/** Menu items, e.g. { textContent, onPointerPress } */
+	items?: Array<Record<string, any>>;
+	/** Stay open after an item is chosen (default: false) */
+	sticky?: boolean;
+	/** Widest the menu may be (default: 240) */
+	maxWidth?: number;
+	/** default: false */
+	autoOpen?: boolean;
+	/** default: true */
+	outsideClose?: boolean;
+}
+
+export declare class ContextMenu extends Popover {
+	constructor(options?: ContextMenuOptions, ...children: Array<Elem | HTMLElement | string>);
+	/** Opens the menu, at a point when given one. */
+	show(options?: Record<string, any>): void;
+	/** Closes the menu and hands focus back to where it was. */
+	hide(): void;
+}
+
 export interface DialogOptions extends ComponentOptions {
 	/** Dialog size; 'fit' is as tall as its content (default: "small") */
 	size?: 'small' | 'standard' | 'large' | 'fit';

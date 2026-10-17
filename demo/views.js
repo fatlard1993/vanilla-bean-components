@@ -7,6 +7,7 @@ import ButtonDemo from '../components/Button/demo.js';
 import CalendarDemo from '../components/Calendar/demo.js';
 import CodeDemo from '../components/Code/demo.js';
 import ColorPickerDemo from '../components/ColorPicker/demo.js';
+import ContextMenuDemo from '../components/ContextMenu/demo.js';
 import DialogDemo from '../components/Dialog/demo.js';
 import FormDemo from '../components/Form/demo.js';
 import FormDialogDemo from '../components/FormDialog/demo.js';
@@ -90,6 +91,7 @@ export default {
 	['/Calendar']: CalendarDemo,
 	['/Code']: CodeDemo,
 	['/ColorPicker']: ColorPickerDemo,
+	['/ContextMenu']: ContextMenuDemo,
 	['/Dialog']: DialogDemo,
 	['/Form']: FormDemo,
 	['/FormDialog']: FormDialogDemo,

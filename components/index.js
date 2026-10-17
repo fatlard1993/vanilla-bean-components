@@ -5,6 +5,7 @@ export * from './Button';
 export * from './Calendar';
 export * from './Code';
 export * from './ColorPicker';
+export * from './ContextMenu';
 export * from './Dialog';
 export * from './Form';
 export * from './FormDialog';
