@@ -35,13 +35,13 @@ new FormDialog({
 | `saveLabel`, `deleteLabel`, `cancelLabel` | `string` | `'Save'`, `'Delete'`, `'Cancel'` | Button labels |
 | `size` | `string` | `'fit'` | As Dialog; `'fit'` is as tall as the form |
 
-Everything else is a Dialog option. Pass `buttons` for a button of your own; Save, Delete and Cancel keep their meaning by label, and any other reaches `onButtonPress`.
+Everything else is a Dialog option. A subclass sets its own defaults in `static schema`, not `prepareOptions`: schema defaults are merged in before `prepareOptions` runs, so a value set there behind `...options` loses to them. Pass `buttons` for a button of your own; Save, Delete and Cancel keep their meaning by label, and any other reaches `onButtonPress`.
 
 ## Behaviour
 
 - **Save** runs `form.hasErrors()` first, which also commits what is being typed in the focused field; an invalid form stays as it is, with its errors showing.
 - While a save or delete is under way, Save and Delete are disabled, so a double press can't send it twice.
-- **Enter** in a single-line field saves; in a textarea it is a new line.
+- **Enter** in a single-line field saves; in a textarea it is a new line, and a field that uses Enter itself (a TagList, an autocomplete) claims it with `preventDefault` so it doesn't save.
 - **Delete** with `confirmDelete` asks over the form; no leaves the form open as it was.
 
 ## Methods

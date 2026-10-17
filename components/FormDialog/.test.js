@@ -178,4 +178,17 @@ describe('FormDialog', () => {
 
 		expect(dialog.intro.elem).toHaveTextContent('Updated');
 	});
+
+	test('Enter that a field claims for itself does not save', async () => {
+		const onSave = mock();
+		const dialog = new FormDialog({ inputs: [{ key: 'tags' }], data: { tags: '' }, onSave, appendTo: container });
+
+		dialog.form.inputElements.tags.elem.addEventListener(
+			'keydown',
+			event => event.key === 'Enter' && event.preventDefault(),
+		);
+		await userEvent.setup().type(dialog.form.inputElements.tags.elem, 'a{Enter}');
+
+		expect(onSave).not.toHaveBeenCalled();
+	});
 });

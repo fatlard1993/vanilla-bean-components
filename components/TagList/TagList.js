@@ -83,6 +83,15 @@ class TagList extends StyledComponent {
 				},
 			});
 
+			// Enter belongs to this field: claimed, so a dialog or form around it doesn't also act on it
+			this.tagInput.on({
+				targetEvent: 'keydown',
+				id: 'claimEnter',
+				callback: e => {
+					if (e.key === 'Enter') e.preventDefault();
+				},
+			});
+
 			this.addTag = new Tag(
 				{ readOnly: true, addClass: 'add-tag' },
 				this.tagInput,

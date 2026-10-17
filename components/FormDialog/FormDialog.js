@@ -87,7 +87,8 @@ class FormDialog extends Dialog {
 			const { target } = event;
 			const singleLine = target.tagName === 'INPUT' && !['checkbox', 'radio', 'button', 'submit'].includes(target.type);
 
-			if (event.key !== 'Enter' || !singleLine || event.isComposing) return;
+			// A field that uses Enter itself (a tag list, an autocomplete) claims it with preventDefault
+			if (event.key !== 'Enter' || !singleLine || event.isComposing || event.defaultPrevented) return;
 
 			event.preventDefault();
 			this.save();
