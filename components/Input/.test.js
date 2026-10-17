@@ -62,8 +62,20 @@ describe('Input', () => {
 			appendTo: container,
 		});
 
-		expect(textarea.elem.style.height).toContain('calc');
+		// The browser sizes it to its content, wrapped lines included; without field-sizing the height is measured
+		expect(textarea.elem.style.fieldSizing).toBe('content');
 		expect(textarea.__updateAutoHeight).toBeDefined();
+	});
+
+	test('a syntax-highlighting textarea keeps the line-counted height its overlay is aligned to', () => {
+		const textarea = new Input({
+			tag: 'textarea',
+			value: 'a\nb',
+			syntaxHighlighting: true,
+			appendTo: container,
+		});
+
+		expect(textarea.elem.style.height).toBe('calc(2.38em + 10px)');
 	});
 
 	test('handles checkbox type correctly', () => {

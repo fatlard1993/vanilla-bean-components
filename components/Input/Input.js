@@ -67,9 +67,27 @@ export default class Input extends Component {
 
 				if (value === 'auto') {
 					this.__updateAutoHeight = () => {
-						this.elem.style.height = this.options.syntaxHighlighting
-							? `calc(${((this.elem.value?.match(/\n/g) || '').length + 1) * 1.19}em + 10px)`
-							: `calc(${((this.elem.value?.match(/\n/g) || '').length + 1) * 1.25}em + 16px)`;
+						const lines = (this.elem.value?.match(/\n/g) || '').length + 1;
+
+						if (this.options.syntaxHighlighting) {
+							this.elem.style.height = `calc(${lines * 1.19}em + 10px)`;
+							return;
+						}
+
+						// A browser that sizes a field to its content counts wrapped lines too
+						if (globalThis.CSS?.supports?.('field-sizing', 'content')) {
+							this.elem.style.fieldSizing = 'content';
+							this.elem.style.height = '';
+							return;
+						}
+
+						// Elsewhere newlines set the floor, and the measured height adds the wrapped lines; a field not laid out
+						// yet measures nothing, so connecting and focusing fit it again
+						this.elem.style.height = `calc(${lines * 1.25}em + 16px)`;
+
+						if (this.elem.scrollHeight > this.elem.clientHeight) {
+							this.elem.style.height = `${this.elem.scrollHeight + this.elem.offsetHeight - this.elem.clientHeight}px`;
+						}
 					};
 
 					this.__debouncedUpdateAutoHeight =
@@ -82,14 +100,19 @@ export default class Input extends Component {
 					this.__updateAutoHeight();
 
 					this.elem.addEventListener('input', this.__debouncedUpdateAutoHeight);
+					this.elem.addEventListener('focus', this.__updateAutoHeight);
+					this.on({ targetEvent: 'connected', id: 'autoHeightConnected', callback: () => this.__updateAutoHeight?.() });
 
 					this.replaceCleanup('autoHeight', () => {
 						clearTimeout(this.__autoHeightTimeout);
 						this.elem.removeEventListener?.('input', this.__debouncedUpdateAutoHeight);
+						this.elem.removeEventListener?.('focus', this.__updateAutoHeight);
 					});
 				} else {
 					this.elem.removeEventListener('input', this.__debouncedUpdateAutoHeight);
+					this.elem.removeEventListener('focus', this.__updateAutoHeight);
 					clearTimeout(this.__autoHeightTimeout);
+					this.elem.style.fieldSizing = '';
 
 					this.elem.style.height = typeof value === 'number' ? `${value + 1}em` : value;
 				}
