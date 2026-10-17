@@ -138,6 +138,17 @@ new Elem({
 });
 ```
 
+### SVG
+
+`tag: 'svg'` creates an SVG root, and an Elem created with `appendTo` (or `prependTo`) an SVG element joins the SVG namespace too, except inside `foreignObject`, which holds HTML again. `svg: true` asks for the namespace outright, for an element built before it is placed. Options on an SVG element become attributes (`cx`, `viewBox`, `'stroke-width'`), except functions, `textContent`, `innerHTML` and `id`, which stay properties. SVG is an Elem feature; Component doesn't take it.
+
+```js
+const chart = new Elem({ tag: 'svg', viewBox: '0 0 200 100', appendTo: document.body });
+
+new Elem({ tag: 'circle', cx: 50, cy: 50, r: 20, fill: 'tomato', appendTo: chart, onclick: () => open(remedy) });
+new Elem({ tag: 'text', x: 100, y: 55, textContent: 'Rest', appendTo: chart });
+```
+
 ## DOM Manipulation
 
 ### Content Management

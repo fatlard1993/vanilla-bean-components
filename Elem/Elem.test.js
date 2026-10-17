@@ -676,4 +676,40 @@ describe('Elem', () => {
 			expect(screen.getByText('Test content')).toBeInTheDocument();
 		});
 	});
+
+	describe('svg', () => {
+		const SVG = 'http://www.w3.org/2000/svg';
+
+		test('tag svg and svg: true create in the SVG namespace', () => {
+			expect(new Elem({ tag: 'svg' }).elem.namespaceURI).toBe(SVG);
+			expect(new Elem({ tag: 'circle', svg: true }).elem.namespaceURI).toBe(SVG);
+			expect(new Elem({ tag: 'div' }).elem.namespaceURI).not.toBe(SVG);
+		});
+
+		test('an element appended to SVG is SVG too, unless inside foreignObject', () => {
+			const chart = new Elem({ tag: 'svg', viewBox: '0 0 10 10', appendTo: document.body });
+			const dot = new Elem({ tag: 'circle', cx: 5, cy: 5, r: 2, appendTo: chart });
+			const html = new Elem({ tag: 'foreignObject', appendTo: chart });
+			const inside = new Elem({ tag: 'div', appendTo: html });
+
+			expect(dot.elem.namespaceURI).toBe(SVG);
+			expect(dot.elem.getAttribute('cx')).toBe('5');
+			expect(chart.elem.getAttribute('viewBox')).toBe('0 0 10 10');
+			expect(inside.elem.namespaceURI).not.toBe(SVG);
+		});
+
+		test('text, handlers and classes work on SVG elements', () => {
+			const clicks = [];
+			const label = new Elem({ tag: 'text', svg: true, textContent: 'Rest', onclick: () => clicks.push(1) });
+
+			label.addClass('label', 'active');
+			label.removeClass('active');
+			label.elem.dispatchEvent(new Event('click'));
+
+			expect(label.elem.textContent).toBe('Rest');
+			expect(label.hasClass('label')).toBe(true);
+			expect(label.hasClass('active')).toBe(false);
+			expect(clicks).toEqual([1]);
+		});
+	});
 });

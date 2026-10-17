@@ -1,11 +1,24 @@
 import { buildClassList } from '../utils';
 
+const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
+
+// An element placed in SVG belongs in its namespace too, except inside foreignObject, which holds HTML again
+const isSvgParent = parent => {
+	const elem = parent?.elem ?? parent;
+
+	return elem?.namespaceURI === SVG_NAMESPACE && elem.localName !== 'foreignObject';
+};
+
+// The properties an SVG element takes as properties; everything else it is given is an attribute (cx, viewBox, fill)
+const svgProperties = new Set(['textContent', 'innerHTML', 'id']);
+
 /** Elem - A bare-bones general purpose element building block */
 class Elem extends EventTarget {
 	/**
 	 * Create an Element wrapper with enhanced DOM manipulation
 	 * @param {object} [options] - Element configuration
-	 * @param {string} [options.tag] - HTML tag name
+	 * @param {string} [options.tag] - Tag name
+	 * @param {boolean} [options.svg] - Create in the SVG namespace; implied by tag 'svg' or by an appendTo/prependTo that is in SVG. Options on an SVG element become attributes, except functions, textContent, innerHTML and id
 	 * @param {object} [options.style] - CSS properties as key-value pairs
 	 * @param {object} [options.attributes] - HTML attributes as key-value pairs
 	 * @param {string} [options.className] - CSS class names
@@ -25,11 +38,15 @@ class Elem extends EventTarget {
 	 * @example
 	 * new Elem({ tag: 'button', textContent: 'Click me', onclick: () => alert('clicked') })
 	 */
-	constructor({ tag = 'div', ...optionsWithoutConfig } = {}, ...children) {
+	constructor(options = {}, ...children) {
+		const { tag = 'div', svg, ...optionsWithoutConfig } = options;
+
 		super();
 
+		const inSvg = svg ?? (tag === 'svg' || isSvgParent(options.appendTo) || isSvgParent(options.prependTo));
+
 		this.tag = tag;
-		this.elem = document.createElement(tag);
+		this.elem = inSvg ? document.createElementNS(SVG_NAMESPACE, tag) : document.createElement(tag);
 		this.options = {
 			...optionsWithoutConfig,
 			...(children.length > 0 ? { append: [optionsWithoutConfig.append, ...children] } : {}),
@@ -65,6 +82,8 @@ class Elem extends EventTarget {
 			if (value?.elem) value = value.elem;
 
 			this.elem[key].call(this.elem, value);
+		} else if (this.elem.namespaceURI === SVG_NAMESPACE && typeof value !== 'function' && !svgProperties.has(key)) {
+			this.elem.setAttribute(key, value);
 		} else this.elem[key] = value;
 	}
 
@@ -113,10 +132,13 @@ class Elem extends EventTarget {
 	 */
 	hasClass(...classes) {
 		return classes.flat(Number.POSITIVE_INFINITY).every(className => {
-			if (className instanceof RegExp) return className.test(this.elem.className);
+			// className is not a string on an SVG element; the attribute is, on either kind
+			const classAttribute = this.elem.getAttribute('class') ?? '';
+
+			if (className instanceof RegExp) return className.test(classAttribute);
 
 			const escaped = className.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-			return new RegExp(`\\b${escaped}\\b`, 'g').test(this.elem.className);
+			return new RegExp(`\\b${escaped}\\b`, 'g').test(classAttribute);
 		});
 	}
 
@@ -155,9 +177,9 @@ class Elem extends EventTarget {
 				classRegex = new RegExp(`\\b${escaped}\\b`, 'g');
 			}
 
-			if (classRegex.test(this.elem.className)) {
-				this.elem.className = this.elem.className.replaceAll(classRegex, '');
-			}
+			const classAttribute = this.elem.getAttribute('class') ?? '';
+
+			if (classRegex.test(classAttribute)) this.elem.setAttribute('class', classAttribute.replaceAll(classRegex, ''));
 		});
 
 		return this;
