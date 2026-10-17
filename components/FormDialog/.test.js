@@ -1,6 +1,7 @@
 import { findByText, getAllByRole } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 
+import { Form } from '../Form';
 import { FormDialog } from '.';
 
 const settle = () => new Promise(resolve => setTimeout(resolve, 30));
@@ -156,5 +157,14 @@ describe('FormDialog', () => {
 
 		finish();
 		expect(await saving).toBe(true);
+	});
+
+	test('FormComponent builds a form of its own class', async () => {
+		class TaggedForm extends Form {}
+
+		const dialog = new FormDialog({ inputs: [nameField], data: { name: 'a' }, FormComponent: TaggedForm });
+
+		expect(dialog.form).toBeInstanceOf(TaggedForm);
+		expect(dialog.form.inputElements.name.elem.value).toBe('a');
 	});
 });

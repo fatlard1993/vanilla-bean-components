@@ -14,6 +14,7 @@ const labelOf = button => (typeof button === 'object' ? button.textContent : but
  * @param {Array<object>} [options.inputs] - Form field definitions, as Form takes them
  * @param {object} [options.data] - Initial values, as Form takes them
  * @param {object} [options.formOptions] - Further options for the Form
+ * @param {Function} [options.FormComponent] - The Form class to build, for a form with fields and behaviour of its own
  * @param {Function} [options.onSave] - Called with (data, dialog) when the form is valid; false or a throw keeps it open
  * @param {Function} [options.onDelete] - Called with (data, dialog); its presence adds the Delete button
  * @param {string|object|boolean} [options.confirmDelete] - Ask before deleting: a message, or Dialog.confirm options
@@ -38,6 +39,7 @@ class FormDialog extends Dialog {
 		inputs: {},
 		data: {},
 		formOptions: {},
+		FormComponent: { default: Form },
 		onSave: {},
 		onDelete: {},
 		confirmDelete: {},
@@ -65,7 +67,7 @@ class FormDialog extends Dialog {
 	build() {
 		super.build();
 
-		this.form = new Form({
+		this.form = new this.options.FormComponent({
 			inputs: this.options.inputs,
 			data: this.options.data,
 			...this.options.formOptions,

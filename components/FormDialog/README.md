@@ -27,6 +27,7 @@ new FormDialog({
 | `inputs` | `Array<object>` | - | Field definitions, as Form takes them |
 | `data` | `object` | - | Initial values, as Form takes them |
 | `formOptions` | `object` | - | Any further Form options |
+| `FormComponent` | `Function` | `Form` | The Form class to build, for a form with fields and behaviour of its own |
 | `onSave` | `Function` | - | `(data, dialog)` once the form is valid. Returning `false`, or throwing, keeps the dialog open; otherwise it closes |
 | `onDelete` | `Function` | - | `(data, dialog)`. Its presence adds the Delete button |
 | `confirmDelete` | `string\|object\|boolean` | - | Ask before deleting: the question, or `Dialog.confirm` options |
