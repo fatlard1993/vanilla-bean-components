@@ -57,6 +57,19 @@ describe('hotReload', () => {
 		expect(await Bun.file(join(root, 'client/build/index.js')).text()).toContain('2');
 	});
 
+	test('rebuilds and reloads on request, only while watching', async () => {
+		expect(hotReload.rebuild()).toBeUndefined();
+
+		await hotReload.watch(buildOptions);
+
+		const page = pageSocket();
+
+		hotReload.websocket.open(page);
+
+		expect((await hotReload.rebuild()).success).toBe(true);
+		expect(page.send).toHaveBeenCalledWith('hotReload');
+	});
+
 	test('takes no socket while not watching', () => {
 		const server = { upgrade: mock(() => true) };
 

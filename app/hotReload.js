@@ -38,9 +38,12 @@ const build = async () => {
 
 const rebuild = async () => {
 	const { watcher } = state;
+	const result = await build();
 
 	// A rebuild still running when the watcher stops reloads nothing
-	if ((await build()).success && state.watcher === watcher) reloadPages();
+	if (result.success && state.watcher === watcher) reloadPages();
+
+	return result;
 };
 
 /**
@@ -105,6 +108,14 @@ export const hotReload = {
 		state.watcher = Object.assign(current, { close: () => watcher.close(), firstBuild: build() });
 
 		return state.watcher.firstBuild;
+	},
+
+	/**
+	 * Rebuild now and reload connected pages, while watching.
+	 * @returns {Promise<object|undefined>} The build result, or undefined when not watching
+	 */
+	rebuild() {
+		return state.watcher ? rebuild() : undefined;
 	},
 
 	/**
