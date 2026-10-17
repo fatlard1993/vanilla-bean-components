@@ -26,6 +26,7 @@ new FormDialog({
 | --- | --- | --- | --- |
 | `inputs` | `Array<object>` | - | Field definitions, as Form takes them |
 | `data` | `object` | - | Initial values, as Form takes them |
+| `intro` | `string\|Component\|Array` | - | Content shown above the form; reactive |
 | `formOptions` | `object` | - | Any further Form options |
 | `FormComponent` | `Function` | `Form` | The Form class to build, for a form with fields and behaviour of its own |
 | `onSave` | `Function` | - | `(data, dialog)` once the form is valid. Returning `false`, or throwing, keeps the dialog open; otherwise it closes |

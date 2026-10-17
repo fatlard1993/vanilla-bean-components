@@ -167,4 +167,15 @@ describe('FormDialog', () => {
 		expect(dialog.form).toBeInstanceOf(TaggedForm);
 		expect(dialog.form.inputElements.name.elem.value).toBe('a');
 	});
+
+	test('intro shows above the form, and follows its option', async () => {
+		const dialog = new FormDialog({ inputs: [nameField], intro: 'Fill this in', appendTo: container });
+
+		expect(dialog.intro.elem).toHaveTextContent('Fill this in');
+		expect(dialog.form.elem.compareDocumentPosition(dialog.intro.elem) & Node.DOCUMENT_POSITION_PRECEDING).toBeTruthy();
+
+		dialog.options.intro = 'Updated';
+
+		expect(dialog.intro.elem).toHaveTextContent('Updated');
+	});
 });

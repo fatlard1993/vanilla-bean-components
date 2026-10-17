@@ -404,6 +404,8 @@ export interface FormDialogOptions extends DialogOptions {
 	inputs?: Array<Record<string, any>>;
 	/** Initial values, as Form takes them */
 	data?: Record<string, any>;
+	/** Content shown above the form */
+	intro?: string | Component | Array<any>;
 	/** Further options for the Form */
 	formOptions?: Record<string, any>;
 	/** The Form class to build, for a form with fields and behaviour of its own */

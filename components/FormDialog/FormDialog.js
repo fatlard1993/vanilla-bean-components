@@ -1,3 +1,4 @@
+import { Component } from '../../Component';
 import { conditionalList } from '../../utils';
 import { Dialog } from '../Dialog';
 import { Form } from '../Form';
@@ -13,6 +14,7 @@ const labelOf = button => (typeof button === 'object' ? button.textContent : but
  * @param {object} [options] - FormDialog configuration
  * @param {Array<object>} [options.inputs] - Form field definitions, as Form takes them
  * @param {object} [options.data] - Initial values, as Form takes them
+ * @param {string|Component|Array} [options.intro] - Content shown above the form
  * @param {object} [options.formOptions] - Further options for the Form
  * @param {Function} [options.FormComponent] - The Form class to build, for a form with fields and behaviour of its own
  * @param {Function} [options.onSave] - Called with (data, dialog) when the form is valid; false or a throw keeps it open
@@ -38,6 +40,11 @@ class FormDialog extends Dialog {
 		size: { default: 'fit' },
 		inputs: {},
 		data: {},
+		intro: {
+			set(value) {
+				this.intro?.content(value ?? '');
+			},
+		},
 		formOptions: {},
 		FormComponent: { default: Form },
 		onSave: {},
@@ -66,6 +73,8 @@ class FormDialog extends Dialog {
 
 	build() {
 		super.build();
+
+		this.intro = new Component({ addClass: 'intro', appendTo: this.body });
 
 		this.form = new this.options.FormComponent({
 			inputs: this.options.inputs,
