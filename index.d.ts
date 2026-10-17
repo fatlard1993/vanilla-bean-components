@@ -229,7 +229,7 @@ export declare class BottomSheet extends Component {
 	readonly body: Component;
 	/** Slides the sheet into view and registers navigation listeners to auto-dismiss. */
 	show(): void;
-	/** Slides the sheet out of view. Calls `onClose` only if the sheet was actually open — hiding an */
+	/** Slides the sheet out of view. Calls `onClose` only if the sheet was actually open — hiding an already-closed sheet dismisses nothing, so there is nothing to announce. */
 	hide(): void;
 }
 
@@ -267,7 +267,7 @@ export interface CalendarOptions extends ComponentOptions {
 export declare class Calendar extends Component {
 	constructor(options?: CalendarOptions, ...children: Array<Elem | HTMLElement | string>);
 	/** Sets the calendar to display a specific date. */
-	setDate(year: number, month: number, day: number): void;
+	setDate(year: number, month: number, day: number, reRender?: boolean): void;
 	/** Navigates the calendar to today's date and re-renders. */
 	today(): void;
 	/** Navigates to the previous time period based on current view (day/week/month). */
@@ -275,7 +275,7 @@ export declare class Calendar extends Component {
 	/** Navigates to the next time period based on current view (day/week/month). */
 	next(): void;
 	/** Navigates to a specific day and switches to day view. */
-	goToDay(): void;
+	goToDay(position: number | Date): void;
 	/** Changes the calendar view mode and updates the display. */
 	setView(view: string): Calendar;
 	/** Clears the wrapper and renders the current view. */
@@ -311,7 +311,7 @@ export interface ColorPickerOptions extends InputOptions {
 export declare class ColorPicker extends Input {
 	constructor(options?: ColorPickerOptions, ...children: Array<Elem | HTMLElement | string>);
 	/** Changes the color value and triggers change event. */
-	change(): void;
+	change(value: string | Record<string, any>): void;
 	/** Parses color value into HSL components and TinyColor instance. */
 	parseValue(value: string | Record<string, any>): Record<string, any>;
 }
@@ -337,16 +337,20 @@ export interface DialogOptions extends ComponentOptions {
 	onButtonPress?: (...args: any[]) => any;
 	/** Custom close function */
 	closeDialog?: (...args: any[]) => any;
+	/** Destroy the dialog once it has closed and faded out; false keeps it to open again (default: true) */
+	removeOnClose?: boolean;
 }
 
 export declare class Dialog extends Component {
 	constructor(options?: DialogOptions, ...children: Array<Elem | HTMLElement | string>);
 	/** Content container - primary injection point for subclass and consumer content. */
 	readonly body: Component;
+	/** Ask a yes-or-no question. The confirming button comes second: the dialog focuses its first button, so a reflexive Enter keeps things as they are. Any other way out (Escape, the backdrop) is a no. */
+	static confirm(options: Record<string, any>): Promise<boolean>;
 	/** Opens the dialog, either as modal or non-modal */
-	open(): void;
+	open(modal: boolean): void;
 	/** Closes the dialog with optional return value */
-	close(): void;
+	close(returnValue: string): void;
 }
 
 export interface FormOptions extends ComponentOptions {
@@ -358,7 +362,7 @@ export interface FormOptions extends ComponentOptions {
 
 export declare class Form extends Component {
 	constructor(options?: FormOptions, ...children: Array<Elem | HTMLElement | string>);
-	/** Validates all visible form inputs and returns whether errors were found. */
+	/** Validates all visible form inputs and returns whether errors were found. Runs both VBC Input validations and field-level `validate` functions from the definition. Hidden conditional fields are excluded. */
 	hasErrors(options?: Record<string, any>): boolean;
 }
 
@@ -442,7 +446,7 @@ export interface KeyboardOptions extends ComponentOptions {
 export declare class Keyboard extends Component {
 	constructor(options?: KeyboardOptions, ...children: Array<Elem | HTMLElement | string>);
 	/** Switches the keyboard to the specified layout and rebuilds the keys. */
-	setLayout(): void;
+	setLayout(name: string): void;
 	/** Registers a callback for key down events. */
 	onKeyDown(callback: (...args: any[]) => any): (...args: any[]) => any;
 	/** Registers a callback for key up events. */
@@ -558,7 +562,7 @@ export declare class Popover extends Icon {
 	/** Checks if the popover is currently open. */
 	readonly isOpen: boolean;
 	/** Shows the popover with optional position update. */
-	show(): void;
+	show(options?: Record<string, any>): void;
 	/** Hides the popover. */
 	hide(): void;
 }

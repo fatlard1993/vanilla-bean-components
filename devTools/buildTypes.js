@@ -216,7 +216,7 @@ function generateComponentInterface(
 		const params = method.parameters.map(p => `${p.name}${p.optional ? '?' : ''}: ${jsDocTypeToTS(p.type)}`).join(', ');
 		const ret = method.returns ? jsDocTypeToTS(method.returns.type) : 'void';
 		if (method.description) lines.push(`\t/** ${method.description} */`);
-		lines.push(`\t${method.name}(${params}): ${ret};`);
+		lines.push(`\t${method.static ? 'static ' : ''}${method.name}(${params}): ${ret};`);
 	}
 
 	lines.push('}');

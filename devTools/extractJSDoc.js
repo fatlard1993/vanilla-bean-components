@@ -163,28 +163,26 @@ function extractMethods(content) {
 	// get/set accessors are excluded; underscore-prefixed names are excluded.
 	const matches = [
 		...classBody.matchAll(
-			/\/\*\*((?:(?!\/\*\*)[\s\S])*?)\*\/[ \t]*\n[ \t]*(?!constructor\b)(?!get\b)(?!set\b)(?!_)(\w+)\s*\([^)]*\)\s*\{/g,
+			/\/\*\*((?:(?!\/\*\*)[\s\S])*?)\*\/[ \t]*\n[ \t]*(static\s+)?(?!constructor\b)(?!get\b)(?!set\b)(?!_)(\w+)\s*\([^)]*\)\s*\{/g,
 		),
 	];
 
 	return matches.map(match => {
-		const [, jsdoc, name] = match;
+		const [, jsdoc, isStatic, name] = match;
 
-		// Extract description
-		const descMatch = jsdoc.match(/^\s*\*\s*(.+?)(?=\s*^\s*\*\s*@|\s*$)/ms);
-		const description = descMatch
-			? descMatch[1]
-					.split('\n')
-					.map(line => line.replace(/^\s*\*\s?/, ''))
-					.join(' ')
-					.replace(/\s+/g, ' ')
-					.trim()
-			: '';
+		// The description is everything before the first tag, however many lines it runs to
+		const description = jsdoc
+			.split(/^\s*\*\s*@/m)[0]
+			.split('\n')
+			.map(line => line.replace(/^\s*\*\s?/, ''))
+			.join(' ')
+			.replace(/\s+/g, ' ')
+			.trim();
 
 		// Extract parameters
 		const paramMatches = [
 			...jsdoc.matchAll(
-				/^\s*\*\s*@param\s+{([^}]+)}\s+(\[?(\w+)(?:=([^\]]+))?\]?)\s*-\s*(.+?)(?=\s*^\s*\*\s*@|\s*^\s*\*\s*$)/gms,
+				/^\s*\*\s*@param\s+{([^}]+)}\s+(\[?(\w+)(?:=([^\]]+))?\]?)\s*-\s*(.+?)(?=\s*^\s*\*\s*@|\s*^\s*\*\s*$|\s*$(?![\s\S]))/gms,
 			),
 		];
 
@@ -207,6 +205,7 @@ function extractMethods(content) {
 
 		return {
 			name,
+			static: Boolean(isStatic),
 			description,
 			parameters,
 			returns: returnInfo,
