@@ -27,6 +27,7 @@ module.exports = [
 					...librarySpellcheck,
 					...appSpellcheck,
 					skipWords: [...new Set([...librarySpellcheck.skipWords, ...(appSpellcheck.skipWords ?? [])])],
+					skipIfMatch: [...(librarySpellcheck.skipIfMatch ?? []), ...(appSpellcheck.skipIfMatch ?? [])],
 				},
 			],
 			// lowdb publishes only an exports map, which the import resolver can't read
@@ -54,8 +55,8 @@ module.exports = [
 		},
 	},
 	{
-		// Fixture strings and shorthand identifiers aren't prose
-		files: ['**/*.test.js'],
+		// Fixture strings and shorthand identifiers aren't prose, and a word list read as prose flags itself
+		files: ['**/*.test.js', 'spellcheck.config.cjs'],
 		rules: {
 			'spellcheck/spell-checker': 'off',
 		},
