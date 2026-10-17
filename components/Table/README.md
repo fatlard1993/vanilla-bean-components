@@ -36,7 +36,7 @@ A column can be a plain string (key name, auto-capitalized as header label) or a
 | `key` | `string` | Property name on each row data object |
 | `content` | `string\|Component` | Header cell content. Defaults to `capitalize(key)` |
 | `sort` | `boolean` | Enables click-to-sort on this column's header with an animated sort icon |
-| `dataColumn` | `object\|Function` | Options forwarded to each `<td>` component, or a `Function({ column, rowData, table })` returning those options |
+| `dataColumn` | `object\|Function` | Options forwarded to each `<td>` component, or a `Function({ column, rowData, table })` returning those options. A cell given its own `content`, `textContent`, `innerHTML` or `append` shows that instead of the keyed value |
 | `...thOptions` | `any` | Any additional options forwarded to the `<th>` component (e.g., `style`, `className`) |
 
 ### `footer` entry shape

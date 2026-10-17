@@ -4,6 +4,8 @@ import { Elem } from '../../Elem';
 import { Component } from '../../Component';
 import { Icon } from '../Icon';
 
+const ownsContent = cell => ['content', 'textContent', 'innerHTML', 'append'].some(key => cell?.[key] !== undefined);
+
 /**
  * Data table component with sorting, column configuration, and footer support.
  *
@@ -169,18 +171,18 @@ class Table extends Component {
 				rowData =>
 					new Component(
 						{ tag: 'tr' },
-						columns.map(
-							column =>
-								new Component(
-									{
-										tag: 'td',
-										...(typeof column.dataColumn === 'function'
-											? column.dataColumn({ column, rowData, table: this })
-											: column.dataColumn),
-									},
-									column.key ? rowData[column.key]?.toString() : undefined,
-								),
-						),
+						columns.map(column => {
+							const cell =
+								typeof column.dataColumn === 'function'
+									? column.dataColumn({ column, rowData, table: this })
+									: column.dataColumn;
+
+							// The keyed value is the default; a cell that brings its own content shows that instead
+							return new Component(
+								{ tag: 'td', ...cell },
+								column.key && !ownsContent(cell) ? rowData[column.key]?.toString() : undefined,
+							);
+						}),
 					),
 			),
 		);

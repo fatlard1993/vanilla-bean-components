@@ -9,6 +9,42 @@ describe('Table', () => {
 		document.body.replaceChildren();
 	});
 
+	describe('cells', () => {
+		test('a keyed column shows its value', () => {
+			table = new Table({ appendTo: document.body, columns: ['name'], data: [{ name: 'Alice' }] });
+
+			expect(table.elem.querySelector('tbody td').textContent).toBe('Alice');
+		});
+
+		test('a keyed column whose cell brings its own content shows only that content', () => {
+			table = new Table({
+				appendTo: document.body,
+				columns: [
+					{
+						key: 'status',
+						content: 'Status',
+						sort: true,
+						dataColumn: ({ rowData }) => ({ content: `[${rowData.status}]` }),
+					},
+				],
+				data: [{ status: 'open' }],
+			});
+
+			expect(table.elem.querySelector('tbody td').textContent).toBe('[open]');
+		});
+
+		test('a cell that only styles itself still shows the keyed value', () => {
+			table = new Table({
+				appendTo: document.body,
+				columns: [{ key: 'effort', dataColumn: { style: { textAlign: 'right' } } }],
+				data: [{ effort: 3 }],
+			});
+
+			expect(table.elem.querySelector('tbody td').textContent).toBe('3');
+			expect(table.elem.querySelector('tbody td').style.textAlign).toBe('right');
+		});
+	});
+
 	describe('reactive options', () => {
 		test('re-renders when columns change, including string-form columns', () => {
 			table = new Table({
