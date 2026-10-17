@@ -30,3 +30,20 @@ A screen reader interrupts for `alert` and waits for a quiet moment for `status`
 
 - a falsy `timeout` means the notification stays until something dismisses it; a positive one dismisses it after that long
   - new Subject({ content: "stay", timeout: 0, appendTo: document.body }) captures kept then new Subject({ content: "go", timeout: 30, appendTo: document.body }) captures going then await new Promise(r => setTimeout(r, 90)) -> kept.elem.isConnected === true && going.elem.isConnected === false
+
+## Severity also decides how long it stays
+
+A success or an informational note says something that needs no answer, so it leaves on its own. A warning or an error may need acting on, so it waits to be tapped. A `timeout` given, zero included, overrides either.
+
+- info and success dismiss themselves after four seconds; warning and error stay until dismissed
+  - new Subject({ type: "info", autoOpen: false, appendTo: document.body }) captures info then new Subject({ type: "error", autoOpen: false, appendTo: document.body }) captures error -> info.options.timeout === 4000 && error.options.timeout === 0
+
+## Toasts placed at no point stack in a corner
+
+Without an `x` and `y`, a notification joins a stack in the bottom-right corner, the newest at the bottom, so several at once read as a list rather than piling on one another. When one leaves, the rest close the gap.
+
+- notifications without a point stack, the newest nearest the edge, and close up when one goes
+  - new Subject({ textContent: "older", autoOpen: false, appendTo: document.body }) captures older then older.show() then new Subject({ textContent: "newer", autoOpen: false, appendTo: document.body }) captures newer then newer.show() then parseInt(older.elem.style.bottom) captures olderBefore then newer.destroy() -> olderBefore > 16 && older.elem.style.bottom === "16px"
+- a notification given a point is placed there and kept out of the stack
+  - new Subject({ x: 40, y: 40, autoOpen: false, appendTo: document.body }) captures placed then placed.show() -> !placed.elem.classList.contains("stacked")
+

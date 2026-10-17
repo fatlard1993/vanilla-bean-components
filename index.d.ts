@@ -520,11 +520,11 @@ export declare class Menu extends List {
 export interface NotifyOptions extends PopoverOptions {
 	/** Notification type ('info', 'success', 'warning', 'error') (default: "success") */
 	type?: 'info' | 'success' | 'warning' | 'error';
-	/** Auto-dismiss timeout in milliseconds */
+	/** Auto-dismiss timeout in milliseconds; defaults to 4000 for info and success, and 0 (stay until tapped) for warning and error */
 	timeout?: number;
 	/** Custom icon name, defaults to type-appropriate icon */
 	icon?: string;
-	/** X position for the notification */
+	/** X position for the notification; without x and y it stacks in the bottom-right corner */
 	x?: number;
 	/** Y position for the notification */
 	y?: number;
