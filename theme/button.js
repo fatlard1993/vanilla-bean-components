@@ -52,8 +52,12 @@ export default ({ colors, fonts }) => `
 		pointer-events: none;
 	}
 
+	/*
+	 * The nudge is a translate rather than top: it moves what's painted without moving the box, so a button placed by
+	 * bottom stays under the finger for the whole press instead of jumping, and no click lands on what was behind it.
+	 */
 	&:hover, &:focus {
-		top: -1px;
+		translate: 0 -1px;
 
 		&:after {
 			background-image: linear-gradient(
@@ -72,7 +76,7 @@ export default ({ colors, fonts }) => `
 	&.pressed,
 	&.disabled,
 	&:disabled {
-		top: 1px;
+		translate: 0 1px;
 
 		&:before {
 			top: 1px;
