@@ -327,8 +327,8 @@ export declare class ColorPicker extends Input {
 }
 
 export interface DialogOptions extends ComponentOptions {
-	/** Dialog size (default: "small") */
-	size?: 'small' | 'standard' | 'large';
+	/** Dialog size; 'fit' is as tall as its content (default: "small") */
+	size?: 'small' | 'standard' | 'large' | 'fit';
 	/** Color variant */
 	variant?: 'info' | 'success' | 'warning' | 'error';
 	/** Auto-open delay in ms, or false to disable (default: 16) */
@@ -376,6 +376,33 @@ export declare class Form extends Component {
 	commitPendingEdit(): void;
 	/** Validates all visible form inputs and returns whether errors were found. Runs both VBC Input validations and field-level `validate` functions from the definition. Hidden conditional fields are excluded. */
 	hasErrors(options?: Record<string, any>): boolean;
+}
+
+export interface FormDialogOptions extends DialogOptions {
+	/** Form field definitions, as Form takes them */
+	inputs?: Array<Record<string, any>>;
+	/** Initial values, as Form takes them */
+	data?: Record<string, any>;
+	/** Further options for the Form */
+	formOptions?: Record<string, any>;
+	/** Called with (data, dialog) when the form is valid; false or a throw keeps it open */
+	onSave?: (...args: any[]) => any;
+	/** Called with (data, dialog); its presence adds the Delete button */
+	onDelete?: (...args: any[]) => any;
+	/** Ask before deleting: a message, or Dialog.confirm options */
+	confirmDelete?: string | Record<string, any> | boolean;
+	/** Label of the save button (default: "Save") */
+	saveLabel?: string;
+	/** Label of the delete button (default: "Delete") */
+	deleteLabel?: string;
+	/** Label of the cancel button (default: "Cancel") */
+	cancelLabel?: string;
+	/** default: "fit" */
+	size?: string;
+}
+
+export declare class FormDialog extends Dialog {
+	constructor(options?: FormDialogOptions, ...children: Array<Elem | HTMLElement | string>);
 }
 
 export interface IconOptions extends ComponentOptions {

@@ -20,7 +20,7 @@ const defaultOpenDelay = 16;
  * header/body/footer sections. Supports different sizes, color variants, and button configurations.
  * @param {object} [options] - Dialog configuration options
  * @param {string} [options.tag] - HTML tag, uses native dialog element
- * @param {('small'|'standard'|'large')} [options.size] - Dialog size
+ * @param {('small'|'standard'|'large'|'fit')} [options.size] - Dialog size; 'fit' is as tall as its content
  * @param {('info'|'success'|'warning'|'error')} [options.variant] - Color variant
  * @param {number|boolean} [options.openOnRender] - Auto-open delay in ms, or false to disable
  * @param {boolean} [options.modal] - Whether to open as modal dialog
@@ -97,6 +97,14 @@ class Dialog extends styled(
 			height: 90vh;
 		}
 
+		/* As tall as its content: the top layer gives a dialog inset 0, so releasing bottom lets it hug what it holds */
+		&.size-fit {
+			width: min(640px, 95vw);
+			height: auto;
+			bottom: auto;
+			max-height: 90vh;
+		}
+
 		&::backdrop {
 			background-color: ${colors.black.setAlpha(0.85)};
 			backdrop-filter: blur(2px);
@@ -157,7 +165,7 @@ class Dialog extends styled(
 		modal: { default: true },
 		size: {
 			default: 'small',
-			enum: ['small', 'standard', 'large'],
+			enum: ['small', 'standard', 'large', 'fit'],
 			set(value) {
 				this.removeClass(/\bsize-\S+\b/g);
 

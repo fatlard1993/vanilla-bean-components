@@ -7,6 +7,7 @@ export * from './Code';
 export * from './ColorPicker';
 export * from './Dialog';
 export * from './Form';
+export * from './FormDialog';
 export * from './Icon';
 export * from './Input';
 export * from './Keyboard';

@@ -9,6 +9,7 @@ import CodeDemo from '../components/Code/demo.js';
 import ColorPickerDemo from '../components/ColorPicker/demo.js';
 import DialogDemo from '../components/Dialog/demo.js';
 import FormDemo from '../components/Form/demo.js';
+import FormDialogDemo from '../components/FormDialog/demo.js';
 import IconDemo from '../components/Icon/demo.js';
 import InputDemo from '../components/Input/demo.js';
 import KeyboardDemo from '../components/Keyboard/demo.js';
@@ -91,6 +92,7 @@ export default {
 	['/ColorPicker']: ColorPickerDemo,
 	['/Dialog']: DialogDemo,
 	['/Form']: FormDemo,
+	['/FormDialog']: FormDialogDemo,
 	['/Icon']: IconDemo,
 	['/Input']: InputDemo,
 	['/Keyboard']: KeyboardDemo,
