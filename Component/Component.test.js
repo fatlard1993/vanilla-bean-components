@@ -896,6 +896,16 @@ describe('Component', () => {
 		});
 	});
 
+	describe('before', () => {
+		test('a component given before is placed in front of that target, as an Elem is', () => {
+			const target = new Component({ textContent: 'target', appendTo: document.body });
+			const placed = new Component({ textContent: 'placed', before: target });
+
+			expect(target.elem.compareDocumentPosition(placed.elem) & Node.DOCUMENT_POSITION_PRECEDING).toBeTruthy();
+			expect(placed.elem).toBeInTheDocument();
+		});
+	});
+
 	describe('retired 1.x declarations', () => {
 		test('a class declaring static handlers or a defaultOptions field is warned of, once per class', async () => {
 			const warn = spyOn(console, 'warn').mockImplementation(() => {});

@@ -468,6 +468,8 @@ class Component extends Elem {
 		if (key === 'uniqueId') this.elem.id = typeof value === 'string' ? value : this.uniqueId;
 		else if (key === 'style') this.setStyle(value);
 		else if (key === 'attributes') this.setAttributes(value);
+		// As on Elem: placed in front of the target. The DOM method of the same name inserts the other way round
+		else if (key === 'before') (value?.elem ?? value)?.before(this.elem);
 		else if (this.__knownAttributes.has(key) || key.startsWith('aria-') || key.startsWith('data-')) {
 			if (value === null || value === undefined || value === false) this.elem.removeAttribute(key);
 			else this.elem.setAttribute(key, typeof value === 'boolean' ? '' : String(value));
