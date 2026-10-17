@@ -44,9 +44,12 @@ Access live form data at any time via `form.options.data`.
 ## Methods
 
 ```js
-form.validate(options?): boolean
-// Calls validate() on every input element that supports it.
-// Returns true if any validation errors exist, false if the form is valid.
+form.hasErrors(options?): boolean
+// Runs every visible input's validations and field-level validate functions, after committing whatever is being typed
+// in the focused field. Returns true if any validation errors exist, false if the form is valid.
+
+form.commitPendingEdit(): void
+// Commits the focused field's typed value, as leaving the field would. hasErrors() calls it first.
 
 form.inputElements: { [key]: InputComponent }
 // Map of key → input component instances, available after build().
@@ -77,7 +80,7 @@ const form = new Form(
 	new Button({
 		textContent: 'Submit',
 		onPointerPress: () => {
-			if (form.validate()) return console.warn('Fix errors before submitting');
+			if (form.hasErrors()) return console.warn('Fix errors before submitting');
 			console.log('Submitting:', { ...form.options.data });
 		},
 	}),

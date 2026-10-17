@@ -1,5 +1,6 @@
 import { describe, test, expect, afterEach } from 'bun:test';
 import { findByText } from '@testing-library/dom';
+import userEvent from '@testing-library/user-event';
 
 import { Input } from '../Input';
 import { Form } from '.';
@@ -168,6 +169,42 @@ describe('Form', () => {
 	});
 
 	describe('hasErrors()', () => {
+		test('judges the field being typed in by what it holds now, not before the edit', async () => {
+			const form = new Form({
+				data: { name: '' },
+				inputs: [{ key: 'name', validations: [[/.+/, 'Required']] }],
+				appendTo: container,
+			});
+
+			await userEvent.setup().type(form.inputElements.name.elem, 'Alice');
+
+			expect(form.inputElements.name.elem).toHaveFocus();
+			expect(form.hasErrors()).toBe(false);
+			expect(form.options.data.name).toBe('Alice');
+		});
+
+		test('field-level validators see the value being typed too', async () => {
+			const form = new Form({
+				data: { age: '' },
+				inputs: [{ key: 'age', validate: value => (Number(value) >= 18 ? null : 'Too young') }],
+				appendTo: container,
+			});
+
+			await userEvent.setup().type(form.inputElements.age.elem, '21');
+
+			expect(form.hasErrors()).toBe(false);
+		});
+
+		test('a focused field with nothing new fires no change', async () => {
+			const onChange = mock();
+			const form = new Form({ data: { name: 'Alice' }, inputs: [{ key: 'name', onChange }], appendTo: container });
+
+			form.inputElements.name.elem.focus();
+			form.hasErrors();
+
+			expect(onChange).not.toHaveBeenCalled();
+		});
+
 		test('returns false when there are no inputElements', () => {
 			const form = new Form({ appendTo: container });
 

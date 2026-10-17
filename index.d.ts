@@ -362,6 +362,8 @@ export interface FormOptions extends ComponentOptions {
 
 export declare class Form extends Component {
 	constructor(options?: FormOptions, ...children: Array<Elem | HTMLElement | string>);
+	/** Commits the value being typed in the focused field, as leaving the field would. A field reports its value on change, which an edit only fires when the field loses focus; a Save pressed by keyboard, or on a device whose buttons take no focus, would otherwise judge the form by what the field held before. */
+	commitPendingEdit(): void;
 	/** Validates all visible form inputs and returns whether errors were found. Runs both VBC Input validations and field-level `validate` functions from the definition. Hidden conditional fields are excluded. */
 	hasErrors(options?: Record<string, any>): boolean;
 }

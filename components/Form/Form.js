@@ -222,6 +222,19 @@ export default class Form extends Component {
 	}
 
 	/**
+	 * Commits the value being typed in the focused field, as leaving the field would. A field reports its value on change,
+	 * which an edit only fires when the field loses focus; a Save pressed by keyboard, or on a device whose buttons take
+	 * no focus, would otherwise judge the form by what the field held before.
+	 */
+	commitPendingEdit() {
+		const field = Object.values(this.inputElements || {}).find(input => input?.elem === document.activeElement);
+
+		if (field && 'value' in field.elem && String(field.elem.value) !== String(field.options.value ?? '')) {
+			field.elem.dispatchEvent(new Event('change', { bubbles: true }));
+		}
+	}
+
+	/**
 	 * Validates all visible form inputs and returns whether errors were found.
 	 * Runs both VBC Input validations and field-level `validate` functions from the definition.
 	 * Hidden conditional fields are excluded.
@@ -230,6 +243,8 @@ export default class Form extends Component {
 	 */
 	hasErrors(options) {
 		if (!this.inputElements) return false;
+
+		this.commitPendingEdit();
 
 		const hiddenKeys = new Set(
 			(this._conditionals || []).filter(({ wrapper }) => wrapper.elem.style.display === 'none').map(({ key }) => key),
