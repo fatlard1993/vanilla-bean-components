@@ -32,6 +32,7 @@ const dialog = new Dialog({
 | `size` | `string` | `'small'` | Dialog dimensions: `'small'` (420×210px), `'standard'` (840×420px), `'large'` (90vw×90vh) |
 | `variant` | `string` | - | Color theme: `'info'`, `'success'`, `'warning'`, `'error'` |
 | `closeDialog` | `Function` | - | Override the default close behavior used inside `onButtonPress` |
+| `removeOnClose` | `boolean` | `true` | Destroy the dialog once it has closed and faded out. Set to `false` to keep one dialog and open it again |
 | `appendTo` | `Element` | `document.body` | Where to append the dialog in the DOM |
 
 ### `onButtonPress` callback signature
@@ -50,7 +51,16 @@ dialog.open(modal?: boolean): void
 // Opens the dialog. Defaults to options.modal. Falls back to re-render on first failure.
 
 dialog.close(returnValue?: string): void
-// Closes the dialog. Passes returnValue to the native dialog close event.
+// Closes the dialog. Passes returnValue to the native dialog close event. Unless removeOnClose is false, the dialog is
+// destroyed once its fade-out ends, whether it closed this way, by Escape, or from the backdrop.
+
+Dialog.confirm({ confirmLabel, cancelLabel = 'Cancel', ...dialogOptions }): Promise<boolean>
+// Asks a yes-or-no question. The confirming button comes second, so a reflexive Enter on the focused first button keeps
+// things as they are. Resolves true for the confirming button and false for any other way out.
+```
+
+```js
+if (await Dialog.confirm({ header: 'Delete this bookmark?', confirmLabel: 'Delete', variant: 'warning' })) remove();
 ```
 
 Enums are exposed as instance properties for validation reference:

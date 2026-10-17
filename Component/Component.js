@@ -32,6 +32,7 @@ const _lifecycleMethods = new Set([
 const connectionEvents = new Set(['connected', 'disconnected']);
 const inputEvents = new Set(['keydown', 'keyup', 'change', 'blur', 'input', 'search']);
 const commonEvents = new Set([
+	'click',
 	'pointerover',
 	'pointerenter',
 	'pointerdown',
@@ -791,14 +792,14 @@ class Component extends Elem {
 	}
 
 	/**
-	 * Register pointer press handler. Fires on pointerdown for immediate, reliable response
-	 * across all contexts including scroll containers and modal dialogs.
-	 * @param {Function} [callback] - Handler called on pointerdown on this element
+	 * Register press handler. Fires on click: a mouse, touch or pen press released on this element, or a keyboard or
+	 * assistive technology activation. A touch that turns into a scroll is not a press.
+	 * @param {Function} [callback] - Handler called on click on this element
 	 */
 	onPointerPress(callback = () => {}) {
 		callback = callback.bind(this);
-		this.replaceDestroyCleanup('onPointerPress', () => this.elem.removeEventListener('pointerdown', callback));
-		this.elem.addEventListener('pointerdown', callback);
+		this.replaceDestroyCleanup('onPointerPress', () => this.elem.removeEventListener('click', callback));
+		this.elem.addEventListener('click', callback);
 	}
 
 	/**

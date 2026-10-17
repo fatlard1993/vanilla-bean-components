@@ -24,9 +24,9 @@ A menu is one stop for the keyboard, not one stop per item: tabbing past a ten-i
 - an items list that is absent renders an empty menu rather than throwing
   - new Subject({ items: undefined, appendTo: document.body }) captures missing then new Subject({ items: null, appendTo: document.body }) captures empty -> missing.elem.querySelectorAll("li").length === 0 && empty.elem.querySelectorAll("li").length === 0
 - activation on a node outside the menu selects nothing, so a menu never claims an event that was not its own
-  - new Array() captures fired then new Subject({ items: [{ textContent: "a" }], onSelect: () => fired.push(1), appendTo: document.body }) captures m then document.createElement("li") captures outsider then document.body.append(outsider) then outsider.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })) then outsider.dispatchEvent(new PointerEvent("pointerup", { bubbles: true })) -> fired.length === 0
+  - new Array() captures fired then new Subject({ items: [{ textContent: "a" }], onSelect: () => fired.push(1), appendTo: document.body }) captures m then document.createElement("li") captures outsider then document.body.append(outsider) then outsider.click() -> fired.length === 0
 - pressing the menu's own padding selects nothing either; only a press that lands on an item counts
-  - new Array() captures fired then new Subject({ items: [{ textContent: "a" }], onSelect: () => fired.push(1), appendTo: document.body }) captures m then m.elem.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })) then m.elem.dispatchEvent(new PointerEvent("pointerup", { bubbles: true })) then fired.length captures afterRootPress then m.elem.querySelector("li") captures item then item.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })) then item.dispatchEvent(new PointerEvent("pointerup", { bubbles: true })) -> afterRootPress === 0 && fired.length === 1
+  - new Array() captures fired then new Subject({ items: [{ textContent: "a" }], onSelect: () => fired.push(1), appendTo: document.body }) captures m then m.elem.click() then fired.length captures afterRootPress then m.elem.querySelector("li") captures item then item.click() -> afterRootPress === 0 && fired.length === 1
 
 ## Arrow keys move focus within the menu and wrap at both ends
 

@@ -1,4 +1,5 @@
 import { findByRole, fireEvent } from '@testing-library/dom';
+import userEvent from '@testing-library/user-event';
 
 import { Button } from '.';
 
@@ -11,42 +12,54 @@ describe('Button', () => {
 		await findByRole(container, 'button', { name });
 	});
 
-	test('handles click events', async () => {
+	test('a press fires once', async () => {
 		const onPointerPress = mock(() => {});
-		new Button({
-			textContent: 'Click me',
-			onPointerPress,
-			appendTo: container,
-		});
+		new Button({ textContent: 'Click me', onPointerPress, appendTo: container });
 
-		const element = await findByRole(container, 'button');
-
-		// Trigger the actual pointer press event that Button listens for
-		fireEvent.pointerDown(element);
+		await userEvent.setup().click(await findByRole(container, 'button'));
 
 		expect(onPointerPress).toHaveBeenCalledTimes(1);
 	});
 
-	test('handles keyboard events (Enter and Space)', async () => {
+	test('a touch that becomes a scroll is not a press', async () => {
 		const onPointerPress = mock(() => {});
-		new Button({
-			textContent: 'Press me',
-			onPointerPress,
-			appendTo: container,
-		});
+		new Button({ textContent: 'In a list', onPointerPress, appendTo: container });
 
 		const element = await findByRole(container, 'button');
 
-		// Test Enter key
-		fireEvent.keyUp(element, { code: 'Enter' });
+		// The browser sends pointercancel instead of a click once the finger starts scrolling
+		fireEvent.pointerDown(element, { pointerType: 'touch' });
+		fireEvent.pointerCancel(element, { pointerType: 'touch' });
+
+		expect(onPointerPress).not.toHaveBeenCalled();
+	});
+
+	test('Enter and Space press a button once each, through its own click', async () => {
+		const onPointerPress = mock(() => {});
+		new Button({ textContent: 'Press me', onPointerPress, appendTo: container });
+
+		const user = userEvent.setup();
+
+		(await findByRole(container, 'button')).focus();
+
+		await user.keyboard('{Enter}');
 		expect(onPointerPress).toHaveBeenCalledTimes(1);
 
-		// Test Space key
-		fireEvent.keyUp(element, { code: 'Space' });
+		await user.keyboard(' ');
 		expect(onPointerPress).toHaveBeenCalledTimes(2);
 
-		// Test other keys (should not trigger)
-		fireEvent.keyUp(element, { code: 'Escape' });
+		await user.keyboard('{Escape}');
+		expect(onPointerPress).toHaveBeenCalledTimes(2);
+	});
+
+	test('a Button on another tag gets Enter and Space added', async () => {
+		const onPointerPress = mock(() => {});
+		const button = new Button({ tag: 'div', textContent: 'Press me', onPointerPress, appendTo: container });
+
+		fireEvent.keyUp(button.elem, { code: 'Enter' });
+		fireEvent.keyUp(button.elem, { code: 'Space' });
+		fireEvent.keyUp(button.elem, { code: 'Escape' });
+
 		expect(onPointerPress).toHaveBeenCalledTimes(2);
 	});
 

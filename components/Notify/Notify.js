@@ -96,7 +96,7 @@ export default class Notify extends StyledPopover {
 		super.build();
 
 		this.on({
-			targetEvent: 'pointerdown',
+			targetEvent: 'click',
 			id: 'notifyDismiss',
 			callback: e => {
 				if (!e.target.closest('button, [role="button"]')) this.destroy();

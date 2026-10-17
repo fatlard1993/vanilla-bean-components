@@ -14,6 +14,7 @@ export default class Demo extends DemoView {
 			body: 'Loading…',
 			buttons: ['noop', 'dismiss'],
 			openOnRender: false,
+			removeOnClose: false,
 			onButtonPress: ({ button, closeDialog }) => {
 				console.log({ button, closeDialog });
 

@@ -30,6 +30,7 @@ const defaultOpenDelay = 16;
  * @param {Array<string|object>} [options.buttons] - Button configurations for default footer
  * @param {Function} [options.onButtonPress] - Handler for button press events
  * @param {Function} [options.closeDialog] - Custom close function
+ * @param {boolean} [options.removeOnClose] - Destroy the dialog once it has closed and faded out; false keeps it to open again
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Dialog} Dialog component instance
  */
@@ -194,11 +195,48 @@ class Dialog extends styled(
 		// Read from this.options at button-press time
 		closeDialog: {},
 		onButtonPress: {},
+		// Read directly from this.options.removeOnClose when the dialog closes
+		removeOnClose: { default: true },
 	};
 
 	static events = ['close'];
 
+	/**
+	 * Ask a yes-or-no question. The confirming button comes second: the dialog focuses its first button, so a reflexive
+	 * Enter keeps things as they are. Any other way out (Escape, the backdrop) is a no.
+	 * @param {object} options - Dialog options, plus the two labels
+	 * @param {string} options.confirmLabel - Label of the confirming button
+	 * @param {string} [options.cancelLabel] - Label of the safe first button
+	 * @returns {Promise<boolean>} Whether the confirming button was pressed
+	 */
+	static confirm({ confirmLabel, cancelLabel = 'Cancel', ...options }) {
+		return new Promise(resolve => {
+			new this({
+				...options,
+				buttons: [cancelLabel, confirmLabel],
+				onButtonPress: ({ button, closeDialog }) => {
+					resolve(button === confirmLabel);
+					closeDialog();
+				},
+				onClose: () => resolve(false),
+			});
+		});
+	}
+
 	build() {
+		this.on({
+			targetEvent: 'close',
+			id: 'removeOnClose',
+			callback: async () => {
+				if (!this.options.removeOnClose) return;
+
+				await Promise.all((this.elem.getAnimations?.() ?? []).map(animation => animation.finished.catch(() => {})));
+
+				// Opened again while it faded out
+				if (!this.elem.open) this.destroy();
+			},
+		});
+
 		this.options['aria-labelledby'] = this.uniqueId;
 
 		this._header = new Elem({

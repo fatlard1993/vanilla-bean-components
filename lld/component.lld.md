@@ -53,10 +53,10 @@ Between those two there are the cases where *now* is the wrong moment rather tha
 
 ## `on()` reports whether it recognised the event, so callers can fall back
 
-Option dispatch tries `on()` first for any `on*` key and needs a yes-or-no answer to decide whether the key was an event or something else entirely. Three categories are recognised -- pointer events, input events, and the synthetic connection events -- and anything outside them is declined rather than silently attached to nothing.
+Option dispatch tries `on()` first for any `on*` key and needs a yes-or-no answer to decide whether the key was an event or something else entirely. Three categories are recognised -- pointer events and click, input events, and the synthetic connection events -- and anything outside them is declined rather than silently attached to nothing.
 
-- pointer, input and connection events are recognised; an unrecognised name is declined, as is a registration with no callback
-  - new Subject({ appendTo: document.body }) captures c then ["pointerdown", "contextmenu", "input", "change", "connected", "disconnected"].map(e => c.on({ targetEvent: e, callback: () => {} })) captures recognised then ["click", "notAnEvent"].map(e => c.on({ targetEvent: e, callback: () => {} })) captures declined -> recognised.every(Boolean) && declined.every(r => r === false) && c.on({ targetEvent: "pointerdown" }) === false
+- pointer, click, input and connection events are recognised; an unrecognised name is declined, as is a registration with no callback
+  - new Subject({ appendTo: document.body }) captures c then ["pointerdown", "click", "contextmenu", "input", "change", "connected", "disconnected"].map(e => c.on({ targetEvent: e, callback: () => {} })) captures recognised then ["notAnEvent"].map(e => c.on({ targetEvent: e, callback: () => {} })) captures declined -> recognised.every(Boolean) && declined.every(r => r === false) && c.on({ targetEvent: "pointerdown" }) === false
 
 ## A `data` option lives in options only, and the nearest class decides
 

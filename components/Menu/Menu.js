@@ -59,11 +59,11 @@ export default class Menu extends StyledList {
 
 	build() {
 		this.on({
-			targetEvent: 'pointerdown',
+			targetEvent: 'click',
 			id: 'menuSelect',
 			callback: event => {
 				// Selecting requires an item, the same way the keyboard path below requires a focused
-				// one. Emitting for any pointerdown on the menu meant clicking the padding, the gap
+				// one. Emitting for any click on the menu meant clicking the padding, the gap
 				// between items, or the border fired `select` with nothing selected, leaving every
 				// consumer to work out from the event whether an item had actually been hit.
 				const item = event.target?.closest?.('li');

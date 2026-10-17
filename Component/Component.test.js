@@ -1152,7 +1152,7 @@ describe('Component', () => {
 			const handler = mock();
 			component = new Component({ tag: 'button', onPointerPress: handler, appendTo: document.body });
 
-			component.elem.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+			component.elem.click();
 			expect(handler).toHaveBeenCalled();
 		});
 

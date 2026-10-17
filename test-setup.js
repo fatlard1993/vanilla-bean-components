@@ -36,8 +36,13 @@ HTMLDialogElement.prototype.showModal = function () {
 	this.style.display = 'block';
 };
 HTMLDialogElement.prototype.close = function () {
+	const wasOpen = this.open;
+
 	this.open = false;
 	this.style.display = 'none';
+
+	// A browser fires close from a queued task; firing it at once keeps what a test's close sets off inside that test
+	if (wasOpen) this.dispatchEvent(new Event('close'));
 };
 
 // happy dom doesn't support canvas yet

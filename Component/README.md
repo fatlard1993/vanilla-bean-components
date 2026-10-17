@@ -181,7 +181,7 @@ component.onHover(event => {
 
 #### Press Detection
 
-Fires on `pointerdown` for immediate, reliable response in all contexts including scroll containers and modal dialogs:
+Fires on `click`: a mouse, touch or pen press released on the element, or a keyboard or assistive technology activation. A touch that turns into a scroll is not a press, and the release is what presses, so nothing lands on whatever a press revealed:
 
 ```js
 component.onPointerPress(event => {
@@ -402,7 +402,7 @@ Custom events (`static events`), attribute routing (`attribute: true`), and proc
 | Option           | Type       | Description                                  |
 | ---------------- | ---------- | -------------------------------------------- |
 | `onHover`        | `Function` | Hover handler with move tracking             |
-| `onPointerPress` | `Function` | Fires on `pointerdown`                       |
+| `onPointerPress` | `Function` | Fires on `click`, from any input             |
 | ~~`onClick`~~    | -          | Not supported. Use `onPointerPress` instead. |
 | `onChange`       | `Function` | Change event handler (input .value included) |
 | `onConnected`    | `Function` | DOM connection detection                     |

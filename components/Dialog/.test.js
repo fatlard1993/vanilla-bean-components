@@ -1,4 +1,5 @@
-import { findByText } from '@testing-library/dom';
+import { findByText, getAllByRole, getByRole } from '@testing-library/dom';
+import userEvent from '@testing-library/user-event';
 
 import { Component, Button, List } from '../..';
 
@@ -177,7 +178,7 @@ describe('Dialog', () => {
 		// Access the button through testing library methods and trigger click
 		const button = await findByText(container, 'Test Button');
 		// Trigger the actual pointer events that Button components listen for
-		button.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+		button.click();
 
 		expect(onButtonPress).toHaveBeenCalledWith(
 			expect.objectContaining({
@@ -237,7 +238,7 @@ describe('Dialog', () => {
 		});
 
 		const button = await findByText(container, '+');
-		button.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+		button.click();
 
 		expect(handler).toHaveBeenCalled();
 	});
@@ -260,8 +261,81 @@ describe('Dialog', () => {
 		dialog.open();
 
 		const button = await findByText(container, '+');
-		button.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+		button.click();
 
 		expect(handler).toHaveBeenCalled();
+	});
+
+	describe('closing', () => {
+		const closed = () => new Promise(resolve => setTimeout(resolve, 10));
+
+		test('a closed dialog is removed from the page', async () => {
+			const dialog = new Dialog({ header: 'gone', openOnRender: false, appendTo: container });
+
+			dialog.open();
+			dialog.close();
+			await closed();
+
+			expect(container.contains(dialog.elem)).toBe(false);
+		});
+
+		test('removeOnClose: false keeps it to open again', async () => {
+			const dialog = new Dialog({ header: 'kept', openOnRender: false, removeOnClose: false, appendTo: container });
+
+			dialog.open();
+			dialog.close();
+			await closed();
+			dialog.open();
+
+			expect(container.contains(dialog.elem)).toBe(true);
+			expect(dialog.elem.open).toBe(true);
+		});
+
+		test('a dialog opened again before it finished closing stays', async () => {
+			const dialog = new Dialog({ header: 'back', openOnRender: false, appendTo: container });
+
+			dialog.open();
+			dialog.close();
+			dialog.open();
+			await closed();
+
+			expect(container.contains(dialog.elem)).toBe(true);
+		});
+	});
+
+	describe('confirm', () => {
+		const answer = async (confirmation, label) => {
+			await userEvent.setup().click(await findByText(document.body, label));
+
+			return confirmation;
+		};
+
+		test('resolves true for the confirming button, which comes second', async () => {
+			const confirmation = Dialog.confirm({ header: 'Delete it?', confirmLabel: 'Delete' });
+
+			await findByText(document.body, 'Delete');
+
+			expect(getAllByRole(document.body, 'button', { hidden: true }).map(button => button.textContent)).toEqual([
+				'Cancel',
+				'Delete',
+			]);
+			expect(await answer(confirmation, 'Delete')).toBe(true);
+		});
+
+		test('resolves false for the cancel button', async () => {
+			const confirmation = Dialog.confirm({ header: 'Delete it?', confirmLabel: 'Delete', cancelLabel: 'Keep it' });
+
+			expect(await answer(confirmation, 'Keep it')).toBe(false);
+		});
+
+		test('resolves false when closed any other way', async () => {
+			const confirmation = Dialog.confirm({ header: 'Leave?', confirmLabel: 'Leave' });
+
+			await findByText(document.body, 'Leave');
+			await new Promise(resolve => setTimeout(resolve, 50));
+			getByRole(document.body, 'dialog').close();
+
+			expect(await confirmation).toBe(false);
+		});
 	});
 });

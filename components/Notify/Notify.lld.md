@@ -14,12 +14,12 @@ Transient notification that self-destructs. The design choice is that click-to-d
 Notifications are temporary and should be easy to clear, so there is no separate close button to aim at.
 
 - a click anywhere on the notification dismisses it, its body included, rather than only on a dedicated control
-  - new Subject({ textContent: "hi", appendTo: document.body }) captures n then n.elem.isConnected captures shown then n.elem.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })) -> shown === true && n.elem.isConnected === false
+  - new Subject({ textContent: "hi", appendTo: document.body }) captures n then n.elem.isConnected captures shown then n.elem.click() -> shown === true && n.elem.isConnected === false
 
 ## Manual dismiss cancels a pending timeout - no duplicate destroy fires
 
 - when a `timeout` is set and the user dismisses manually before it fires, the timer is cancelled so a second destroy call after the component is already gone cannot happen
-  - new Array() captures calls then new Subject({ timeout: 50, appendTo: document.body, textContent: "hi" }) captures n then n.destroy = (...a) => { calls.push(1); return Object.getPrototypeOf(n).destroy.call(n, ...a); } then n.elem.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })) then await new Promise(r => setTimeout(r, 160)) -> calls.length === 1
+  - new Array() captures calls then new Subject({ timeout: 50, appendTo: document.body, textContent: "hi" }) captures n then n.destroy = (...a) => { calls.push(1); return Object.getPrototypeOf(n).destroy.call(n, ...a); } then n.elem.click() then await new Promise(r => setTimeout(r, 160)) -> calls.length === 1
 
 ## Severity decides how assertively the notification announces
 

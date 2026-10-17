@@ -18,15 +18,14 @@ describe('Menu', () => {
 	});
 
 	describe('select event', () => {
-		test('onSelect registers without warnings and fires on pointer activation', () => {
+		test('onSelect registers without warnings and fires on a click', () => {
 			const received = [];
 			menu = new Menu({ items: ['one', 'two'], onSelect: event => received.push(event), appendTo: document.body });
 
 			expect(warnings.filter(warning => warning.includes('onSelect'))).toEqual([]);
 
 			const li = menu.elem.querySelector('li');
-			li.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
-			li.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+			li.click();
 
 			expect(received.length).toBe(1);
 			expect(received[0].type).toBe('select');
