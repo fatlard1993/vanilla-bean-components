@@ -133,7 +133,7 @@
 		"eslint": "^10.7.0",
 		"eslint-plugin-compat": "^7.0.2",
 		"eslint-plugin-import": "^2.32.0",
-		"eslint-plugin-jsdoc": "^63.0.13",
+		"eslint-plugin-jsdoc": "^63.0.13 || ^65.0.0",
 		"eslint-plugin-spellcheck": "0.0.20",
 		"eslint-plugin-testing-library": "^7.16.2",
 		"eslint-plugin-write-good-comments": "^0.2.0",
