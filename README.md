@@ -350,6 +350,24 @@ loadUsers();
 
 If you need older browser support, VBC is not the right tool. The native CSS nesting requirement is not negotiable without reintroducing a build-time CSS processing step.
 
+## Shared Tooling
+
+The package ships the house lint, format and test setup, so an app's config files stay one line where they can:
+
+```js
+// eslint.config.cjs: the app profile adds the app's own spellcheck.config.cjs words, node and Bun globals for
+// server/, scripts/, cli/ and client/build.js, and leaves JSDoc optional
+module.exports = [...require('@vanilla-bean/components/eslint.app.config.cjs'), { rules: {/* the app's own */} }];
+
+// prettier.config.cjs
+module.exports = require('@vanilla-bean/components/prettier.config.cjs');
+
+// test-setup.js (bunfig.toml: [test] preload = ["./test-setup.js"])
+import '@vanilla-bean/components/test-setup.js';
+```
+
+`eslint.config.cjs` is the library's own stricter config, which the app profile builds on.
+
 ## Development
 
 ### Local Development
