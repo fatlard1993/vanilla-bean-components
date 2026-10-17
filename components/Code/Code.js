@@ -63,10 +63,8 @@ class Code extends Component {
 				new Button({
 					icon: 'copy',
 					tooltip: 'Copy to clipboard',
-					onPointerPress: () => {
-						const clipboardWriteSuccess = copyToClipboard(this.options.code);
-
-						if (clipboardWriteSuccess) {
+					onPointerPress: async () => {
+						if (await copyToClipboard(this.options.code)) {
 							const { right: x, top: y } = this.elem.getBoundingClientRect();
 
 							new Notify({ content: 'Copied text to clipboard!', timeout: 1000, x, y });

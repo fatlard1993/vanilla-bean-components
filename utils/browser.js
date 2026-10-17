@@ -39,13 +39,17 @@ export const isMac = () =>
 /**
  * Copy a piece of text to the clipboard
  * @param {string} text - The text to copy to the clipboard
- * @returns {boolean} A boolean indicating the success of the action
+ * @returns {Promise<boolean>} Whether the text reached the clipboard
  */
-export const copyToClipboard = text => {
+export const copyToClipboard = async text => {
 	if (window.isSecureContext && navigator.clipboard) {
-		navigator.clipboard.writeText(text);
+		try {
+			await navigator.clipboard.writeText(text ?? '');
 
-		return true;
+			return true;
+		} catch {
+			// Denied, or the page lacks focus; the older way below may still work
+		}
 	}
 
 	const textarea = document.createElement('textarea');

@@ -38,23 +38,24 @@ describe('browser utilities', () => {
 			global.isSecureContext = originalIsSecureContext;
 		});
 
-		test('returns false in insecure context', () => {
+		test('resolves false in an insecure context where the fallback fails too', async () => {
 			global.isSecureContext = false;
-			const result = copyToClipboard('test');
-			expect(result).toBe(false);
+			expect(await copyToClipboard('test')).toBe(false);
 		});
 
-		test('handles different input types', () => {
-			expect(() => copyToClipboard('')).not.toThrow();
-			expect(() => copyToClipboard('text')).not.toThrow();
-			expect(() => copyToClipboard('special chars: !@#$%')).not.toThrow();
-			expect(() => copyToClipboard('unicode: 🚀')).not.toThrow();
+		test('resolves true once the clipboard write succeeds', async () => {
+			global.isSecureContext = true;
+			const writeText = spyOn(navigator.clipboard, 'writeText').mockResolvedValue();
+
+			expect(await copyToClipboard('copied')).toBe(true);
+			expect(writeText).toHaveBeenCalledWith('copied');
 		});
 
-		test('returns consistent type for all inputs', () => {
-			expect(typeof copyToClipboard('test1')).toBe('boolean');
-			expect(typeof copyToClipboard('')).toBe('boolean');
-			expect(typeof copyToClipboard('🚀')).toBe('boolean');
+		test('resolves false when the clipboard refuses and the fallback fails', async () => {
+			global.isSecureContext = true;
+			spyOn(navigator.clipboard, 'writeText').mockRejectedValue(new Error('denied'));
+
+			expect(await copyToClipboard('refused')).toBe(false);
 		});
 	});
 
@@ -132,9 +133,10 @@ describe('browser utilities', () => {
 			expect(typeof tactileResponse).toBe('function');
 		});
 
-		test('functions have expected return types', () => {
+		test('functions have expected return types', async () => {
 			expect(typeof isMac()).toBe('boolean');
-			expect(typeof copyToClipboard('test')).toBe('boolean');
+			expect(copyToClipboard('test')).toBeInstanceOf(Promise);
+			expect(typeof (await copyToClipboard('test'))).toBe('boolean');
 			expect(readClipboard()).toBeInstanceOf(Promise);
 		});
 
@@ -157,15 +159,15 @@ describe('browser utilities', () => {
 			global.isSecureContext = originalIsSecureContext;
 		});
 
-		test('clipboard operations respect secure context', () => {
+		test('clipboard operations respect secure context', async () => {
 			global.isSecureContext = false;
-			expect(copyToClipboard('test')).toBe(false);
+			expect(await copyToClipboard('test')).toBe(false);
 
 			global.isSecureContext = null;
-			expect(copyToClipboard('test')).toBe(false);
+			expect(await copyToClipboard('test')).toBe(false);
 
 			global.isSecureContext = undefined;
-			expect(copyToClipboard('test')).toBe(false);
+			expect(await copyToClipboard('test')).toBe(false);
 		});
 
 		test('readClipboard respects secure context', async () => {
@@ -193,10 +195,10 @@ describe('browser utilities', () => {
 
 		test('safe clipboard workflow', async () => {
 			if (!isSecureContext) {
-				expect(copyToClipboard('test')).toBe(false);
+				expect(await copyToClipboard('test')).toBe(false);
 				expect(await readClipboard()).toBe(false);
 			} else {
-				expect(() => copyToClipboard('test')).not.toThrow();
+				await expect(copyToClipboard('test')).resolves.toBeBoolean();
 				await expect(readClipboard()).resolves.toBeDefined();
 			}
 		});
@@ -226,8 +228,8 @@ describe('browser utilities', () => {
 			expect(() => tactileResponse()).not.toThrow();
 		});
 
-		test('clipboard operations handle API absence', () => {
-			const copyResult = copyToClipboard('test');
+		test('clipboard operations handle API absence', async () => {
+			const copyResult = await copyToClipboard('test');
 			expect(typeof copyResult).toBe('boolean');
 		});
 
@@ -237,12 +239,12 @@ describe('browser utilities', () => {
 			expect(() => vibrate([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])).not.toThrow();
 		});
 
-		test('maintains function stability across multiple calls', () => {
+		test('maintains function stability across multiple calls', async () => {
 			const isMacResults = Array.from({ length: 5 }, () => isMac());
 			const allSame = isMacResults.every(result => result === isMacResults[0]);
 			expect(allSame).toBe(true);
 
-			const copyResults = ['test1', 'test2', 'test3'].map(text => copyToClipboard(text));
+			const copyResults = await Promise.all(['test1', 'test2', 'test3'].map(text => copyToClipboard(text)));
 			expect(copyResults.every(result => typeof result === 'boolean')).toBe(true);
 		});
 	});
