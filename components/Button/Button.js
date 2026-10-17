@@ -12,6 +12,7 @@ import { TooltipWrapper } from '../TooltipWrapper';
  * @param {string} [options.icon] - FontAwesome icon name (without 'fa-' prefix)
  * @param {string} [options.tooltip] - Tooltip text shown on hover
  * @param {boolean} [options.disabled] - Whether button is disabled
+ * @param {('flat')} [options.variant] - 'flat' drops the raised look, for toolbars, chips and icon buttons
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Button} Button component instance
  * @example
@@ -31,7 +32,20 @@ import { TooltipWrapper } from '../TooltipWrapper';
 export default class Button extends TooltipWrapper {
 	static schema = {
 		tag: { default: 'button' },
+		variant: {
+			enum: ['flat'],
+			set(value) {
+				this.removeClass(/\bvariant-\S+\b/g);
+
+				if (value) this.addClass(`variant-${value}`);
+			},
+		},
 	};
+
+	// The class the theme gives a Button's look to, whatever the page does for bare buttons
+	static prepareOptions(options) {
+		return { ...options, addClass: ['vbc-button', options.addClass] };
+	}
 
 	build() {
 		if (this.elem instanceof HTMLButtonElement) return;

@@ -160,6 +160,8 @@ export default class Input extends Component {
 			...(tag === 'input' ? { type: dataTypeToInputType[typeof rawValue] || 'text' } : {}),
 			...(tag === 'input' || tag === 'textarea' ? textInputDefaults : {}),
 			...options,
+			// The class the theme gives an Input's look to, whatever the page does for bare fields
+			addClass: ['vbc-input', options.addClass],
 		};
 	}
 

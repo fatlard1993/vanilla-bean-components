@@ -3,7 +3,7 @@ import _code from './code';
 import colors from './colors';
 import fonts from './fonts';
 import _input from './input';
-import _page from './page';
+import _page, { elements as _elements } from './page';
 import _scrollbar from './scrollbar';
 import _table from './table';
 
@@ -27,6 +27,9 @@ const theme = {
 	},
 	get page() {
 		return _page(this);
+	},
+	get elements() {
+		return _elements(this);
 	},
 };
 

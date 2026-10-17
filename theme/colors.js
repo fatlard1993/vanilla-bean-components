@@ -31,6 +31,17 @@ const colors = {
 		return colors.blackish();
 	},
 
+	// Named for their job rather than their hue
+	get surface() {
+		return colors.darker(colors.gray);
+	},
+	get overlay() {
+		return colors.alpha(colors.vantablack, 0.6);
+	},
+	get warning() {
+		return colors.yellow;
+	},
+
 	get selected() {
 		return selectedOverride ?? colors.yellow;
 	},

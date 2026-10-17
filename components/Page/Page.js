@@ -3,7 +3,18 @@ import { Component } from '../../Component';
 
 const dependentStyleSheets = ['@fortawesome/fontawesome-free/css/all.css', '@fontsource-variable/kode-mono/index.css'];
 
+const ELEMENT_STYLES_ID = 'vbc-theme-elements';
+
 shimCSS({ styles: ({ page }) => page });
+shimCSS({ styles: ({ elements }) => elements, id: ELEMENT_STYLES_ID });
+
+// The element styles may not be in the document yet: they are added once the page has loaded
+const useElementStyles = enabled => {
+	const style = document.getElementById(ELEMENT_STYLES_ID);
+
+	if (style) style.disabled = !enabled;
+	else window.addEventListener('load', () => useElementStyles(enabled), { once: true });
+};
 
 /**
  * Page component that provides full-page layout with automatic stylesheet loading.
@@ -18,6 +29,17 @@ shimCSS({ styles: ({ page }) => page });
  * @returns {Page} Page component instance
  */
 class Page extends Component {
+	static schema = {
+		// false leaves bare elements (headings, links, code, form fields, buttons, tables) to the app; the library's
+		// components keep their look either way
+		themeElements: {
+			default: true,
+			set(value) {
+				useElementStyles(value !== false);
+			},
+		},
+	};
+
 	constructor(options = {}, ...children) {
 		const { styleSheets = [], ...optionsWithoutConfig } = options;
 

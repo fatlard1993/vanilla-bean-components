@@ -16,6 +16,7 @@ module.exports = {
 		'latin',
 		'metafile',
 		'microtask',
+		'toolbars',
 		'minify',
 		'minifies',
 		'mkdtemp',

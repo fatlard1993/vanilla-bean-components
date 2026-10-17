@@ -1,0 +1,39 @@
+import theme from '.';
+
+describe('theme.page and theme.elements', () => {
+	// Top-level rules sit one tab in; nested ones (code inside a language- block) sit deeper
+	const rule = (css, selector) =>
+		new RegExp(`^\\t${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\{`, 'm').test(css);
+
+	test('bare elements are styled by theme.elements, not by the page', () => {
+		for (const selector of [
+			'h1, h2, h3, h4, h5, h6',
+			'a',
+			'code',
+			'input, select, textarea',
+			'button, kbd',
+			'table',
+			'blockquote',
+		]) {
+			expect(rule(theme.elements, selector)).toBe(true);
+			expect(rule(theme.page, selector)).toBe(false);
+		}
+	});
+
+	test("the page keeps the library components' looks, at no specificity, and the syntax font", () => {
+		for (const selector of [':where(.vbc-button)', ':where(.vbc-input)', ':where(.vbc-table)', 'a.variant-button']) {
+			expect(rule(theme.page, selector)).toBe(true);
+		}
+
+		expect(theme.page).toContain('@font-face');
+		expect(theme.page).toContain('code[class*="language-"]');
+	});
+});
+
+describe('theme colors named for their job', () => {
+	test('surface, overlay and warning', () => {
+		expect(theme.colors.surface.toHslString()).toBe(theme.colors.darker(theme.colors.gray).toHslString());
+		expect(theme.colors.overlay.getAlpha()).toBe(0.6);
+		expect(theme.colors.warning).toBe(theme.colors.yellow);
+	});
+});

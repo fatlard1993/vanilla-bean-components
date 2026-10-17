@@ -29,3 +29,11 @@ Stylesheet lists are usually built by concatenating conditionals, so holes in th
 
 - falsy entries in `styleSheets` are skipped and the real entries beside them are still injected
   - new Subject({ styleSheets: [null, "/real.css", undefined, ""], appendTo: document.body }) captures p -> Array.from(document.querySelectorAll("link[rel=stylesheet]")).some(l => l.getAttribute("href") === "/real.css")
+
+## An app can take over the bare elements
+
+The page styles headings, links, code, form fields, buttons and tables wherever they appear. An app that styles its own elements turns that off with `themeElements: false` rather than resetting each one; the library's components keep their look, because the theme gives it to their own classes at no specificity.
+
+- `themeElements: false` disables the bare-element styles, and `true` brings them back
+  - new Array() captures seen then document.getElementById("vbc-theme-elements") captures style then new Subject({ themeElements: false, autoRender: true, appendTo: document.body }) captures page then style.disabled captures off then page.options.themeElements = true -> off === true && style.disabled === false
+

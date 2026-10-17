@@ -27,6 +27,11 @@ const ownsContent = cell => ['content', 'textContent', 'innerHTML', 'append'].so
  * @returns {Table} Table component instance
  */
 class Table extends Component {
+	// The class the theme gives a Table's look to, whatever the page does for bare tables
+	static prepareOptions(options) {
+		return { ...options, addClass: ['vbc-table', options.addClass] };
+	}
+
 	static schema = {
 		tag: { default: 'table' },
 		sortDirection: {

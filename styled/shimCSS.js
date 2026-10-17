@@ -11,14 +11,16 @@ let loadListener = null;
  */
 export const shimCSS = styleConfig => {
 	if (document.readyState === 'complete') {
-		appendStyles(themeStyles(styleConfig) || '', styleConfig.scope?.replace(/^\./, ''));
+		appendStyles(themeStyles(styleConfig) || '', styleConfig.id ?? styleConfig.scope?.replace(/^\./, ''));
 	} else {
 		loadQueue = loadQueue || [];
 		loadQueue.push(styleConfig);
 
 		if (!loadListener) {
 			loadListener = () => {
-				loadQueue.forEach(config => appendStyles(themeStyles(config) || '', config.scope?.replace(/^\./, '')));
+				loadQueue.forEach(config =>
+					appendStyles(themeStyles(config) || '', config.id ?? config.scope?.replace(/^\./, '')),
+				);
 
 				loadQueue = null;
 				window.removeEventListener('load', loadListener);

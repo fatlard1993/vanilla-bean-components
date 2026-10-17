@@ -35,3 +35,11 @@ Keyboard activation is deliberately two keys, not "any key". A button that fired
 
 - Space and Enter invoke `onPointerPress`; other keys leave it uninvoked
   - new Array() captures fired then new Subject({ tag: "div", onPointerPress: e => fired.push(e.code), appendTo: document.body }) captures b then ["Enter", "Space", "KeyA", "Tab", "Escape"].forEach(code => b.elem.dispatchEvent(new KeyboardEvent("keyup", { key: code, code, bubbles: true }))) -> fired.join() === "Enter,Space"
+
+## A flat Button drops the raised look
+
+Toolbars, chips and icon buttons sit inside something that already reads as a control; a raised, colored button there is noise, and apps were resetting it by hand.
+
+- `variant: 'flat'` marks the button flat; the theme gives it a transparent background and no bevel
+  - new Subject({ variant: "flat", textContent: "x", appendTo: document.body }) captures b -> b.elem.classList.contains("variant-flat") && b.elem.classList.contains("vbc-button")
+

@@ -1,5 +1,5 @@
 import _button from './button';
-import _code from './code';
+import { bareCode, codeFonts, highlightedCode } from './code';
 import colors from './colors';
 import fonts from './fonts';
 import _input, { number, checkbox } from './input';
@@ -54,6 +54,129 @@ export default theme => `
 		height: 100%;
 	}
 
+	@viewport {
+		width: device-width;
+		zoom: 1;
+		min-zoom: 1;
+		max-zoom: 1;
+	}
+
+	${codeFonts(theme)}
+
+	${highlightedCode(theme)}
+
+	${_scrollbar(theme)}
+
+	a.variant-button { ${_button(theme)} }
+
+	/*
+	 * The library's own components keep their look when the page's element styles are off. :where() gives these rules no
+	 * specificity, so any rule an app writes still wins.
+	 */
+	:where(.vbc-button) { ${_button(theme)} }
+	:where(.vbc-input) { ${_input(theme)} }
+	:where(.vbc-table) { ${_table(theme)} }
+
+	/* A Button without the raised look: for toolbars, chips and icon buttons */
+	.vbc-button:where(.variant-flat) {
+		background-color: transparent;
+		color: inherit;
+		translate: none;
+
+		&:after {
+			display: none;
+		}
+
+		&:hover, &:focus-visible {
+			background-color: ${colors.alpha(colors.white, 0.08)};
+		}
+
+		&:active, &.pressed {
+			background-color: ${colors.alpha(colors.white, 0.14)};
+			box-shadow: none;
+		}
+
+		&:disabled, &.disabled {
+			background-color: transparent;
+			color: ${colors.gray};
+		}
+	}
+
+	.fa-support:before {
+		${fonts.fontAwesomeSolid}
+		content: var(--fa);
+	}
+
+	/*
+	 * Icon's iconAnimation option. FontAwesome's own animation classes animate the element that
+	 * carries them, which is what you want on a bare Icon and not what you want on anything that
+	 * also renders a label — Button and Link extend Icon, so an fa animation there spins the
+	 * control, background and text included. These aim the same animations at the :before that
+	 * draws the glyph, reusing FontAwesome's keyframes and honoring the same --fa-animation-*
+	 * overrides, so a caller can animate the glyph and the element independently.
+	 */
+	[class*='icon-animation-']:before {
+		animation-delay: var(--fa-animation-delay, 0s);
+		animation-direction: var(--fa-animation-direction, normal);
+		animation-iteration-count: var(--fa-animation-iteration-count, infinite);
+	}
+
+	.icon-animation-spin:before {
+		animation-name: fa-spin;
+		animation-duration: var(--fa-animation-duration, 2s);
+		animation-timing-function: var(--fa-animation-timing, linear);
+	}
+
+	.icon-animation-spin-pulse:before {
+		animation-name: fa-spin;
+		animation-duration: var(--fa-animation-duration, 1s);
+		animation-timing-function: var(--fa-animation-timing, steps(8));
+	}
+
+	.icon-animation-beat:before {
+		animation-name: fa-beat;
+		animation-duration: var(--fa-animation-duration, 1s);
+		animation-timing-function: var(--fa-animation-timing, ease-in-out);
+	}
+
+	.icon-animation-fade:before {
+		animation-name: fa-fade;
+		animation-duration: var(--fa-animation-duration, 1s);
+		animation-timing-function: var(--fa-animation-timing, ease-in-out);
+	}
+
+	.icon-animation-beat-fade:before {
+		animation-name: fa-beat-fade;
+		animation-duration: var(--fa-animation-duration, 1s);
+		animation-timing-function: var(--fa-animation-timing, ease-in-out);
+	}
+
+	.icon-animation-bounce:before {
+		animation-name: fa-bounce;
+		animation-duration: var(--fa-animation-duration, 1s);
+		animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.28, 0.84, 0.42, 1));
+	}
+
+	.icon-animation-flip:before {
+		animation-name: fa-flip;
+		animation-duration: var(--fa-animation-duration, 1.5s);
+		animation-timing-function: var(--fa-animation-timing, ease-in-out);
+	}
+
+	.icon-animation-shake:before {
+		animation-name: fa-shake;
+		animation-duration: var(--fa-animation-duration, 0.75s);
+		animation-timing-function: var(--fa-animation-timing, ease-in-out);
+	}
+`;
+
+/**
+ * What the page gives bare elements: headings, links, code, form fields, buttons, tables and quotes. Page's themeElements
+ * option turns these off for an app that styles its own elements; the library's components keep their look either way.
+ * @param {object} theme - The theme
+ * @returns {string} CSS
+ */
+export const elements = theme => `
 	h1, h2, h3, h4, h5, h6 {
 		color: ${colors.green};
 
@@ -132,22 +255,13 @@ export default theme => `
 		}
 	}
 
-	@viewport {
-		width: device-width;
-		zoom: 1;
-		min-zoom: 1;
-		max-zoom: 1;
-	}
-
-	${_code(theme)}
-
-	${_scrollbar(theme)}
+	${bareCode(theme)}
 
 	input, select, textarea { ${_input(theme)} }
 	${number(theme)}
 	${checkbox(theme)}
 
-	button, a.variant-button, kbd { ${_button(theme)} }
+	button, kbd { ${_button(theme)} }
 
 	kbd {
 		background-color: ${colors.dark(colors.gray)};
@@ -211,72 +325,5 @@ export default theme => `
 				color: ${colors.lighter(colors.red)};
 			}
 		}
-	}
-
-	.fa-support:before {
-		${fonts.fontAwesomeSolid}
-		content: var(--fa);
-	}
-
-	/*
-	 * Icon's iconAnimation option. FontAwesome's own animation classes animate the element that
-	 * carries them, which is what you want on a bare Icon and not what you want on anything that
-	 * also renders a label — Button and Link extend Icon, so an fa animation there spins the
-	 * control, background and text included. These aim the same animations at the :before that
-	 * draws the glyph, reusing FontAwesome's keyframes and honoring the same --fa-animation-*
-	 * overrides, so a caller can animate the glyph and the element independently.
-	 */
-	[class*='icon-animation-']:before {
-		animation-delay: var(--fa-animation-delay, 0s);
-		animation-direction: var(--fa-animation-direction, normal);
-		animation-iteration-count: var(--fa-animation-iteration-count, infinite);
-	}
-
-	.icon-animation-spin:before {
-		animation-name: fa-spin;
-		animation-duration: var(--fa-animation-duration, 2s);
-		animation-timing-function: var(--fa-animation-timing, linear);
-	}
-
-	.icon-animation-spin-pulse:before {
-		animation-name: fa-spin;
-		animation-duration: var(--fa-animation-duration, 1s);
-		animation-timing-function: var(--fa-animation-timing, steps(8));
-	}
-
-	.icon-animation-beat:before {
-		animation-name: fa-beat;
-		animation-duration: var(--fa-animation-duration, 1s);
-		animation-timing-function: var(--fa-animation-timing, ease-in-out);
-	}
-
-	.icon-animation-fade:before {
-		animation-name: fa-fade;
-		animation-duration: var(--fa-animation-duration, 1s);
-		animation-timing-function: var(--fa-animation-timing, ease-in-out);
-	}
-
-	.icon-animation-beat-fade:before {
-		animation-name: fa-beat-fade;
-		animation-duration: var(--fa-animation-duration, 1s);
-		animation-timing-function: var(--fa-animation-timing, ease-in-out);
-	}
-
-	.icon-animation-bounce:before {
-		animation-name: fa-bounce;
-		animation-duration: var(--fa-animation-duration, 1s);
-		animation-timing-function: var(--fa-animation-timing, cubic-bezier(0.28, 0.84, 0.42, 1));
-	}
-
-	.icon-animation-flip:before {
-		animation-name: fa-flip;
-		animation-duration: var(--fa-animation-duration, 1.5s);
-		animation-timing-function: var(--fa-animation-timing, ease-in-out);
-	}
-
-	.icon-animation-shake:before {
-		animation-name: fa-shake;
-		animation-duration: var(--fa-animation-duration, 0.75s);
-		animation-timing-function: var(--fa-animation-timing, ease-in-out);
 	}
 `;

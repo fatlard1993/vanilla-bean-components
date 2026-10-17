@@ -26,6 +26,12 @@ export interface ThemeColors {
 	white: ThemeColor;
 	black: ThemeColor;
 	selected: ThemeColor;
+	/** A raised panel or card */
+	surface: ThemeColor;
+	/** The dimming behind a dialog or sheet */
+	overlay: ThemeColor;
+	/** The library's warning color (Notify and Dialog's warning variant) */
+	warning: ThemeColor;
 	transparent: ThemeColor;
 	superWhite: ThemeColor;
 	vantablack: ThemeColor;
@@ -47,6 +53,8 @@ export interface Theme {
 	button: string;
 	input: string;
 	page: string;
+	/** Styles for bare elements; Page's themeElements: false turns them off */
+	elements: string;
 	scrollbar: string;
 	table: string;
 }
@@ -238,6 +246,8 @@ export interface ButtonOptions extends TooltipWrapperOptions {
 	icon?: string;
 	/** Tooltip text shown on hover */
 	tooltip?: string;
+	/** 'flat' drops the raised look, for toolbars, chips and icon buttons */
+	variant?: 'flat';
 }
 
 export declare class Button extends TooltipWrapper {
@@ -534,8 +544,13 @@ export declare class Notify extends Popover {
 	constructor(options?: NotifyOptions, ...children: Array<Elem | HTMLElement | string>);
 }
 
+export interface PageOptions extends ComponentOptions {
+	/** default: true */
+	themeElements?: boolean;
+}
+
 export declare class Page extends Component {
-	constructor(options?: ComponentOptions, ...children: Array<Elem | HTMLElement | string>);
+	constructor(options?: PageOptions, ...children: Array<Elem | HTMLElement | string>);
 }
 
 export interface PopoverOptions extends IconOptions {

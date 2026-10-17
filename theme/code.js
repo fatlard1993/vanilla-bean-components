@@ -1,4 +1,5 @@
-export default ({ colors, fonts }) => `
+// The syntax font and its palettes: at-rules, so they stay at the top level of whatever includes them
+export const codeFonts = ({ colors }) => `
 	@font-face {
 		font-family: 'FontWithASyntaxHighlighter';
 		src:
@@ -66,7 +67,32 @@ export default ({ colors, fonts }) => `
 			8 ${colors.light(colors.green)} /* few chars */
 		;
 	}
+`;
 
+const codeLook = ({ colors, fonts }, selector) => `
+	${selector} {
+		${fonts.code}
+
+		&[class*="language-html"] {
+			font-palette: --vbc-html-theme;
+			color: ${colors.white};
+		}
+
+		&[class*="language-css"] {
+			font-palette: --vbc-css-theme;
+			color: ${colors.light(colors.green)};
+		}
+
+		&[class*="language-json"] {
+			font-palette: --vbc-json-theme;
+			color: ${colors.white};
+		}
+	}
+
+`;
+
+// Code that asks for highlighting by class or attribute, and the Code component's block
+export const highlightedCode = ({ colors, fonts }) => `
 	pre[class*="language-"] {
 		position: relative;
 		background-color: ${colors.black};
@@ -102,22 +128,10 @@ export default ({ colors, fonts }) => `
 		}
 	}
 
-	code, textarea.syntax-highlighting, input.syntax-highlighting, pre[lang] {
-		${fonts.code}
-
-		&[class*="language-html"] {
-			font-palette: --vbc-html-theme;
-			color: ${colors.white};
-		}
-
-		&[class*="language-css"] {
-			font-palette: --vbc-css-theme;
-			color: ${colors.light(colors.green)};
-		}
-
-		&[class*="language-json"] {
-			font-palette: --vbc-json-theme;
-			color: ${colors.white};
-		}
-	}
+	${codeLook({ colors, fonts }, 'textarea.syntax-highlighting, input.syntax-highlighting, pre[lang], code[class*="language-"]')}
 `;
+
+// Every bare code element
+export const bareCode = theme => codeLook(theme, 'code');
+
+export default theme => `${codeFonts(theme)}${highlightedCode(theme)}${bareCode(theme)}`;

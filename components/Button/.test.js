@@ -85,4 +85,17 @@ describe('Button', () => {
 		expect(button.elem.disabled).toBe(true);
 		expect(button.elem.className).toContain('custom-button');
 	});
+
+	test('a Button carries the class the theme gives its look to, and a flat variant', () => {
+		const plain = new Button({ textContent: 'Plain', addClass: 'mine', appendTo: container });
+		const flat = new Button({ textContent: 'Flat', variant: 'flat', appendTo: container });
+
+		expect(plain.elem).toHaveClass('vbc-button', 'mine');
+		expect(flat.elem).toHaveClass('vbc-button', 'variant-flat');
+
+		flat.options.variant = null;
+
+		expect(flat.elem).not.toHaveClass('variant-flat');
+		expect(() => new Button({ variant: 'loud' })).toThrow();
+	});
 });
