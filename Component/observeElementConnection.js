@@ -2,6 +2,20 @@ const registry = new Map();
 let sharedObserver = null;
 
 /**
+ * Runs one element's callback, reporting what it throws rather than letting it end the walk: every other element in
+ * the batch still gets its callback.
+ * @param {Function} callback - An element's onConnected or onDisconnected
+ * @param {MutationRecord} mutation - The mutation that connected or disconnected it
+ */
+const isolated = (callback, mutation) => {
+	try {
+		callback(mutation);
+	} catch (error) {
+		globalThis.reportError ? globalThis.reportError(error) : console.error(error); // eslint-disable-line no-console
+	}
+};
+
+/**
  *
  */
 function ensureObserver() {
@@ -11,12 +25,14 @@ function ensureObserver() {
 		for (const mutation of mutations) {
 			for (const node of mutation.removedNodes) {
 				for (const [target, callbacks] of registry) {
-					if ((node === target || node.contains?.(target)) && !target.isConnected) callbacks.onDisconnected(mutation);
+					if ((node === target || node.contains?.(target)) && !target.isConnected)
+						isolated(callbacks.onDisconnected, mutation);
 				}
 			}
 			for (const node of mutation.addedNodes) {
 				for (const [target, callbacks] of registry) {
-					if ((node === target || node.contains?.(target)) && target.isConnected) callbacks.onConnected(mutation);
+					if ((node === target || node.contains?.(target)) && target.isConnected)
+						isolated(callbacks.onConnected, mutation);
 				}
 			}
 		}

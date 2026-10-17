@@ -133,4 +133,32 @@ describe('observeElementConnection', () => {
 
 		h2.disconnect();
 	});
+
+	test('a callback that throws does not keep the others from theirs', async () => {
+		const failing = document.createElement('div');
+		const other = document.createElement('div');
+		document.body.append(failing, other);
+		await tick();
+
+		const report = spyOn(globalThis, 'reportError').mockImplementation(() => {});
+		const onDisconnected = mock();
+		const handles = [
+			observeElementConnection({
+				target: failing,
+				onConnected: mock(),
+				onDisconnected: () => {
+					throw new Error('failing callback');
+				},
+			}),
+			observeElementConnection({ target: other, onConnected: mock(), onDisconnected }),
+		];
+
+		failing.remove();
+		other.remove();
+		await tick();
+
+		expect(onDisconnected).toHaveBeenCalledTimes(1);
+		expect(report.mock.calls[0][0].message).toBe('failing callback');
+		handles.forEach(handle => handle.disconnect());
+	});
 });
