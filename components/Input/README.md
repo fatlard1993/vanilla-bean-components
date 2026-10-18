@@ -31,6 +31,8 @@ const input = new Input({
 | `syntaxHighlighting` | `boolean` | - | Adds `syntaxHighlighting` class and Tab key indentation handling (textarea only) |
 | `language` | `string` | - | Adds `language-<value>` class for Prism-compatible highlighting (requires `syntaxHighlighting`) |
 | `validations` | `Array` | - | Validation rules; see Validation section below |
+| `onFiles` | `Function` | - | Type `'file'`: `(files, event)` with the files picked, dropped or pasted that `accept` allows |
+| `dropZone` | `Component\|HTMLElement` | - | Type `'file'`: an area that takes dropped and pasted files, is marked `drag-over` while dragged over, and opens the picker when pressed or on Enter |
 | `onInput` | `Function` | - | Called on every keystroke with an enhanced event containing `.value` |
 | `onChange` | `Function` | - | Called on change with an enhanced event containing `.value` |
 | `onKeyUp` | `Function` | - | Called on keyup with an enhanced event containing `.value` |
@@ -55,6 +57,23 @@ validations: [
 ```
 
 Validation errors are applied to the underlying element via `setCustomValidity` and the `validationErrors` CSS class is toggled on the component.
+
+### Files
+
+A file Input hands its files to `onFiles`, already filtered by `accept`, however they arrived: the picker, a drop, or a paste. The field clears after each pick, so choosing the same file again is still a change. Give it a `dropZone` for a larger target, and hide the field itself if the zone is the whole control:
+
+```js
+const zone = new Component({ textContent: 'Drop a CSV here, or tap to choose' });
+
+new Input({
+	type: 'file',
+	accept: '.csv,.json',
+	style: { display: 'none' },
+	dropZone: zone,
+	onFiles: async ([file]) => importRows(await readFile(file)),
+	appendTo: zone,
+});
+```
 
 ## Methods
 

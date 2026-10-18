@@ -50,3 +50,10 @@ A `language` on its own says what the content is, not that it should be coloured
   - new Subject({ appendTo: document.body }) captures text then new Subject({ tag: "select", appendTo: document.body }) captures select -> text.elem.getAttribute("autocomplete") === "off" && select.elem.getAttribute("autocomplete") === null
 - `validate()` returns the messages it produced and marks the element invalid; a value that passes returns nothing and clears the mark
   - new Subject({ validations: [[v => v === "ok", "must be ok"]], value: "no", appendTo: document.body }) captures bad then bad.validate() captures errors then new Subject({ validations: [[v => v === "ok", "must be ok"]], value: "ok", appendTo: document.body }) captures good then good.validate() captures none -> errors.join() === "must be ok" && bad.elem.getAttribute("aria-invalid") === "true" && none === undefined && good.elem.getAttribute("aria-invalid") === null
+
+## A file field hands over files however they came, already filtered
+
+Picking, dropping and pasting are three routes to one question (which files did the user give?), so a file Input answers it once, through `onFiles`, with what `accept` allows. Apps were writing the drop handling four times over.
+
+- a drop zone passes on only the dropped files accept allows, and marks itself while files are dragged over it
+  - new Array() captures got then document.createElement("div") captures zone then document.body.append(zone) then new Subject({ type: "file", accept: ".csv", dropZone: zone, onFiles: files => got.push(...files.map(f => f.name)), appendTo: document.body }) then zone.dispatchEvent(Object.assign(new Event("dragover", { cancelable: true }), { dataTransfer: { types: ["Files"], files: [] } })) then zone.classList.contains("drag-over") captures marked then zone.dispatchEvent(Object.assign(new Event("drop", { cancelable: true }), { dataTransfer: { types: ["Files"], files: [new File(["x"], "a.csv"), new File(["x"], "b.png")] } })) -> marked === true && zone.classList.contains("drag-over") === false && got.join() === "a.csv"

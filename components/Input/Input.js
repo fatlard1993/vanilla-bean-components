@@ -1,5 +1,5 @@
 import { Component } from '../../Component';
-import { retry } from '../../utils';
+import { fileAccepted, retry } from '../../utils';
 import { updateValidationErrors, insertTabCharacter, adjustIndentation } from './utils';
 
 const type_enum = Object.freeze([
@@ -51,6 +51,8 @@ const dataTypeToInputType = { number: 'number', boolean: 'checkbox', string: 'te
  * @param {string} [options.autocorrect='off'] - Auto-correction behavior
  * @param {string|number} [options.height='auto'] - Height for textarea ('auto' for dynamic sizing)
  * @param {Array<string>} [options.suggestions] - Values the browser offers while typing, as a datalist
+ * @param {Function} [options.onFiles] - For type 'file': (files, event) with the files picked, dropped or pasted that accept allows
+ * @param {Component|HTMLElement} [options.dropZone] - For type 'file': an area that takes dropped and pasted files, and opens the picker when pressed
  * @param {boolean} [options.syntaxHighlighting] - Enable syntax highlighting for textarea
  * @param {string} [options.language] - Programming language for syntax highlighting
  * @param {Array<Function>} [options.validations] - Array of validation functions
@@ -168,6 +170,13 @@ export default class Input extends Component {
 				this.elem.autocorrect = value;
 			},
 		},
+		// Called by the field itself, so not wired as a listener
+		onFiles: { data: true },
+		dropZone: {
+			set(value) {
+				this._wireDropZone(value?.elem ?? value);
+			},
+		},
 		// Read by validate() and the value handler
 		validations: {
 			get default() {
@@ -196,6 +205,17 @@ export default class Input extends Component {
 	}
 
 	build() {
+		if (this.options.type === 'file') {
+			const picked = event => {
+				this._takeFiles(event.target.files, event);
+				// Cleared, so picking the same file again is still a change
+				this.elem.value = '';
+			};
+
+			this.elem.addEventListener('change', picked);
+			this.replaceDestroyCleanup('filesPicked', () => this.elem.removeEventListener('change', picked));
+		}
+
 		if (this.tag === 'textarea' && this.options.syntaxHighlighting) {
 			const handleKeydown = function (event) {
 				if (event.key == 'Tab') {
@@ -210,6 +230,61 @@ export default class Input extends Component {
 			this.elem.addEventListener('keydown', handleKeydown);
 			this.replaceCleanup('syntaxHighlightingKeydown', () => this.elem.removeEventListener('keydown', handleKeydown));
 		}
+	}
+
+	_takeFiles(files, event) {
+		const accepted = [...(files ?? [])].filter(file => fileAccepted(file, this.options.accept ?? this.elem.accept));
+
+		if (accepted.length) this.options.onFiles?.(accepted, event);
+
+		return accepted.length > 0;
+	}
+
+	_wireDropZone(zone) {
+		this.replaceDestroyCleanup('dropZone', null);
+
+		if (!zone) return;
+
+		const carriesFiles = event => [...(event.dataTransfer?.types ?? [])].includes('Files');
+		const listeners = {
+			dragover: event => {
+				if (!carriesFiles(event)) return;
+				event.preventDefault();
+				zone.classList.add('drag-over');
+			},
+			dragleave: event => {
+				if (!zone.contains(event.relatedTarget)) zone.classList.remove('drag-over');
+			},
+			drop: event => {
+				zone.classList.remove('drag-over');
+				if (!carriesFiles(event)) return;
+				event.preventDefault();
+				this._takeFiles(event.dataTransfer.files, event);
+			},
+			paste: event => {
+				if (event.clipboardData?.files?.length && this._takeFiles(event.clipboardData.files, event)) {
+					event.preventDefault();
+				}
+			},
+			click: event => {
+				if (event.target !== this.elem) this.elem.click();
+			},
+			keydown: event => {
+				if (event.target === zone && (event.key === 'Enter' || event.key === ' ')) {
+					event.preventDefault();
+					this.elem.click();
+				}
+			},
+		};
+
+		// Reachable from the keyboard, where pasting and Enter work
+		if (!zone.hasAttribute('tabindex')) zone.setAttribute('tabindex', '0');
+		for (const [type, listener] of Object.entries(listeners)) zone.addEventListener(type, listener);
+
+		this.replaceDestroyCleanup('dropZone', () => {
+			for (const [type, listener] of Object.entries(listeners)) zone.removeEventListener(type, listener);
+			zone.classList.remove('drag-over');
+		});
 	}
 
 	/**
