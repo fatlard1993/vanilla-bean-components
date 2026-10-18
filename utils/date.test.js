@@ -19,6 +19,13 @@ describe('date', () => {
 		expect(formatDate('2026-10-18', { locale: 'en-US' })).toBe('10/18/2026');
 	});
 
+	test('a day the month lacks is no date, and an early year stays early', () => {
+		expect(parseDate('2026-02-31')).toBe(null);
+		expect(parseDate('2026-13-01')).toBe(null);
+		expect(parseDate('2024-02-29').getDate()).toBe(29);
+		expect(parseDate('0042-06-01').getFullYear()).toBe(42);
+	});
+
 	test('numbers, Dates and full ISO strings read as themselves', () => {
 		const at = Date.UTC(2026, 9, 18, 18);
 

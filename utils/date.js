@@ -10,7 +10,19 @@ export const parseDate = value => {
 	if (value === undefined || value === null || value === '') return null;
 
 	const dateOnly = typeof value === 'string' && value.match(DATE_ONLY);
-	const date = dateOnly ? new Date(+dateOnly[1], dateOnly[2] - 1, +dateOnly[3]) : new Date(value);
+
+	if (dateOnly) {
+		const [year, month, day] = dateOnly.slice(1).map(Number);
+		const date = new Date(2000, month - 1, day);
+
+		// setFullYear, since the constructor reads years 0 to 99 as 1900 to 1999
+		date.setFullYear(year);
+
+		// A day the month doesn't have (2026-02-31) rolls into the next month; that is no date
+		return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day ? date : null;
+	}
+
+	const date = new Date(value);
 
 	return Number.isNaN(date.getTime()) ? null : date;
 };

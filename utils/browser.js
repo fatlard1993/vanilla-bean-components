@@ -111,10 +111,14 @@ export const requestWakeLock = () => {
 	if (!('wakeLock' in navigator)) return () => {};
 
 	let lock = null;
+	let pending = false;
 	let released = false;
 
 	const acquire = async () => {
-		if (released || document.visibilityState !== 'visible' || (lock && !lock.released)) return;
+		// One request at a time, so two quick turns back to the page can't leave a lock nothing releases
+		if (pending || released || document.visibilityState !== 'visible' || (lock && !lock.released)) return;
+
+		pending = true;
 
 		try {
 			// Guarded above: only reached where wakeLock exists
@@ -124,6 +128,8 @@ export const requestWakeLock = () => {
 			if (released) lock.release();
 		} catch {
 			// Refused (low battery, no user gesture yet) or unsupported; the next visible turn tries again
+		} finally {
+			pending = false;
 		}
 	};
 

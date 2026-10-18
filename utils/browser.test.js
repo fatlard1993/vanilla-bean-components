@@ -328,6 +328,35 @@ describe('requestWakeLock', () => {
 		expect(locks.length).toBe(2);
 	});
 
+	test('two quick turns back to the page take one lock, so releasing lets the screen sleep', async () => {
+		const locks = [];
+		let grant;
+
+		navigator.wakeLock = {
+			request: () =>
+				new Promise(resolve => {
+					grant = () => {
+						const lock = { released: false, release: () => (lock.released = true) };
+
+						locks.push(lock);
+						resolve(lock);
+					};
+				}),
+		};
+
+		const release = requestWakeLock();
+
+		document.dispatchEvent(new Event('visibilitychange'));
+		document.dispatchEvent(new Event('visibilitychange'));
+		grant();
+		await new Promise(resolve => setTimeout(resolve));
+
+		release();
+
+		expect(locks.length).toBe(1);
+		expect(locks.every(lock => lock.released)).toBe(true);
+	});
+
 	test('does nothing where it is not supported', () => {
 		expect(requestWakeLock()).toBeFunction();
 	});
