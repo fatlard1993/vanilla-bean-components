@@ -30,6 +30,12 @@ module.exports = [
 					skipIfMatch: [...(librarySpellcheck.skipIfMatch ?? []), ...(appSpellcheck.skipIfMatch ?? [])],
 				},
 			],
+			// A leading underscore marks a name kept for its place: an unused callback parameter, or a property pulled out
+			// of a rest spread to leave it behind
+			'no-unused-vars': [
+				'error',
+				{ ignoreRestSiblings: true, argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
+			],
 			// lowdb publishes only an exports map, which the import resolver can't read
 			'import/no-unresolved': ['warn', { ignore: ['bun', 'bun:test', String.raw`\.asText$`, '^lowdb'] }],
 			// An app documents what needs it; the library documents everything, since its JSDoc becomes its types
@@ -43,7 +49,18 @@ module.exports = [
 		},
 	},
 	{
-		files: ['server/**/*.js', 'scripts/**/*.js', 'cli/**/*.js', 'client/build.js', '*.config.js'],
+		files: [
+			'server/**/*.js',
+			'scripts/**/*.js',
+			'cli/**/*.js',
+			'bin/**/*.js',
+			'e2e/**/*.js',
+			'src/**/*.js',
+			'test/**/*.js',
+			'index.js',
+			'client/build.js',
+			'*.config.js',
+		],
 		languageOptions: {
 			globals: {
 				...globals.node,
@@ -52,6 +69,8 @@ module.exports = [
 		},
 		rules: {
 			'no-console': 'off',
+			// Browser support doesn't apply to code Bun runs
+			'compat/compat': 'off',
 		},
 	},
 	{
