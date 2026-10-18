@@ -20,6 +20,13 @@ describe('theme.page and theme.elements', () => {
 		}
 	});
 
+	test("typed fields' rules weigh no more than a bare element, so an app's class still wins over them", () => {
+		for (const type of ['number', 'checkbox']) {
+			expect(rule(theme.elements, `input:where([type='${type}'])`)).toBe(true);
+			expect(rule(theme.elements, `input[type='${type}']`)).toBe(false);
+		}
+	});
+
 	test("the page keeps the library components' looks, at no specificity, and the syntax font", () => {
 		for (const selector of [':where(.vbc-button)', ':where(.vbc-input)', ':where(.vbc-table)', 'a.variant-button']) {
 			expect(rule(theme.page, selector)).toBe(true);

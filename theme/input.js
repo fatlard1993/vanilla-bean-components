@@ -1,12 +1,12 @@
 export const number = ({ colors }) => `
-	input[type='number'] {
+	input:where([type='number']) {
 		color: ${colors.light(colors.orange)};
 		background-color: ${colors.black};
 	}
 `;
 
 export const checkbox = ({ colors }) => `
-	input[type='checkbox'] {
+	input:where([type='checkbox']) {
 		/* Remove most all native input styles */
 		appearance: none;
 
