@@ -36,4 +36,6 @@ The page styles headings, links, code, form fields, buttons and tables wherever 
 
 - `themeElements: false` disables the bare-element styles, and `true` brings them back
   - new Array() captures seen then document.getElementById("vbc-theme-elements") captures style then new Subject({ themeElements: false, autoRender: true, appendTo: document.body }) captures page then style.disabled captures off then page.options.themeElements = true -> off === true && style.disabled === false
+- a vbc-elements container keeps the element styles inside it while the page leaves them off
+  - new Subject({ themeElements: false, autoRender: true, appendTo: document.body }) captures page then String(Array.from(document.querySelectorAll("style")).map(style => style.textContent).join("")).includes(":where(.vbc-elements)") captures scoped -> scoped === true
 

@@ -75,6 +75,8 @@ export default theme => `
 	 */
 	:where(.vbc-button) { ${_button(theme)} }
 	:where(.vbc-input) { ${_input(theme)} }
+	${number(theme, ":where(.vbc-input[type='number'])")}
+	${checkbox(theme, ":where(.vbc-input[type='checkbox'])")}
 	:where(.vbc-table) { ${_table(theme)} }
 
 	/* A Button without the raised look: for toolbars, chips and icon buttons */
@@ -100,6 +102,11 @@ export default theme => `
 			background-color: transparent;
 			color: ${colors.gray};
 		}
+	}
+
+	/* Bare elements styled inside one container (rendered markdown, say) while the page leaves them to the app */
+	:where(.vbc-elements) {
+${elements(theme).replace(/^(?=.)/gm, '\t')}
 	}
 
 	.fa-support:before {

@@ -27,6 +27,17 @@ describe('theme.page and theme.elements', () => {
 		}
 	});
 
+	test('an Input of a typed kind keeps its look by class too, at no specificity', () => {
+		for (const type of ['number', 'checkbox']) {
+			expect(rule(theme.page, `:where(.vbc-input[type='${type}'])`)).toBe(true);
+		}
+	});
+
+	test('a vbc-elements container gets the element styles whether or not the page does', () => {
+		expect(rule(theme.page, ':where(.vbc-elements)')).toBe(true);
+		expect(theme.page).toContain(`\t${theme.elements.trim().split('\n')[0]}`);
+	});
+
 	test("the page keeps the library components' looks, at no specificity, and the syntax font", () => {
 		for (const selector of [':where(.vbc-button)', ':where(.vbc-input)', ':where(.vbc-table)', 'a.variant-button']) {
 			expect(rule(theme.page, selector)).toBe(true);

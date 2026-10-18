@@ -447,7 +447,8 @@ theme.input; // Form input styling with validation states
 theme.table; // Data table with hover effects and borders
 theme.scrollbar; // Custom scrollbar styling to match theme
 theme.code; // Code syntax highlighting configuration
-theme.page; // Global page styles and typography reset
+theme.page; // Always-on page base and the library components' looks
+theme.elements; // Bare-element styles; Page's themeElements turns them off
 ```
 
 **Component style usage:**
@@ -490,48 +491,18 @@ const DataTable = styled.Table`
 
 ### Global Page Styling
 
-The `page` style provides comprehensive global styling:
+The theme's page-wide CSS comes in two parts:
 
-**Typography hierarchy:**
+- **`theme.page`** is always on: the html and body base, the font, selection, scrollbars, highlighted code, and the looks of the library's own components. Those looks hang on classes at no specificity (`:where(.vbc-button)`, `:where(.vbc-input)`, `:where(.vbc-table)`, the typed `.vbc-input[type='number']` and `[type='checkbox']`, and `.vbc-button.variant-flat`), so a rule an app writes always wins.
+- **`theme.elements`** styles bare elements wherever they appear: headings with their markdown prefixes, links, code, `input`/`select`/`textarea`, checkboxes, `button` and `kbd`, tables and blockquotes.
 
-- `h1`-`h6` headings with semantic markdown-style prefixes
-- Consistent font sizing and spacing
-- Responsive typography scaling
-
-**Form elements:**
-
-- `input`, `select`, `textarea` styling
-- `button` base styles with hover states
-- Form validation states
-
-**Content elements:**
-
-- `blockquote` styling with left border
-- `code` inline and block styling
-- `table` responsive design
-- `a` link styling with hover effects
-
-**Custom scrollbars:**
-
-- Styled to match theme colors
-- Consistent across all scrollable elements
+An app that styles its own elements turns `theme.elements` off with Page's `themeElements: false`. The library's components keep their look either way. To keep the element styles inside one container, such as rendered markdown, give it the `vbc-elements` class:
 
 ```js
-// Apply global page styles
-const App = styled.Component`
-	${({ page }) => page}
+new Page({ themeElements: false });
 
-	// Override specific globals
-  h1 {
-		color: ${({ colors }) => colors.purple};
-	}
-
-	.custom-button {
-		${({ button }) => button}
-		background: transparent;
-		border: 2px solid ${({ colors }) => colors.blue};
-	}
-`;
+// Bare elements inside get the theme's look; elsewhere they are the app's
+new Component({ addClass: 'vbc-elements', innerHTML: renderedMarkdown });
 ```
 
 ## API Reference
@@ -550,6 +521,7 @@ interface Theme {
 	scrollbar: string;
 	code: string;
 	page: string;
+	elements: string;
 }
 ```
 
