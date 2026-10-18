@@ -26,7 +26,10 @@ class NotFoundView extends View {
 	}
 }
 
-const page = new Page({ title: 'My App', appendTo: document.body });
+// Page takes no title; the document's title is the browser's own
+document.title = 'My App';
+
+const page = new Page({ appendTo: document.body });
 
 new Router({
 	views: {
@@ -139,7 +142,10 @@ class ArticleView extends View {
 }
 
 // Page is the app shell - Router and Nav live inside it, not inside each view
-const page = new Page({ title: 'My App', appendTo: document.body });
+// Page takes no title; the document's title is the browser's own
+document.title = 'My App';
+
+const page = new Page({ appendTo: document.body });
 
 const router = new Router({
 	views: {
