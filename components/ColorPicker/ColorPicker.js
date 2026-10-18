@@ -207,7 +207,11 @@ class ColorPicker extends StyledInput {
 		this.textInput = new Input({
 			type: 'text',
 			value: this.options.subscriber('value', value => this.hslString || value),
-			onChange: ({ value }) => this.change(value),
+			// The picker reports its own change; the field's raw one stops here, or the picker's onChange hears both
+			onChange: event => {
+				event.stopPropagation();
+				this.change(event.value);
+			},
 			onKeyUp: debounce(({ target: { value } }) => this.change(value), 700),
 			prependTo: this.elem,
 		});
