@@ -7,4 +7,5 @@ export * from './hotReloadPath';
 export * from './requestMatch';
 export * from './serveApp';
 export * from './serveStatic';
+export * from './service';
 export * from './store';
