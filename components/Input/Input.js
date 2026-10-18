@@ -207,9 +207,12 @@ export default class Input extends Component {
 	build() {
 		if (this.options.type === 'file') {
 			const picked = event => {
+				// A field read the plain way (its own change listener, a form's FormData) keeps what was picked
+				if (!this.options.onFiles) return;
+
 				this._takeFiles(event.target.files, event);
-				// Cleared, so picking the same file again is still a change
-				this.elem.value = '';
+				// Cleared once every change listener has had it, so picking the same file again is still a change
+				setTimeout(() => (this.elem.value = ''));
 			};
 
 			this.elem.addEventListener('change', picked);

@@ -60,7 +60,7 @@ Validation errors are applied to the underlying element via `setCustomValidity` 
 
 ### Files
 
-A file Input hands its files to `onFiles`, already filtered by `accept`, however they arrived: the picker, a drop, or a paste. The field clears after each pick, so choosing the same file again is still a change. Give it a `dropZone` for a larger target, and hide the field itself if the zone is the whole control:
+A file Input hands its files to `onFiles`, already filtered by `accept`, however they arrived: the picker, a drop, or a paste. With `onFiles` set, the field clears after each pick (once every change listener has had it), so choosing the same file again is still a change; a file field without `onFiles` keeps its selection for its own listeners or a form to read. Give it a `dropZone` for a larger target, and hide the field itself if the zone is the whole control:
 
 ```js
 const zone = new Component({ textContent: 'Drop a CSV here, or tap to choose' });

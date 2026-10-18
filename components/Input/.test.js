@@ -188,16 +188,48 @@ describe('Input', () => {
 				[property]: { types: ['Files'], files },
 			});
 
-		test('a picked file reaches onFiles, and the field clears so the same file can be picked again', () => {
+		// What the field's value is set to, while it reads as a picked file until cleared
+		const watchValue = input => {
+			const sets = [];
+
+			Object.defineProperty(input.elem, 'value', {
+				configurable: true,
+				get: () => sets.at(-1) ?? 'C:\\fakepath\\map.csv',
+				set: value => {
+					sets.push(value);
+				},
+			});
+
+			return sets;
+		};
+
+		test('a picked file reaches onFiles, and the field clears after the change so the same file can be picked again', async () => {
 			const onFiles = mock();
 			const input = new Input({ type: 'file', onFiles, appendTo: container });
 			const picked = file('map.csv', 'text/csv');
+			const sets = watchValue(input);
+			let seenByOthers;
 
 			Object.defineProperty(input.elem, 'files', { configurable: true, value: [picked] });
+			input.elem.addEventListener('change', () => (seenByOthers = input.elem.value));
 			input.elem.dispatchEvent(new Event('change', { bubbles: true }));
 
 			expect(onFiles.mock.calls[0][0]).toEqual([picked]);
-			expect(input.elem.value).toBe('');
+			expect(seenByOthers).toBe('C:\\fakepath\\map.csv');
+
+			await new Promise(resolve => setTimeout(resolve));
+
+			expect(sets).toEqual(['']);
+		});
+
+		test('a file field without onFiles keeps what was picked, for a change listener or a form to read', async () => {
+			const input = new Input({ type: 'file', appendTo: container });
+			const sets = watchValue(input);
+
+			input.elem.dispatchEvent(new Event('change', { bubbles: true }));
+			await new Promise(resolve => setTimeout(resolve));
+
+			expect(sets).toEqual([]);
 		});
 
 		test('a drop zone takes dropped and pasted files that accept allows, marking itself while dragged over', () => {
