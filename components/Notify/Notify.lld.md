@@ -47,3 +47,16 @@ Without an `x` and `y`, a notification joins a stack in the bottom-right corner,
 - a notification given a point is placed there and kept out of the stack
   - new Subject({ x: 40, y: 40, autoOpen: false, appendTo: document.body }) captures placed then placed.show() -> !placed.elem.classList.contains("stacked")
 
+
+## An action is the one thing worth doing about the message
+
+A toast that says something was deleted is the right place to undo it. The action runs once, however many times it's pressed, and the toast leaves when it's done; an action that reports it couldn't finish keeps the toast so it can be tried again.
+
+- an action's handler gets the toast, and the toast closes once the handler settles; returning false keeps it
+  - new Array() captures calls then new Subject({ content: "m", actions: [{ textContent: "Undo", onPress: n => { calls.push(n); } }], appendTo: document.body }) captures n then n.elem.querySelector(".notify-actions button").click() then await new Promise(r => setTimeout(r, 20)) -> calls[0] === n && n.elem.isConnected === false
+  - new Subject({ content: "m", actions: [{ textContent: "Retry", onPress: () => false }], appendTo: document.body }) captures n then n.elem.querySelector(".notify-actions button").click() then await new Promise(r => setTimeout(r, 20)) -> n.elem.isConnected === true
+
+## A hand on the toast holds it
+
+- a pointer over the toast holds its timeout
+  - new Subject({ content: "m", timeout: 30, appendTo: document.body }) captures n then n.elem.dispatchEvent(new Event("pointerenter")) then await new Promise(r => setTimeout(r, 90)) -> n.elem.isConnected === true

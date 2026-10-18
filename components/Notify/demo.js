@@ -20,5 +20,23 @@ export default class Demo extends DemoView {
 				this.component.edgeAwarePlacement({ x: event.clientX + 10, y: event.clientY + 10 });
 			},
 		});
+
+		new Button({
+			appendTo: this.demoWrapper,
+			textContent: 'Delete something',
+			onPointerPress: () =>
+				new Notify({
+					type: 'warning',
+					timeout: 8000,
+					content: 'Deleted 3 bookmarks',
+					actions: [
+						{
+							textContent: 'Undo',
+							onPress: () =>
+								new Promise(resolve => setTimeout(resolve, 600)).then(() => new Notify({ content: 'Restored' })),
+						},
+					],
+				}),
+		});
 	}
 }
