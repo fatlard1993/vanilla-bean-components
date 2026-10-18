@@ -195,7 +195,7 @@ Checks of the app's own go in the same file, after that line.
 `eslint.app.config.cjs` is the library's lint config set up for an app (spread it in the app's `eslint.config.cjs`):
 
 - the app's own `spellcheck.config.cjs` words join the library's;
-- Node and Bun globals, and `console`, in `server/`, `scripts/`, `cli/`, `bin/`, `e2e/`, `src/`, `test/`, a root `index.js`, `client/build.js` and `*.config.js`, with no browser-support check there;
+- Node and Bun globals, and `console`, in `server/`, `scripts/`, `cli/`, `bin/`, `e2e/`, `test/`, `client/build.js` and `*.config.js`, with no browser-support check there;
 - a leading `_` marks an unused name on purpose (a callback's unused parameter, a property pulled out of a rest spread);
 - JSDoc is optional.
 
