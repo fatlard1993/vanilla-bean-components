@@ -1,6 +1,10 @@
 import { styled } from '../../styled';
 import { List } from '../List';
 
+// A row marked presentational (a heading over a group) is not an item: not focused, not selected
+const itemsOf = elem =>
+	Array.from(elem.children).filter(el => el.tagName === 'LI' && el.getAttribute('role') !== 'presentation');
+
 const StyledList = styled(
 	List,
 	({ colors }) => `
@@ -49,8 +53,7 @@ export default class Menu extends StyledList {
 			set(value, next) {
 				next(value);
 				if (!value) return;
-				const items = Array.from(this.elem.children).filter(el => el.tagName === 'LI');
-				items.forEach((li, i) => li.setAttribute('tabindex', i === 0 ? '0' : '-1'));
+				itemsOf(this.elem).forEach((li, i) => li.setAttribute('tabindex', i === 0 ? '0' : '-1'));
 			},
 		},
 	};
@@ -67,7 +70,7 @@ export default class Menu extends StyledList {
 				// between items, or the border fired `select` with nothing selected, leaving every
 				// consumer to work out from the event whether an item had actually been hit.
 				const item = event.target?.closest?.('li');
-				if (!item || !this.elem.contains(item)) return;
+				if (!item || !itemsOf(this.elem).includes(item)) return;
 
 				this.emit('select', event);
 			},
@@ -76,7 +79,7 @@ export default class Menu extends StyledList {
 		this.on({
 			targetEvent: 'keydown',
 			callback: e => {
-				const items = Array.from(this.elem.children).filter(el => el.tagName === 'LI');
+				const items = itemsOf(this.elem);
 				if (!items.length) return;
 
 				const currentIndex = items.indexOf(document.activeElement);

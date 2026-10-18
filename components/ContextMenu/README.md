@@ -1,6 +1,6 @@
 # ContextMenu
 
-A [Menu](../Menu/README.md) in a [Popover](../Popover/README.md) that opens at a point: a right-click, a long press, or the button that asked for it.
+A [Menu](../Menu/README.md) in a [Popover](../Popover/README.md) that opens at a point (a right-click, a long press) or under the button that asked for it.
 
 ## Usage
 
@@ -21,23 +21,47 @@ card.on({
 		menu.show({ x: event.clientX, y: event.clientY });
 	},
 });
+
+// A touch screen has no right-click: a long press opens it at the same point
+card.onLongPress(event => menu.show({ x: event.clientX, y: event.clientY }));
 ```
+
+### Under a button
+
+Given an `anchor`, the menu hangs under it, or over it when there's more room above, moved in from the viewport's edges. Showing it again from the same button closes it, so the button toggles its menu, and the button carries `aria-haspopup` and `aria-expanded`.
+
+```js
+const branchMenu = new ContextMenu({
+	items: [
+		{ heading: 'Switch to' },
+		{ textContent: 'main', detail: 'up to date with origin', onPointerPress: () => checkout('main') },
+		{ textContent: 'dev', detail: '3 ahead, 1 behind', onPointerPress: () => checkout('dev') },
+	],
+});
+
+branchButton.onPointerPress(() => branchMenu.show({ anchor: branchButton }));
+```
+
+### Headings and details
+
+- `{ heading }` names the group under it. It isn't an item: the arrow keys pass over it and pressing it does nothing.
+- An item's `detail` shows as a second, smaller line under its label.
 
 ## Options
 
-| Option         | Type            | Default | Description                                                  |
-| -------------- | --------------- | ------- | ------------------------------------------------------------ |
-| `items`        | `Array<object>` | -       | Menu items, e.g. `{ textContent, onPointerPress }`; reactive |
-| `sticky`       | `boolean`       | `false` | Stay open after an item is chosen                            |
-| `maxWidth`     | `number`        | `240`   | Widest the menu may be                                       |
-| `outsideClose` | `boolean`       | `true`  | A press outside closes it                                    |
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `Array<object>` | - | Menu items, e.g. `{ textContent, detail, onPointerPress }`, and headings, `{ heading }`; reactive |
+| `sticky` | `boolean` | `false` | Stay open after an item is chosen |
+| `maxWidth` | `number` | `240` | Widest the menu may be |
+| `outsideClose` | `boolean` | `true` | A press outside closes it |
 
 Everything else is a Popover option.
 
 ## Behaviour
 
 - Choosing an item runs its `onPointerPress`, then closes the menu (unless `sticky`).
-- Escape and a press outside close it.
+- Escape and a press outside close it, and so does showing it again from the same anchor.
 - It is placed by its measured size, so it flips away from the edges it would cross; nothing depends on how tall a row is.
 - Focus moves to the first item on opening, so the arrow keys work at once, and returns to where it was on closing.
 
@@ -45,6 +69,7 @@ Everything else is a Popover option.
 
 ```js
 menu.show({ x, y }); // open at a point; without one it opens where it last was
+menu.show({ anchor }); // open under an element, or close if it's already open from there
 menu.hide();
 ```
 
