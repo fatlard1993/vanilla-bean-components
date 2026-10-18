@@ -1177,4 +1177,88 @@ describe('Component', () => {
 			expect(component.elem).toHaveAttribute('aria-expanded');
 		});
 	});
+
+	describe('onLongPress', () => {
+		const held = ms => new Promise(resolve => setTimeout(resolve, ms));
+		const pointer = (elem, type, x = 10, y = 10) =>
+			elem.dispatchEvent(
+				new PointerEvent(type, { bubbles: true, cancelable: true, button: 0, clientX: x, clientY: y }),
+			);
+
+		test('held still for half a second, it fires with the point, and the click that ends it is not a press', async () => {
+			const onLongPress = mock();
+			const onPointerPress = mock();
+			const button = new Component({ tag: 'button', onLongPress, onPointerPress, appendTo: document.body });
+
+			pointer(button.elem, 'pointerdown', 30, 40);
+			await held(560);
+			pointer(button.elem, 'pointerup', 30, 40);
+			button.elem.click();
+
+			expect(onLongPress).toHaveBeenCalledTimes(1);
+			expect(onLongPress.mock.calls[0][0].clientX).toBe(30);
+			expect(onPointerPress).not.toHaveBeenCalled();
+			button.destroy();
+		});
+
+		test('the click that ends a long press reaches nothing, so a menu it opened stays open', async () => {
+			const heard = mock();
+			const item = new Component({ onLongPress: () => {}, appendTo: document.body });
+
+			document.addEventListener('click', heard, true);
+			pointer(item.elem, 'pointerdown');
+			await held(560);
+			pointer(item.elem, 'pointerup');
+			item.elem.click();
+			document.removeEventListener('click', heard, true);
+
+			expect(heard).not.toHaveBeenCalled();
+			item.destroy();
+		});
+
+		test('a short press is only a press', async () => {
+			const onLongPress = mock();
+			const onPointerPress = mock();
+			const button = new Component({ tag: 'button', onLongPress, onPointerPress, appendTo: document.body });
+
+			pointer(button.elem, 'pointerdown');
+			await held(100);
+			pointer(button.elem, 'pointerup');
+			button.elem.click();
+			await held(500);
+
+			expect(onLongPress).not.toHaveBeenCalled();
+			expect(onPointerPress).toHaveBeenCalledTimes(1);
+			button.destroy();
+		});
+
+		test('moving away while held cancels it', async () => {
+			const onLongPress = mock();
+			const item = new Component({ onLongPress, appendTo: document.body });
+
+			pointer(item.elem, 'pointerdown', 10, 10);
+			pointer(item.elem, 'pointermove', 10, 30);
+			await held(560);
+
+			expect(onLongPress).not.toHaveBeenCalled();
+			item.destroy();
+		});
+
+		test("a touch's own menu while held is this long press, once, and the browser's menu stays shut", async () => {
+			const onLongPress = mock();
+			const item = new Component({ onLongPress, appendTo: document.body });
+
+			pointer(item.elem, 'pointerdown');
+			await held(200);
+
+			const menu = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+
+			item.elem.dispatchEvent(menu);
+			await held(500);
+
+			expect(onLongPress).toHaveBeenCalledTimes(1);
+			expect(menu.defaultPrevented).toBe(true);
+			item.destroy();
+		});
+	});
 });

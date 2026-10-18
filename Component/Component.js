@@ -44,6 +44,10 @@ const commonEvents = new Set([
 	'contextmenu',
 ]);
 
+// A long press: held this long, without moving further than this
+const LONG_PRESS_MS = 500;
+const LONG_PRESS_SLOP = 8;
+
 const defaultOptions = {
 	tag: 'div',
 	autoRender: true,
@@ -802,6 +806,99 @@ class Component extends Elem {
 		callback = callback.bind(this);
 		this.replaceDestroyCleanup('onPointerPress', () => this.elem.removeEventListener('click', callback));
 		this.elem.addEventListener('click', callback);
+	}
+
+	/**
+	 * Register a long-press handler: a pointer held still on this element for half a second. Moving more than a few
+	 * pixels, scrolling, or letting go first cancels it, and the click that ends a long press is swallowed, so the same
+	 * element can take both a press and a long press. Touch's native callout is turned off on the element.
+	 * @param {Function} [callback] - Handler called with the pointerdown event, so its clientX and clientY are the point
+	 */
+	onLongPress(callback = () => {}) {
+		callback = callback.bind(this);
+
+		let timer = null;
+		let start = null;
+		let fired = false;
+
+		const cancel = () => {
+			clearTimeout(timer);
+			timer = null;
+			start = null;
+		};
+
+		// The press that became a long press doesn't also count as a click: caught at the window, before anything else
+		// hears it, so a menu the long press opened isn't closed again by the click as it lands
+		const swallowClick = event => {
+			window.removeEventListener('click', swallowClick, true);
+			if (!fired) return;
+
+			event.preventDefault();
+			event.stopImmediatePropagation();
+			fired = false;
+		};
+
+		const fire = () => {
+			const event = start;
+
+			cancel();
+			fired = true;
+			window.addEventListener('click', swallowClick, true);
+			callback(event);
+		};
+
+		const down = event => {
+			if (event.button > 0) return;
+
+			cancel();
+			fired = false;
+			start = event;
+			timer = setTimeout(fire, LONG_PRESS_MS);
+			window.addEventListener('scroll', cancel, { capture: true, once: true, passive: true });
+		};
+
+		const up = () => {
+			cancel();
+			// The click that ends this press comes straight after; a later one is a press of its own
+			if (fired)
+				setTimeout(() => {
+					fired = false;
+					window.removeEventListener('click', swallowClick, true);
+				}, LONG_PRESS_SLOP * 10);
+		};
+
+		const move = event => {
+			if (start && Math.hypot(event.clientX - start.clientX, event.clientY - start.clientY) > LONG_PRESS_SLOP) cancel();
+		};
+
+		// A held touch brings the browser's own menu, sometimes before the timer: that is this long press, not another
+		const swallowMenu = event => {
+			if (timer) fire();
+			if (!fired) return;
+
+			event.preventDefault();
+			event.stopImmediatePropagation();
+		};
+
+		this.elem.style.webkitTouchCallout = 'none';
+
+		const listeners = [
+			['pointerdown', down],
+			['pointermove', move],
+			['pointerup', up],
+			['pointercancel', cancel],
+			['pointerleave', cancel],
+			['contextmenu', swallowMenu, true],
+		];
+
+		this.replaceDestroyCleanup('onLongPress', () => {
+			cancel();
+			window.removeEventListener('scroll', cancel, { capture: true });
+			window.removeEventListener('click', swallowClick, true);
+			for (const [type, listener, capture] of listeners) this.elem.removeEventListener(type, listener, capture);
+		});
+
+		for (const [type, listener, capture] of listeners) this.elem.addEventListener(type, listener, capture);
 	}
 
 	/**

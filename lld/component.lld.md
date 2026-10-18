@@ -66,3 +66,10 @@ Most options end up on the element; a `data` option is state the component reaso
   - new Array() captures probe then new (class extends Subject { static schema = { title: { data: true } }; })({ title: "hello", appendTo: document.body }) captures asData then new (class extends Subject { static schema = { title: {} }; })({ title: "hello", appendTo: document.body }) captures plain -> asData.options.title === "hello" && asData.elem.title === "" && plain.elem.title === "hello"
 - the nearest class that declares the key decides, so a subclass can flip a parent's `data` flag
   - new Array() captures probe then (class extends Subject { static schema = { title: { data: true } }; }) captures Base then new Base({ title: "hello", appendTo: document.body }) captures base then new (class extends Base { static schema = { title: { data: false } }; })({ title: "hello", appendTo: document.body }) captures flipped -> base.elem.title === "" && flipped.elem.title === "hello"
+
+## A long press is not also a press
+
+A touch screen has no right-click, so holding a pointer still is how a menu or a second action is reached. The press that became a long press must not also count as a press, or holding a card would both open its menu and open the card.
+
+- a pointer held still fires the long press with its point, and the click that ends it doesn't press
+  - new Array() captures calls then new Subject({ tag: "button", onLongPress: e => calls.push("long:" + e.clientX), onPointerPress: () => calls.push("press"), appendTo: document.body }) captures b then b.elem.dispatchEvent(new PointerEvent("pointerdown", { button: 0, clientX: 7, clientY: 7 })) then await new Promise(r => setTimeout(r, 560)) then b.elem.dispatchEvent(new PointerEvent("pointerup", { button: 0 })) then b.elem.click() -> calls.join() === "long:7"
