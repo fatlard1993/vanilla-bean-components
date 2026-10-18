@@ -6,8 +6,18 @@ export const SERVICE_COMMANDS = ['enable', 'disable', 'start', 'stop', 'reload',
 
 const xml = value => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-// systemd splits ExecStart on spaces; quoting keeps a path with one in it whole
-const quoted = value => (/[\s"\\]/.test(value) ? `"${String(value).replace(/(["\\])/g, '\\$1')}"` : String(value));
+// systemd reads %h and the like as specifiers in every value, so a literal % is doubled
+const literal = value => String(value).replace(/%/g, '%%');
+
+// systemd splits ExecStart and Environment on spaces; quoting keeps a value with one in it whole
+const quoted = value => {
+	const text = literal(value);
+
+	return /[\s"\\]/.test(text) ? `"${text.replace(/(["\\])/g, '\\$1')}"` : text;
+};
+
+// ExecStart also expands $NAME, so a literal $ is doubled there
+const argument = value => quoted(String(value).replace(/\$/g, '$$$$'));
 
 /**
  * What a background service for an app is on this machine: a systemd user unit on Linux, a launchd agent on macOS.
@@ -40,6 +50,14 @@ export const serviceDefinition = ({
 
 	const environment = { NODE_ENV: 'production', ...env };
 	const command = [bun, entry, ...args];
+
+	// A line break in any value would start a directive of its own in the unit file
+	for (const value of [description, cwd, ...command, ...Object.entries(environment).flat()]) {
+		// eslint-disable-next-line no-control-regex
+		if (/[\u0000-\u001f\u007f]/.test(String(value))) {
+			throw new Error(`A service value can't hold control characters: ${JSON.stringify(String(value))}`);
+		}
+	}
 
 	if (platform === 'darwin') {
 		const id = `com.vanilla-bean.${name}`;
@@ -89,13 +107,13 @@ ${Object.entries({ HOME: home, ...environment })
 			id: name,
 			file: path.join(home, '.config', 'systemd', 'user', `${name}.service`),
 			contents: `[Unit]
-Description=${description.replace(/\n/g, ' ')}
+Description=${literal(description)}
 After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=${cwd}
-ExecStart=${command.map(quoted).join(' ')}
+WorkingDirectory=${literal(cwd)}
+ExecStart=${command.map(argument).join(' ')}
 ${Object.entries(environment)
 	.map(([key, value]) => `Environment=${quoted(`${key}=${value}`)}`)
 	.join('\n')}

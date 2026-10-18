@@ -40,6 +40,29 @@ describe('serviceDefinition', () => {
 		expect(contents).toContain('<key>KeepAlive</key>');
 	});
 
+	test('linux: % and $ stay literal, and a line break that would start a directive is refused', () => {
+		const { contents } = serviceDefinition({
+			...options,
+			platform: 'linux',
+			description: '100% home',
+			args: ['--greeting', '$HOME at %h'],
+			env: { PRICE: '$5 or 5%' },
+		});
+
+		expect(contents).toContain('Description=100%% home');
+		expect(contents).toContain('"$$HOME at %%h"');
+		expect(contents).toContain('Environment="PRICE=$5 or 5%%"');
+
+		for (const bad of [
+			{ description: 'Home\nExecStartPre=/bin/evil' },
+			{ args: ['--port', '1\rExecStartPre=/bin/evil'] },
+			{ env: { A: 'x\nExecStartPre=/bin/evil' } },
+			{ cwd: '/apps\nExecStartPre=/bin/evil' },
+		]) {
+			expect(() => serviceDefinition({ ...options, platform: 'linux', ...bad })).toThrow('control characters');
+		}
+	});
+
 	test('a name that could escape its file is refused, and so is an unknown platform', () => {
 		expect(() => serviceDefinition({ ...options, name: '../evil', platform: 'linux' })).toThrow();
 		expect(() => serviceDefinition({ ...options, platform: 'win32' })).toThrow('No service manager');
