@@ -480,6 +480,8 @@ export interface InputOptions extends ComponentOptions {
 	autocorrect?: string;
 	/** Height for textarea ('auto' for dynamic sizing) (default: "auto") */
 	height?: string | number;
+	/** Values the browser offers while typing, as a datalist */
+	suggestions?: Array<string>;
 	/** Enable syntax highlighting for textarea */
 	syntaxHighlighting?: boolean;
 	/** Programming language for syntax highlighting */
@@ -709,6 +711,10 @@ export declare class Table extends Component {
 export interface TagListOptions extends ComponentOptions {
 	/** Whether tags can be added/removed (default: false) */
 	readOnly?: boolean;
+	/** (value, tagList) => the tag to add (true keeps it as typed), or false to refuse it */
+	accept?: (...args: any[]) => any;
+	/** Values offered while typing a new tag */
+	suggestions?: Array<string>;
 	/** Initial array of tag text values */
 	tags?: Array<string>;
 }

@@ -21,6 +21,7 @@ module.exports = {
 		'cx',
 		'cy',
 		'lowdb',
+		'datalist',
 		'minify',
 		'minifies',
 		'mkdtemp',

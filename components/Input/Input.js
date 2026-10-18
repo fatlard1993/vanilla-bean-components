@@ -50,6 +50,7 @@ const dataTypeToInputType = { number: 'number', boolean: 'checkbox', string: 'te
  * @param {string} [options.autocapitalize='off'] - Auto-capitalization behavior
  * @param {string} [options.autocorrect='off'] - Auto-correction behavior
  * @param {string|number} [options.height='auto'] - Height for textarea ('auto' for dynamic sizing)
+ * @param {Array<string>} [options.suggestions] - Values the browser offers while typing, as a datalist
  * @param {boolean} [options.syntaxHighlighting] - Enable syntax highlighting for textarea
  * @param {string} [options.language] - Programming language for syntax highlighting
  * @param {Array<Function>} [options.validations] - Array of validation functions
@@ -60,6 +61,29 @@ export default class Input extends Component {
 	static schema = {
 		tag: { default: 'input' },
 		type: { enum: type_enum },
+		// Values the browser offers while typing, through a datalist kept in step with the option
+		suggestions: {
+			set(value) {
+				if (!value?.length) {
+					this._suggestions?.remove();
+					this._suggestions = null;
+					this.elem.removeAttribute('list');
+					return;
+				}
+
+				if (!this._suggestions) {
+					this._suggestions = document.createElement('datalist');
+					this._suggestions.id = `${this.uniqueId}-suggestions`;
+					document.body.append(this._suggestions);
+					this.addCleanup('suggestions', () => this._suggestions?.remove());
+				}
+
+				this._suggestions.replaceChildren(
+					...value.map(suggestion => Object.assign(document.createElement('option'), { value: suggestion })),
+				);
+				this.elem.setAttribute('list', this._suggestions.id);
+			},
+		},
 		height: {
 			default: 'auto',
 			set(value) {

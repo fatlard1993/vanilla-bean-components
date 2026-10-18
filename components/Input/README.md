@@ -26,7 +26,8 @@ const input = new Input({
 | `autocomplete` | `string` | `'off'` | Native autocomplete attribute |
 | `autocapitalize` | `string` | `'off'` | Native autocapitalize attribute |
 | `autocorrect` | `string` | `'off'` | Native autocorrect attribute |
-| `height` | `string\|number` | `'auto'` | Height for textarea. `'auto'` dynamically sizes to content; a number sets `em` units |
+| `height` | `string\|number` | `'auto'` | Height for textarea. `'auto'` sizes to the content, wrapped lines included; a number sets `em` units |
+| `suggestions` | `string[]` | - | Values the browser offers while typing, through a datalist kept in step with the option |
 | `syntaxHighlighting` | `boolean` | - | Adds `syntaxHighlighting` class and Tab key indentation handling (textarea only) |
 | `language` | `string` | - | Adds `language-<value>` class for Prism-compatible highlighting (requires `syntaxHighlighting`) |
 | `validations` | `Array` | - | Validation rules; see Validation section below |

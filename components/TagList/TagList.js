@@ -40,6 +40,8 @@ const TagListInput = styled(
  * @param {object} [options={}] - TagList configuration options
  * @param {string} [options.tag='ul'] - HTML tag for the container element
  * @param {boolean} [options.readOnly=false] - Whether tags can be added/removed
+ * @param {Function} [options.accept] - (value, tagList) => the tag to add (true keeps it as typed), or false to refuse it
+ * @param {Array<string>} [options.suggestions] - Values offered while typing a new tag
  * @param {Array<string>} [options.tags] - Initial array of tag text values
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {TagList} TagList component instance
@@ -58,11 +60,29 @@ class TagList extends StyledComponent {
 				return [];
 			},
 		},
+		// (value, tagList) => the tag to add (true keeps it as typed), or false to refuse it
+		accept: {},
+		suggestions: {
+			set(value) {
+				if (this.tagInput) this.tagInput.options.suggestions = value;
+			},
+		},
 	};
 
 	_addTag(value) {
 		value = (value || '').trim();
 		if (!value) return;
+
+		if (this.options.accept) {
+			const accepted = this.options.accept(value, this);
+
+			if (!accepted) {
+				this._refuse();
+				return;
+			}
+
+			if (accepted !== true) value = String(accepted);
+		}
 
 		const existing = Array.from(this.elem.querySelectorAll('li[data-value]')).map(el => el.dataset.value);
 		if (existing.includes(value)) return;
@@ -70,6 +90,20 @@ class TagList extends StyledComponent {
 		this.elem.insertBefore(new Tag({ textContent: value }).elem, this.addTag.elem);
 		this.tagInput.elem.value = '';
 		this.tagInput.elem.focus();
+	}
+
+	// A refused entry is marked for a moment and left selected, ready to be corrected
+	_refuse() {
+		this.tagInput.addClass('validation-errors');
+		this.tagInput.elem.setAttribute('aria-invalid', 'true');
+		this.tagInput.elem.select();
+
+		clearTimeout(this._refusedTimeout);
+		this._refusedTimeout = setTimeout(() => {
+			this.tagInput.removeClass('validation-errors');
+			this.tagInput.elem.removeAttribute('aria-invalid');
+		}, 600);
+		this.replaceCleanup('refused', () => clearTimeout(this._refusedTimeout));
 	}
 
 	build() {

@@ -164,4 +164,19 @@ describe('Input', () => {
 
 		expect(preventDefaultSpy).toHaveBeenCalled();
 	});
+
+	test('suggestions become a datalist the field lists, kept in step', () => {
+		const input = new Input({ suggestions: ['Hail', 'Flood'], appendTo: container });
+		// A datalist isn't rendered, so there's no role to find its options by
+		// eslint-disable-next-line testing-library/no-node-access
+		const list = () => [...document.getElementById(input.elem.getAttribute('list')).options];
+
+		expect(list().map(option => option.value)).toEqual(['Hail', 'Flood']);
+
+		input.options.suggestions = ['Wind'];
+		expect(list().map(option => option.value)).toEqual(['Wind']);
+
+		input.options.suggestions = [];
+		expect(input.elem.hasAttribute('list')).toBe(false);
+	});
 });

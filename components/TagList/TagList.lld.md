@@ -33,3 +33,11 @@ Typing is not committing -- the field has to stay usable while a tag is being sp
   - new Subject({ tags: ["one"], appendTo: document.body }) captures t then t.tagInput.elem.value = "two" then t.tagInput.elem.dispatchEvent(new KeyboardEvent("keyup", { key: "Enter", bubbles: true })) then Array.from(t.elem.querySelectorAll("li[data-value]")).map(li => li.dataset.value) captures afterEnter then t.tagInput.elem.value = "three" then t.tagInput.elem.dispatchEvent(new KeyboardEvent("keyup", { key: "a", bubbles: true })) -> afterEnter.join() === "one,two" && Array.from(t.elem.querySelectorAll("li[data-value]")).map(li => li.dataset.value).join() === "one,two"
 - a blank or whitespace-only entry is not added, and neither is one already present
   - new Subject({ tags: ["one"], appendTo: document.body }) captures t then t.tagInput.elem.value = "   " then t.tagInput.elem.dispatchEvent(new KeyboardEvent("keyup", { key: "Enter", bubbles: true })) then Array.from(t.elem.querySelectorAll("li[data-value]")).length captures afterBlank then t.tagInput.elem.value = "one" then t.tagInput.elem.dispatchEvent(new KeyboardEvent("keyup", { key: "Enter", bubbles: true })) -> afterBlank === 1 && t.elem.querySelectorAll("li[data-value]").length === 1
+
+## What counts as a tag can be the caller's to say
+
+A tag list over a fixed vocabulary (the games a collection holds, the people on a team) refuses anything else and stores what it does accept in the vocabulary's own spelling. A refused entry stays in the field, marked for a moment, ready to be corrected.
+
+- accept returns the tag to add, or false to refuse it
+  - new Subject({ accept: v => (v.toLowerCase() === "chess" ? "Chess" : false), appendTo: document.body }) captures t then t._addTag("chess") then t._addTag("monopoly") -> Array.from(t.elem.querySelectorAll("li[data-value]")).map(li => li.dataset.value).join() === "Chess" && t.tagInput.elem.getAttribute("aria-invalid") === "true"
+
