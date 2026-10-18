@@ -247,7 +247,7 @@ export interface ButtonOptions extends TooltipWrapperOptions {
 	/** Tooltip text shown on hover */
 	tooltip?: string;
 	/** 'flat' drops the raised look, for toolbars, chips and icon buttons */
-	variant?: "flat";
+	variant?: 'flat';
 }
 
 export declare class Button extends TooltipWrapper {
@@ -256,7 +256,7 @@ export declare class Button extends TooltipWrapper {
 
 export interface CalendarOptions extends ComponentOptions {
 	/** Initial calendar view mode (default: "month") */
-	view?: "month" | "week" | "day";
+	view?: 'month' | 'week' | 'day';
 	/** Calendar component height (default: "420px") */
 	height?: string;
 	/** Initial year to display, defaults to current year */
@@ -336,7 +336,7 @@ export declare class Content extends Component {
 }
 
 export interface ContextMenuOptions extends PopoverOptions {
-	/** Menu items, e.g. { textContent, onPointerPress } */
+	/** Menu items, e.g. { textContent, detail, onPointerPress }, and headings, { heading } */
 	items?: Array<Record<string, any>>;
 	/** Stay open after an item is chosen (default: false) */
 	sticky?: boolean;
@@ -350,7 +350,7 @@ export interface ContextMenuOptions extends PopoverOptions {
 
 export declare class ContextMenu extends Popover {
 	constructor(options?: ContextMenuOptions, ...children: Array<Elem | HTMLElement | string>);
-	/** Opens the menu, at a point when given one. */
+	/** Opens the menu at a point, or under an element; showing it again from the same element closes it. */
 	show(options?: Record<string, any>): void;
 	/** Closes the menu and hands focus back to where it was. */
 	hide(): void;
@@ -358,9 +358,9 @@ export declare class ContextMenu extends Popover {
 
 export interface DialogOptions extends ComponentOptions {
 	/** Dialog size; 'fit' is as tall as its content (default: "small") */
-	size?: "small" | "standard" | "large" | "fit";
+	size?: 'small' | 'standard' | 'large' | 'fit';
 	/** Color variant */
-	variant?: "info" | "success" | "warning" | "error";
+	variant?: 'info' | 'success' | 'warning' | 'error';
 	/** Auto-open delay in ms, or false to disable (default: 16) */
 	openOnRender?: number | boolean;
 	/** Whether to open as modal dialog (default: true) */
@@ -469,7 +469,29 @@ export declare class Icon extends Component {
 
 export interface InputOptions extends ComponentOptions {
 	/** Input type, auto-detected from value type if not specified */
-	type?: "button" | "checkbox" | "color" | "date" | "datetime-local" | "email" | "file" | "hidden" | "image" | "month" | "number" | "password" | "radio" | "range" | "reset" | "search" | "submit" | "tel" | "text" | "time" | "url" | "week";
+	type?:
+		| 'button'
+		| 'checkbox'
+		| 'color'
+		| 'date'
+		| 'datetime-local'
+		| 'email'
+		| 'file'
+		| 'hidden'
+		| 'image'
+		| 'month'
+		| 'number'
+		| 'password'
+		| 'radio'
+		| 'range'
+		| 'reset'
+		| 'search'
+		| 'submit'
+		| 'tel'
+		| 'text'
+		| 'time'
+		| 'url'
+		| 'week';
 	/** Initial input value (default: "") */
 	value?: any;
 	/** Placeholder text */
@@ -529,7 +551,7 @@ export declare class Keyboard extends Component {
 
 export interface LabelOptions extends TooltipWrapperOptions {
 	/** Label display variant (default: "simple") */
-	variant?: "overlay" | "collapsible" | "inline" | "inline-after" | "simple";
+	variant?: 'overlay' | 'collapsible' | 'inline' | 'inline-after' | 'simple';
 	/** Label text content or label component options */
 	label?: string | Record<string, any>;
 	/** Input component or ID to associate label with */
@@ -546,7 +568,7 @@ export declare class Label extends TooltipWrapper {
 
 export interface LinkOptions extends TooltipWrapperOptions {
 	/** Link display variant ('link', 'button') (default: "link") */
-	variant?: "link" | "button";
+	variant?: 'link' | 'button';
 	/** URL to link to */
 	href?: string;
 	/** Link target attribute */
@@ -589,7 +611,7 @@ export declare class Menu extends List {
 
 export interface NotifyOptions extends PopoverOptions {
 	/** Notification type ('info', 'success', 'warning', 'error') (default: "success") */
-	type?: "info" | "success" | "warning" | "error";
+	type?: 'info' | 'success' | 'warning' | 'error';
 	/** Auto-dismiss timeout in milliseconds; defaults to 4000 for info and success, and 0 (stay until tapped) for warning and error */
 	timeout?: number;
 	/** Custom icon name, defaults to type-appropriate icon */
@@ -598,6 +620,8 @@ export interface NotifyOptions extends PopoverOptions {
 	x?: number;
 	/** Y position for the notification */
 	y?: number;
+	/** Buttons on the toast, e.g. { textContent: 'Undo', onPress }; onPress gets * (notify, event) and may be async, and the toast closes once it settles unless it returns false */
+	actions?: Array<Record<string, any>>;
 }
 
 export declare class Notify extends Popover {
@@ -615,7 +639,7 @@ export declare class Page extends Component {
 
 export interface PopoverOptions extends IconOptions {
 	/** Popover state ('auto', 'manual') (default: "manual") */
-	state?: "auto" | "manual";
+	state?: 'auto' | 'manual';
 	/** Whether to automatically open on render (default: true) */
 	autoOpen?: boolean;
 	/** X position for the popover */
@@ -665,7 +689,7 @@ export interface RouterOptions extends ComponentOptions {
 	/** Callback fired when rendering a new view */
 	onRenderView?: (...args: any[]) => any;
 	/** Routing mode: 'hash' uses URL fragments, 'history' uses pushState (default: "hash") */
-	mode?: "hash" | "history";
+	mode?: 'hash' | 'history';
 }
 
 export declare class Router extends Component {
@@ -714,13 +738,32 @@ export interface TableOptions extends ComponentOptions {
 	/** Currently sorted column key */
 	sortProperty?: string;
 	/** Sort direction ('asc' or 'desc') */
-	sortDirection?: "asc" | "desc";
+	sortDirection?: 'asc' | 'desc';
 	/** Caller-owned selection state. The table stores it and re-renders * when it is reassigned, but never interprets it; `dataColumn` functions read it back off * `table.options.selection` to render per-row state. Mutating a property of it deliberately does * not re-render, so toggling one row's checkbox does not rebuild the table under the pointer */
 	selection?: any;
 }
 
 export declare class Table extends Component {
 	constructor(options?: TableOptions, ...children: Array<Elem | HTMLElement | string>);
+}
+
+export interface TabsOptions extends ComponentOptions {
+	/** The tabs, e.g. { id, label, count, disabled }; reactive */
+	tabs?: Array<Record<string, any>>;
+	/** The selected tab's id; defaults to the first tab */
+	selected?: string;
+	/** Each tab's panel, by id: an element or a Component, shown only while selected */
+	panels?: Record<string, any>;
+	/** default: "tablist" */
+	role?: string;
+}
+
+export declare class Tabs extends Component {
+	constructor(options?: TabsOptions, ...children: Array<Elem | HTMLElement | string>);
+	/** Selects a tab, showing its panel and calling onChange if it wasn't already selected. */
+	select(id: string): void;
+	/** Sets the count shown beside a tab's label; zero or nothing clears it. */
+	count(id: string, count?: number): void;
 }
 
 export interface TagListOptions extends ComponentOptions {
@@ -751,7 +794,7 @@ export declare class Toolbar extends Component {
 
 export interface TooltipOptions extends PopoverOptions {
 	/** Tooltip position relative to parent (default: "topRight") */
-	position?: "center" | "top" | "bottom" | "left" | "right" | "topLeft" | "topRight" | "bottomLeft" | "bottomRight";
+	position?: 'center' | 'top' | 'bottom' | 'left' | 'right' | 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
 	/** Whether tooltip opens automatically (default: false) */
 	autoOpen?: boolean;
 	/** Icon to display in tooltip */

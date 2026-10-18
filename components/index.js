@@ -26,6 +26,7 @@ export * from './Router';
 export * from './SectionLabel';
 export * from './Select';
 export * from './Table';
+export * from './Tabs';
 export * from './TagList';
 export * from './Toolbar';
 export * from './Tooltip';

@@ -28,6 +28,7 @@ import RouterDemo from '../components/Router/demo.js';
 import SectionLabelDemo from '../components/SectionLabel/demo.js';
 import SelectDemo from '../components/Select/demo.js';
 import TableDemo from '../components/Table/demo.js';
+import TabsDemo from '../components/Tabs/demo.js';
 import TagListDemo from '../components/TagList/demo.js';
 import ToolbarDemo from '../components/Toolbar/demo.js';
 import TooltipDemo from '../components/Tooltip/demo.js';
@@ -116,6 +117,7 @@ export default {
 	['/SectionLabel']: SectionLabelDemo,
 	['/Select']: SelectDemo,
 	['/Table']: TableDemo,
+	['/Tabs']: TabsDemo,
 	['/TagList']: TagListDemo,
 	['/Toolbar']: ToolbarDemo,
 	['/Tooltip']: TooltipDemo,
