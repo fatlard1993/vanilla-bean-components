@@ -828,22 +828,40 @@ class Component extends Elem {
 		};
 
 		// The press that became a long press doesn't also count as a click: caught at the window, before anything else
-		// hears it, so a menu the long press opened isn't closed again by the click as it lands
+		// hears it, so a menu the long press opened isn't closed again by the click as it lands. Armed only until that
+		// press ends: a cancelled press brings no click, and any later click is a press of its own.
 		const swallowClick = event => {
-			window.removeEventListener('click', swallowClick, true);
 			if (!fired) return;
 
 			event.preventDefault();
 			event.stopImmediatePropagation();
+			disarm();
+		};
+
+		const disarm = () => {
 			fired = false;
+			window.removeEventListener('click', swallowClick, true);
+			window.removeEventListener('pointerup', ended, true);
+			window.removeEventListener('pointercancel', disarm, true);
+			window.removeEventListener('pointerdown', disarm, true);
+		};
+
+		// The click that ends this press comes straight after its pointerup, wherever the pointer was let go
+		const ended = () => {
+			window.removeEventListener('pointerup', ended, true);
+			setTimeout(disarm, LONG_PRESS_SLOP * 10);
 		};
 
 		const fire = () => {
 			const event = start;
 
 			cancel();
+			disarm();
 			fired = true;
 			window.addEventListener('click', swallowClick, true);
+			window.addEventListener('pointerup', ended, true);
+			window.addEventListener('pointercancel', disarm, true);
+			window.addEventListener('pointerdown', disarm, true);
 			callback(event);
 		};
 
@@ -851,20 +869,10 @@ class Component extends Elem {
 			if (event.button > 0) return;
 
 			cancel();
-			fired = false;
+			disarm();
 			start = event;
 			timer = setTimeout(fire, LONG_PRESS_MS);
 			window.addEventListener('scroll', cancel, { capture: true, once: true, passive: true });
-		};
-
-		const up = () => {
-			cancel();
-			// The click that ends this press comes straight after; a later one is a press of its own
-			if (fired)
-				setTimeout(() => {
-					fired = false;
-					window.removeEventListener('click', swallowClick, true);
-				}, LONG_PRESS_SLOP * 10);
 		};
 
 		const move = event => {
@@ -885,7 +893,7 @@ class Component extends Elem {
 		const listeners = [
 			['pointerdown', down],
 			['pointermove', move],
-			['pointerup', up],
+			['pointerup', cancel],
 			['pointercancel', cancel],
 			['pointerleave', cancel],
 			['contextmenu', swallowMenu, true],
@@ -894,7 +902,7 @@ class Component extends Elem {
 		this.replaceDestroyCleanup('onLongPress', () => {
 			cancel();
 			window.removeEventListener('scroll', cancel, { capture: true });
-			window.removeEventListener('click', swallowClick, true);
+			disarm();
 			for (const [type, listener, capture] of listeners) this.elem.removeEventListener(type, listener, capture);
 		});
 

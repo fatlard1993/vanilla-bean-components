@@ -1216,6 +1216,27 @@ describe('Component', () => {
 			item.destroy();
 		});
 
+		test('a long press the browser cancels swallows nothing after it: a later click elsewhere, or a right-click', async () => {
+			const elsewhere = mock();
+			const item = new Component({ onLongPress: () => {}, appendTo: document.body });
+			const other = new Component({ tag: 'button', onPointerPress: elsewhere, appendTo: document.body });
+
+			pointer(item.elem, 'pointerdown');
+			await held(560);
+			pointer(item.elem, 'pointercancel');
+			await held(300);
+			other.elem.click();
+
+			const menu = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+
+			item.elem.dispatchEvent(menu);
+
+			expect(elsewhere).toHaveBeenCalledTimes(1);
+			expect(menu.defaultPrevented).toBe(false);
+			item.destroy();
+			other.destroy();
+		});
+
 		test('a short press is only a press', async () => {
 			const onLongPress = mock();
 			const onPointerPress = mock();
