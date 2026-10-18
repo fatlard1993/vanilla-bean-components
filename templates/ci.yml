@@ -1,0 +1,28 @@
+# The shared CI for a VBC app: copy to .github/workflows/ci.yml. It runs the same gates as githooks/pre-commit, for
+# commits that skipped it. Drop the lld steps in an app with no .lld.md documents.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Read-only token: checkout persists it into .git/config, and the next steps run the branch's own scripts
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run lint
+      - run: bun test
+      - run: bun run lld:lint
+      - run: bun run lld
+      - run: bun run build

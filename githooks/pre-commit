@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+# The shared pre-commit for a VBC app. The app's own .githooks/pre-commit runs it:
+#   sh node_modules/@vanilla-bean/components/githooks/pre-commit || exit 1
+
+bun --bun eslint --quiet || exit 1
+
+# With no test files, bun test exits nonzero for having nothing to run
+if git ls-files | grep -qE '\.(test|spec)\.[cm]?[jt]sx?$'; then
+	bun test || exit 1
+fi
+
+# Staged .lld.md documents are linted when lldtdd is installed; a fresh clone before bun install skips rather than blocks
+if git diff --name-only --cached | grep -q '\.lld\.md$'; then
+	if [ -x node_modules/.bin/lldtdd ]; then
+		node_modules/.bin/lldtdd lint || exit 1
+	else
+		echo 'lldtdd not installed: staged .lld.md changes not checked'
+	fi
+fi

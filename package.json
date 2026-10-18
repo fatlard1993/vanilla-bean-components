@@ -8,6 +8,8 @@
 		"./app": "./app/index.js",
 		"./app/reloadOnBuild": "./app/reloadOnBuild.js",
 		"./app/requestMatch": "./app/requestMatch.js",
+		"./githooks/*": "./githooks/*",
+		"./templates/*": "./templates/*",
 		"./Component": "./Component/index.js",
 		"./Elem": "./Elem/index.js",
 		"./styled": "./styled/index.js",
@@ -28,6 +30,8 @@
 	"files": [
 		"/app/*.js",
 		"!/app/*.test.js",
+		"/githooks/*",
+		"/templates/*",
 		"/Elem/*.js",
 		"/Component/*.js",
 		"/styled/*.js",
