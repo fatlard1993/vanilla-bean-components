@@ -10,14 +10,15 @@ const STACK_GAP = 8;
 // A toast paused by a pointer or focus gets at least this long once they leave, so it doesn't vanish under the hand
 const RESUME_MIN = 1500;
 
-// Toasts placed by no point stack in the bottom-right corner, the newest at the bottom
+// Toasts placed by no point stack in the bottom-right corner, the newest at the bottom. They sit above the phone's
+// home indicator, and above whatever an app keeps along the bottom edge (a tab bar) when it sets --vbc-notify-offset.
 const stack = [];
 
 const layOutStack = () => {
 	let bottom = STACK_EDGE;
 
 	for (const notify of [...stack].reverse()) {
-		notify.elem.style.bottom = `${bottom}px`;
+		notify.elem.style.bottom = `calc(${bottom}px + var(--vbc-notify-offset, 0px) + env(safe-area-inset-bottom, 0px))`;
 		bottom += notify.elem.offsetHeight + STACK_GAP;
 	}
 };

@@ -11,7 +11,7 @@ new Notify({ type: 'success', content: 'Saved' });
 new Notify({ type: 'error', content: 'Could not reach the server' });
 ```
 
-Without an `x` and `y` it joins a stack in the bottom-right corner, the newest at the bottom; with them it's placed at that point.
+Without an `x` and `y` it joins a stack in the bottom-right corner, the newest at the bottom; with them it's placed at that point. The stack keeps clear of a phone's home indicator. An app with a bar along the bottom edge lifts it above the bar with `--vbc-notify-offset`, e.g. `:root { --vbc-notify-offset: 56px; }` inside the media query where the bar shows.
 
 ## How long it stays
 

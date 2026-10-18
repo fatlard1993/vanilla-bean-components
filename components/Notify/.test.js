@@ -40,18 +40,29 @@ describe('Notify', () => {
 			return notify;
 		};
 
+		// The px part of a stacked toast's bottom, which also adds the app's offset and the home indicator
+		const height = notify => Number(notify.elem.style.bottom.match(/(\d+)px/)?.[1]);
+
 		test('toasts placed at no point stack in the corner, the newest at the bottom', () => {
 			const older = toast('older');
 			const newer = toast('newer');
 
 			expect(older.elem).toHaveClass('stacked');
-			expect(newer.elem.style.bottom).toBe('16px');
-			expect(parseInt(older.elem.style.bottom)).toBeGreaterThan(16);
+			expect(height(newer)).toBe(16);
+			expect(height(older)).toBeGreaterThan(16);
 
 			newer.destroy();
 
-			expect(older.elem.style.bottom).toBe('16px');
+			expect(height(older)).toBe(16);
 			older.destroy();
+		});
+
+		test('the stack sits above an app bar the app names in --vbc-notify-offset, and the home indicator', () => {
+			const notify = toast('lifted');
+
+			expect(notify.elem.style.bottom).toContain('var(--vbc-notify-offset, 0px)');
+			expect(notify.elem.style.bottom).toContain('env(safe-area-inset-bottom');
+			notify.destroy();
 		});
 
 		test('a toast placed at a point is not stacked', () => {
