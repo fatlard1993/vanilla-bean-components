@@ -223,14 +223,15 @@ Serving an app on Bun? **[app](./app/README.md)** (`'@vanilla-bean/components/ap
 
 ## Component Library
 
-25 pre-built components handle common UI patterns:
+27 pre-built components handle common UI patterns:
 
 ### Forms & Input
 
-- **Input** - All HTML input types with validation
+- **Input** - All HTML input types with validation and typing suggestions
 - **Select** - Dropdown selections with search
 - **RadioButton** - Radio group input
 - **Form** - Form management with validation
+- **FormDialog** - A form in a dialog that ends in save, delete or cancel
 - **Label** - Associated labels with accessibility
 
 ### Layout & Structure
@@ -242,11 +243,12 @@ Serving an app on Bun? **[app](./app/README.md)** (`'@vanilla-bean/components/ap
 
 ### Interactive Elements
 
-- **Button** - Action buttons with states
+- **Button** - Action buttons with states, raised or flat
 - **BottomSheet** - Mobile bottom sheet with drag-to-close gesture
-- **Dialog** - Modal dialogs with backdrop
-- **Menu** - Context and dropdown menus
-- **Notify** - Toast-style notifications
+- **Dialog** - Modal dialogs that clean up after closing, plus `Dialog.confirm`
+- **Menu** - Keyboard-navigable item lists
+- **ContextMenu** - A menu that opens at a point and closes itself
+- **Notify** - Toast notifications that stack in a corner and leave on their own
 - **Popover** - Floating content containers
 - **Tooltip / TooltipWrapper** - Contextual help and information
 
@@ -262,7 +264,7 @@ Serving an app on Bun? **[app](./app/README.md)** (`'@vanilla-bean/components/ap
 - **Code** - Syntax-highlighted code blocks
 - **Icon** - Icon system with Font Awesome integration
 - **Link** - Enhanced anchor elements
-- **TagList** - Tag management and display
+- **TagList** - Tag management, optionally held to a vocabulary
 
 ## Real-World Example
 
@@ -396,7 +398,7 @@ bun run format   # Code formatting with Prettier
 ```
 vanilla-bean-components/
 ├── app/                # Bun app kit - client build, hot reload, static serving, request matching
-├── components/         # 25 pre-built UI components
+├── components/         # 27 pre-built UI components
 ├── Component/          # Core Component class
 ├── styled/             # Scoped styling system
 ├── theme/              # Design tokens and helpers
