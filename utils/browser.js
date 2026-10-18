@@ -144,7 +144,7 @@ export const requestWakeLock = () => {
  * visible height goes to `--visible-height`, and to the document's height unless setHeight is false; while
  * pinch-zoomed the visible part is a magnified piece of the page, so the page is left alone.
  * @param {object} [options] - Options
- * @param {boolean} [options.setHeight=true] - Also size the document to the visible part
+ * @param {boolean} [options.setHeight] - Also size the document to the visible part
  * @returns {Function} Stops following the keyboard
  */
 export const fitToKeyboard = ({ setHeight = true } = {}) => {

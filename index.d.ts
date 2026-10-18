@@ -247,7 +247,7 @@ export interface ButtonOptions extends TooltipWrapperOptions {
 	/** Tooltip text shown on hover */
 	tooltip?: string;
 	/** 'flat' drops the raised look, for toolbars, chips and icon buttons */
-	variant?: 'flat';
+	variant?: "flat";
 }
 
 export declare class Button extends TooltipWrapper {
@@ -256,7 +256,7 @@ export declare class Button extends TooltipWrapper {
 
 export interface CalendarOptions extends ComponentOptions {
 	/** Initial calendar view mode (default: "month") */
-	view?: 'month' | 'week' | 'day';
+	view?: "month" | "week" | "day";
 	/** Calendar component height (default: "420px") */
 	height?: string;
 	/** Initial year to display, defaults to current year */
@@ -326,6 +326,15 @@ export declare class ColorPicker extends Input {
 	parseValue(value: string | Record<string, any>): Record<string, any>;
 }
 
+export interface ContentOptions extends ComponentOptions {
+	/** Inner padding (a number is pixels) (default: 0) */
+	padding?: number | string;
+}
+
+export declare class Content extends Component {
+	constructor(options?: ContentOptions, ...children: Array<Elem | HTMLElement | string>);
+}
+
 export interface ContextMenuOptions extends PopoverOptions {
 	/** Menu items, e.g. { textContent, onPointerPress } */
 	items?: Array<Record<string, any>>;
@@ -349,9 +358,9 @@ export declare class ContextMenu extends Popover {
 
 export interface DialogOptions extends ComponentOptions {
 	/** Dialog size; 'fit' is as tall as its content (default: "small") */
-	size?: 'small' | 'standard' | 'large' | 'fit';
+	size?: "small" | "standard" | "large" | "fit";
 	/** Color variant */
-	variant?: 'info' | 'success' | 'warning' | 'error';
+	variant?: "info" | "success" | "warning" | "error";
 	/** Auto-open delay in ms, or false to disable (default: 16) */
 	openOnRender?: number | boolean;
 	/** Whether to open as modal dialog (default: true) */
@@ -382,6 +391,21 @@ export declare class Dialog extends Component {
 	open(modal: boolean): void;
 	/** Closes the dialog with optional return value */
 	close(returnValue: string): void;
+}
+
+export interface EmptyStateOptions extends ComponentOptions {
+	/** A Font Awesome icon name */
+	icon?: string;
+	/** The headline, e.g. 'No fields yet' */
+	title?: string;
+	/** A line under it */
+	message?: string;
+	/** Button options ({ textContent, onPointerPress }) or a Component */
+	action?: Record<string, any> | Component;
+}
+
+export declare class EmptyState extends Component {
+	constructor(options?: EmptyStateOptions, ...children: Array<Elem | HTMLElement | string>);
 }
 
 export interface FormOptions extends ComponentOptions {
@@ -445,29 +469,7 @@ export declare class Icon extends Component {
 
 export interface InputOptions extends ComponentOptions {
 	/** Input type, auto-detected from value type if not specified */
-	type?:
-		| 'button'
-		| 'checkbox'
-		| 'color'
-		| 'date'
-		| 'datetime-local'
-		| 'email'
-		| 'file'
-		| 'hidden'
-		| 'image'
-		| 'month'
-		| 'number'
-		| 'password'
-		| 'radio'
-		| 'range'
-		| 'reset'
-		| 'search'
-		| 'submit'
-		| 'tel'
-		| 'text'
-		| 'time'
-		| 'url'
-		| 'week';
+	type?: "button" | "checkbox" | "color" | "date" | "datetime-local" | "email" | "file" | "hidden" | "image" | "month" | "number" | "password" | "radio" | "range" | "reset" | "search" | "submit" | "tel" | "text" | "time" | "url" | "week";
 	/** Initial input value (default: "") */
 	value?: any;
 	/** Placeholder text */
@@ -482,6 +484,10 @@ export interface InputOptions extends ComponentOptions {
 	height?: string | number;
 	/** Values the browser offers while typing, as a datalist */
 	suggestions?: Array<string>;
+	/** For type 'file': (files, event) with the files picked, dropped or pasted that accept allows */
+	onFiles?: (...args: any[]) => any;
+	/** For type 'file': an area that takes dropped and pasted files, and opens the picker when pressed */
+	dropZone?: Component | HTMLElement;
 	/** Enable syntax highlighting for textarea */
 	syntaxHighlighting?: boolean;
 	/** Programming language for syntax highlighting */
@@ -523,7 +529,7 @@ export declare class Keyboard extends Component {
 
 export interface LabelOptions extends TooltipWrapperOptions {
 	/** Label display variant (default: "simple") */
-	variant?: 'overlay' | 'collapsible' | 'inline' | 'inline-after' | 'simple';
+	variant?: "overlay" | "collapsible" | "inline" | "inline-after" | "simple";
 	/** Label text content or label component options */
 	label?: string | Record<string, any>;
 	/** Input component or ID to associate label with */
@@ -540,7 +546,7 @@ export declare class Label extends TooltipWrapper {
 
 export interface LinkOptions extends TooltipWrapperOptions {
 	/** Link display variant ('link', 'button') (default: "link") */
-	variant?: 'link' | 'button';
+	variant?: "link" | "button";
 	/** URL to link to */
 	href?: string;
 	/** Link target attribute */
@@ -583,7 +589,7 @@ export declare class Menu extends List {
 
 export interface NotifyOptions extends PopoverOptions {
 	/** Notification type ('info', 'success', 'warning', 'error') (default: "success") */
-	type?: 'info' | 'success' | 'warning' | 'error';
+	type?: "info" | "success" | "warning" | "error";
 	/** Auto-dismiss timeout in milliseconds; defaults to 4000 for info and success, and 0 (stay until tapped) for warning and error */
 	timeout?: number;
 	/** Custom icon name, defaults to type-appropriate icon */
@@ -609,7 +615,7 @@ export declare class Page extends Component {
 
 export interface PopoverOptions extends IconOptions {
 	/** Popover state ('auto', 'manual') (default: "manual") */
-	state?: 'auto' | 'manual';
+	state?: "auto" | "manual";
 	/** Whether to automatically open on render (default: true) */
 	autoOpen?: boolean;
 	/** X position for the popover */
@@ -659,7 +665,7 @@ export interface RouterOptions extends ComponentOptions {
 	/** Callback fired when rendering a new view */
 	onRenderView?: (...args: any[]) => any;
 	/** Routing mode: 'hash' uses URL fragments, 'history' uses pushState (default: "hash") */
-	mode?: 'hash' | 'history';
+	mode?: "hash" | "history";
 }
 
 export declare class Router extends Component {
@@ -670,6 +676,15 @@ export declare class Router extends Component {
 	readonly route: string;
 	/** Extracts route parameters from a path. */
 	parseRouteParameters(path?: string): Record<string, any>;
+}
+
+export interface SectionLabelOptions extends ComponentOptions {
+	/** The heading level announced (default: 3) */
+	level?: number;
+}
+
+export declare class SectionLabel extends Component {
+	constructor(options?: SectionLabelOptions, ...children: Array<Elem | HTMLElement | string>);
 }
 
 export interface SelectOptions extends InputOptions {
@@ -699,7 +714,7 @@ export interface TableOptions extends ComponentOptions {
 	/** Currently sorted column key */
 	sortProperty?: string;
 	/** Sort direction ('asc' or 'desc') */
-	sortDirection?: 'asc' | 'desc';
+	sortDirection?: "asc" | "desc";
 	/** Caller-owned selection state. The table stores it and re-renders * when it is reassigned, but never interprets it; `dataColumn` functions read it back off * `table.options.selection` to render per-row state. Mutating a property of it deliberately does * not re-render, so toggling one row's checkbox does not rebuild the table under the pointer */
 	selection?: any;
 }
@@ -723,9 +738,20 @@ export declare class TagList extends Component {
 	constructor(options?: TagListOptions, ...children: Array<Elem | HTMLElement | string>);
 }
 
+export interface ToolbarOptions extends ComponentOptions {
+	/** Space between controls (a number is pixels) (default: 12) */
+	gap?: number | string;
+	/** Wrap onto more lines when there isn't room (default: true) */
+	wrap?: boolean;
+}
+
+export declare class Toolbar extends Component {
+	constructor(options?: ToolbarOptions, ...children: Array<Elem | HTMLElement | string>);
+}
+
 export interface TooltipOptions extends PopoverOptions {
 	/** Tooltip position relative to parent (default: "topRight") */
-	position?: 'center' | 'top' | 'bottom' | 'left' | 'right' | 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
+	position?: "center" | "top" | "bottom" | "left" | "right" | "topLeft" | "topRight" | "bottomLeft" | "bottomRight";
 	/** Whether tooltip opens automatically (default: false) */
 	autoOpen?: boolean;
 	/** Icon to display in tooltip */

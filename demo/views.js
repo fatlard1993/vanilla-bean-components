@@ -7,8 +7,10 @@ import ButtonDemo from '../components/Button/demo.js';
 import CalendarDemo from '../components/Calendar/demo.js';
 import CodeDemo from '../components/Code/demo.js';
 import ColorPickerDemo from '../components/ColorPicker/demo.js';
+import ContentDemo from '../components/Content/demo.js';
 import ContextMenuDemo from '../components/ContextMenu/demo.js';
 import DialogDemo from '../components/Dialog/demo.js';
+import EmptyStateDemo from '../components/EmptyState/demo.js';
 import FormDemo from '../components/Form/demo.js';
 import FormDialogDemo from '../components/FormDialog/demo.js';
 import IconDemo from '../components/Icon/demo.js';
@@ -23,9 +25,11 @@ import PageDemo from '../components/Page/demo.js';
 import PopoverDemo from '../components/Popover/demo.js';
 import RadioButtonDemo from '../components/RadioButton/demo.js';
 import RouterDemo from '../components/Router/demo.js';
+import SectionLabelDemo from '../components/SectionLabel/demo.js';
 import SelectDemo from '../components/Select/demo.js';
 import TableDemo from '../components/Table/demo.js';
 import TagListDemo from '../components/TagList/demo.js';
+import ToolbarDemo from '../components/Toolbar/demo.js';
 import TooltipDemo from '../components/Tooltip/demo.js';
 import TooltipWrapperDemo from '../components/TooltipWrapper/demo.js';
 import WhiteboardDemo from '../components/Whiteboard/demo.js';
@@ -91,8 +95,10 @@ export default {
 	['/Calendar']: CalendarDemo,
 	['/Code']: CodeDemo,
 	['/ColorPicker']: ColorPickerDemo,
+	['/Content']: ContentDemo,
 	['/ContextMenu']: ContextMenuDemo,
 	['/Dialog']: DialogDemo,
+	['/EmptyState']: EmptyStateDemo,
 	['/Form']: FormDemo,
 	['/FormDialog']: FormDialogDemo,
 	['/Icon']: IconDemo,
@@ -107,9 +113,11 @@ export default {
 	['/Popover']: PopoverDemo,
 	['/RadioButton']: RadioButtonDemo,
 	['/Router']: RouterDemo,
+	['/SectionLabel']: SectionLabelDemo,
 	['/Select']: SelectDemo,
 	['/Table']: TableDemo,
 	['/TagList']: TagListDemo,
+	['/Toolbar']: ToolbarDemo,
 	['/Tooltip']: TooltipDemo,
 	['/TooltipWrapper']: TooltipWrapperDemo,
 	['/Whiteboard']: WhiteboardDemo,

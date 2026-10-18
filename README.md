@@ -223,11 +223,11 @@ Serving an app on Bun? **[app](./app/README.md)** (`'@vanilla-bean/components/ap
 
 ## Component Library
 
-27 pre-built components handle common UI patterns:
+31 pre-built components handle common UI patterns:
 
 ### Forms & Input
 
-- **Input** - All HTML input types with validation and typing suggestions
+- **Input** - All HTML input types with validation, typing suggestions and file drop zones
 - **Select** - Dropdown selections with search
 - **RadioButton** - Radio group input
 - **Form** - Form management with validation
@@ -237,6 +237,8 @@ Serving an app on Bun? **[app](./app/README.md)** (`'@vanilla-bean/components/ap
 ### Layout & Structure
 
 - **Page** - Full-page layouts with header/footer
+- **Toolbar** - A row of controls that wraps
+- **Content** - The part of a view that scrolls
 - **Router** - Client-side navigation
 - **List** - Dynamic lists with filtering
 - **Table** - Data tables with sorting
@@ -265,6 +267,8 @@ Serving an app on Bun? **[app](./app/README.md)** (`'@vanilla-bean/components/ap
 - **Icon** - Icon system with Font Awesome integration
 - **Link** - Enhanced anchor elements
 - **TagList** - Tag management, optionally held to a vocabulary
+- **EmptyState** - What an empty list or view shows
+- **SectionLabel** - A quiet heading over a group
 
 ## Real-World Example
 
@@ -398,7 +402,7 @@ bun run format   # Code formatting with Prettier
 ```
 vanilla-bean-components/
 ├── app/                # Bun app kit - client build, hot reload, static serving, request matching
-├── components/         # 27 pre-built UI components
+├── components/         # 31 pre-built UI components
 ├── Component/          # Core Component class
 ├── styled/             # Scoped styling system
 ├── theme/              # Design tokens and helpers
