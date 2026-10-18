@@ -146,7 +146,7 @@ class MyComponent extends Component {
 
 Each `set` receives `(value, next)`. Calling `next(optionalValue)` passes control to the next `set` in the chain; when the chain is exhausted `next` falls through to standard routing (unless the key is `data: true`). If no schema claims the key, standard routing runs directly.
 
-Declared keys are exempt from fallback guessing in standard routing: they route to a real match (elem property, registered event, attribute flag) or stay store-only, silently. The unknown-key warning and elem expando assignment apply only to undeclared keys, so a bare `{}` descriptor is how a component declares a data-only key.
+Declared keys are exempt from fallback guessing in standard routing: they route to a real match (elem property, registered event, attribute flag) or stay store-only, silently. The unknown-key warning and elem expando assignment apply only to undeclared keys, so a bare `{}` descriptor is how a component declares a data-only key. The exception is an `on*` key named for a DOM event (`onChange`, `onInput`): event routing runs first, so it is wired as a listener too and hears its children's bubbling events. A callback the component calls itself is declared `data: true`.
 
 ### Step 2: standard routing
 
