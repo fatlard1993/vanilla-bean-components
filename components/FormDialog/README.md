@@ -29,7 +29,7 @@ new FormDialog({
 | `intro` | `string\|Component\|Array` | - | Content shown above the form; reactive |
 | `formOptions` | `object` | - | Any further Form options |
 | `FormComponent` | `Function` | `Form` | The Form class to build, for a form with fields and behaviour of its own |
-| `onSave` | `Function` | - | `(data, dialog)` once the form is valid. Returning `false`, or throwing, keeps the dialog open; otherwise it closes |
+| `onSave` | `Function` | - | `(data, dialog)` once the form is valid. Returning `false`, returning a failed request (a hypertether result with `status: 'error'`, or a `Response` that isn't ok), or throwing, keeps the dialog open; otherwise it closes |
 | `onDelete` | `Function` | - | `(data, dialog)`. Its presence adds the Delete button |
 | `confirmDelete` | `string\|object\|boolean` | - | Ask before deleting: the question, or `Dialog.confirm` options |
 | `saveLabel`, `deleteLabel`, `cancelLabel` | `string` | `'Save'`, `'Delete'`, `'Cancel'` | Button labels |

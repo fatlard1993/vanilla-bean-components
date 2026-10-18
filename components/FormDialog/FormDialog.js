@@ -5,11 +5,16 @@ import { Form } from '../Form';
 
 const labelOf = button => (typeof button === 'object' ? button.textContent : button);
 
+// A request that came back failed, rather than threw: a hypertether result marked error, or a fetch Response not ok
+const failedRequest = result =>
+	result?.status === 'error' || result?.response?.ok === false || (result instanceof Response && !result.ok);
+
 /**
  * A Dialog holding a Form, with Save, Delete (when there is something to delete) and Cancel.
  *
- * Save checks the form, then hands its data to onSave and closes once that settles; onSave returning false, or
- * throwing, keeps the dialog open with the data as typed. Delete asks first when confirmDelete is set. Enter in a
+ * Save checks the form, then hands its data to onSave and closes once that settles; onSave returning false, returning
+ * a failed request (a hypertether result with status 'error', or a Response that isn't ok), or throwing, keeps the
+ * dialog open with the data as typed. Delete asks first when confirmDelete is set. Enter in a
  * single-line field saves. Any other button reaches onButtonPress as it would on a Dialog.
  * @param {object} [options] - FormDialog configuration
  * @param {Array<object>} [options.inputs] - Form field definitions, as Form takes them
@@ -17,7 +22,7 @@ const labelOf = button => (typeof button === 'object' ? button.textContent : but
  * @param {string|Component|Array} [options.intro] - Content shown above the form
  * @param {object} [options.formOptions] - Further options for the Form
  * @param {Function} [options.FormComponent] - The Form class to build, for a form with fields and behaviour of its own
- * @param {Function} [options.onSave] - Called with (data, dialog) when the form is valid; false or a throw keeps it open
+ * @param {Function} [options.onSave] - Called with (data, dialog) when the form is valid; false, a failed request or a throw keeps it open
  * @param {Function} [options.onDelete] - Called with (data, dialog); its presence adds the Delete button
  * @param {string|object|boolean} [options.confirmDelete] - Ask before deleting: a message, or Dialog.confirm options
  * @param {string} [options.saveLabel] - Label of the save button
@@ -115,7 +120,9 @@ class FormDialog extends Dialog {
 		this._setBusy(true);
 
 		try {
-			if ((await action({ ...this.form.options.data }, this)) === false) return false;
+			const result = await action({ ...this.form.options.data }, this);
+
+			if (result === false || failedRequest(result)) return false;
 
 			this.close();
 

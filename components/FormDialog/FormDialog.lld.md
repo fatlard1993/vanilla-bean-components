@@ -12,6 +12,8 @@ A Dialog that holds a Form and ends in Save, Delete or Cancel. The design decisi
   - new Array() captures calls then new Subject({ inputs: [{ key: "name" }], data: { name: "Garden" }, onSave: data => calls.push(data.name), appendTo: document.body }) captures d then await new Promise(r => setTimeout(r, 40)) then await d.save() captures saved then await new Promise(r => setTimeout(r, 30)) -> saved === true && calls[0] === "Garden" && d.elem.isConnected === false
 - onSave returning false keeps the dialog open, so what was typed is not lost
   - new Subject({ inputs: [{ key: "name" }], data: { name: "Garden" }, onSave: () => false, appendTo: document.body }) captures d then await d.save() captures saved -> saved === false && d.elem.isConnected === true
+- a request that comes back failed keeps it open too, since a request library reports failure rather than throwing it
+  - new Subject({ inputs: [{ key: "name" }], data: { name: "Garden" }, onSave: () => ({ status: "error", response: { ok: false } }), appendTo: document.body }) captures d then await d.save() captures saved -> saved === false && d.elem.isConnected === true
 
 ## Delete appears only when there is something to delete
 

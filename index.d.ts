@@ -434,7 +434,7 @@ export interface FormDialogOptions extends DialogOptions {
 	formOptions?: Record<string, any>;
 	/** The Form class to build, for a form with fields and behaviour of its own */
 	FormComponent?: (...args: any[]) => any;
-	/** Called with (data, dialog) when the form is valid; false or a throw keeps it open */
+	/** Called with (data, dialog) when the form is valid; false, a failed request or a throw keeps it open */
 	onSave?: (...args: any[]) => any;
 	/** Called with (data, dialog); its presence adds the Delete button */
 	onDelete?: (...args: any[]) => any;

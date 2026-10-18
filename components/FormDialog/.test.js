@@ -74,6 +74,32 @@ describe('FormDialog', () => {
 		expect(report.mock.calls[0][0].message).toBe('offline');
 	});
 
+	test('a failed request returned from onSave or onDelete keeps the dialog open', async () => {
+		for (const failed of [
+			{ status: 'error', response: { ok: false, status: 500 } },
+			new Response('nope', { status: 500 }),
+		]) {
+			const dialog = new FormDialog({
+				inputs: [nameField],
+				data: { name: 'a' },
+				onSave: () => failed,
+				onDelete: () => failed,
+			});
+
+			expect(await dialog.save()).toBe(false);
+			expect(await dialog.delete()).toBe(false);
+			expect(dialog.elem.isConnected).toBe(true);
+		}
+
+		const saved = new FormDialog({
+			inputs: [nameField],
+			data: { name: 'a' },
+			onSave: () => ({ status: 'success', response: { ok: true } }),
+		});
+
+		expect(await saved.save()).toBe(true);
+	});
+
 	test('Enter in a single-line field saves; Enter in a textarea is a new line', async () => {
 		const onSave = mock();
 		const dialog = new FormDialog({
