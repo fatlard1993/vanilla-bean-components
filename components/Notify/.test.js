@@ -124,6 +124,28 @@ describe('Notify', () => {
 			notify.destroy();
 		});
 
+		test('an action still running keeps the toast up, though the pointer leaves', async () => {
+			let finish;
+			const notify = new Notify({
+				content: 'm',
+				timeout: 40,
+				actions: [{ textContent: 'Undo', onPress: () => new Promise(resolve => (finish = resolve)) }],
+				appendTo: container,
+			});
+
+			notify.elem.dispatchEvent(new Event('pointerenter'));
+			await userEvent.setup().click(getByRole(container, 'button', { name: 'Undo', hidden: true }));
+			notify.elem.dispatchEvent(new Event('pointerleave'));
+			await settle(1700);
+
+			expect(notify.elem.isConnected).toBe(true);
+
+			finish();
+			await settle();
+
+			expect(notify.elem.isConnected).toBe(false);
+		});
+
 		test('focus inside holds it too', async () => {
 			const notify = new Notify({ content: 'm', timeout: 40, actions: [{ textContent: 'Undo' }], appendTo: container });
 

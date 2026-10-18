@@ -209,7 +209,8 @@ export default class Notify extends StyledPopover {
 	}
 
 	_resumeTimer() {
-		if (!this._paused) return;
+		// An action still running keeps the toast up until it settles, however the pointer moves
+		if (!this._paused || this._acting) return;
 
 		this._paused = false;
 		this._startTimer(Math.max(this._remaining, RESUME_MIN));
@@ -234,6 +235,7 @@ export default class Notify extends StyledPopover {
 						if (buttons.some(button => button.options.disabled)) return;
 
 						buttons.forEach(button => (button.options.disabled = true));
+						this._acting = true;
 
 						try {
 							if ((await onPress?.(this, event)) === false) return;
@@ -242,6 +244,7 @@ export default class Notify extends StyledPopover {
 						} catch (error) {
 							globalThis.reportError ? globalThis.reportError(error) : console.error(error); // eslint-disable-line no-console
 						} finally {
+							this._acting = false;
 							if (this.elem.isConnected) buttons.forEach(button => (button.options.disabled = false));
 						}
 					},
