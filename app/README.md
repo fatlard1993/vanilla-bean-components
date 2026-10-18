@@ -203,14 +203,14 @@ Checks of the app's own go in the same file, after that line.
 
 Each app takes its own port, so they run side by side on one machine:
 
-| App                  | Port                  |
-| -------------------- | --------------------- |
-| humanity             | 8032                  |
-| home-page            | 8033                  |
-| game-night           | 8034                  |
-| pain-map             | TBD (moving off 8034) |
-| paude                | 8044                  |
-| land-ledger          | 7450                  |
-| htpc-remote          | 8793                  |
-| void-driller         | 1040                  |
-| sorcery-and-savagery | 3040                  |
+| App                  | Port |
+| -------------------- | ---- |
+| humanity             | 8032 |
+| home-page            | 8033 |
+| game-night           | 8034 |
+| pain-map             | 8035 |
+| paude                | 8044 |
+| land-ledger          | 7450 |
+| htpc-remote          | 8793 |
+| void-driller         | 1040 |
+| sorcery-and-savagery | 3040 |
