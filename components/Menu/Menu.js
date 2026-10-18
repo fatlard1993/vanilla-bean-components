@@ -70,7 +70,7 @@ export default class Menu extends StyledList {
 				// between items, or the border fired `select` with nothing selected, leaving every
 				// consumer to work out from the event whether an item had actually been hit.
 				const item = event.target?.closest?.('li');
-				if (!item || !itemsOf(this.elem).includes(item)) return;
+				if (!item || !this.elem.contains(item) || item.getAttribute('role') === 'presentation') return;
 
 				this.emit('select', event);
 			},
