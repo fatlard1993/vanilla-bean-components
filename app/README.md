@@ -142,7 +142,7 @@ The page, the built files, and the page again for any other GET so the client's 
 
 ### `withErrors(router, { log? }?)`
 
-Wraps a router so a thrown error becomes an answer. Malformed JSON answers 400. A `ValidationError`, or any error with a 4xx `status`, answers that status with `{ error: message }`. A `ConflictError` answers 409 with `{ error, current }`. Anything else is logged and answers 500, without its details.
+Wraps a router so a thrown error becomes an answer. Malformed JSON answers 400. A `ValidationError`, or any error with a 4xx `status`, answers that status with `{ error: message }`. A `ConflictError` answers 409 with `{ error, _conflict: true, current }`. Anything else is logged and answers 500, without its details.
 
 ### `sameOrigin(request)`
 

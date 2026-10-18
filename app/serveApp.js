@@ -42,7 +42,7 @@ export const serveApp = async (request, { root = 'client/build', api = '/api/', 
 
 /**
  * Wrap a router so a thrown error becomes an answer: a body that isn't JSON answers 400, and a ValidationError (or any
- * error with a 4xx `status`) answers that status with `{ error }`, its message shown to the client, a ConflictError answers 409 with the stored record as `current`, and
+ * error with a 4xx `status`) answers that status with `{ error }`, its message shown to the client, a ConflictError answers 409 with `_conflict: true` and the stored record as `current`, and
  * anything else is logged and answers 500 without its details.
  * @example Bun.serve({ fetch: withErrors(router) });
  * @param {Function} router - (request, server) => Response, maybe async
@@ -61,7 +61,7 @@ export const withErrors =
 				return Response.json({ error: 'Invalid JSON' }, { status: 400 });
 			}
 			if (error instanceof ConflictError) {
-				return Response.json({ error: error.message, current: error.current }, { status: 409 });
+				return Response.json({ error: error.message, _conflict: true, current: error.current }, { status: 409 });
 			}
 			if (Number.isInteger(error?.status) && error.status >= 400 && error.status < 500) {
 				return Response.json({ error: error.message }, { status: error.status });

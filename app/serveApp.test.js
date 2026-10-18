@@ -84,7 +84,7 @@ describe('withErrors', () => {
 		const conflict = await answer(new ConflictError({ name: 'Go', _v: 2 }));
 
 		expect(conflict.status).toBe(409);
-		expect((await conflict.json()).current).toEqual({ name: 'Go', _v: 2 });
+		expect(await conflict.json()).toMatchObject({ _conflict: true, current: { name: 'Go', _v: 2 } });
 	});
 
 	test('anything else is logged and answers 500 without its details', async () => {
