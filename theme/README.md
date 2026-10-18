@@ -435,6 +435,24 @@ Built-in color palettes for code syntax highlighting:
 --vbc-css-theme        /* CSS syntax colors */
 ```
 
+## Safe Areas
+
+`theme.safeArea` holds the screen insets a phone keeps for itself (a notch, rounded corners, the home indicator) as CSS lengths: `top`, `right`, `bottom` and `left`, each `env(safe-area-inset-*, 0px)`. They are `0px` on screens without them, and only take a value once the page lets content reach under them, in `index.html`:
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+```
+
+Then pad whatever sits at an edge:
+
+```js
+const BottomNav = styled.Component`
+	position: fixed;
+	bottom: 0;
+	padding-bottom: calc(8px + ${({ safeArea }) => safeArea.bottom});
+`;
+```
+
 ## Component Styles
 
 ### Pre-Built Component Styles
@@ -513,6 +531,7 @@ new Component({ addClass: 'vbc-elements', innerHTML: renderedMarkdown });
 interface Theme {
 	colors: ColorSystem;
 	fonts: FontSystem;
+	safeArea: { top: string; right: string; bottom: string; left: string };
 
 	// Component base styles (CSS strings)
 	button: string;

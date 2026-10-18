@@ -4,12 +4,14 @@ import colors from './colors';
 import fonts from './fonts';
 import _input from './input';
 import _page, { elements as _elements } from './page';
+import safeArea from './safeArea';
 import _scrollbar from './scrollbar';
 import _table from './table';
 
 const theme = {
 	colors,
 	fonts,
+	safeArea,
 	get button() {
 		return _button(this);
 	},

@@ -55,3 +55,14 @@ describe('theme colors named for their job', () => {
 		expect(theme.colors.warning).toBe(theme.colors.yellow);
 	});
 });
+
+describe('theme.safeArea', () => {
+	test('each side is its env() inset, 0px where there is none', () => {
+		expect(theme.safeArea).toEqual({
+			top: 'env(safe-area-inset-top, 0px)',
+			right: 'env(safe-area-inset-right, 0px)',
+			bottom: 'env(safe-area-inset-bottom, 0px)',
+			left: 'env(safe-area-inset-left, 0px)',
+		});
+	});
+});
