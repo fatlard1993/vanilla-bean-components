@@ -39,8 +39,10 @@ describe('serveApp', () => {
 		expect(chunk.headers.get('cache-control')).toBeNull();
 	});
 
-	test('an unknown api path is left for a 404, never answered with the page', async () => {
+	test('an unknown api path, or a file that is gone, is left for a 404, never answered with the page', async () => {
 		expect(await get('/api/nope')).toBeUndefined();
+		expect(await get('/api')).toBeUndefined();
+		expect(await get('/chunk-from-last-build.js')).toBeUndefined();
 		expect(await (await get('/api/nope', { api: false })).text()).toBe('<html>app</html>');
 	});
 
@@ -67,7 +69,10 @@ describe('withErrors', () => {
 		)(new Request('http://localhost/api/games'));
 
 	test('malformed JSON and a ValidationError answer 400 with the reason', async () => {
-		expect((await answer(new SyntaxError('Unexpected token'))).status).toBe(400);
+		expect((await answer(new SyntaxError('Failed to parse JSON'))).status).toBe(400);
+		expect((await answer(new SyntaxError("JSON Parse error: Expected '}'"))).status).toBe(400);
+		// A SyntaxError of the server's own making is its fault, not the client's
+		expect((await answer(new SyntaxError('Invalid regular expression'), () => {})).status).toBe(500);
 
 		const invalid = await answer(new ValidationError('name is required'));
 

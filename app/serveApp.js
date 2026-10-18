@@ -7,7 +7,8 @@ import { serveStatic } from './serveStatic';
  * Serve a single-page app: its index page, revalidated on every load (the hashed chunks it names change with each
  * build, so a cached index points at files that are gone), the built files and package assets through serveStatic, and
  * the index again for any other GET, so the client's router has every path. Paths under `api` are never answered with
- * the page: an unknown endpoint gets undefined here, and a 404 from the caller, rather than 200 and HTML.
+ * the page: an unknown endpoint gets undefined here, and a 404 from the caller, rather than 200 and HTML. Nor is a
+ * path naming a file: a chunk that is gone after a deploy is a 404, not HTML the browser refuses as a script.
  * @param {Request} request - Any incoming request
  * @param {object} [options] - Options
  * @param {string} [options.root] - The build output directory
@@ -31,14 +32,17 @@ export const serveApp = async (request, { root = 'client/build', api = '/api/', 
 
 	if (file) return file;
 
-	if (api && pathname.startsWith(api)) return;
+	if (api && (pathname.startsWith(api) || pathname === api.replace(/\/$/, ''))) return;
+
+	// A file that isn't there (a chunk from before the last build) is a 404, not the page under its name
+	if (/\.[^/]+$/.test(pathname)) return;
 
 	return page();
 };
 
 /**
- * Wrap a router so a thrown error becomes an answer: malformed JSON and a ValidationError (or any error with a 4xx
- * `status`) answer that status with `{ error }`, a ConflictError answers 409 with the stored record as `current`, and
+ * Wrap a router so a thrown error becomes an answer: a body that isn't JSON answers 400, and a ValidationError (or any
+ * error with a 4xx `status`) answers that status with `{ error }`, its message shown to the client, a ConflictError answers 409 with the stored record as `current`, and
  * anything else is logged and answers 500 without its details.
  * @example Bun.serve({ fetch: withErrors(router) });
  * @param {Function} router - (request, server) => Response, maybe async
@@ -52,7 +56,10 @@ export const withErrors =
 		try {
 			return await router(request, server);
 		} catch (error) {
-			if (error instanceof SyntaxError) return Response.json({ error: 'Invalid JSON' }, { status: 400 });
+			// A body that isn't JSON; a SyntaxError from anywhere else is the server's own fault
+			if (error instanceof SyntaxError && /JSON/i.test(error.message)) {
+				return Response.json({ error: 'Invalid JSON' }, { status: 400 });
+			}
 			if (error instanceof ConflictError) {
 				return Response.json({ error: error.message, current: error.current }, { status: 409 });
 			}
