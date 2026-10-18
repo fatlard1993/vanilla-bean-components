@@ -90,6 +90,9 @@ export default class Tabs extends StyledComponent {
 		this.on({
 			targetEvent: 'keydown',
 			callback: event => {
+				// Alt+Arrow and the like are the browser's (back, forward, word jumps), not a move between tabs
+				if (event.altKey || event.ctrlKey || event.metaKey) return;
+
 				const ids = this.options.tabs.filter(tab => !tab.disabled).map(tab => tab.id);
 				const at = ids.indexOf(this.options.selected);
 				const to = {
