@@ -41,6 +41,24 @@ describe('buildClient', () => {
 		expect(files).toContain('index.js.map');
 	});
 
+	test("a page's chunks are named from the root, so a deep route finds them; '' makes them relative", async () => {
+		writeFileSync(
+			join(root, 'index.html'),
+			'<!doctype html><html><body><script type="module" src="./index.js"></script>',
+		);
+
+		for (const [publicPath, prefix] of [
+			[undefined, '/'],
+			['', './'],
+		]) {
+			const outdir = join(root, `build-public-${prefix.length}`);
+
+			await buildClient({ entrypoints: [join(root, 'index.html')], outdir, publicPath });
+
+			expect(readFileSync(join(outdir, 'index.html'), 'utf8')).toMatch(new RegExp(`src="${prefix}chunk-`));
+		}
+	});
+
 	test('defines are merged over NODE_ENV', async () => {
 		writeFileSync(join(root, 'index.js'), 'globalThis.version = VERSION;\n');
 

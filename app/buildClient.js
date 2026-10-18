@@ -5,6 +5,8 @@
  * @param {string[]} [options.entrypoints] - Defaults to `['client/index.html']`
  * @param {string} [options.outdir] - Defaults to `'client/build'`
  * @param {boolean} [options.production] - Defaults to true; hotReload.watch builds with false
+ * @param {string} [options.publicPath] - Defaults to `'/'`, so a page at a deep route (`/games/12`) still finds its
+ *   chunks; `''` makes them relative again, for an app served under a path prefix
  * @param {object} [options.define] - Merged over the `process.env.NODE_ENV` define
  * @returns {Promise<object>} The Bun.build result
  */
@@ -12,6 +14,7 @@ export const buildClient = async ({
 	entrypoints = ['client/index.html'],
 	outdir = 'client/build',
 	production = true,
+	publicPath = '/',
 	define,
 	...options
 } = {}) => {
@@ -22,6 +25,7 @@ export const buildClient = async ({
 		outdir,
 		minify: production,
 		sourcemap: production ? 'none' : 'linked',
+		publicPath,
 		...options,
 		define: {
 			'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development'),
