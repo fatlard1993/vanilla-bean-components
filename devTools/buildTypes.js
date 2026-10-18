@@ -298,7 +298,7 @@ function buildComponentTypes() {
 /**
  * Read index.d.ts, replace the generated component block, and write it back.
  */
-function updateIndexDts() {
+async function updateIndexDts() {
 	const indexDtsPath = join(root, 'index.d.ts');
 	const content = readFileSync(indexDtsPath, 'utf8');
 	const { block, count } = buildComponentTypes();
@@ -315,8 +315,15 @@ function updateIndexDts() {
 			markerIndex !== -1 ? content.slice(0, markerIndex) + block + '\n' : content.trimEnd() + '\n\n' + block + '\n';
 	}
 
-	writeFileSync(indexDtsPath, updated, 'utf8');
+	// Formatted as committed, so regenerating from the pre-commit hook leaves no diff behind
+	const prettier = await import('prettier');
+	const formatted = await prettier.format(updated, {
+		...(await prettier.resolveConfig(indexDtsPath)),
+		filepath: indexDtsPath,
+	});
+
+	writeFileSync(indexDtsPath, formatted, 'utf8');
 	console.log(`✓ index.d.ts updated - ${count} components`);
 }
 
-updateIndexDts();
+await updateIndexDts();
