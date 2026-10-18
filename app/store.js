@@ -78,6 +78,17 @@ export const createStore = ({ db, collection, fields, versioned = false, hooks =
 		}
 	};
 
+	// One change at a time: a hook that awaits can't let another change land in between, so nothing is checked against,
+	// built from or put back to a record another change has since replaced
+	let queue = Promise.resolve();
+	const serially = change => {
+		const done = queue.then(change);
+
+		queue = done.catch(() => {});
+
+		return done;
+	};
+
 	return {
 		get data() {
 			return data();
@@ -113,7 +124,11 @@ export const createStore = ({ db, collection, fields, versioned = false, hooks =
 		 * @param {object} body - The new record's fields
 		 * @returns {Promise<object>} The stored record, with its id
 		 */
-		async create(body) {
+		create(body) {
+			return serially(() => this._create(body));
+		},
+
+		async _create(body) {
 			const entry = validateFields(spec, body);
 			let id = nanoid(12);
 
@@ -135,7 +150,11 @@ export const createStore = ({ db, collection, fields, versioned = false, hooks =
 		 * @param {object} options.update - Fields to change; a versioned store reads the version it was made against from `_v`
 		 * @returns {Promise<object|false>} The updated record, or false when there is none by that id
 		 */
-		async update({ id, update }) {
+		update(options) {
+			return serially(() => this._update(options));
+		},
+
+		async _update({ id, update }) {
 			if (!this.has(id)) return false;
 
 			const previous = data()[id];
@@ -161,7 +180,11 @@ export const createStore = ({ db, collection, fields, versioned = false, hooks =
 		 * @param {string} options.id - The record's id
 		 * @returns {Promise<string|false>} The removed id, or false when there is none by that id
 		 */
-		async delete({ id, ...options }) {
+		delete(options) {
+			return serially(() => this._delete(options));
+		},
+
+		async _delete({ id, ...options }) {
 			if (!this.has(id)) return false;
 
 			const entry = data()[id];

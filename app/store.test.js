@@ -163,6 +163,32 @@ describe('createStore', () => {
 		expect(games.has(id)).toBe(true);
 	});
 
+	test('changes take turns, so one waiting in a hook is never undone or undoes another', async () => {
+		const games = createStore({
+			db: memoryDb(),
+			collection: 'games',
+			fields,
+			versioned: true,
+			hooks: { beforeUpdate: () => new Promise(resolve => setTimeout(resolve, 20)) },
+		});
+		const { id } = await games.create({ name: 'Chess' });
+
+		const [first, second] = await Promise.allSettled([
+			games.update({ id, update: { name: 'Go', _v: 1 } }),
+			games.update({ id, update: { name: 'Checkers', _v: 1 } }),
+		]);
+
+		expect(first.value.name).toBe('Go');
+		expect(second.reason).toBeInstanceOf(ConflictError);
+
+		const updating = games.update({ id, update: { players: 2 } });
+
+		await games.delete({ id });
+
+		expect(await updating).toMatchObject({ players: 2 });
+		expect(games.has(id)).toBe(false);
+	});
+
 	test('without a collection, the whole database is the collection', async () => {
 		const db = memoryDb({});
 		const store = createStore({ db, fields: ['name'] });
