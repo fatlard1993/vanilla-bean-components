@@ -123,6 +123,7 @@
 		"globals": "17",
 		"happy-dom": "^20.14.6",
 		"lldtdd": "^0.1.0",
+		"lowdb": "^7.0.1",
 		"marked": "18",
 		"moresketchy": "wbern/MoreSketchy.js",
 		"prettier": "^3.9.5"
@@ -137,9 +138,13 @@
 		"eslint-plugin-spellcheck": "0.0.20",
 		"eslint-plugin-testing-library": "^7.16.2",
 		"eslint-plugin-write-good-comments": "^0.2.0",
-		"globals": "^17.7.0"
+		"globals": "^17.7.0",
+		"lowdb": "^7.0.1"
 	},
 	"peerDependenciesMeta": {
+		"lowdb": {
+			"optional": true
+		},
 		"@eslint/compat": {
 			"optional": true
 		},
