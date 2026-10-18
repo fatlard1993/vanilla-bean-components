@@ -161,6 +161,48 @@ Whether the current user agent is macOS. Useful for displaying ⌘ vs Ctrl keybi
 
 `true` outside production bundles. Guards dev-only warnings.
 
+### `requestWakeLock()`
+
+Keeps the screen awake, taking the lock again each time the page comes back into view (the browser drops it while the page is hidden). Returns a function that lets the screen sleep again. Does nothing where unsupported.
+
+```js
+const release = requestWakeLock(); // a game in play
+release(); // the game is over
+```
+
+### `fitToKeyboard({ setHeight? })`
+
+Keeps the page to the part a phone's keyboard leaves showing, which on iOS covers the bottom of the page rather than shrinking it. Writes the visible height to `--visible-height` and, unless `setHeight: false`, sizes the document to it; leaves the page alone while pinch-zoomed. Returns a function that stops.
+
+## Date
+
+### `parseDate(value)`
+
+A `Date` from a Date, a timestamp or a string, or `null`. A date-only string such as `'2026-10-18'` is that day where the reader is; `new Date('2026-10-18')` is midnight UTC, the day before anywhere west of Greenwich.
+
+### `formatDate(value, { locale?, ...intlOptions })`
+
+A date for reading, in the reader's locale, with the same date-only rule. Text that isn't a date comes back as written, and nothing comes back as `''`.
+
+```js
+formatDate('2026-10-18'); // '10/18/2026' in en-US, in any time zone
+formatDate(entry.at, { month: 'short', day: 'numeric' }); // 'Oct 18'
+```
+
+### `relativeTime(value, now?)`
+
+Briefly how long ago, or ahead: `'just now'`, `'5m ago'`, `'3h ago'`, `'2d ago'`, `'in 10m'`.
+
+## File
+
+### `fileAccepted(file, accept)`
+
+Whether a file matches an accept list as `<input type="file" accept>` reads it: extensions (`.csv`), types (`application/json`) and families (`image/*`). An empty list accepts anything.
+
+### `readFile(file, as?)`
+
+A file's contents as `'text'` (default), `'json'`, `'dataURL'` or `'arrayBuffer'`.
+
 ## Class
 
 ### `buildClassList(...classNames)` / `buildClassName(...classNames)`

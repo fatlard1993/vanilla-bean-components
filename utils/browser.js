@@ -100,3 +100,75 @@ export const vibrate = (durationPattern = 30) => {
  * @returns {void}
  */
 export const tactileResponse = () => vibrate(30);
+
+/**
+ * Keep the screen awake (a game in play, a remote in hand), taking the lock again whenever the page comes back into
+ * view, since the browser lets it go when the page is hidden. Best-effort: where it isn't supported or is refused,
+ * nothing happens.
+ * @returns {Function} Lets the screen sleep again
+ */
+export const requestWakeLock = () => {
+	if (!('wakeLock' in navigator)) return () => {};
+
+	let lock = null;
+	let released = false;
+
+	const acquire = async () => {
+		if (released || document.visibilityState !== 'visible' || (lock && !lock.released)) return;
+
+		try {
+			// Guarded above: only reached where wakeLock exists
+			// eslint-disable-next-line compat/compat
+			lock = await navigator.wakeLock.request('screen');
+
+			if (released) lock.release();
+		} catch {
+			// Refused (low battery, no user gesture yet) or unsupported; the next visible turn tries again
+		}
+	};
+
+	document.addEventListener('visibilitychange', acquire);
+	acquire();
+
+	return () => {
+		released = true;
+		document.removeEventListener('visibilitychange', acquire);
+		lock?.release?.();
+		lock = null;
+	};
+};
+
+/**
+ * Keep the page to the part a phone's keyboard leaves showing. The keyboard covers the bottom of the page rather than
+ * shrinking it (on iOS always, on Android unless the viewport asks), which hides whatever sits at the bottom. The
+ * visible height goes to `--visible-height`, and to the document's height unless setHeight is false; while
+ * pinch-zoomed the visible part is a magnified piece of the page, so the page is left alone.
+ * @param {object} [options] - Options
+ * @param {boolean} [options.setHeight=true] - Also size the document to the visible part
+ * @returns {Function} Stops following the keyboard
+ */
+export const fitToKeyboard = ({ setHeight = true } = {}) => {
+	const visible = window.visualViewport;
+
+	if (!visible) return () => {};
+
+	const root = document.documentElement;
+	const fit = () => {
+		const zoomed = visible.scale > 1.01;
+
+		root.style.setProperty('--visible-height', `${visible.height}px`);
+		if (setHeight) root.style.height = zoomed ? '' : `${visible.height}px`;
+		if (!zoomed && window.scrollY) window.scrollTo(0, 0);
+	};
+
+	visible.addEventListener('resize', fit);
+	visible.addEventListener('scroll', fit);
+	fit();
+
+	return () => {
+		visible.removeEventListener('resize', fit);
+		visible.removeEventListener('scroll', fit);
+		root.style.removeProperty('--visible-height');
+		if (setHeight) root.style.height = '';
+	};
+};

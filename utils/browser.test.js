@@ -1,4 +1,12 @@
-import { copyToClipboard, isMac, readClipboard, vibrate, tactileResponse } from './browser';
+import {
+	copyToClipboard,
+	fitToKeyboard,
+	isMac,
+	readClipboard,
+	requestWakeLock,
+	vibrate,
+	tactileResponse,
+} from './browser';
 
 describe('browser utilities', () => {
 	describe('isMac', () => {
@@ -280,5 +288,78 @@ describe('browser utilities', () => {
 
 			expect(true).toBe(true);
 		});
+	});
+});
+
+describe('requestWakeLock', () => {
+	afterEach(() => {
+		delete navigator.wakeLock;
+	});
+
+	test('takes the lock, takes it again when the page is back in view, and lets it go when asked', async () => {
+		const locks = [];
+
+		navigator.wakeLock = {
+			request: async () => {
+				const lock = { released: false, release: () => (lock.released = true) };
+
+				locks.push(lock);
+
+				return lock;
+			},
+		};
+
+		const release = requestWakeLock();
+
+		await Promise.resolve();
+		expect(locks.length).toBe(1);
+
+		// The browser lets the lock go while the page is hidden
+		locks[0].released = true;
+		document.dispatchEvent(new Event('visibilitychange'));
+		await Promise.resolve();
+		expect(locks.length).toBe(2);
+
+		release();
+		expect(locks[1].released).toBe(true);
+
+		document.dispatchEvent(new Event('visibilitychange'));
+		await Promise.resolve();
+		expect(locks.length).toBe(2);
+	});
+
+	test('does nothing where it is not supported', () => {
+		expect(requestWakeLock()).toBeFunction();
+	});
+});
+
+describe('fitToKeyboard', () => {
+	test('sizes the page to what the keyboard leaves showing, and stops when asked', () => {
+		const listeners = {};
+		const original = window.visualViewport;
+
+		Object.defineProperty(window, 'visualViewport', {
+			configurable: true,
+			value: {
+				height: 500,
+				scale: 1,
+				addEventListener: (type, fn) => (listeners[type] = fn),
+				removeEventListener: () => {},
+			},
+		});
+
+		const stop = fitToKeyboard();
+		const root = document.documentElement;
+
+		expect(root.style.getPropertyValue('--visible-height')).toBe('500px');
+		expect(root.style.height).toBe('500px');
+
+		window.visualViewport.height = 320;
+		listeners.resize();
+		expect(root.style.height).toBe('320px');
+
+		stop();
+		expect(root.style.height).toBe('');
+		Object.defineProperty(window, 'visualViewport', { configurable: true, value: original });
 	});
 });
