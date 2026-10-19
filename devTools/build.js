@@ -6,6 +6,8 @@ export const buildOptions = {
 	entrypoints: ['demo/index.html'],
 	outdir: 'demo/build',
 	plugins: [asText, markdownLoader],
+	// Names kept: each demo view finds its README, source and lld document by its component's class name
+	minify: { whitespace: true, syntax: true, identifiers: false },
 };
 
 if (import.meta.main) {
