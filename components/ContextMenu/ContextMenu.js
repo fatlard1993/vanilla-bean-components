@@ -13,10 +13,19 @@ const StyledPopover = styled(
 		padding: 0;
 		overflow: hidden auto;
 
+		/* The menu fills the box, however wide its widest row makes it */
+		& > ul {
+			flex: 1 1 auto;
+			min-width: 0;
+		}
+
 		& li {
 			white-space: nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;
+			/* The list's first-line indent as padding, so a row's text starts where it did and its detail line lines up */
+			text-indent: 0;
+			padding-left: 12px;
 		}
 
 		& li .label, & li .detail {
