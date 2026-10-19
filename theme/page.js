@@ -79,6 +79,11 @@ export default theme => `
 	${checkbox(theme, ":where(.vbc-input[type='checkbox'])")}
 	:where(.vbc-table) { ${_table(theme)} }
 
+	/* A tab's panel the app lays out as flex or grid still hides when its tab isn't the selected one */
+	.vbc-tabpanel[hidden] {
+		display: none !important;
+	}
+
 	/* A Button without the raised look: for toolbars, chips and icon buttons */
 	.vbc-button:where(.variant-flat) {
 		background-color: transparent;

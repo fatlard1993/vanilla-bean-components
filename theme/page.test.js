@@ -33,6 +33,10 @@ describe('theme.page and theme.elements', () => {
 		}
 	});
 
+	test("a hidden tab panel stays hidden, whatever display the app's own styling gives it", () => {
+		expect(theme.page).toMatch(/\.vbc-tabpanel\[hidden\]\s*\{\s*display: none !important;/);
+	});
+
 	test('a vbc-elements container gets the element styles whether or not the page does', () => {
 		expect(rule(theme.page, ':where(.vbc-elements)')).toBe(true);
 		expect(theme.page).toContain(`\t${theme.elements.trim().split('\n')[0]}`);

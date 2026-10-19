@@ -61,6 +61,8 @@ describe('Tabs', () => {
 		expect(chat.elem.hidden).toBe(false);
 		expect(people.elem.hidden).toBe(true);
 		expect(chat.elem).toHaveAttribute('role', 'tabpanel');
+		// The class the theme's always-hidden rule hangs on
+		expect(people.elem).toHaveClass('vbc-tabpanel');
 		expect(tab('Chat')).toHaveAttribute('aria-controls', chat.elem.id);
 
 		await userEvent.setup().click(tab('People'));

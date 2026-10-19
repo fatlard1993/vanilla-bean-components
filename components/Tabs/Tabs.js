@@ -152,6 +152,8 @@ export default class Tabs extends StyledComponent {
 			button.elem.setAttribute('aria-controls', (panel.id ||= `${button.elem.id}-panel`));
 			panel.setAttribute('role', 'tabpanel');
 			panel.setAttribute('aria-labelledby', button.elem.id);
+			// The class carries the theme's rule that a hidden panel stays hidden, whatever display the app gives it
+			panel.classList.add('vbc-tabpanel');
 			panel.hidden = !chosen;
 		}
 	}
