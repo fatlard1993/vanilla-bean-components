@@ -28,6 +28,11 @@ class EmptyState extends styled(
 		text-align: center;
 		color: ${colors.gray};
 
+		/* A part with nothing to show takes no room, whatever display an app's styling gives it */
+		& > [hidden] {
+			display: none !important;
+		}
+
 		& > .icon {
 			font-size: 40px;
 			opacity: 0.7;
