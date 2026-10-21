@@ -43,7 +43,7 @@ A success or an informational note says something that needs no answer, so it le
 Without an `x` and `y`, a notification joins a stack in the bottom-right corner, the newest at the bottom, so several at once read as a list rather than piling on one another. When one leaves, the rest close the gap.
 
 - notifications without a point stack, the newest nearest the edge, and close up when one goes
-  - new Subject({ textContent: "older", autoOpen: false, appendTo: document.body }) captures older then older.show() then new Subject({ textContent: "newer", autoOpen: false, appendTo: document.body }) captures newer then newer.show() then parseInt(older.elem.style.bottom) captures olderBefore then newer.destroy() -> olderBefore > 16 && older.elem.style.bottom === "16px"
+  - new Subject({ textContent: "older", autoOpen: false, appendTo: document.body }) captures older then older.show() then new Subject({ textContent: "newer", autoOpen: false, appendTo: document.body }) captures newer then newer.show() then Number(older.elem.style.bottom.match(/\d+/)[0]) captures olderBefore then newer.destroy() -> olderBefore > 16 && older.elem.style.bottom.startsWith("calc(16px ")
 - a notification given a point is placed there and kept out of the stack
   - new Subject({ x: 40, y: 40, autoOpen: false, appendTo: document.body }) captures placed then placed.show() -> !placed.elem.classList.contains("stacked")
 
