@@ -306,7 +306,7 @@ Unhandled keys fall through to standard routing automatically - no `super._setOp
 Two more statics complete the declaration surface, and together they eliminate the need for component constructors in almost every case:
 
 - `static events = ['select']` - custom event names usable with `on()`/`emit()`. Unioned up the class chain, so a subclass adds to its parent's events instead of replacing them.
-- `static prepareOptions(options, children)` - a pure transform run on the merged (schema defaults + user) options before processing, leaf-first up the class chain. This is the home for computed defaults: Input derives `type` from the value's type here, Code decides its tag from `multiline`, Table normalizes string columns. Because the hook sees merged options, ancestor hooks see subclass schema defaults (Input's hook sees Select's `tag: 'select'`).
+- `static prepareOptions(options, children)` - a pure transform run on the merged (schema defaults + user) options before processing, leaf-first up the class chain. This is the home for computed defaults: Input derives `type` from the value's type here, Code decides its tag from `multiline`, Table normalizes string columns. Because the hook sees merged options, ancestor hooks see subclass schema defaults (Input's hook sees Select's `tag: 'select'`). It follows that a subclass presets an option an ancestor already defaults by redeclaring it in its own `static schema` (`static schema = { variant: { default: 'bar' } }`), not by spreading `{ variant: 'bar', ...options }` in `prepareOptions`: by then the ancestor's default is already in `options` and wins the spread.
 
 A fully declared component needs no constructor at all: `static schema` + `static events` + `prepareOptions` + `build()` cover declaration, wiring, and structure. Constructors remain only for genuine construction-time work (Page's eager stylesheet loading, Label's string-shorthand normalization).
 
@@ -360,6 +360,16 @@ component.processCleanup();
 - Oxject subscription cleanup
 - Style element removal from DOM
 - Recursive child component cleanup
+
+**`signal`** is an `AbortSignal` that aborts when the component is disconnected, destroyed or rendered again. Hand it to anything that takes one and it ends with the build that started it, with no cleanup of your own:
+
+```js
+build() {
+	window.addEventListener('resize', () => this.fit(), { signal: this.signal });
+	fetch('/api/stats', { signal: this.signal }).then(...);
+	GET('/api/games', { scope: this.signal, onSuccess: ({ body }) => this.show(body) }); // hypertether
+}
+```
 
 ### Render Timing Control
 
@@ -448,6 +458,7 @@ component.render(); // Re-render: empty → build → _processOptions → render
 component.addCleanup(id, fn); // Register cleanup function (chains with existing for same id)
 component.replaceCleanup(id, fn); // Replace cleanup, running the previous one immediately
 component.replaceDestroyCleanup(id, fn); // Destroy-only cleanup: survives disconnect, runs on destroy()
+component.signal; // AbortSignal: aborts on disconnect, destroy, or the next render
 component.processCleanup(); // Execute all cleanup functions
 component.destroy(); // Remove from DOM: onDisconnected fires (innermost first), then all cleanup runs
 ```

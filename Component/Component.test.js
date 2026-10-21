@@ -1082,6 +1082,43 @@ describe('Component', () => {
 		});
 	});
 
+	describe('signal', () => {
+		test('a listener given the signal ends with the component', () => {
+			const comp = new Component({ appendTo: container });
+			const onResize = mock();
+
+			window.addEventListener('resize', onResize, { signal: comp.signal });
+			comp.destroy();
+			window.dispatchEvent(new Event('resize'));
+
+			expect(onResize).not.toHaveBeenCalled();
+		});
+
+		test('rendering again ends what the last build started, and the next build gets a live signal', () => {
+			const signals = [];
+
+			class Subscriber extends Component {
+				build() {
+					signals.push(this.signal);
+				}
+			}
+
+			const comp = new Subscriber({ appendTo: container });
+
+			comp.render();
+
+			expect(signals).toHaveLength(2);
+			expect(signals[0].aborted).toBe(true);
+			expect(signals[1].aborted).toBe(false);
+		});
+
+		test('the signal is the same one throughout a build', () => {
+			const comp = new Component({ autoRender: false });
+
+			expect(comp.signal).toBe(comp.signal);
+		});
+	});
+
 	describe('destroy', () => {
 		const settle = () => new Promise(resolve => setTimeout(resolve, 0));
 

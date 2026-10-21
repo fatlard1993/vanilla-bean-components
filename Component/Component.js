@@ -7,6 +7,7 @@ import { observeElementConnection } from './observeElementConnection';
 
 const _internalProperties = new Set([
 	'cleanup',
+	'_abortController',
 	'_destroyCleanup',
 	'rendered',
 	'elemObserver',
@@ -363,6 +364,7 @@ class Component extends Elem {
 	 */
 	render() {
 		if (this.rendered) {
+			this._abortController?.abort();
 			this.empty();
 			this.rendered = false;
 		}
@@ -543,6 +545,23 @@ class Component extends Elem {
 		cleanupDescendants(this.elem);
 		this.elem.replaceChildren();
 		return this;
+	}
+
+	/**
+	 * Aborts when this component is disconnected, destroyed or rendered again, so whatever it's handed to ends with the
+	 * build that made it: an `addEventListener` or `fetch` signal, or a hypertether request's `scope`. The next use after an abort
+	 * gets a fresh one.
+	 * @example window.addEventListener('resize', this.fit, { signal: this.signal });
+	 * @returns {AbortSignal} The signal for the current build
+	 */
+	get signal() {
+		if (!this._abortController || this._abortController.signal.aborted) {
+			const controller = (this._abortController = new AbortController());
+
+			this.addCleanup('signal', () => controller.abort());
+		}
+
+		return this._abortController.signal;
 	}
 
 	/**
