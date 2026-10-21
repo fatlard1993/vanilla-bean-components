@@ -41,7 +41,7 @@ This creates `components/ComponentName/` containing:
 | `.test.js`         | Test suite skeleton      |
 | `README.md`        | Documentation template   |
 
-The generated component extends `Component` and includes a `build()` hook and a `_setOption()` override ready to fill in.
+The generated component extends `Component` and includes a `build()` hook and a commented `static schema` ready to fill in.
 
 ### The `build()` / `render()` contract
 
