@@ -53,6 +53,7 @@
 		"test-setup.js"
 	],
 	"bin": {
+		"vbc-build": "./app/buildCli.js",
 		"vbc-service": "./app/serviceCli.js"
 	},
 	"description": "A lightweight, reactive component library for building modern web applications with vanilla JavaScript",

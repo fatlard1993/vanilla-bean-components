@@ -15,29 +15,25 @@ import { buildClient, createStore, crudRoutes, hotReload, serveApp } from '@vani
 import {
 	createStore,
 	crudRoutes,
-	hotReload,
+	devConsole,
+	handleExit,
 	openDatabase,
-	sameOrigin,
+	serve,
 	serveApp,
-	withErrors,
 } from '@vanilla-bean/components/app';
+
+handleExit();
 
 const db = await openDatabase({ path: `${process.env.HOME}/.games.json`, defaults: { games: {} } });
 const games = createStore({ db, collection: 'games', fields: { name: { type: 'string', required: true } } });
 const gamesRoutes = crudRoutes('/api/games', games);
 
-const server = Bun.serve({
+await serve({
 	port: 8080,
-	fetch: withErrors(async request => {
-		if (!sameOrigin(request)) return new Response('Cross-origin request refused', { status: 403 });
-		if (hotReload.upgrade(request, server)) return;
-
-		return (await gamesRoutes(request)) ?? (await serveApp(request)) ?? new Response('Not Found', { status: 404 });
-	}),
-	websocket: hotReload.websocket,
+	router: async request => (await gamesRoutes(request)) ?? serveApp(request),
 });
 
-if (process.env.NODE_ENV === 'development') await hotReload.watch();
+devConsole();
 ```
 
 ```js
@@ -45,18 +41,13 @@ if (process.env.NODE_ENV === 'development') await hotReload.watch();
 import '@vanilla-bean/components/app/reloadOnBuild';
 ```
 
-```js
-// client/build.js, run by `bun run build`
-import { buildClient } from '@vanilla-bean/components/app';
-
-const { success } = await buildClient();
-
-if (!success) process.exit(1);
+```json
+"build": "vbc-build"
 ```
 
 ## `buildClient(options?)`
 
-One `Bun.build` of the client. It defaults to `client/index.html` → `client/build`, and any other `Bun.build` option passes through.
+One `Bun.build` of the client. `vbc-build` runs it with the defaults and exits non-zero when it fails; an app with options of its own calls `buildClient` from a script. It defaults to `client/index.html` → `client/build`, and any other `Bun.build` option passes through.
 
 `process.env.NODE_ENV` is defined in the bundle, so `if (process.env.NODE_ENV === 'development')` blocks drop out of a production build. A build is a production build unless it's given `production: false`, whatever `NODE_ENV` the shell has; `hotReload.watch` builds for development. Production builds minify. Development builds write source maps.
 
@@ -135,6 +126,26 @@ await games.delete({ id }); // the id, or false
 The REST routes for a store: `GET path` (every record by id, or an array with `list: true`), `POST path` (201 and the record), and `GET`, `PATCH` (or `PUT`) and `DELETE` at `path/:id` (404 for no such record). The id comes only from the path: a `?id=` search param never names a record. Search params do reach `delete` as its options, for `afterDelete`. It answers `undefined` for anything else, so routers chain with `??`.
 
 ## Serving an app
+
+### `serve({ router, websocket?, build?, ...options })`
+
+Starts the server with what every app's server repeats. Anything else `Bun.serve` takes (`hostname`, `tls`, `maxRequestBodySize`, …) passes through.
+
+- A write or socket from another site is refused before the router sees it (`sameOrigin`).
+- A thrown error becomes an answer (`withErrors`), and anything the router leaves is a 404.
+- The page's hot reload socket is taken; in development the client is watched, with `build` as its build options.
+- Sockets the router upgrades itself (`server.upgrade(request, { data })`) reach `websocket`'s `open`, `message` and `close`; the hot reload ones never do. `websocket`'s settings (`perMessageDeflate`, …) pass through.
+- A port already in use fails saying so.
+
+It resolves to the Bun server.
+
+### `handleExit({ flush?, survive? }?)`
+
+How the process ends. Ctrl+C exits 130 and a stop request (a service manager, `kill`) exits 0. An uncaught error or unhandled rejection is logged, then exits 99 or 1. `flush` is awaited before any of them, for writes still pending; `survive: true` keeps the process running after an uncaught error, for one whose children must outlive it. Calling it again, as `bun --hot` does, only replaces the options.
+
+### `devConsole(handle?)`
+
+Commands typed into the dev server's terminal, in development only: `b` rebuilds the client and reloads its pages, `stop` ends the server, and any other line goes to `handle(line)`. A command that throws is logged and the console keeps reading.
 
 ### `serveApp(request, { root?, api?, headers?, packages? }?)`
 
