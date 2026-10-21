@@ -68,7 +68,12 @@ const StyledLabel = styled(
 			}
 		}
 
+		/* Drawn after its control even when the control was appended after the text was placed */
 		&.variant-inline-after {
+			& > .label-text {
+				order: 1;
+			}
+
 			& label {
 				margin-left: 9px;
 				margin-right: 0;
@@ -201,7 +206,7 @@ class Label extends StyledLabel {
 	}
 
 	build() {
-		this._labelText = new Component({ tag: 'label' });
+		this._labelText = new Component({ tag: 'label', addClass: 'label-text' });
 
 		const handleClick = () => {
 			if (this.options.variant !== 'collapsible') return;

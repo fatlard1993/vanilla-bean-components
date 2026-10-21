@@ -26,7 +26,7 @@ Labeling wrapper with five structural variants. The key decision is that `varian
 
 ## The variant decides which side the label text sits on, and moving it is a move
 
-`inline-after` is the only variant that puts the text after the control, so switching variants has to relocate the existing text node rather than render a second one. Reassigning a variant is a reposition, not a rebuild.
+`inline-after` is the only variant that puts the text after the control, so switching variants has to relocate the existing text node rather than render a second one. Reassigning a variant is a reposition, not a rebuild. A control given as a child arrives after the text is placed, so under `inline-after` the text is also drawn last by flex order, whatever the DOM order.
 
 - the label text precedes the control except under `inline-after`, and changing variant moves the same text rather than adding another
   - new Subject({ label: "Name", variant: "inline", appendTo: document.body, append: document.createElement("input") }) captures l then Array.from(l.elem.children).indexOf(l._labelText.elem) captures asInline then l.options.variant = "inline-after" then Array.from(l.elem.children).indexOf(l._labelText.elem) captures asAfter then l.options.variant = "inline" -> asInline === 0 && asAfter === 1 && Array.from(l.elem.children).indexOf(l._labelText.elem) === 0 && l.elem.children.length === 2
@@ -48,3 +48,10 @@ A label is usually a string, and stays that short. When it needs more it carries
   - new Subject({ label: "Str", appendTo: document.body }) captures s then new Subject({ label: { textContent: "Obj", addClass: "fancy" }, appendTo: document.body }) captures o -> s._labelText.elem.textContent === "Str" && o._labelText.elem.textContent === "Obj" && o._labelText.elem.classList.contains("fancy")
 - `for` accepts an id string, a component, or an element, and gives an unidentified control an id so the association actually holds
   - new Subject({ label: "L", for: "explicit", appendTo: document.body }) captures byString then new Subject({ tag: "input" }) captures control then document.body.append(control.elem) then new Subject({ label: "L", for: control, appendTo: document.body }) captures byComponent -> byString._labelText.elem.htmlFor === "explicit" && control.elem.id.length > 0 && byComponent._labelText.elem.htmlFor === control.elem.id
+
+## A control given as a child still sits before inline-after text
+
+**browser:** true
+
+- a checkbox passed as a child of an inline-after label is drawn before the label's text
+  - new Subject({ variant: "inline-after", label: "Remember me", appendTo: document.body }, Object.assign(document.createElement("input"), { type: "checkbox" })) captures l then await new Promise(r => setTimeout(r, 700)) -> l.elem.querySelector("input").getBoundingClientRect().left < l.elem.querySelector(".label-text").getBoundingClientRect().left
