@@ -18,3 +18,10 @@ A row of tabs, one selected. The design decision is that selection is the compon
 
 - each tab's panel is hidden unless its tab is selected
   - new Array() captures probe then document.body.appendChild(document.createElement("div")) captures pa then document.body.appendChild(document.createElement("div")) captures pb then new Subject({ tabs: [{ id: "a", label: "A" }, { id: "b", label: "B" }], panels: { a: pa, b: pb }, appendTo: document.body }) captures t then t.select("b") -> pa.hidden === true && pb.hidden === false && pb.getAttribute("role") === "tabpanel"
+
+## Segmented is the same tabs, drawn as a switch
+
+- the segmented variant marks the tabs for its look and keeps them tabs
+  - new Subject({ variant: "segmented", tabs: [{ id: "day", label: "By day" }, { id: "project", label: "By project" }], appendTo: document.body }) captures t -> t.elem.classList.contains("variant-segmented") && t.elem.getAttribute("role") === "tablist"
+- a tab can carry an icon beside its label
+  - new Subject({ tabs: [{ id: "chart", label: "Chart", icon: "chart-line" }], appendTo: document.body }) captures t -> t.elem.querySelector("[data-tab='chart']").classList.contains("fa-chart-line")

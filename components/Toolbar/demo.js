@@ -12,5 +12,17 @@ export default class Demo extends DemoView {
 				new Input({ placeholder: 'Search', style: { flex: '1', minWidth: '10em', width: 'auto' } }),
 			],
 		});
+
+		new Toolbar({
+			appendTo: this.demoWrapper,
+			variant: 'bar',
+			heading: 'North 80',
+			style: { marginTop: '12px' },
+			append: [
+				new Button({ icon: 'arrow-left', variant: 'flat', addClass: 'start', title: 'Back' }),
+				new Button({ icon: 'pen', variant: 'flat', title: 'Edit' }),
+				new Button({ icon: 'trash', variant: 'flat', title: 'Delete' }),
+			],
+		});
 	}
 }

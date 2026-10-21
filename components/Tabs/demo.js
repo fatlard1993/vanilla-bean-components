@@ -21,5 +21,15 @@ export default class Demo extends DemoView {
 		});
 
 		this.demoWrapper.append(...Object.values(panels).map(panel => panel.elem));
+
+		new Tabs({
+			appendTo: this.demoWrapper,
+			variant: 'segmented',
+			tabs: [
+				{ id: 'day', label: 'By day', icon: 'calendar-day' },
+				{ id: 'project', label: 'By project', icon: 'folder' },
+			],
+			style: { marginTop: '12px' },
+		});
 	}
 }

@@ -5,7 +5,7 @@ import { Button } from '../Button';
 
 const StyledComponent = styled(
 	Component,
-	({ colors }) => `
+	({ colors, radius }) => `
 		display: flex;
 		gap: 4px;
 		overflow-x: auto;
@@ -31,6 +31,31 @@ const StyledComponent = styled(
 			font-weight: bold;
 		}
 
+		/* A switch between a few views of the same thing: a pill split into its choices */
+		&.variant-segmented {
+			display: inline-flex;
+			gap: 0;
+			border: 1px solid ${colors.alpha(colors.white, 0.15)};
+			border-radius: ${radius.pill};
+			overflow: hidden;
+
+			/* 30px inside the pill's 1px border: as tall as a button beside it */
+			& > .vbc-button {
+				height: 30px;
+				margin: 0;
+				padding: 0 12px;
+				border: none;
+				border-radius: 0;
+				font-size: 0.85em;
+				line-height: 30px;
+			}
+
+			& > .vbc-button[aria-selected='true'] {
+				background-color: ${colors.alpha(colors.blue, 0.3)};
+				font-weight: normal;
+			}
+		}
+
 		& .count {
 			margin-left: 6px;
 			color: ${colors.light(colors.gray)};
@@ -46,10 +71,12 @@ const StyledComponent = styled(
  * Panels are optional: given one per tab, only the selected tab's shows. Without them, onChange says which tab to show,
  * for content that's built on demand. A tab can carry a count (unread, items listed), shown beside its label.
  * @param {object} [options] - Tabs configuration
- * @param {Array<object>} [options.tabs] - The tabs, e.g. { id, label, count, disabled }; reactive
+ * @param {Array<object>} [options.tabs] - The tabs, e.g. { id, label, icon, count, disabled }; reactive
  * @param {string} [options.selected] - The selected tab's id; defaults to the first tab
  * @param {object} [options.panels] - Each tab's panel, by id: an element or a Component, shown only while selected
  * @param {Function} [options.onChange] - Called with (id, tabs) when the selection changes
+ * @param {('segmented')} [options.variant] - 'segmented' is a pill split into its choices, for switching between a
+ *   few views of the same thing
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Tabs} Tabs component instance
  * @example
@@ -62,6 +89,14 @@ const StyledComponent = styled(
 export default class Tabs extends StyledComponent {
 	static schema = {
 		role: { default: 'tablist' },
+		variant: {
+			enum: ['segmented'],
+			set(value) {
+				this.removeClass(/\bvariant-\S+\b/g);
+
+				if (value) this.addClass(`variant-${value}`);
+			},
+		},
 		tabs: {
 			get default() {
 				return [];
@@ -115,13 +150,16 @@ export default class Tabs extends StyledComponent {
 		this._buttons = {};
 		this.empty();
 
-		for (const { id, label, count, disabled } of tabs) {
+		for (const { id, label, icon, count, disabled } of tabs) {
 			const button = new Button({
 				variant: 'flat',
+				icon,
 				role: 'tab',
 				uniqueId: `${this.uniqueId}-${id}`,
 				disabled: !!disabled,
-				append: [label, new Elem({ tag: 'span', addClass: 'count', textContent: count ? String(count) : '' })],
+				// The label as text too, so a tab with an icon isn't taken for an icon-only button
+				textContent: label,
+				append: new Elem({ tag: 'span', addClass: 'count', textContent: count ? String(count) : '' }),
 				onPointerPress: () => this.select(id),
 				appendTo: this,
 			});

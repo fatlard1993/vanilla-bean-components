@@ -3,6 +3,7 @@
 export * from './BottomSheet';
 export * from './Button';
 export * from './Calendar';
+export * from './Card';
 export * from './Code';
 export * from './ColorPicker';
 export * from './Content';

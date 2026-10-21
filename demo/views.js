@@ -5,6 +5,7 @@ import { styled } from '../styled/styled.js';
 import BottomSheetDemo from '../components/BottomSheet/demo.js';
 import ButtonDemo from '../components/Button/demo.js';
 import CalendarDemo from '../components/Calendar/demo.js';
+import CardDemo from '../components/Card/demo.js';
 import CodeDemo from '../components/Code/demo.js';
 import ColorPickerDemo from '../components/ColorPicker/demo.js';
 import ContentDemo from '../components/Content/demo.js';
@@ -94,6 +95,7 @@ export default {
 	['/BottomSheet']: BottomSheetDemo,
 	['/Button']: ButtonDemo,
 	['/Calendar']: CalendarDemo,
+	['/Card']: CardDemo,
 	['/Code']: CodeDemo,
 	['/ColorPicker']: ColorPickerDemo,
 	['/Content']: ContentDemo,

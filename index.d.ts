@@ -246,8 +246,8 @@ export interface ButtonOptions extends TooltipWrapperOptions {
 	icon?: string;
 	/** Tooltip text shown on hover */
 	tooltip?: string;
-	/** 'flat' drops the raised look, for toolbars, chips and icon buttons */
-	variant?: 'flat';
+	/** 'flat' has no fill, for toolbars and icon buttons; 'chip' is a * small outlined pill, for filters and choices; 'raised' is bevelled and sinks as it's pressed */
+	variant?: 'flat' | 'chip' | 'raised';
 }
 
 export declare class Button extends TooltipWrapper {
@@ -296,6 +296,17 @@ export declare class Calendar extends Component {
 	addEvent(eventItem: Record<string, any>): Calendar;
 }
 
+export interface CardOptions extends ComponentOptions {
+	/** A color for the left edge (a CSS color or a theme color) */
+	accent?: string | Record<string, any>;
+	/** Answer hover and focus, and Enter or Space like a press; on by default when * onPointerPress is given */
+	interactive?: boolean;
+}
+
+export declare class Card extends Component {
+	constructor(options?: CardOptions, ...children: Array<Elem | HTMLElement | string>);
+}
+
 export interface CodeOptions extends ComponentOptions {
 	/** Programming language for syntax highlighting class (default: "javascript") */
 	language?: string;
@@ -327,8 +338,10 @@ export declare class ColorPicker extends Input {
 }
 
 export interface ContentOptions extends ComponentOptions {
-	/** Inner padding (a number is pixels) (default: 0) */
+	/** Inner padding (a number is pixels); unset, a subclass's own CSS padding applies */
 	padding?: number | string;
+	/** Keep what scrolls to a centered column, for reading on a wide * screen: true is 960px wide, or give the width (a number is pixels). The sides keep at least a 12px gutter. */
+	column?: boolean | number | string;
 }
 
 export declare class Content extends Component {
@@ -342,6 +355,8 @@ export interface ContextMenuOptions extends PopoverOptions {
 	sticky?: boolean;
 	/** Widest the menu may be (default: 240) */
 	maxWidth?: number;
+	/** Mark the point a menu opened at; false leaves it unmarked (default: true) */
+	reticle?: boolean;
 	/** default: false */
 	autoOpen?: boolean;
 	/** default: true */
@@ -402,6 +417,8 @@ export interface EmptyStateOptions extends ComponentOptions {
 	message?: string;
 	/** Button options ({ textContent, onPointerPress }) or a Component */
 	action?: Record<string, any> | Component;
+	/** Show a spinner in place of the icon, while what would fill the view is on its way */
+	loading?: boolean;
 }
 
 export declare class EmptyState extends Component {
@@ -748,12 +765,14 @@ export declare class Table extends Component {
 }
 
 export interface TabsOptions extends ComponentOptions {
-	/** The tabs, e.g. { id, label, count, disabled }; reactive */
+	/** The tabs, e.g. { id, label, icon, count, disabled }; reactive */
 	tabs?: Array<Record<string, any>>;
 	/** The selected tab's id; defaults to the first tab */
 	selected?: string;
 	/** Each tab's panel, by id: an element or a Component, shown only while selected */
 	panels?: Record<string, any>;
+	/** 'segmented' is a pill split into its choices, for switching between a * few views of the same thing */
+	variant?: 'segmented';
 	/** default: "tablist" */
 	role?: string;
 }
@@ -786,10 +805,16 @@ export interface ToolbarOptions extends ComponentOptions {
 	gap?: number | string;
 	/** Wrap onto more lines when there isn't room (default: true) */
 	wrap?: boolean;
+	/** A title at the start, truncated to fit; it stays through empty() */
+	heading?: string;
+	/** 'bar' is a page's top bar: flush, on a surface, ruled off from what's below */
+	variant?: 'bar';
 }
 
 export declare class Toolbar extends Component {
 	constructor(options?: ToolbarOptions, ...children: Array<Elem | HTMLElement | string>);
+	/** Removes the controls, keeping the heading. */
+	empty(): Toolbar;
 }
 
 export interface TooltipOptions extends PopoverOptions {

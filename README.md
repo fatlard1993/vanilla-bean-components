@@ -8,7 +8,7 @@ A lightweight, reactive component library for building modern web applications w
 - **Reactive state management** - Proxy-based, explicit; `component.options` is reactive out of the box, no dependency tracking magic
 - **Scoped CSS styling** - Opinionated dark theme by design; override per-instance, per-class, or replace the theme entirely
 - **Cleanup on disconnect** - no listener accumulation; components clean up after themselves
-- **25 production-ready components** - A second tier of building blocks above the primitives. Button handles keyboard activation and pointer events. Dialog handles focus management and modal behavior. Form handles validation. These are composed concerns your app components build on, not reinvent.
+- **33 production-ready components** - A second tier of building blocks above the primitives. Button handles keyboard activation and pointer events. Dialog handles focus management and modal behavior. Form handles validation. These are composed concerns your app components build on, not reinvent.
 - **Modern browser APIs** - EventTarget, Proxy, ES6 modules, native CSS nesting
 - **Framework-agnostic** - works alongside Web Components, React islands, or any other approach; no conflicts, no opinions on your stack
 
@@ -119,25 +119,24 @@ Create scoped, themed components:
 ```js
 import { Component, styled } from '@vanilla-bean/components';
 
-const Card = styled(
+const Notice = styled(
 	Component,
-	({ colors }) => `
-	background: ${colors.white};
-	border-radius: 8px;
-	box-shadow: 0 2px 8px ${colors.alpha(colors.black, 0.1)};
-	padding: 24px;
+	({ colors, radius, space }) => `
+	background: ${colors.alpha(colors.blue, 0.15)};
+	border-left: 3px solid ${colors.blue};
+	border-radius: ${radius.md};
+	padding: ${space.md};
 
 	&:hover {
-		transform: translateY(-2px);
-		transition: transform 0.2s ease;
+		background: ${colors.alpha(colors.blue, 0.22)};
 	}
 `,
 );
 
-new Card({
+new Notice({
 	append: [
-		new Component({ tag: 'h3', textContent: 'Card Title' }),
-		new Component({ tag: 'p', textContent: 'Card content goes here.' }),
+		new Component({ tag: 'h3', textContent: 'Heads up' }),
+		new Component({ tag: 'p', textContent: 'Scoped styles, drawn from the theme.' }),
 	],
 	appendTo: document.body,
 });
@@ -223,7 +222,7 @@ Serving an app on Bun? **[app](./app/README.md)** (`'@vanilla-bean/components/ap
 
 ## Component Library
 
-31 pre-built components handle common UI patterns:
+33 pre-built components handle common UI patterns:
 
 ### Forms & Input
 
@@ -236,12 +235,14 @@ Serving an app on Bun? **[app](./app/README.md)** (`'@vanilla-bean/components/ap
 
 ### Layout & Structure
 
-- **Page** - Full-page layouts with header/footer
-- **Toolbar** - A row of controls that wraps
-- **Content** - The part of a view that scrolls
+- **Page** - The app's root: the page theme, fonts and stylesheets
+- **Toolbar** - A row of controls that wraps, or a page's header bar with a title
+- **Content** - The part of a view that scrolls, optionally as a centered reading column
+- **Card** - A raised patch holding one record or summary, with an optional accent edge
 - **Router** - Client-side navigation
 - **List** - Dynamic lists with filtering
 - **Table** - Data tables with sorting
+- **Tabs** - A row of tabs, one selected, with optional panels and counts
 
 ### Interactive Elements
 
@@ -402,7 +403,7 @@ bun run format   # Code formatting with Prettier
 ```
 vanilla-bean-components/
 ├── app/                # Bun app kit - client build, hot reload, static serving, request matching
-├── components/         # 31 pre-built UI components
+├── components/         # 33 pre-built UI components
 ├── Component/          # Core Component class
 ├── styled/             # Scoped styling system
 ├── theme/              # Design tokens and helpers
