@@ -56,7 +56,7 @@ items.sort(
 
 ### `debounce(callback, delay?)` / `throttle(callback, delay?)`
 
-Standard debounce and throttle. Default delay is 400ms.
+Standard debounce and throttle. Default delay is 400ms. A debounced function's `cancel()` drops a call still waiting.
 
 ```js
 const save = debounce(value => api.save(value), 300);
@@ -104,6 +104,33 @@ conditionalList([
 
 Returns all own enumerable properties of an object, excluding prototype members.
 
+## Storage
+
+### `readStorage(key, fallback?)` / `writeStorage(key, value)`
+
+localStorage as JSON, without the throws: a missing or unparseable value, or storage the browser refuses (a private window, blocked site data), answers `fallback`, and a refused write is dropped. Writing `undefined` removes the key.
+
+```js
+const recent = readStorage('recentColors', []);
+writeStorage('recentColors', [color, ...recent]);
+```
+
+## Socket
+
+### `connectSocket(path?, { onLost?, onRestored? }?)`
+
+A WebSocket that comes back. A dropped connection is retried for as long as it's open, backing off to every 10 seconds, and at once when the page comes back into view or the network comes back. Listeners carry over to each new connection. `onLost` and `onRestored` are called once per outage, for a notice of your own.
+
+```js
+const socket = connectSocket('/ws', { onLost: () => lost.show(), onRestored: () => lost.hide() });
+
+const stop = socket.onMessage(data => update(data)); // JSON is parsed; anything else comes as it is
+socket.send({ type: 'move', x, y }); // false while disconnected: nothing is queued
+socket.close(); // for good
+```
+
+A path is this host's, over `wss:` on an https page; a full `ws:`/`wss:` URL is used as it is.
+
 ## Random
 
 ### `rand(min?, max?)` / `randInt(min?, max?)` / `randFromArray(array)`
@@ -112,6 +139,14 @@ Returns all own enumerable properties of an object, excluding prototype members.
 rand(0, 1); // float in [0, 1)
 randInt(1, 6); // integer in [1, 6]
 randFromArray(['a', 'b', 'c']); // random element
+```
+
+### `shuffleArray(array)` / `chance(percentage?)` / `weightedChance(percentages)`
+
+```js
+shuffleArray(deck); // the same array, reordered
+chance(25); // true a quarter of the time
+weightedChance({ common: 70, rare: 25, legendary: 5 }); // a key, as likely as its percentage; they must sum to 100
 ```
 
 ## Color

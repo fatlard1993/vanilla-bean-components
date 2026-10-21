@@ -6,4 +6,5 @@ export * from './date';
 export * from './element';
 export * from './file';
 export * from './rand';
+export * from './socket';
 export * from './string';
