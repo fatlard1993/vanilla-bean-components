@@ -26,3 +26,13 @@ A menu under a button belongs to that button: pressing it again is how people ex
 
 - a heading row is presentational and focus starts on the first real item
   - new Subject({ items: [{ heading: "Group" }, { textContent: "a" }], appendTo: document.body }) captures menu then menu.show({ x: 10, y: 10 }) -> menu.elem.querySelector("li").getAttribute("role") === "presentation" && document.activeElement.textContent === "a"
+
+## The point it opened at is marked
+
+A right-click or long press opens the menu away from anything that shows where it came from; a mark at the point ties the two together while the menu is open. A menu under a button already hangs from what opened it.
+
+- a menu opened at a point marks it, and closing takes the mark away
+  - new Subject({ items: [{ textContent: "a" }], appendTo: document.body }) captures menu then menu.show({ x: 10, y: 10 }) then Array.from(document.body.children) captures during then menu.hide() -> during.at(-1) !== menu.elem && during.at(-1).isConnected === false && menu.elem.isConnected
+- a menu under a button, or one told reticle: false, marks nothing
+  - new Array() captures probe then document.body.appendChild(document.createElement("button")) captures anchor then new Subject({ items: [{ textContent: "a" }], appendTo: document.body }) captures menu then menu.show({ anchor }) -> document.body.lastElementChild === menu.elem
+  - new Subject({ reticle: false, items: [{ textContent: "a" }], appendTo: document.body }) captures menu then menu.show({ x: 10, y: 10 }) -> document.body.lastElementChild === menu.elem

@@ -54,6 +54,7 @@ branchButton.onPointerPress(() => branchMenu.show({ anchor: branchButton }));
 | `items` | `Array<object>` | - | Menu items, e.g. `{ textContent, detail, onPointerPress }`, and headings, `{ heading }`; reactive |
 | `sticky` | `boolean` | `false` | Stay open after an item is chosen |
 | `maxWidth` | `number` | `240` | Widest the menu may be |
+| `reticle` | `boolean` | `true` | Mark the point a menu opened at |
 | `outsideClose` | `boolean` | `true` | A press outside closes it |
 
 Everything else is a Popover option.
@@ -64,6 +65,7 @@ Everything else is a Popover option.
 - Escape and a press outside close it, and so does showing it again from the same anchor.
 - It is placed by its measured size, so it flips away from the edges it would cross; nothing depends on how tall a row is.
 - Focus moves to the first item on opening, so the arrow keys work at once, and returns to where it was on closing.
+- It unfolds from the top as it opens and dims the page behind it. Opened at a point, it marks the point with a reticle until it closes; a menu under a button has none.
 
 ## Methods
 

@@ -1,3 +1,4 @@
+import { Component } from '../../Component';
 import { Elem } from '../../Elem';
 import { styled } from '../../styled';
 import { Menu } from '../Menu';
@@ -7,11 +8,127 @@ import { Popover } from '../Popover';
 const ANCHOR_GAP = 4;
 const VIEWPORT_EDGE = 8;
 
+const reticleWidth = 32; // Click indicator width in px
+// The hexangle's own proportion is width * 0.857142857 = 27.43px; 28 keeps the placement offset on
+// whole pixels and is 2% off natural.
+const reticleHeight = 28;
+
+/*
+ * An upward hexangle — narrow flat top, full width at 72% down, flat bottom — outlined by a 2.5px
+ * ring, with a mark where each of three oversized discs crosses it and a dot at the middle.
+ *
+ * The discs are 8px radius and would merge into a blob without clipping; the ring — a clip-path
+ * here — slices them into the three marks.
+ *
+ * The outer points match the corner cuts of augmented-ui's all-hexangle-up, which this clip-path
+ * replaces (top corners 35.7142857% wide by 72.1687836% tall, bottom corners 13.7728802% by
+ * 27.8312164%). The discs sit
+ * on the midpoints of the top edge and the two lower diagonals, which lands each mark centered on
+ * its edge.
+ *
+ * The inner points come from offsetting each edge 2.5px inward and intersecting the results — done
+ * in pixel space, because on a box this much wider than it is tall an even pixel ring is an uneven
+ * percentage one. They are traced the opposite way round, so the winding cancels the outer loop and
+ * the middle is punched out under the default nonzero fill rule (evenodd support is too young).
+ *
+ * To adjust the ring width, recompute the inner loop as a set: offset each outer edge inward by the
+ * new width in pixel space and re-intersect. The values are not independently tunable.
+ */
+const Reticle = styled(
+	Component,
+	({ colors }) => `
+	/* Placed by the point's viewport coordinates, so a scrolled page doesn't carry it off */
+	position: fixed;
+	width: ${reticleWidth}px;
+	height: ${reticleHeight}px;
+	color: ${colors.red};
+	/* It lands under the cursor by definition, and it is decoration — it must not eat the click. */
+	pointer-events: none;
+
+	--reticle-color: currentColor;
+	--reticle-size: calc(${reticleWidth}px * 0.25);
+
+	transform-origin: 50% 56%;
+	transform: rotateZ(0deg);
+	transition:
+		transform 0.3s ease-out,
+		color 0.4s ease-out;
+	background: radial-gradient(circle at 50% 56%, var(--reticle-color) 2px, transparent 2px);
+
+	&::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background:
+			radial-gradient(circle at top center, var(--reticle-color) var(--reticle-size), transparent var(--reticle-size)),
+			radial-gradient(
+				circle at bottom 13.92% right 6.89%,
+				var(--reticle-color) var(--reticle-size),
+				transparent var(--reticle-size)
+			),
+			radial-gradient(
+				circle at bottom 13.92% left 6.89%,
+				var(--reticle-color) var(--reticle-size),
+				transparent var(--reticle-size)
+			);
+		clip-path: polygon(
+			35.71% 0%, 64.29% 0%, 100% 72.17%, 86.23% 100%, 13.77% 100%, 0% 72.17%, 35.71% 0%,
+			8.98% 72.17%, 18.33% 91.07%, 81.67% 91.07%, 91.02% 72.17%, 59.73% 8.93%, 40.27% 8.93%, 8.98% 72.17%
+		);
+	}
+
+	@starting-style {
+		transform: rotateZ(360deg) scale(3);
+		color: transparent;
+	}
+`,
+);
+
 const StyledPopover = styled(
 	Popover,
 	({ colors }) => `
 		padding: 0;
 		overflow: hidden auto;
+		transform: scaleY(0);
+		transition:
+			opacity 0.3s,
+			transform 0.1s,
+			overlay 0.3s allow-discrete,
+			display 0.3s allow-discrete;
+
+		&::backdrop {
+			background-color: ${colors.alpha(colors.black, 0)};
+			transition:
+				display 0.7s allow-discrete,
+				overlay 0.7s allow-discrete,
+				background-color 0.7s;
+		}
+
+		/* It unfolds from where it was asked for, and dims the page behind it */
+		&:popover-open {
+			opacity: 1;
+			transform: scaleY(1);
+			transition:
+				overlay 0.6s allow-discrete,
+				display 0.6s allow-discrete,
+				opacity 0.6s,
+				transform 0.6s;
+
+			&::backdrop {
+				background-color: ${colors.alpha(colors.black, 0.25)};
+			}
+		}
+
+		@starting-style {
+			&:popover-open {
+				opacity: 0;
+				transform: scaleY(0);
+
+				&::backdrop {
+					background-color: ${colors.alpha(colors.black, 0)};
+				}
+			}
+		}
 
 		/* The menu fills the box, however wide its widest row makes it */
 		& > ul {
@@ -81,6 +198,7 @@ const menuItem = (item, choose) => {
  * @param {Array<object>} [options.items] - Menu items, e.g. { textContent, detail, onPointerPress }, and headings, { heading }
  * @param {boolean} [options.sticky] - Stay open after an item is chosen
  * @param {number} [options.maxWidth] - Widest the menu may be
+ * @param {boolean} [options.reticle] - Mark the point a menu opened at; false leaves it unmarked
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {ContextMenu} ContextMenu component instance
  * @example
@@ -94,6 +212,7 @@ class ContextMenu extends StyledPopover {
 		outsideClose: { default: true },
 		maxWidth: { default: 240 },
 		sticky: { default: false },
+		reticle: { default: true },
 		items: {
 			set(value) {
 				if (!this.menu) this.menu = new Menu({ appendTo: this });
@@ -120,6 +239,7 @@ class ContextMenu extends StyledPopover {
 		};
 
 		this.addCleanup('contextMenuKeys', () => document.removeEventListener('keydown', this._onKeydown));
+		this.addCleanup('reticle', () => this._removeReticle());
 	}
 
 	/**
@@ -150,8 +270,17 @@ class ContextMenu extends StyledPopover {
 		this.shown = true;
 
 		// Placed by what it measures now it is open, rather than by a guess at its rows
+		this._removeReticle();
+
 		if (anchorElem) this._placeUnder(anchorElem);
 		else if (x !== undefined && y !== undefined) {
+			if (this.options.reticle) {
+				this._reticle = new Reticle({
+					appendTo: document.body,
+					style: { left: `${x - reticleWidth / 2}px`, top: `${y - reticleHeight / 2}px` },
+				});
+			}
+
 			this.edgeAwarePlacement({
 				x,
 				y,
@@ -171,12 +300,18 @@ class ContextMenu extends StyledPopover {
 		const wasOpen = this.shown;
 
 		this.shown = false;
+		this._removeReticle();
 		this._setAnchor(null);
 		document.removeEventListener('keydown', this._onKeydown);
 		super.hide();
 
 		if (wasOpen && this._opener?.isConnected) this._opener.focus();
 		this._opener = null;
+	}
+
+	_removeReticle() {
+		this._reticle?.elem.remove();
+		this._reticle = null;
 	}
 
 	_setAnchor(anchor) {
