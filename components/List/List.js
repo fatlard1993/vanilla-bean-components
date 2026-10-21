@@ -44,6 +44,7 @@ const ListItem = styled(
 export default class List extends StyledComponent {
 	static schema = {
 		tag: { default: 'ul' },
+		ListItemComponent: { data: true },
 		noStyle: {
 			set(value) {
 				this.toggleClass('no-style', !!value);
