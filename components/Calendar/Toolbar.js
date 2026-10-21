@@ -11,14 +11,42 @@ const Title = styled(
 );
 const Left = styled(
 	Component,
-	() => `
+	({ radius }) => `
 		margin-left: 6px;
+		display: flex;
+
+		/* A row of buttons joined into one control */
+		& > .vbc-button {
+			border-radius: 0;
+		}
+
+		& > .vbc-button:first-child {
+			border-radius: ${radius.md} 0 0 ${radius.md};
+		}
+
+		& > .vbc-button:last-child {
+			border-radius: 0 ${radius.md} ${radius.md} 0;
+		}
 	`,
 );
 const Right = styled(
 	Component,
-	() => `
+	({ radius }) => `
 		margin-right: 6px;
+		display: flex;
+
+		/* A row of buttons joined into one control */
+		& > .vbc-button {
+			border-radius: 0;
+		}
+
+		& > .vbc-button:first-child {
+			border-radius: ${radius.md} 0 0 ${radius.md};
+		}
+
+		& > .vbc-button:last-child {
+			border-radius: 0 ${radius.md} ${radius.md} 0;
+		}
 	`,
 );
 

@@ -4,7 +4,9 @@ Design tokens: colors, fonts, and component base styles, passed to every `styled
 
 ## The Default Aesthetic
 
-VBC ships with an intentional design language: dark backgrounds, a teal accent palette, and a technical/monospace typographic voice. This is a position, not a placeholder. The components look the way they look because that's how they were designed.
+VBC ships with an intentional design language: dark backgrounds, a monospace typographic voice, and a quiet surface. Controls are flat and filled, fields are translucent with a hairline border, headings are plain white, and cards lift off the page by a shade. This is a position, not a placeholder. It's the look the apps built on VBC each arrived at on their own, drawn back into the library.
+
+The earlier, louder look is still there where it carries meaning: a Button with `variant: 'raised'` has the bevel that sinks as it's pressed (the on-screen Keyboard's keys use it), and rendered markdown marked with the `vbc-markdown` class keeps green headings with their `#` level markers.
 
 That said, the theme system is layered. You can work at any layer depending on how much you want to change.
 
@@ -435,6 +437,29 @@ Built-in color palettes for code syntax highlighting:
 --vbc-css-theme        /* CSS syntax colors */
 ```
 
+## Steps
+
+`theme.space`, `theme.radius` and `theme.media` are the steps the library's own components use, so an app's own pieces line up with them:
+
+| Token | Values |
+| --- | --- |
+| `theme.space` | `xs` 4px, `sm` 8px, `md` 12px, `lg` 16px, `xl` 24px |
+| `theme.radius` | `sm` 4px (fields), `md` 6px (buttons, cards), `lg` 8px, `pill` 999px (chips) |
+| `theme.media` | `phone` `(max-width: 767px)`, `wide` `(min-width: 768px)`, `touch` `(pointer: coarse)`, for `@media` |
+
+```js
+const Panel = styled.Component`
+	padding: ${({ space }) => space.md};
+	border-radius: ${({ radius }) => radius.md};
+
+	@media ${({ media }) => media.phone} {
+		padding: ${({ space }) => space.sm};
+	}
+`;
+```
+
+Colors also have names for their jobs: `colors.surface`, `colors.border` (a hairline), `colors.muted` (secondary text), `colors.overlay`, and `colors.success`, `colors.warning`, `colors.danger`, `colors.info`. Reach for the job's name before the hue's, so a status reads the same in every app.
+
 ## Safe Areas
 
 `theme.safeArea` holds the screen insets a phone keeps for itself (a notch, rounded corners, the home indicator) as CSS lengths: `top`, `right`, `bottom` and `left`, each `env(safe-area-inset-*, 0px)`. They are `0px` on screens without them, and only take a value once the page lets content reach under them, in `index.html`:
@@ -511,16 +536,16 @@ const DataTable = styled.Table`
 
 The theme's page-wide CSS comes in two parts:
 
-- **`theme.page`** is always on: the html and body base, the font, selection, scrollbars, highlighted code, and the looks of the library's own components. Those looks hang on classes at no specificity (`:where(.vbc-button)`, `:where(.vbc-input)`, `:where(.vbc-table)`, the typed `.vbc-input[type='number']` and `[type='checkbox']`, and `.vbc-button.variant-flat`), so a rule an app writes always wins.
-- **`theme.elements`** styles bare elements wherever they appear: headings with their markdown prefixes, links, code, `input`/`select`/`textarea`, checkboxes, `button` and `kbd`, tables and blockquotes.
+- **`theme.page`** is always on: the html and body base, the font, selection, scrollbars, highlighted code, and the looks of the library's own components. Those looks hang on classes at no specificity (`:where(.vbc-button)`, `:where(.vbc-input)`, `:where(.vbc-table)`, the typed `.vbc-input[type='number']` and `[type='checkbox']`, and the Button variants `flat`, `chip` and `raised`), so a rule an app writes always wins. Rendered markdown given the `vbc-markdown` class gets green headings with their level markers, and its tables scroll sideways inside themselves on a narrow screen.
+- **`theme.elements`** styles bare elements wherever they appear: headings, links, code, `input`/`select`/`textarea`, checkboxes, `button`, `kbd` (as a key cap), tables and blockquotes.
 
 An app that styles its own elements turns `theme.elements` off with Page's `themeElements: false`. The library's components keep their look either way. To keep the element styles inside one container, such as rendered markdown, give it the `vbc-elements` class:
 
 ```js
 new Page({ themeElements: false });
 
-// Bare elements inside get the theme's look; elsewhere they are the app's
-new Component({ addClass: 'vbc-elements', innerHTML: renderedMarkdown });
+// Bare elements inside get the theme's look, and headings their markdown markers; elsewhere they are the app's
+new Component({ addClass: ['vbc-elements', 'vbc-markdown'], innerHTML: renderedMarkdown });
 ```
 
 ## API Reference
@@ -532,6 +557,9 @@ interface Theme {
 	colors: ColorSystem;
 	fonts: FontSystem;
 	safeArea: { top: string; right: string; bottom: string; left: string };
+	space: { xs: string; sm: string; md: string; lg: string; xl: string };
+	radius: { sm: string; md: string; lg: string; pill: string };
+	media: { phone: string; wide: string; touch: string };
 
 	// Component base styles (CSS strings)
 	button: string;

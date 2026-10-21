@@ -41,6 +41,23 @@ const colors = {
 	get warning() {
 		return colors.yellow;
 	},
+	get success() {
+		return colors.green;
+	},
+	get danger() {
+		return colors.red;
+	},
+	get info() {
+		return colors.blue;
+	},
+	// Secondary text: meta lines, counts, hints
+	get muted() {
+		return colors.light(colors.gray);
+	},
+	// A hairline between things on the page's dark ground
+	get border() {
+		return colors.alpha(colors.white, 0.12);
+	},
 
 	get selected() {
 		return selectedOverride ?? colors.yellow;
@@ -57,7 +74,7 @@ const colors = {
 	darker: color => color.darken(25),
 	darkest: color => color.darken(30),
 	blackish: (color = colors.gray) => color.darken(35),
-	alpha: (color, alpha) => new TinyColor(color.toHslString()).setAlpha(alpha),
+	alpha: (color, alpha) => new TinyColor(typeof color === 'string' ? color : color.toHslString()).setAlpha(alpha),
 };
 
 export default colors;

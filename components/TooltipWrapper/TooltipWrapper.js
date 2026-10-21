@@ -5,9 +5,13 @@ import { Tooltip } from '../Tooltip';
 const StyledIcon = styled(
 	Icon,
 	() => `
+		/* A button keeps its own display (an icon-only one centers its glyph); anything else holds its tooltip as a box */
+		&.has-tooltip:where(:not(.vbc-button, .variant-button)) {
+			display: inline-block;
+		}
+
 		&.has-tooltip {
 			position: relative;
-			display: inline-block;
 
 			&:hover {
 				overflow: visible;

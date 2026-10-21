@@ -25,4 +25,9 @@ describe('theme colors', () => {
 		light.setAlpha(0.5);
 		expect(colors.teal.a).toBe(1);
 	});
+
+	test('alpha takes a CSS color as well as a theme color', () => {
+		expect(colors.alpha('#ff0000', 0.5).toRgbString()).toBe('rgba(255, 0, 0, 0.5)');
+		expect(colors.alpha(colors.red, 0.5).getAlpha()).toBe(0.5);
+	});
 });

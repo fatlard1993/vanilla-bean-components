@@ -31,7 +31,7 @@ export default class ExampleView extends DemoView {
 			this._demoWrapper = new Label({
 				variant: 'collapsible',
 				label: 'Demo',
-				style: { margin: '2% 4%', width: 'calc(100% - 8%)', flexShrink: 0 },
+				style: { margin: '2% 4%', width: 'calc(100% - 8%)', boxSizing: 'border-box', flexShrink: 0 },
 				appendTo: this,
 			});
 			this._runOutput = new vbc.Component({ appendTo: this._demoWrapper });
@@ -101,7 +101,7 @@ export default class ExampleView extends DemoView {
 				variant: 'collapsible',
 				collapsed: true,
 				label: 'Example Code',
-				style: { margin: '2% 4%', width: 'calc(100% - 8%)', flexShrink: 0 },
+				style: { margin: '2% 4%', width: 'calc(100% - 8%)', boxSizing: 'border-box', flexShrink: 0 },
 				appendTo: this,
 			},
 			editor,

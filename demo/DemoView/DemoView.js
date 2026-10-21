@@ -33,7 +33,7 @@ export class DemoView extends View {
 			this._demoWrapper = new Label({
 				variant: 'collapsible',
 				label: 'Demo',
-				style: { margin: '2% 4%', width: 'calc(100% - 8%)', flexShrink: 0 },
+				style: { margin: '2% 4%', width: 'calc(100% - 8%)', boxSizing: 'border-box', flexShrink: 0 },
 				appendTo: this,
 			});
 		}
@@ -118,7 +118,7 @@ export class DemoView extends View {
 					variant: 'collapsible',
 					collapsed: true,
 					label: 'Demo Code',
-					style: { margin: '2% 4%', width: 'calc(100% - 8%)', flexShrink: 0 },
+					style: { margin: '2% 4%', width: 'calc(100% - 8%)', boxSizing: 'border-box', flexShrink: 0 },
 					appendTo: this,
 				},
 				editor,
@@ -129,7 +129,7 @@ export class DemoView extends View {
 		this.demoMetadata = new Label({
 			variant: 'collapsible',
 			label: 'Details',
-			style: { margin: '2% 4%', width: 'calc(100% - 8%)', flexShrink: 0 },
+			style: { margin: '2% 4%', width: 'calc(100% - 8%)', boxSizing: 'border-box', flexShrink: 0 },
 			appendTo: this,
 		});
 
@@ -169,7 +169,7 @@ export class DemoView extends View {
 		if (readme.response.ok) {
 			new StyledLabel(
 				{ label: 'README', appendTo: this.demoMetadata },
-				new Elem({ style: { overflow: 'auto' }, innerHTML: readme.body }),
+				new Elem({ addClass: 'vbc-markdown', style: { overflow: 'auto' }, innerHTML: readme.body }),
 			);
 		}
 
@@ -216,7 +216,7 @@ export class DemoView extends View {
 					variant: 'collapsible',
 					collapsed: true,
 					label: 'LLD',
-					style: { margin: '2% 4%', width: 'calc(100% - 8%)', flexShrink: 0 },
+					style: { margin: '2% 4%', width: 'calc(100% - 8%)', boxSizing: 'border-box', flexShrink: 0 },
 					appendTo: this,
 				},
 				runButton,

@@ -43,3 +43,10 @@ Toolbars, chips and icon buttons sit inside something that already reads as a co
 - `variant: 'flat'` marks the button flat; the theme gives it a transparent background and no bevel
   - new Subject({ variant: "flat", textContent: "x", appendTo: document.body }) captures b -> b.elem.classList.contains("variant-flat") && b.elem.classList.contains("vbc-button")
 
+
+## The raised look is a variant
+
+The default button is flat and filled; the bevel that sinks as it's pressed is asked for.
+
+- each variant marks the button for its look, and only one at a time
+  - new Subject({ variant: "raised", appendTo: document.body }) captures b then b.options.variant = "chip" -> b.elem.classList.contains("variant-chip") && b.elem.classList.contains("variant-raised") === false

@@ -11,7 +11,8 @@ describe('theme.page and theme.elements', () => {
 			'a',
 			'code',
 			'input, select, textarea',
-			'button, kbd',
+			'button',
+			'kbd',
 			'table',
 			'blockquote',
 		]) {

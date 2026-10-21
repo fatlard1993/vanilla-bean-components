@@ -1,10 +1,11 @@
-import _button from './button';
+import _button, { raised } from './button';
 import { bareCode, codeFonts, highlightedCode } from './code';
 import colors from './colors';
 import fonts from './fonts';
 import _input, { number, checkbox } from './input';
 import _scrollbar from './scrollbar';
 import _table from './table';
+import { radius } from './tokens';
 
 export default theme => `
 	html {
@@ -84,15 +85,11 @@ export default theme => `
 		display: none !important;
 	}
 
-	/* A Button without the raised look: for toolbars, chips and icon buttons */
+	/* A Button with no fill: for toolbars, menus and icon buttons */
 	.vbc-button:where(.variant-flat) {
 		background-color: transparent;
 		color: inherit;
-		translate: none;
-
-		&:after {
-			display: none;
-		}
+		filter: none;
 
 		&:hover, &:focus-visible {
 			background-color: ${colors.alpha(colors.white, 0.08)};
@@ -100,6 +97,11 @@ export default theme => `
 
 		&:active, &.pressed {
 			background-color: ${colors.alpha(colors.white, 0.14)};
+		}
+
+		&.active, &.selected, &[aria-pressed='true'] {
+			background-color: ${colors.alpha(colors.blue, 0.25)};
+			color: ${colors.lighter(colors.blue)};
 			box-shadow: none;
 		}
 
@@ -107,6 +109,64 @@ export default theme => `
 			background-color: transparent;
 			color: ${colors.gray};
 		}
+	}
+
+	/* A small outlined pill: a filter, a choice among a few, a tag that does something */
+	.vbc-button:where(.variant-chip) {
+		padding: 2px 10px;
+		border: 1px solid ${colors.alpha(colors.white, 0.15)};
+		border-radius: ${radius.pill};
+		background-color: transparent;
+		color: ${colors.muted};
+		font-size: 0.85em;
+		filter: none;
+
+		&:hover, &:focus-visible {
+			color: ${colors.white};
+			border-color: ${colors.alpha(colors.white, 0.3)};
+		}
+
+		&.active, &.selected, &[aria-pressed='true'] {
+			border-color: ${colors.light(colors.blue)};
+			background-color: ${colors.alpha(colors.blue, 0.3)};
+			color: ${colors.white};
+			box-shadow: none;
+		}
+
+		&:disabled, &.disabled {
+			background-color: transparent;
+			color: ${colors.gray};
+		}
+	}
+
+	/* The bevelled look that sinks as it's pressed */
+	.vbc-button:where(.variant-raised) { ${raised(theme)} }
+
+	/* Rendered markdown: headings marked with their level, in the document green */
+	.vbc-markdown {
+		:where(h1, h2, h3, h4, h5, h6) {
+			color: ${colors.green};
+
+			&:before {
+				margin-right: 3px;
+				font-size: 0.7em;
+				opacity: 0.7;
+			}
+		}
+
+		/* A table wider than the screen scrolls inside itself rather than stretching the page */
+		:where(table) {
+			display: block;
+			max-width: 100%;
+			overflow-x: auto;
+		}
+
+		:where(h1):before { content: "#"; }
+		:where(h2):before { content: "##"; }
+		:where(h3):before { content: "###"; }
+		:where(h4):before { content: "####"; }
+		:where(h5):before { content: "#####"; }
+		:where(h6):before { content: "######"; }
 	}
 
 	/* Bare elements styled inside one container (rendered markdown, say) while the page leaves them to the app */
@@ -190,65 +250,29 @@ ${elements(theme).replace(/^(?=.)/gm, '\t')}
  */
 export const elements = theme => `
 	h1, h2, h3, h4, h5, h6 {
-		color: ${colors.green};
-
-		&:before {
-			margin-right: 3px;
-			font-size: 0.7em;
-			opacity: 0.7;
-		}
+		color: ${colors.white};
+		font-weight: 600;
+		line-height: 1.25;
 	}
 
 	h1 {
-		font-size: 30px;
+		font-size: 24px;
 
 		&:first-child {
 			margin-top: 0;
 		}
-
-		&:before {
-			content: "#";
-		}
 	}
 
 	h2 {
-		font-size: 24px;
-
-		&:before {
-			content: "##";
-		}
+		font-size: 20px;
 	}
 
 	h3 {
-		font-size: 18px;
-
-		&:before {
-			content: "###";
-		}
+		font-size: 17px;
 	}
 
-	h4 {
-		font-size: 18px;
-
-		&:before {
-			content: "####";
-		}
-	}
-
-	h5 {
-		font-size: 18px;
-
-		&:before {
-			content: "#####";
-		}
-	}
-
-	h6 {
-		font-size: 18px;
-
-		&:before {
-			content: "######";
-		}
+	h4, h5, h6 {
+		font-size: 15px;
 	}
 
 	a {
@@ -273,11 +297,15 @@ export const elements = theme => `
 	${number(theme)}
 	${checkbox(theme)}
 
-	button, kbd { ${_button(theme)} }
+	button { ${_button(theme)} }
 
 	kbd {
+		padding: 1px 6px;
+		border-radius: ${radius.sm};
+		border-bottom: 2px solid ${colors.darker(colors.gray)};
 		background-color: ${colors.dark(colors.gray)};
-		padding: 4px 6px 6px 6px;
+		color: ${colors.white};
+		font-size: 0.9em;
 	}
 
 	table { ${_table(theme)} }

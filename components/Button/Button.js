@@ -12,7 +12,8 @@ import { TooltipWrapper } from '../TooltipWrapper';
  * @param {string} [options.icon] - FontAwesome icon name (without 'fa-' prefix)
  * @param {string} [options.tooltip] - Tooltip text shown on hover
  * @param {boolean} [options.disabled] - Whether button is disabled
- * @param {('flat')} [options.variant] - 'flat' drops the raised look, for toolbars, chips and icon buttons
+ * @param {('flat'|'chip'|'raised')} [options.variant] - 'flat' has no fill, for toolbars and icon buttons; 'chip' is a
+ *   small outlined pill, for filters and choices; 'raised' is bevelled and sinks as it's pressed
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Button} Button component instance
  * @example
@@ -33,7 +34,7 @@ export default class Button extends TooltipWrapper {
 	static schema = {
 		tag: { default: 'button' },
 		variant: {
-			enum: ['flat'],
+			enum: ['flat', 'chip', 'raised'],
 			set(value) {
 				this.removeClass(/\bvariant-\S+\b/g);
 

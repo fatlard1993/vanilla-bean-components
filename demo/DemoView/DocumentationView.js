@@ -54,7 +54,7 @@ export default class DocumentationView extends DemoView {
 			if (html) {
 				new StyledLabel(
 					{ label: 'README', style: { marginTop: '2%' }, appendTo: this },
-					new Elem({ style: { overflow: 'auto' }, innerHTML: html }),
+					new Elem({ addClass: 'vbc-markdown', style: { overflow: 'auto' }, innerHTML: html }),
 				);
 			} else {
 				console.warn(`No documentation found for ${markdownPath}`);

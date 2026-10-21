@@ -7,11 +7,15 @@ import _page, { elements as _elements } from './page';
 import safeArea from './safeArea';
 import _scrollbar from './scrollbar';
 import _table from './table';
+import { media, radius, space } from './tokens';
 
 const theme = {
 	colors,
 	fonts,
 	safeArea,
+	space,
+	radius,
+	media,
 	get button() {
 		return _button(this);
 	},

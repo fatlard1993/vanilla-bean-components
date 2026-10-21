@@ -1,24 +1,45 @@
+import { radius } from './tokens';
+
 export default ({ colors, fonts }) => `
 	display: inline-block;
-	padding: 4px 6px 6px 6px;
+	/* 32px tall at the page's size, from the line and the padding; a button with smaller text is smaller */
+	line-height: 1.25;
+	padding: 6px 10px;
 	margin: 0;
 	box-sizing: border-box;
 	text-decoration: none;
 	color: ${colors.white};
 	background-color: ${colors.blue};
+	border: none;
+	border-radius: ${radius.md};
 	outline-color: ${colors.lighter(colors.selected)};
 	text-align: center;
 	position: relative;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: visible;
-	border: none;
 	cursor: pointer;
 	touch-action: manipulation;
+	transition: filter 0.15s, background-color 0.15s, color 0.15s;
+
+	/* Lighter and darker by filter, so a button given a color of its own still answers the pointer */
+	&:hover, &:focus-visible {
+		filter: brightness(1.15);
+	}
+
+	&:active, &.active, &.pressed {
+		filter: brightness(0.88);
+	}
 
 	&.disabled, &:disabled {
-		background-color: ${colors.gray};
+		background-color: ${colors.dark(colors.gray)};
+		color: ${colors.alpha(colors.white, 0.6)};
 		cursor: no-drop;
+		filter: none;
+	}
+
+	&.selected {
+		box-shadow: 0 0 0 2px ${colors.light(colors.selected)};
 	}
 
 	&:before {
@@ -26,16 +47,52 @@ export default ({ colors, fonts }) => `
 
 		position: relative;
 		pointer-events: none;
-		padding: 0 6px 0 3px;
+		padding: 0 6px 0 0;
 	}
 
 	/*
-	 * An animated glyph turns about the center of its own box, and the padding above is heavier on
-	 * one side, which would swing it off-center. Evening it out keeps the same total width, so
-	 * starting an animation never shifts the label beside it.
+	 * An animated glyph turns about the center of its own box; even padding keeps it centered, and the same total
+	 * width means starting an animation never shifts the label beside it.
 	 */
 	&[class*='icon-animation-']:before {
+		padding: 0 3px;
+	}
+
+	&:empty, &.icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		padding: 0;
+
+		&:before {
+			padding: 0;
+		}
+	}
+`;
+
+/**
+ * The raised look: a bevel that sinks as it's pressed. Button's variant 'raised', over the default's colors and shape.
+ * @param {object} theme - The theme
+ * @param {object} theme.colors - Its colors
+ * @returns {string} CSS
+ */
+export const raised = ({ colors }) => `
+	padding: 4px 6px 6px 6px;
+	border-radius: 0;
+	filter: none;
+
+	&:before {
+		padding: 0 6px 0 3px;
+	}
+
+	&[class*='icon-animation-']:before {
 		padding: 0 4.5px;
+	}
+
+	&:empty, &.icon {
+		padding: 3px 0 8px 0;
 	}
 
 	&:after {
@@ -57,6 +114,7 @@ export default ({ colors, fonts }) => `
 	 * bottom stays under the finger for the whole press instead of jumping, and no click lands on what was behind it.
 	 */
 	&:hover, &:focus {
+		filter: none;
 		translate: 0 -1px;
 
 		&:after {
@@ -71,11 +129,13 @@ export default ({ colors, fonts }) => `
 				linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.2) 0.24em, rgba(0, 0, 0, 0) 0.28em);
 		}
 	}
+
 	&:active,
 	&.active,
 	&.pressed,
 	&.disabled,
 	&:disabled {
+		filter: none;
 		translate: 0 1px;
 
 		&:before {
@@ -94,20 +154,13 @@ export default ({ colors, fonts }) => `
 				linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.2) 0.08em, rgba(0, 0, 0, 0) 0.16em);
 		}
 	}
+
 	&.pressed {
 		box-shadow: 0 0 7px 3px rgba(0, 0, 0, 40%), inset 0 0 7px 3px rgba(0, 0, 0, 40%);
 	}
+
 	&.selected {
+		box-shadow: none;
 		outline: 2px dashed ${colors.red};
-	}
-
-	&:empty, &.icon {
-		width: 30px;
-		height: 30px;
-		padding: 3px 0 8px 0;
-
-		&:before {
-			padding: 0;
-		}
 	}
 `;

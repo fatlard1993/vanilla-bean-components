@@ -1,7 +1,8 @@
-export const number = ({ colors }, selector = "input:where([type='number'])") => `
+import { radius } from './tokens';
+
+export const number = (_theme, selector = "input:where([type='number'])") => `
 	${selector} {
-		color: ${colors.light(colors.orange)};
-		background-color: ${colors.black};
+		font-variant-numeric: tabular-nums;
 	}
 `;
 
@@ -9,6 +10,9 @@ export const checkbox = ({ colors }, selector = "input:where([type='checkbox'])"
 	${selector} {
 		/* Remove most all native input styles */
 		appearance: none;
+		padding: 0;
+		background-color: transparent;
+		box-shadow: none;
 
 		margin: 0;
 		margin-right: 6px;
@@ -42,23 +46,40 @@ export const checkbox = ({ colors }, selector = "input:where([type='checkbox'])"
 
 export default ({ colors }) => `
 	display: block;
-	border-radius: 3px;
-	border: inset 3px ${colors.lightest(colors.teal).setAlpha(0.8)};
 	box-sizing: border-box;
 	width: 100%;
-	color: ${colors.light(colors.red)};
+	line-height: 1.25;
+	padding: 5px 8px;
+	border: 1px solid ${colors.alpha(colors.white, 0.15)};
+	border-radius: ${radius.sm};
+	color: ${colors.white};
+	background-color: ${colors.alpha(colors.white, 0.06)};
 	accent-color: ${colors.selected};
-	background-color: ${colors.black};
-	outline-color: ${colors.lighter(colors.selected)};
-	padding: 2px 4px;
+	outline: none;
+	transition: border-color 0.15s, box-shadow 0.15s;
+
+	/* A select's list is drawn on its own, with nothing behind a translucent fill */
+	& option {
+		background-color: ${colors.black};
+		color: ${colors.white};
+	}
+
+	&::placeholder {
+		color: ${colors.alpha(colors.white, 0.35)};
+	}
+
+	&:focus, &:focus-within {
+		border-color: ${colors.light(colors.blue)};
+		box-shadow: 0 0 0 2px ${colors.alpha(colors.blue, 0.35)};
+	}
 
 	&:disabled {
-		color: ${colors.black};
-		background-color: ${colors.darker(colors.gray)};
+		color: ${colors.alpha(colors.white, 0.4)};
+		background-color: ${colors.alpha(colors.white, 0.03)};
 	}
 
 	&:not(.syntax-highlighting).validation-errors {
-		background-color: ${colors.dark(colors.red)};
-		color: ${colors.white};
+		border-color: ${colors.light(colors.red)};
+		background-color: ${colors.alpha(colors.red, 0.2)};
 	}
 `;

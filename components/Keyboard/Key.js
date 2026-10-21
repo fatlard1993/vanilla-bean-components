@@ -26,6 +26,7 @@ class Key extends StyledButton {
 
 		return {
 			textContent: text ?? key,
+			variant: 'raised',
 			...rest,
 			addClass: [key, keyClass].concat(options.addClass),
 		};
