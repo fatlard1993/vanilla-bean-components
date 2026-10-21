@@ -178,3 +178,33 @@ export const fitToKeyboard = ({ setHeight = true } = {}) => {
 		if (setHeight) root.style.height = '';
 	};
 };
+
+/**
+ * A value kept in localStorage as JSON, or `fallback` when there is none, it won't parse, or storage is refused (a
+ * private window, blocked site data)
+ * @param {string} key - The storage key
+ * @param {*} [fallback] - What to answer instead
+ * @returns {*} The value
+ */
+export const readStorage = (key, fallback = null) => {
+	try {
+		return JSON.parse(localStorage.getItem(key)) ?? fallback;
+	} catch {
+		return fallback;
+	}
+};
+
+/**
+ * Keep a value in localStorage as JSON, or remove it when `undefined`. Refused storage is ignored: the value lasts until
+ * the page goes.
+ * @param {string} key - The storage key
+ * @param {*} value - Anything JSON holds
+ */
+export const writeStorage = (key, value) => {
+	try {
+		if (value === undefined) localStorage.removeItem(key);
+		else localStorage.setItem(key, JSON.stringify(value));
+	} catch {
+		// Storage refused
+	}
+};

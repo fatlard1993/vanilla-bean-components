@@ -10,6 +10,17 @@ describe('data utilities', () => {
 			expect(debounced).not.toBe(callback);
 		});
 
+		test('cancel drops the call still waiting', async () => {
+			const callback = mock();
+			const debounced = debounce(callback, 30);
+
+			debounced();
+			debounced.cancel();
+			await delay(40);
+
+			expect(callback).not.toHaveBeenCalled();
+		});
+
 		test('delays function execution', async () => {
 			const callback = mock();
 			const debounced = debounce(callback, 50);

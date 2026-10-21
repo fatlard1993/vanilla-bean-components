@@ -4,16 +4,20 @@ import { isDev } from './browser';
  * Creates debounced version of function that delays execution until after delay period of inactivity.
  * @param {Function} callback - Function to debounce
  * @param {number} [delay] - Milliseconds to delay after last invocation
- * @returns {Function} Debounced function that cancels previous invocations
+ * @returns {Function} Debounced function that cancels previous invocations; its `cancel()` drops a call still waiting
  */
 export const debounce = (callback, delay = 400) => {
 	let timerId;
 
-	return (...args) => {
+	const debounced = (...args) => {
 		clearTimeout(timerId);
 
 		timerId = setTimeout(() => callback(...args), delay);
 	};
+
+	debounced.cancel = () => clearTimeout(timerId);
+
+	return debounced;
 };
 
 /**

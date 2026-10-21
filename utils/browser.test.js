@@ -3,9 +3,11 @@ import {
 	fitToKeyboard,
 	isMac,
 	readClipboard,
+	readStorage,
 	requestWakeLock,
 	vibrate,
 	tactileResponse,
+	writeStorage,
 } from './browser';
 
 describe('browser utilities', () => {
@@ -390,5 +392,42 @@ describe('fitToKeyboard', () => {
 		stop();
 		expect(root.style.height).toBe('');
 		Object.defineProperty(window, 'visualViewport', { configurable: true, value: original });
+	});
+});
+
+describe('readStorage / writeStorage', () => {
+	afterEach(() => localStorage.clear());
+
+	test('a value comes back as it was kept, and undefined removes it', () => {
+		writeStorage('recent', ['#fff', '#000']);
+		expect(readStorage('recent')).toEqual(['#fff', '#000']);
+
+		writeStorage('recent', undefined);
+		expect(readStorage('recent', [])).toEqual([]);
+	});
+
+	test('a value that will not parse answers the fallback', () => {
+		localStorage.setItem('recent', '{oops');
+
+		expect(readStorage('recent', [])).toEqual([]);
+	});
+
+	test('refused storage neither throws nor keeps anything', () => {
+		const storage = Object.getOwnPropertyDescriptor(globalThis, 'localStorage');
+
+		// Blocked site data throws as soon as localStorage is touched
+		Object.defineProperty(globalThis, 'localStorage', {
+			configurable: true,
+			get: () => {
+				throw new DOMException('denied', 'SecurityError');
+			},
+		});
+
+		try {
+			expect(() => writeStorage('recent', [1])).not.toThrow();
+			expect(readStorage('recent', 'none')).toBe('none');
+		} finally {
+			Object.defineProperty(globalThis, 'localStorage', storage);
+		}
 	});
 });
