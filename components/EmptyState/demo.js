@@ -9,5 +9,7 @@ export default class Demo extends DemoView {
 			message: 'Fields you draw on the map show up here.',
 			action: { textContent: 'Draw a field', onPointerPress: () => console.log('draw') },
 		});
+
+		new EmptyState({ appendTo: this.demoWrapper, loading: true, title: 'Loading fields' });
 	}
 }

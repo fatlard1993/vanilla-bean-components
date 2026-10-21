@@ -11,9 +11,11 @@ import { Icon } from '../Icon';
  * @param {string} [options.title] - The headline, e.g. 'No fields yet'
  * @param {string} [options.message] - A line under it
  * @param {object|Component} [options.action] - Button options ({ textContent, onPointerPress }) or a Component
+ * @param {boolean} [options.loading] - Show a spinner in place of the icon, while what would fill the view is on its way
  * @param {...(Component|HTMLElement|string)} children - Appended below the rest
  * @returns {EmptyState} EmptyState component instance
  * @example new EmptyState({ icon: 'seedling', title: 'No fields yet', message: 'Draw one on the map.' })
+ * @example new EmptyState({ loading: true })
  */
 class EmptyState extends styled(
 	Component,
@@ -38,6 +40,11 @@ class EmptyState extends styled(
 			opacity: 0.7;
 		}
 
+		&.loading > .icon {
+			color: ${colors.light(colors.blue)};
+			opacity: 1;
+		}
+
 		& > .title {
 			font-size: 1.1em;
 			font-weight: 600;
@@ -59,9 +66,14 @@ class EmptyState extends styled(
 ) {
 	static schema = {
 		icon: {
+			set() {
+				this._showIcon();
+			},
+		},
+		loading: {
 			set(value) {
-				this._icon.options.icon = value ?? '';
-				this._icon.elem.hidden = !value;
+				this.toggleClass('loading', !!value);
+				this._showIcon();
 			},
 		},
 		title: {
@@ -94,6 +106,15 @@ class EmptyState extends styled(
 		this._title = new Component({ addClass: 'title', appendTo: this });
 		this._message = new Component({ addClass: 'message', appendTo: this });
 		this._action = null;
+	}
+
+	_showIcon() {
+		const { loading, icon } = this.options;
+		const name = loading ? 'spinner' : icon;
+
+		this._icon.options.animation = loading ? 'spin-pulse' : undefined;
+		this._icon.options.icon = name ?? '';
+		this._icon.elem.hidden = !name;
 	}
 }
 
