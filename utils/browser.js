@@ -29,12 +29,12 @@ export const isDev = (() => {
 })();
 
 /**
- * Check if the current device is a mac
+ * Check if the current device is a Mac, an iPhone or an iPad: the ones whose shortcuts use ⌘
  * @returns {boolean} isMac
  */
 export const isMac = () =>
 	// eslint-disable-next-line compat/compat
-	(window.navigator?.userAgentData?.platform || window.navigator.platform).toLowerCase().startsWith('mac');
+	/mac|iphone|ipad/i.test(window.navigator?.userAgentData?.platform || window.navigator.platform || '');
 
 /**
  * Copy a piece of text to the clipboard

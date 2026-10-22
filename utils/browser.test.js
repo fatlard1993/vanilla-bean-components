@@ -27,13 +27,21 @@ describe('browser utilities', () => {
 			expect(() => isMac()).not.toThrow();
 		});
 
-		test('detects platform correctly based on current environment', () => {
-			const result = isMac();
+		test('a Mac, an iPhone and an iPad use the Mac keys; Windows, Linux and Android do not', () => {
+			const platform = Object.getOwnPropertyDescriptor(window.navigator, 'platform');
+			const on = value => {
+				Object.defineProperty(window.navigator, 'platform', { value, configurable: true });
 
-			const platform = (window.navigator?.userAgentData?.platform || window.navigator?.platform || '').toLowerCase();
-			const expectedResult = platform.startsWith('mac');
+				return isMac();
+			};
 
-			expect(result).toBe(expectedResult);
+			try {
+				expect(['MacIntel', 'iPhone', 'iPad'].map(on)).toEqual([true, true, true]);
+				expect(['Win32', 'Linux x86_64', 'Linux armv8l'].map(on)).toEqual([false, false, false]);
+			} finally {
+				if (platform) Object.defineProperty(window.navigator, 'platform', platform);
+				else delete window.navigator.platform;
+			}
 		});
 	});
 

@@ -169,7 +169,7 @@ Haptic feedback on mobile. `tactileResponse` is a 30ms pulse shorthand.
 
 ### `isMac()`
 
-Whether the current user agent is macOS. Useful for displaying ⌘ vs Ctrl keybindings.
+Whether the device is a Mac, an iPhone or an iPad. Useful for displaying ⌘ vs Ctrl keybindings.
 
 ### `isDev`
 
