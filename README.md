@@ -2,7 +2,7 @@
 
 A lightweight, reactive component library for building modern web applications with vanilla JavaScript. No build steps, no framework lock-in, no virtual DOM complexity.
 
-![A page built from VBC components: a header bar with a title, tabs with counts, buttons, a search field, a segmented switch, filter chips, cards with colored accent edges, a loading state and a small form](docs/showcase.png)
+![The explorer's Showcase page, built from VBC components: a header bar with a title, tabs with counts, buttons, a search field, a segmented switch, filter chips, cards with colored accent edges, a loading state, a small form and a row of raised links](docs/showcase.png)
 
 <p>
 	<img src="docs/showcase-phone.png" alt="The same page at phone width: the toolbar wraps and the columns stack" width="260" />
@@ -75,7 +75,7 @@ import { Button, Dialog, Calendar } from '@vanilla-bean/components';
 
 - **Live option editor**: every component, every option, type-appropriate controls, updated in real time
 - **Auto-generated API docs**: options tables, method signatures, event listings pulled directly from source annotations
-- **13 example applications**: async data tables with row actions, localStorage-backed todo, a live HTML/JS/CSS playground with iframe preview, a drawing canvas with a functioning in-game economy
+- **14 example applications**: the Showcase page pictured above, async data tables with row actions, localStorage-backed todo, a live HTML/JS/CSS playground with iframe preview, a drawing canvas with a functioning in-game economy
 - **Ancestor chain navigation**: each component shows its full inheritance (EventTarget → Elem → Component → ...) with links to each layer's documentation
 
 The explorer is built with VBC itself. It uses the same primitives and patterns you'd use in your own app.

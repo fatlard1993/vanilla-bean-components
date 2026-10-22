@@ -47,6 +47,7 @@ import MultiWidgetExample from './examples/MultiWidget';
 import PlaygroundExample from './examples/Playground';
 import ReactiveStateExample from './examples/ReactiveState';
 import ShapeMatchGameExample from './examples/ShapeMatchGame';
+import ShowcaseExample from './examples/Showcase';
 import StopwatchExample from './examples/Stopwatch';
 import TodoExample from './examples/Todo';
 
@@ -137,6 +138,7 @@ export default {
 	['/examples/Playground']: PlaygroundExample,
 	['/examples/ReactiveState']: ReactiveStateExample,
 	['/examples/ShapeMatchGame']: ShapeMatchGameExample,
+	['/examples/Showcase']: ShowcaseExample,
 	['/examples/Stopwatch']: StopwatchExample,
 	['/examples/Todo']: TodoExample,
 
