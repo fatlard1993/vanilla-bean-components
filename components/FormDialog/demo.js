@@ -16,7 +16,10 @@ export default class Demo extends DemoView {
 					{ key: 'notes', tag: 'textarea' },
 				],
 				data: record,
+				// A failed request keeps the dialog open and says why: try the name "taken"
 				onSave: data => {
+					if (data.name === 'taken') return { status: 'error', body: { error: 'That name is taken' } };
+
 					Object.assign(record, data);
 					new Notify({ type: 'success', content: `Saved ${record.name}` });
 				},
