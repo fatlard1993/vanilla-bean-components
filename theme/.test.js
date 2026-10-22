@@ -40,34 +40,10 @@ describe('theme colors', () => {
 });
 
 describe('theme lazy strings', () => {
-	test('theme.button reflects a color mutation', () => {
-		const custom = new TinyColor('hsl(120, 55%, 45%)');
-		theme.colors.blue = custom;
-		expect(theme.button).toContain(custom.toString());
-	});
-
-	test('theme.table reflects a color mutation', () => {
-		const before = theme.table;
-		theme.colors.yellow = new TinyColor('hsl(120, 55%, 45%)');
-		expect(theme.table).not.toBe(before);
-	});
-
-	test('theme.scrollbar reflects a color mutation', () => {
-		const custom = new TinyColor('hsl(120, 55%, 45%)');
-		theme.colors.yellow = custom;
-		expect(theme.scrollbar).toContain(custom.toString());
-	});
-
 	test('theme.input reflects a color mutation', () => {
 		const custom = new TinyColor('hsl(120, 55%, 45%)');
 		theme.colors.yellow = custom;
 		expect(theme.input).toContain(custom.toString());
-	});
-
-	test('theme.code reflects a color mutation', () => {
-		const before = theme.code;
-		theme.colors.blue = new TinyColor('hsl(120, 55%, 45%)');
-		expect(theme.code).not.toBe(before);
 	});
 
 	test('theme.page reflects a color mutation', () => {
@@ -77,9 +53,9 @@ describe('theme lazy strings', () => {
 	});
 
 	test('two accesses with a mutation between return different strings', () => {
-		const before = theme.button;
+		const before = theme.elements;
 		theme.colors.blue = new TinyColor('hsl(120, 55%, 45%)');
-		const after = theme.button;
+		const after = theme.elements;
 		expect(before).not.toBe(after);
 	});
 });

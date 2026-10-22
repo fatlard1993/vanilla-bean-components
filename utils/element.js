@@ -1,16 +1,4 @@
 /**
- * Calculates zero-based index position of element within parent's children.
- * @param {HTMLElement} element - Element to find index of
- * @param {number} [index] - Internal recursion accumulator, do not provide
- * @returns {number} Zero-based index position within parent element
- */
-export const getElementIndex = (element, index = 0) => {
-	if (element.previousElementSibling) return getElementIndex(element.previousElementSibling, index + 1);
-
-	return index;
-};
-
-/**
  * Determines if element is a descendant of specified parent element.
  * @param {HTMLElement} element - Element to test descendant relationship
  * @param {HTMLElement} parentElement - Potential ancestor element

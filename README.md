@@ -54,7 +54,7 @@ npm install github:fatlard1993/vanilla-bean-components
 yarn add github:fatlard1993/vanilla-bean-components
 ```
 
-Reactive state (`Oxject`, `derive`) is included in VBC, no separate install. The HTTP examples use [hypertether](https://github.com/fatlard1993/hypertether), which is a separate package:
+Reactive state (`Oxject`) is included in VBC, no separate install. The HTTP examples use [hypertether](https://github.com/fatlard1993/hypertether), which is a separate package:
 
 ```bash
 bun add @vanilla-bean/hypertether
@@ -234,7 +234,7 @@ class Stats extends Component {
 | Module | Purpose | Key Features |
 | --- | --- | --- |
 | **[Component](./Component/README.md)** | Enhanced DOM elements | Lifecycle management, reactive options, automatic cleanup |
-| **Oxject** | Reactive state | Proxy-based reactivity, subscriber system, `derive()` for computed values |
+| **Oxject** | Reactive state | Proxy-based reactivity, subscriber system |
 | **[styled](./styled/README.md)** | Scoped CSS | Theme integration, native CSS nesting, unique class generation |
 | **[Theme](./theme/README.md)** | Design system | Color manipulation, font management, accessibility helpers |
 

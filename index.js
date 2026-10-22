@@ -9,7 +9,7 @@ Object.entries({ Elem, Component, ...components }).forEach(([name, component]) =
 
 export * from './Component';
 export * from './components';
-export { Oxject, derive } from '@vanilla-bean/oxject';
+export { Oxject } from '@vanilla-bean/oxject';
 export * from './Elem';
 export * from './styled';
 export * from './utils';

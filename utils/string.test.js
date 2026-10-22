@@ -1,4 +1,4 @@
-import { capitalize, fromCamelCase, toCamelCase, toPascalCase, removeExcessIndentation } from './string';
+import { capitalize, fromCamelCase, toCamelCase, removeExcessIndentation } from './string';
 
 describe('string utilities', () => {
 	describe('capitalize', () => {
@@ -178,45 +178,6 @@ describe('string utilities', () => {
 		});
 	});
 
-	describe('toPascalCase', () => {
-		test('converts strings to PascalCase', () => {
-			expect(toPascalCase('pascal case')).toBe('PascalCase');
-			expect(toPascalCase('my component')).toBe('MyComponent');
-			expect(toPascalCase('user account')).toBe('UserAccount');
-		});
-
-		test('handles camelCase input', () => {
-			expect(toPascalCase('camelCase')).toBe('CamelCase');
-			expect(toPascalCase('myVariableName')).toBe('MyVariableName');
-		});
-
-		test('handles already PascalCase strings', () => {
-			expect(toPascalCase('PascalCase')).toBe('PascalCase');
-			expect(toPascalCase('MyComponent')).toBe('MyComponent');
-		});
-
-		test('handles empty and single character strings', () => {
-			expect(toPascalCase('')).toBe('');
-			expect(toPascalCase('a')).toBe('A');
-			expect(toPascalCase('hello')).toBe('Hello');
-		});
-
-		test('handles kebab-case and snake_case', () => {
-			expect(toPascalCase('kebab-case')).toBe('Kebab-case');
-			expect(toPascalCase('snake_case')).toBe('Snake_case');
-		});
-
-		test('works with numbers and mixed content', () => {
-			expect(toPascalCase('version 2')).toBe('Version2');
-			expect(toPascalCase('html 5 parser')).toBe('Html5Parser');
-		});
-
-		test('handles special characters', () => {
-			expect(toPascalCase('hello world!')).toBe('HelloWorld!');
-			expect(toPascalCase('test @case')).toBe('Test@case');
-		});
-	});
-
 	describe('removeExcessIndentation', () => {
 		test('returns string unchanged if no tabs', () => {
 			const input = 'hello world\nno tabs here';
@@ -300,16 +261,6 @@ describe('string utilities', () => {
 	});
 
 	describe('integration and real-world scenarios', () => {
-		test('converts between different naming conventions', () => {
-			const original = 'myVariableName';
-
-			const spaced = fromCamelCase(original);
-			const pascal = toPascalCase(spaced);
-
-			expect(spaced).toBe('my Variable Name');
-			expect(pascal).toBe('MyVariableName');
-		});
-
 		test('round trip conversions', () => {
 			const original = 'hello world test';
 			const camel = toCamelCase(original);
@@ -317,17 +268,6 @@ describe('string utilities', () => {
 
 			expect(camel).toBe('helloWorldTest');
 			expect(backToSpaced).toBe('hello World Test');
-		});
-
-		test('API field name transformations', () => {
-			const apiField = 'user_account_settings';
-			const camelCase = toCamelCase(apiField, '_');
-			const pascalCase = toPascalCase(camelCase);
-			const readable = fromCamelCase(pascalCase);
-
-			expect(camelCase).toBe('userAccountSettings');
-			expect(pascalCase).toBe('UserAccountSettings');
-			expect(readable).toBe('User Account Settings');
 		});
 
 		test('code formatting with removeExcessIndentation', () => {
@@ -379,23 +319,6 @@ describe('string utilities', () => {
 				expect(fromCamelCase(input)).toBe(fromCamel);
 				expect(toCamelCase(fromCamelCase(input))).toBe(toCamel);
 			});
-		});
-
-		test('performance with large strings', () => {
-			const largeString = 'word '.repeat(1000).trim();
-			const largeCamelString = 'a'.repeat(500) + 'B' + 'c'.repeat(500);
-			const largeIndentedString = '\t'.repeat(50) + 'content\n' + '\t'.repeat(50) + 'more content';
-
-			const start = Date.now();
-
-			capitalize(largeString, true);
-			fromCamelCase(largeCamelString);
-			toCamelCase(largeString);
-			toPascalCase(largeString);
-			removeExcessIndentation(largeIndentedString);
-
-			const elapsed = Date.now() - start;
-			expect(elapsed).toBeLessThan(100);
 		});
 	});
 

@@ -21,10 +21,3 @@ export const buildClassList = (...classNames) => [
 			.filter(className => typeof className === 'string' && className.length > 0 && !/^\s+$/.test(className)),
 	),
 ];
-
-/**
- * Convert any number of strings or arrays into a single space delineated string with no duplicates
- * @param {...any} classNames - strings or arrays of strings
- * @returns {string} className
- */
-export const buildClassName = (...classNames) => buildClassList(...classNames).join(' ');

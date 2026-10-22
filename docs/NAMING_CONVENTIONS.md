@@ -39,7 +39,7 @@ Variable and function naming emphasizes readability and clearly communicates int
 **Standard Identifiers:**
 
 - **Local variables**: camelCase with descriptive names (e.g., `userName`, `isValid`, `currentValue`)
-- **Function names**: camelCase verbs that describe the action (e.g., `buildClassName`, `hydrateUrl`, `updateValidationErrors`)
+- **Function names**: camelCase verbs that describe the action (e.g., `buildClassList`, `hydrateUrl`, `updateValidationErrors`)
 - **Default options**: Always `defaultOptions` as a camelCase object containing component defaults
 
 **Special Naming Patterns:**
@@ -115,7 +115,7 @@ Package and module naming follows NPM conventions and JavaScript module standard
 
 **Module Structure:**
 
-- **Export paths**: Follow the internal file structure (e.g., `@vanilla-bean/components/utils`, `@vanilla-bean/components/theme`)
+- **Export paths**: Follow the internal file structure (e.g., `@vanilla-bean/components/utils`, `@vanilla-bean/components/app`)
 - **Named exports**: Match the internal class or function names exactly for predictable imports
 
 ## Special Cases

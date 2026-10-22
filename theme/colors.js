@@ -1,11 +1,8 @@
-import { TinyColor, random, readability, isReadable, mostReadable } from '@ctrl/tinycolor';
+import { TinyColor, mostReadable } from '@ctrl/tinycolor';
 
 let selectedOverride;
 
 const colors = {
-	random,
-	readability,
-	isReadable,
 	mostReadable,
 
 	// Shared instances for speed (cloning per access proved too slow) - frozen so an
@@ -20,7 +17,6 @@ const colors = {
 	purple: Object.freeze(new TinyColor('hsl(254, 55%, 45%)')),
 	pink: Object.freeze(new TinyColor('hsl(314, 55%, 45%)')),
 	red: Object.freeze(new TinyColor('hsl(359, 55%, 45%)')),
-	transparent: Object.freeze(new TinyColor('rgba(255, 255, 255, 0)')),
 	superWhite: Object.freeze(new TinyColor('hsl(0, 100%, 100%)')),
 	vantablack: Object.freeze(new TinyColor('hsl(0, 0%, 0%)')),
 

@@ -73,8 +73,7 @@ Table does not emit custom events. Supply `onSort` to intercept sort interaction
 Sortable table with a custom column label, styled header, and footer totals:
 
 ```js
-import { Table } from '@vanilla-bean/components';
-import theme from '@vanilla-bean/components/theme';
+import { Table, theme } from '@vanilla-bean/components';
 
 const table = new Table({
 	data: [

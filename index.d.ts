@@ -32,7 +32,6 @@ export interface ThemeColors {
 	overlay: ThemeColor;
 	/** The library's warning color (Notify and Dialog's warning variant) */
 	warning: ThemeColor;
-	transparent: ThemeColor;
 	superWhite: ThemeColor;
 	vantablack: ThemeColor;
 	dark(c: ThemeColor): ThemeColor;
@@ -44,19 +43,15 @@ export interface ThemeColors {
 	blackish(c: ThemeColor): ThemeColor;
 	whiteish(c: ThemeColor): ThemeColor;
 	mostReadable(base: ThemeColor, candidates: ThemeColor[]): ThemeColor;
-	random(): ThemeColor;
 }
 
 export interface Theme {
 	colors: ThemeColors;
 	fonts: { kodeMono: string; code: string; fontAwesome: string; fontAwesomeSolid: string; fontAwesomeBrands: string };
-	button: string;
 	input: string;
 	page: string;
 	/** Styles for bare elements; Page's themeElements: false turns them off */
 	elements: string;
-	scrollbar: string;
-	table: string;
 }
 
 export declare const theme: Theme;
@@ -71,7 +66,7 @@ import type {
 	SubscriberSubscription,
 } from '@vanilla-bean/oxject';
 export type { OxjectInstance, DeriveInstance, DeriveOptions, Subscription, SubscriberSubscription };
-export { Oxject, derive } from '@vanilla-bean/oxject';
+export { Oxject } from '@vanilla-bean/oxject';
 
 // ── Elem ───────────────────────────────────────────────────────────────────────
 

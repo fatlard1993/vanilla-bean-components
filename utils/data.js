@@ -85,25 +85,6 @@ export const convertRange = (value, sourceRange, targetRange) =>
 	((value - sourceRange[0]) * (targetRange[1] - targetRange[0])) / (sourceRange[1] - sourceRange[0]) + targetRange[0];
 
 /**
- * Extracts non-native property names from object and its prototype chain.
- *
- * Filters out built-in JavaScript object methods and properties like constructor,
- * toString, hasOwnProperty, etc.
- * @param {object} object - Object to extract custom properties from
- * @returns {string[]} Array of custom property names excluding native methods
- */
-export const getCustomProperties = object =>
-	[
-		...new Set(object ? [...Reflect.ownKeys(object), ...getCustomProperties(Object.getPrototypeOf(object))] : []),
-	].filter(
-		key =>
-			typeof key !== 'string' ||
-			!/^(?:constructor|prototype|arguments|caller|name|length|toString|toLocaleString|valueOf|apply|bind|call|__proto__|__defineGetter__|__defineSetter__|hasOwnProperty|__lookupGetter__|__lookupSetter__|isPrototypeOf|propertyIsEnumerable)$/.test(
-				key,
-			),
-	);
-
-/**
  * Builds array from conditional item descriptors, supporting conditional inclusion and arrays.
  * @param {object[]} conditionalItems - Array of conditional item descriptors
  * @param {boolean} conditionalItems[].if - Condition determining item inclusion

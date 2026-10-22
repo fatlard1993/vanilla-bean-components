@@ -1,4 +1,4 @@
-import { buildClassList, buildClassName, classSafeNanoid } from './class';
+import { buildClassList, classSafeNanoid } from './class';
 
 describe('class utilities', () => {
 	describe('classSafeNanoid', () => {
@@ -99,73 +99,7 @@ describe('class utilities', () => {
 		});
 	});
 
-	describe('buildClassName', () => {
-		test('creates space-separated string from arguments', () => {
-			const result = buildClassName('one', 'two', 'three');
-			expect(result).toBe('one two three');
-		});
-
-		test('removes duplicates and joins with spaces', () => {
-			const result = buildClassName('one', 'two', 'two', 'three');
-			expect(result).toBe('one two three');
-		});
-
-		test('handles arrays and nested structures', () => {
-			const result = buildClassName(['one', 'two'], 'three', [['four']]);
-			expect(result).toBe('one two three four');
-		});
-
-		test('filters invalid inputs before joining', () => {
-			const result = buildClassName('valid', 123, null, 'also-valid', '');
-			expect(result).toBe('valid also-valid');
-		});
-
-		test('returns empty string for no valid classes', () => {
-			expect(buildClassName()).toBe('');
-			expect(buildClassName(null, undefined, 123, '')).toBe('');
-		});
-
-		test('handles single class', () => {
-			expect(buildClassName('single')).toBe('single');
-		});
-
-		test('preserves strings with whitespace around content', () => {
-			const result = buildClassName('  valid-class  ', 'another');
-			expect(result).toBe('  valid-class   another');
-		});
-
-		test('filters out whitespace-only strings', () => {
-			const result = buildClassName('valid', '   ', '\t\n', 'another');
-			expect(result).toBe('valid another');
-		});
-	});
-
 	describe('integration scenarios', () => {
-		test('classSafeNanoid output works with buildClassName', () => {
-			const id1 = classSafeNanoid();
-			const id2 = classSafeNanoid();
-
-			const className = buildClassName(id1, id2, 'custom-class');
-
-			expect(className).toContain(id1);
-			expect(className).toContain(id2);
-			expect(className).toContain('custom-class');
-			expect(className.split(' ')).toHaveLength(3);
-		});
-
-		test('complex real-world scenario', () => {
-			const baseClasses = ['btn', 'component'];
-			const conditionalClasses = baseClasses.length > 1 ? ['active', 'primary'] : ['inactive'];
-			const dynamicClass = classSafeNanoid(8);
-
-			const result = buildClassName(baseClasses, conditionalClasses, dynamicClass, null, '', 'final-class');
-
-			expect(result).toContain('btn component active primary');
-			expect(result).toContain(dynamicClass);
-			expect(result).toContain('final-class');
-			expect(result).not.toContain('inactive');
-		});
-
 		test('demonstrates CSS class creation workflow', () => {
 			const baseClass = classSafeNanoid();
 			const modifiers = ['hover', 'active'];
@@ -183,26 +117,6 @@ describe('class utilities', () => {
 			expect(finalClasses).not.toContain('disabled');
 			expect(finalClasses).not.toContain('');
 			expect(finalClasses).not.toContain(null);
-		});
-
-		test('handles className attribute creation', () => {
-			const component = 'button';
-			const variant = 'primary';
-			const size = 'large';
-			const isDisabled = false;
-			const customClasses = ['my-button', ''];
-
-			const className = buildClassName(
-				component,
-				`${component}--${variant}`,
-				`${component}--${size}`,
-				isDisabled && `${component}--disabled`,
-				customClasses,
-				'   ',
-				null,
-			);
-
-			expect(className).toBe('button button--primary button--large my-button');
 		});
 	});
 

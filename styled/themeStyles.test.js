@@ -73,14 +73,14 @@ describe('themeStyles', () => {
 		expect(receivedTheme).toBe(theme);
 		expect(receivedTheme).toHaveProperty('colors');
 		expect(receivedTheme).toHaveProperty('fonts');
-		expect(receivedTheme).toHaveProperty('button');
+		expect(receivedTheme).toHaveProperty('space');
 		expect(receivedTheme).toHaveProperty('input');
 	});
 
 	test('handles complex theme function usage', () => {
 		const styleConfig = {
-			styles: ({ colors, fonts, button }) => `
-				${button}
+			styles: ({ colors, fonts, space }) => `
+				padding: ${space.md};
 				${fonts.kodeMono}
 				color: ${colors.mostReadable(colors.blue, [colors.white, colors.black])};
 				background: ${colors.darker(colors.blue)};
@@ -89,7 +89,7 @@ describe('themeStyles', () => {
 
 		const result = themeStyles(styleConfig);
 
-		expect(result).toContain('display: inline-block');
+		expect(result).toContain('padding: 12px');
 		expect(result).toContain('font-family');
 		expect(typeof result).toBe('string');
 		expect(result.length).toBeGreaterThan(0);

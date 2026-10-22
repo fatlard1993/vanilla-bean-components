@@ -1,4 +1,4 @@
-import { debounce, throttle, delay, retry, convertRange, getCustomProperties, conditionalList, orderBy } from './data';
+import { debounce, throttle, delay, retry, convertRange, conditionalList, orderBy } from './data';
 
 describe('data utilities', () => {
 	describe('debounce', () => {
@@ -373,120 +373,6 @@ describe('data utilities', () => {
 		});
 	});
 
-	describe('getCustomProperties', () => {
-		test('finds custom properties on plain objects', () => {
-			const testObject = {
-				customProp: 'test',
-				anotherProp: 42,
-				methodProp: function () {
-					return 'method';
-				},
-			};
-
-			const result = getCustomProperties(testObject);
-			expect(result).toContain('customProp');
-			expect(result).toContain('anotherProp');
-			expect(result).toContain('methodProp');
-		});
-
-		test('excludes native object properties', () => {
-			const testObject = {
-				customProp: 'test',
-			};
-
-			const result = getCustomProperties(testObject);
-			expect(result).not.toContain('constructor');
-			expect(result).not.toContain('toString');
-			expect(result).not.toContain('valueOf');
-			expect(result).not.toContain('hasOwnProperty');
-			expect(result).not.toContain('__proto__');
-		});
-
-		test('finds properties on class instances', () => {
-			class TestClass {
-				constructor() {
-					this.instanceProp = 'instance';
-				}
-
-				methodProp() {
-					return 'method';
-				}
-			}
-
-			TestClass.prototype.protoProp = 'proto';
-
-			const instance = new TestClass();
-			const result = getCustomProperties(instance);
-
-			expect(result).toContain('instanceProp');
-			expect(result).toContain('methodProp');
-			expect(result).toContain('protoProp');
-		});
-
-		test('handles null and undefined gracefully', () => {
-			expect(getCustomProperties(null)).toEqual([]);
-			expect(getCustomProperties(undefined)).toEqual([]);
-		});
-
-		test('finds symbol properties', () => {
-			const symbolProp = Symbol('test');
-			const obj = {
-				stringProp: 'test',
-				[symbolProp]: 'symbol value',
-			};
-
-			const result = getCustomProperties(obj);
-			expect(result).toContain('stringProp');
-			expect(result).toContain(symbolProp);
-		});
-
-		test('removes duplicates from inheritance chain', () => {
-			class Parent {
-				parentMethod() {
-					return 'parent';
-				}
-			}
-
-			class Child extends Parent {
-				childMethod() {
-					return 'child';
-				}
-				parentMethod() {
-					return 'overridden';
-				}
-			}
-
-			const instance = new Child();
-			const result = getCustomProperties(instance);
-
-			const parentMethodCount = result.filter(prop => prop === 'parentMethod').length;
-			expect(parentMethodCount).toBe(1);
-			expect(result).toContain('childMethod');
-		});
-
-		test('handles empty objects', () => {
-			const result = getCustomProperties({});
-			expect(Array.isArray(result)).toBe(true);
-		});
-
-		test('handles objects with only native properties', () => {
-			const obj = Object.create(null);
-			const result = getCustomProperties(obj);
-			expect(result).toEqual([]);
-		});
-
-		test('handles functions as objects', () => {
-			/**
-			 *
-			 */
-			function testFunction() {}
-			testFunction.customProp = 'custom';
-
-			const result = getCustomProperties(testFunction);
-			expect(result).toContain('customProp');
-		});
-	});
-
 	describe('conditionalList', () => {
 		test('includes items when condition is true', () => {
 			const result = conditionalList([
@@ -722,27 +608,6 @@ describe('data utilities', () => {
 			expect(processed).toHaveLength(3);
 			expect(processed[0].name).toBe('Carol');
 			expect(processed[0].grade).toBeCloseTo(3.52, 2);
-		});
-
-		test('performance with large data sets', async () => {
-			const largeData = Array.from({ length: 1000 }, (_, i) => ({
-				id: i,
-				name: `item-${i}`,
-				value: Math.random() * 100,
-			}));
-
-			const start = Date.now();
-
-			const sorted = largeData.sort(orderBy({ property: 'value', direction: 'desc' }));
-			const properties = getCustomProperties(largeData[0]);
-
-			const elapsed = Date.now() - start;
-
-			expect(sorted.length).toBe(1000);
-			expect(sorted[0].value).toBeGreaterThanOrEqual(sorted[999].value);
-			expect(properties).toContain('id');
-			// Generous budget: guards against pathological regressions without being machine-sensitive
-			expect(elapsed).toBeLessThan(1000);
 		});
 	});
 });

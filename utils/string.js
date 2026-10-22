@@ -42,13 +42,6 @@ export const toCamelCase = (string, splitter = ' ') => {
 };
 
 /**
- * Reformat string to a PascalCase
- * @param {string} string - The source string
- * @returns {string} The re-formatted string
- */
-export const toPascalCase = (string = '') => capitalize(toCamelCase(string));
-
-/**
  * Strip all excess newline and indentation whitespace from the source string
  * @param {string} string - The source string
  * @returns {string} The re-formatted string

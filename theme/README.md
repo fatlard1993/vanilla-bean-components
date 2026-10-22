@@ -100,7 +100,7 @@ new Button({ addClass: 'my-button', textContent: 'Save' });
 Or inject scoped styles directly via `appendStyles`:
 
 ```js
-import { appendStyles } from '@vanilla-bean/components/styled';
+import { appendStyles } from '@vanilla-bean/components';
 
 appendStyles(
 	`
@@ -280,7 +280,6 @@ Special utility colors and WCAG compliance helpers:
 
 ```js
 // Utility colors
-colors.transparent; // Transparent - for overlays, hidden elements
 colors.white; // Near-white derived from gray (gray lightened 45%) - text on dark backgrounds
 colors.black; // Near-black derived from gray (gray darkened 35%) - backgrounds, text on light surfaces
 colors.superWhite; // #ffffff - pure white constant, independent of gray
@@ -295,15 +294,6 @@ theme.colors.selected = new TinyColor('#3d7aed'); // decouple from yellow
 // Accessibility functions
 colors.mostReadable(baseColor, [colors.white, colors.black]);
 // Returns the highest contrast color for optimal readability
-
-colors.readability(color1, color2);
-// Returns WCAG contrast ratio (1-21, higher is better)
-
-colors.isReadable(color1, color2, { level: 'AA', size: 'normal' });
-// Tests WCAG compliance (AA/AAA levels, normal/large text)
-
-colors.random();
-// Generates random color for placeholders, testing
 ```
 
 **Accessibility examples:**
@@ -319,18 +309,6 @@ const accessibleCard = ({ colors }) => {
     color: ${textColor};
   `;
 };
-
-// Validate color combinations
-const validateDesign = (bg, text) => {
-	const ratio = colors.readability(bg, text);
-	const isAccessible = colors.isReadable(bg, text, { level: 'AA' });
-
-	console.log(`Contrast ratio: ${ratio.toFixed(2)}`);
-	console.log(`WCAG AA compliant: ${isAccessible}`);
-};
-
-validateDesign(colors.blue, colors.white); // Good contrast
-validateDesign(colors.light(colors.blue), colors.white); // May fail
 ```
 
 ## Typography & Fonts
@@ -485,11 +463,7 @@ const BottomNav = styled.Component`
 Complete styling for standard UI elements:
 
 ```js
-theme.button; // Button styling with states (hover, active, disabled)
 theme.input; // Form input styling with validation states
-theme.table; // Data table with hover effects and borders
-theme.scrollbar; // Custom scrollbar styling to match theme
-theme.code; // Code syntax highlighting configuration
 theme.page; // Always-on page base and the library components' looks
 theme.elements; // Bare-element styles; Page's themeElements turns them off
 ```
@@ -497,16 +471,6 @@ theme.elements; // Bare-element styles; Page's themeElements turns them off
 **Component style usage:**
 
 ```js
-// Extend base button styles
-const PrimaryButton = styled.Button`
-	${({ button }) => button}
-	background: ${({ colors }) => colors.blue};
-
-	&:hover {
-		background: ${({ colors }) => colors.darker(colors.blue)};
-	}
-`;
-
 // Apply input styling with custom validation
 const ValidatedInput = styled.Input`
 	${({ input }) => input}
@@ -518,16 +482,6 @@ const ValidatedInput = styled.Input`
 
 	&.success {
 		border-color: ${({ colors }) => colors.green};
-	}
-`;
-
-// Styled data table
-const DataTable = styled.Table`
-	${({ table }) => table}
-
-	th {
-		background: ${({ colors }) => colors.darker(colors.gray)};
-		color: ${({ colors }) => colors.white};
 	}
 `;
 ```
@@ -562,11 +516,7 @@ interface Theme {
 	media: { phone: string; wide: string; touch: string };
 
 	// Component base styles (CSS strings)
-	button: string;
 	input: string;
-	table: string;
-	scrollbar: string;
-	code: string;
 	page: string;
 	elements: string;
 }
@@ -588,7 +538,6 @@ interface ColorSystem {
 	red: TinyColor;
 
 	// Utility colors
-	transparent: TinyColor;
 	white: TinyColor;
 	black: TinyColor;
 	selected: TinyColor;
@@ -607,16 +556,6 @@ interface ColorSystem {
 
 	// Accessibility functions
 	mostReadable(baseColor: TinyColor, candidates: TinyColor[]): TinyColor;
-	readability(color1: TinyColor, color2: TinyColor): number;
-	isReadable(
-		color1: TinyColor,
-		color2: TinyColor,
-		options?: {
-			level?: 'AA' | 'AAA';
-			size?: 'normal' | 'large';
-		},
-	): boolean;
-	random(): TinyColor;
 }
 ```
 

@@ -1,36 +1,3 @@
-import { random as randomColor } from '@ctrl/tinycolor';
-
-/**
- * Create a hsl color string using a string as the seed
- * @param {string} string - The string to use as the color seed
- * @param {object} config - Min/Max constraints for the color
- * @param {[number, number]} config.h - The hue constraints [min, max]
- * @param {[number, number]} config.s - The saturation constraints [min, max]
- * @param {[number, number]} config.l - The lightness constraints [min, max]
- * @returns {string} hsl color string
- */
-export const stringToColor = (string, config = {}) => {
-	const { h, s, l } = { h: [0, 360], s: [75, 100], l: [40, 60], ...config };
-
-	if (!string) return randomColor().toRgbString();
-
-	const range = (hash, min, max) => {
-		const diff = max - min;
-		const x = ((hash % diff) + diff) % diff;
-
-		return x + min;
-	};
-
-	let hash = 0;
-
-	for (let x = 0; x < string.length; ++x) {
-		hash = string.codePointAt(x) + ((hash << 5) - hash);
-		hash &= hash;
-	}
-
-	return `hsl(${range(hash, h[0], h[1])}, ${range(hash, s[0], s[1])}%, ${range(hash, l[0], l[1])}%)`;
-};
-
 const rgb2lab = rgb => {
 	let r = rgb[0] / 255,
 		g = rgb[1] / 255,

@@ -1,7 +1,7 @@
-import { raised } from './button';
+import button, { raised } from './button';
 import theme from '.';
 
-describe('theme.button', () => {
+describe('button styles', () => {
 	test('a raised button nudges with translate, never top, so a button placed by bottom stays put', () => {
 		const css = raised(theme);
 		const rule = selector => css.slice(css.indexOf(selector), css.indexOf('&:after', css.indexOf(selector)));
@@ -13,7 +13,7 @@ describe('theme.button', () => {
 	});
 
 	test('the default button moves nothing as it is pressed, and answers by brightness so a color of its own still works', () => {
-		const css = theme.button;
+		const css = button(theme);
 
 		expect(css).not.toContain('translate');
 		expect(css).toContain('filter: brightness(1.15)');

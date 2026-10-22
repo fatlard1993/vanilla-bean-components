@@ -26,14 +26,6 @@ toCamelCase('component options'); // → 'componentOptions'
 fromCamelCase('componentOptions'); // → 'component options'
 ```
 
-### `toPascalCase(string)`
-
-Like `toCamelCase` but capitalizes the first word too. Useful for generated class names.
-
-```js
-toPascalCase('my component'); // → 'MyComponent'
-```
-
 ### `removeExcessIndentation(string)`
 
 Strips the minimum common leading whitespace from every line. Useful for cleaning up indented template literals before rendering.
@@ -100,10 +92,6 @@ conditionalList([
 ]); // → ['home', 'dashboard'] when isLoggedIn, not isAdmin
 ```
 
-### `getCustomProperties(object)`
-
-Returns all own enumerable properties of an object, excluding prototype members.
-
 ## Storage
 
 ### `readStorage(key, fallback?)` / `writeStorage(key, value)`
@@ -150,15 +138,6 @@ weightedChance({ common: 70, rare: 25, legendary: 5 }); // a key, as likely as i
 ```
 
 ## Color
-
-### `stringToColor(string, config?)`
-
-Deterministic color from any string. Same input always produces the same hue. Useful for avatars or tag coloring.
-
-```js
-stringToColor('alice'); // always the same hue for 'alice'
-stringToColor('bob'); // different but stable hue
-```
 
 ### `rgbDelta(rgbA, rgbB)`
 
@@ -240,12 +219,12 @@ A file's contents as `'text'` (default), `'json'`, `'dataURL'` or `'arrayBuffer'
 
 ## Class
 
-### `buildClassList(...classNames)` / `buildClassName(...classNames)`
+### `buildClassList(...classNames)`
 
-Flatten nested arrays, filter falsy values, and produce a class name list or space-joined string. Used internally by `addClass`.
+Flatten nested arrays, filter falsy values, and produce a list of class names. Used internally by `addClass`.
 
 ```js
-buildClassName('btn', isActive && 'active', null, ['size-lg']); // → 'btn active size-lg'
+buildClassList('btn', isActive && 'active', null, ['size-lg']); // → ['btn', 'active', 'size-lg']
 ```
 
 ### `classSafeNanoid(size?)`
