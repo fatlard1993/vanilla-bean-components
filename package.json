@@ -1,6 +1,6 @@
 {
 	"name": "@vanilla-bean/components",
-	"version": "5.1.0",
+	"version": "5.1.1",
 	"type": "module",
 	"module": "./index.js",
 	"types": "./index.d.ts",
