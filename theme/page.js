@@ -140,7 +140,7 @@ export default theme => `
 	}
 
 	/* The bevelled look that sinks as it's pressed */
-	.vbc-button:where(.variant-raised) { ${raised(theme)} }
+	.vbc-button:where(.variant-raised), a.variant-button:where(.variant-raised) { ${raised(theme)} }
 
 	/* Rendered markdown: headings marked with their level, in the document green */
 	.vbc-markdown {

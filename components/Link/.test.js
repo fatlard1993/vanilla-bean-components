@@ -75,7 +75,8 @@ describe('Link', () => {
 
 		expect(link.optionEnum('variant')).toContain('link');
 		expect(link.optionEnum('variant')).toContain('button');
-		expect(link.optionEnum('variant')).toHaveLength(2);
+		expect(link.optionEnum('variant')).toContain('raised');
+		expect(link.optionEnum('variant')).toHaveLength(3);
 	});
 
 	test('accepts custom href and target attributes', () => {

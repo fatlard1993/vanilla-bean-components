@@ -9,6 +9,13 @@ Anchor element with optional button styling. The decision: `variant: 'button'` c
 - a Link with `variant: 'button'` looks like a button but behaves like a link; it is still an anchor element, which is what provides right-click menus, keyboard focus, and tab semantics natively
   - does a Link with variant 'button' remain an anchor element?
 
+## A raised link is a key you press
+
+A launcher's links are the content, pressed like keys, so they take the bevelled look Button calls `raised` while staying anchors.
+
+- a Link with `variant: 'raised'` is an anchor drawn as a raised button
+  - new Subject({ href: "#x", textContent: "go", variant: "raised" }) captures l -> l.elem.tagName === "A" && l.elem.classList.contains("variant-button") && l.elem.classList.contains("variant-raised")
+
 ## Tooltip includes a link icon automatically
 
 - when a tooltip string is provided, the tooltip is configured with a link icon alongside the text

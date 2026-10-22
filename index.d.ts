@@ -584,8 +584,8 @@ export declare class Label extends TooltipWrapper {
 }
 
 export interface LinkOptions extends TooltipWrapperOptions {
-	/** Link display variant ('link', 'button') (default: "link") */
-	variant?: 'link' | 'button';
+	/** Link display variant ('link', 'button', 'raised') (default: "link") */
+	variant?: 'link' | 'button' | 'raised';
 	/** URL to link to */
 	href?: string;
 	/** Link target attribute */
