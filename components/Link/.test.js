@@ -70,6 +70,20 @@ describe('Link', () => {
 		expect(link.options.tooltip.style.fontSize).toBe('12px');
 	});
 
+	test('tooltip false leaves a nav link without one, and takes away one it had', async () => {
+		const bare = new Link({ href: '#home', textContent: 'Home', tooltip: false, appendTo: container });
+		const later = new Link({ href: '#map', textContent: 'Map', appendTo: container });
+
+		expect(bare._tooltip).toBeFalsy();
+		expect(later._tooltip).toBeTruthy();
+
+		later.options.tooltip = false;
+
+		expect(later._tooltip).toBeFalsy();
+		expect(await findByRole(container, 'link', { name: 'Home' })).not.toHaveClass('has-tooltip');
+		expect(await findByRole(container, 'link', { name: 'Map' })).not.toHaveClass('has-tooltip');
+	});
+
 	test('supports variant enum values', () => {
 		const link = new Link({ appendTo: container });
 
