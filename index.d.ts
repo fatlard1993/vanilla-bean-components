@@ -585,8 +585,8 @@ export interface LinkOptions extends TooltipWrapperOptions {
 	href?: string;
 	/** Link target attribute */
 	target?: string;
-	/** Tooltip configuration or text */
-	tooltip?: Record<string, any> | string;
+	/** Tooltip configuration or text; false for none, as on a nav bar's links */
+	tooltip?: Record<string, any> | string | false;
 }
 
 export declare class Link extends TooltipWrapper {
@@ -826,8 +826,8 @@ export declare class Tooltip extends Popover {
 }
 
 export interface TooltipWrapperOptions extends IconOptions {
-	/** Tooltip text or configuration object */
-	tooltip?: string | Record<string, any>;
+	/** Tooltip text or configuration object; false for none */
+	tooltip?: string | Record<string, any> | false;
 	/** Icon to display in the component */
 	icon?: string;
 }
