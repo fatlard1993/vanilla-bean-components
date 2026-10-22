@@ -184,22 +184,33 @@ The same is a function, `service(command, options)`, and `serviceDefinition(opti
 
 On macOS the agent is labelled `com.vanilla-bean.<name>`. An app moving from its own script disables the old agent first.
 
-## Checks before a commit, and in CI
+## Checks before a push, and in CI
 
-The library ships the pre-commit an app needs: lint, then the tests (when there are any), then `lldtdd lint` on staged `.lld.md` documents. An app runs it from a one-line hook of its own, through `sh` so it needn't be executable where the package manager put it:
+The library ships the pre-push an app needs: lint, then the tests (when there are any), then `lldtdd lint` when the pushed commits change `.lld.md` documents. The checks run once, on what is about to leave the machine, rather than on every commit made along the way. An app runs it from a one-line hook of its own, through `sh` so it needn't be executable where the package manager put it, passing on the remote and the refs git hands a pre-push:
 
 ```sh
 #!/usr/bin/env sh
-# .githooks/pre-commit
-sh node_modules/@vanilla-bean/components/githooks/pre-commit || exit 1
+# .githooks/pre-push
+sh node_modules/@vanilla-bean/components/githooks/pre-push "$@" || exit 1
 ```
 
 ```json
 "prepare": "bun run prepare:githooks && bun run build",
-"prepare:githooks": "[ -n \"$CI\" ] && exit 0 || (git config --local core.hooksPath .githooks || echo 'Cannot set core.hooksPath -- pre-commit checks will not run')"
+"prepare:githooks": "[ -n \"$CI\" ] && exit 0 || (git config --local core.hooksPath .githooks || echo 'Cannot set core.hooksPath -- pre-push checks will not run')"
 ```
 
-Checks of the app's own go in the same file, after that line.
+Checks of the app's own go in the same file. git hands the refs over once, on stdin, so a hook with checks of its own reads them first and passes them to each; `githooks/pushed-files` turns them into the files the push changes:
+
+```sh
+#!/usr/bin/env sh
+# .githooks/pre-push
+refs=$(cat)
+echo "$refs" | sh node_modules/@vanilla-bean/components/githooks/pre-push "$@" || exit 1
+
+if echo "$refs" | sh node_modules/@vanilla-bean/components/githooks/pushed-files "$1" | grep -q '^server/'; then
+	bun run check:server || exit 1
+fi
+```
 
 `templates/ci.yml` is the same gate for GitHub Actions, for commits that skipped the hook: copy it to `.github/workflows/ci.yml`. It installs from the lockfile, then lints, tests, checks the lld documents and builds, with a read-only token. Drop the two lld steps in an app without lld documents.
 

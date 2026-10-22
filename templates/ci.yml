@@ -1,5 +1,5 @@
-# The shared CI for a VBC app: copy to .github/workflows/ci.yml. It runs the same gates as githooks/pre-commit, for
-# commits that skipped it. Drop the lld steps in an app with no .lld.md documents.
+# The shared CI for a VBC app: copy to .github/workflows/ci.yml. It runs the same gates as githooks/pre-push, for
+# pushes that skipped it. Drop the lld steps in an app with no .lld.md documents.
 name: CI
 
 on:

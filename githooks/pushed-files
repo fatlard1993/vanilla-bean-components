@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+# The files a push changes, one per line, from the refs git hands a pre-push hook on stdin:
+#   pushed=$(sh node_modules/@vanilla-bean/components/githooks/pushed-files "$1")
+# Against what the remote has, or, for a new branch or a remote commit not here, everything not on the remote yet. A
+# deleted ref, or a branch at commits the remote has, changes nothing.
+
+remote="$1"
+zero=0000000000000000000000000000000000000000
+
+while read -r _localRef localSha _remoteRef remoteSha; do
+	[ "$localSha" = "$zero" ] && continue
+	if [ "$remoteSha" != "$zero" ] && git cat-file -e "$remoteSha^{commit}" 2>/dev/null; then
+		git log --format= --name-only "$remoteSha..$localSha"
+	else
+		git log --format= --name-only "$localSha" --not --remotes="$remote"
+	fi
+done | sort -u | grep -v '^$'

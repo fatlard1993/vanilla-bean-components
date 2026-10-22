@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+# The shared pre-push for a VBC app. The app's own .githooks/pre-push runs it, passing git's arguments and refs on:
+#   sh node_modules/@vanilla-bean/components/githooks/pre-push "$@" || exit 1
+
+# Read first: the checks below inherit stdin
+pushed=$(sh "$(dirname "$0")/pushed-files" "$1")
+
+# Nothing new leaves (a deletion, a branch at commits the remote has): nothing to check
+[ -n "$pushed" ] || exit 0
+
+bun --bun eslint --quiet || exit 1
+
+# With no test files, bun test exits nonzero for having nothing to run
+if git ls-files | grep -qE '\.(test|spec)\.[cm]?[jt]sx?$'; then
+	bun test || exit 1
+fi
+
+# Pushed .lld.md documents are linted when lldtdd is installed; a fresh clone before bun install skips rather than blocks
+if echo "$pushed" | grep -q '\.lld\.md$'; then
+	if [ -x node_modules/.bin/lldtdd ]; then
+		node_modules/.bin/lldtdd lint || exit 1
+	else
+		echo 'lldtdd not installed: pushed .lld.md changes not checked'
+	fi
+fi
