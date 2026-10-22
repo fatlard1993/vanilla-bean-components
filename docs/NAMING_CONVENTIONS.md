@@ -28,7 +28,7 @@ File naming follows a hierarchical approach where the casing indicates the file'
 
 - **Utility files**: camelCase reflecting their functional purpose (e.g., `class.js` for class utilities, `element.js` for DOM utilities)
 - **Configuration files**: kebab-case with descriptive suffixes (e.g., `eslint.config.cjs`, `prettier.config.cjs`, `spellcheck.config.cjs`)
-- **Test files**: Source filename + `.test.js` to maintain clear associations (e.g., `Button.test.js`, `color.test.js`)
+- **Test files**: a component's tests are `.test.js` in its folder (`components/Button/.test.js`); a module's sit beside it as its filename + `.test.js` (`utils/color.test.js`, `Elem/Elem.test.js`)
 
 This structure makes it immediately clear whether a file contains a component, utility functions, configuration, or tests just from its name.
 
