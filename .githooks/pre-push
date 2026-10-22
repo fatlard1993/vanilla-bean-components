@@ -1,0 +1,34 @@
+#!/usr/bin/env sh
+
+# Read first: the checks below inherit stdin
+changedFiles=$(sh githooks/pushed-files "$1")
+
+[ -n "$changedFiles" ] || exit 0
+
+# lldtdd is a real devDependency now: installed by `bun install`, resolved from
+# node_modules -- no more sibling-checkout path. If it is not installed yet
+# (fresh clone before bun install), skip rather than block the push on it.
+if echo "$changedFiles" | grep -q '\.lld\.md$'; then
+	if [ -x "node_modules/.bin/lldtdd" ]; then
+		bun run lldtdd lint || exit 1
+	else
+		echo "lldtdd not installed -- run bun install (pushed .lld.md changes not checked)"
+	fi
+fi
+
+echo "$changedFiles" | grep -q 'Component/' && { bun test Component || exit 1; }
+
+if echo "$changedFiles" | grep -q 'components/'; then
+	bun test components || exit 1
+	# The pushed commits carry the types their components generate
+	bun run build:types || exit 1
+	git diff --quiet -- index.d.ts || { echo 'index.d.ts is behind the components: commit what build:types wrote'; exit 1; }
+fi
+
+echo "$changedFiles" | grep -q 'Elem/' && { bun test Elem || exit 1; }
+echo "$changedFiles" | grep -q 'styled/' && { bun test styled || exit 1; }
+echo "$changedFiles" | grep -q 'utils/' && { bun test utils || exit 1; }
+
+# Checked, not fixed: a fix made now would land beside the pushed commits, not in them
+BROWSERSLIST_IGNORE_OLD_DATA=1 bun run lint || exit 1
+bun --bun prettier --check . --log-level warn || { echo 'Not formatted: bun run format, then commit it'; exit 1; }

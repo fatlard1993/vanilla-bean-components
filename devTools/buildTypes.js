@@ -315,7 +315,7 @@ async function updateIndexDts() {
 			markerIndex !== -1 ? content.slice(0, markerIndex) + block + '\n' : content.trimEnd() + '\n\n' + block + '\n';
 	}
 
-	// Formatted as committed, so regenerating from the pre-commit hook leaves no diff behind
+	// Formatted as committed, so regenerating from the pre-push hook leaves no diff behind
 	const prettier = await import('prettier');
 	const formatted = await prettier.format(updated, {
 		...(await prettier.resolveConfig(indexDtsPath)),

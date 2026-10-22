@@ -85,7 +85,7 @@ bun run format   # eslint --fix + prettier --write
 bun run lint     # lint only, no auto-fix
 ```
 
-The pre-commit hook (`.githooks/pre-commit`) runs targeted tests for every changed directory (e.g. editing a file in `Component/` runs `bun test Component`) then runs `bun run format`. The commit is aborted if any step fails.
+The pre-push hook (`.githooks/pre-push`) runs targeted tests for every directory the pushed commits change (e.g. a change in `Component/` runs `bun test Component`), checks that `index.d.ts` is current when components change, then checks lint and formatting. It fixes nothing: the push is stopped, and `bun run format` or `bun run build:types` makes the fix to commit.
 
 ESLint is configured in `eslint.config.cjs` with these active plugins: `jsdoc`, `compat`, `import`, `spellcheck`, and `testing-library` (test files only).
 

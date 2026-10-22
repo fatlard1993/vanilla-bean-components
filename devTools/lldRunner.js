@@ -2,7 +2,7 @@
 
 // Bridge to the lldtdd engine for the demo's "Run" button. lldtdd is a real dependency now,
 // resolved from node_modules like everything else -- the sibling-checkout era is over
-// (.githooks/pre-commit made the same move). Still run as a subprocess by demo/server.js so a
+// (.githooks/pre-push made the same move). Still run as a subprocess by demo/server.js so a
 // crash in parsing or translation reports as JSON instead of taking the dev server down.
 //
 // runDocument() would be simpler but returns only counts; the demo paints a status icon onto
