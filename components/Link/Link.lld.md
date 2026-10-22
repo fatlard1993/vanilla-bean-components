@@ -16,6 +16,11 @@ A launcher's links are the content, pressed like keys, so they take the bevelled
 - a Link with `variant: 'raised'` is an anchor drawn as a raised button
   - new Subject({ href: "#x", textContent: "go", variant: "raised" }) captures l -> l.elem.tagName === "A" && l.elem.classList.contains("variant-button") && l.elem.classList.contains("variant-raised")
 
+## A link's target is an option like any other
+
+- a target given as an option lands on the anchor, beside any other attributes
+  - new Subject({ href: "#x", textContent: "go", target: "_blank", attributes: { rel: "noopener" } }) captures l -> l.elem.getAttribute("target") === "_blank" && l.elem.getAttribute("rel") === "noopener"
+
 ## Tooltip includes a link icon automatically
 
 - when a tooltip string is provided, the tooltip is configured with a link icon alongside the text

@@ -248,7 +248,7 @@ export default class Showcase extends View {
 												variant: 'raised',
 												textContent,
 												href,
-												attributes: { target: '_blank' },
+												target: '_blank',
 											}),
 									),
 								}),

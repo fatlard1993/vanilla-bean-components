@@ -49,6 +49,11 @@ class Link extends TooltipWrapper {
 			},
 		},
 	};
+
+	// The options store keeps its own state on `target`, so the anchor's target travels as an attribute
+	static prepareOptions({ target, ...options }) {
+		return target === undefined ? options : { ...options, attributes: { ...options.attributes, target } };
+	}
 }
 
 export default Link;
