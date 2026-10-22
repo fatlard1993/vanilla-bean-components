@@ -2,11 +2,18 @@
 
 A lightweight, reactive component library for building modern web applications with vanilla JavaScript. No build steps, no framework lock-in, no virtual DOM complexity.
 
+![A page built from VBC components: a header bar with a title, tabs with counts, buttons, a search field, a segmented switch, filter chips, cards with colored accent edges, a loading state and a small form](docs/showcase.png)
+
+<p>
+	<img src="docs/showcase-phone.png" alt="The same page at phone width: the toolbar wraps and the columns stack" width="260" />
+	<img src="docs/explorer.png" alt="The component explorer's Button page: default, flat, chip and raised buttons above the demo's editable code" width="520" />
+</p>
+
 ## Key Features
 
 - **No build step for consumers** - Pure ES modules; import directly in browsers or bundle with any tool
 - **Reactive state management** - Proxy-based, explicit; `component.options` is reactive out of the box, no dependency tracking magic
-- **Scoped CSS styling** - Opinionated dark theme by design; override per-instance, per-class, or replace the theme entirely
+- **Scoped CSS styling** - A quiet dark theme by default (flat filled controls, hairline fields, cards a shade off the page), with shared spacing, radius and media tokens; override per-instance, per-class, or replace the theme entirely
 - **Cleanup on disconnect** - no listener accumulation; components clean up after themselves
 - **33 production-ready components** - A second tier of building blocks above the primitives. Button handles keyboard activation and pointer events. Dialog handles focus management and modal behavior. Form handles validation. These are composed concerns your app components build on, not reinvent.
 - **Modern browser APIs** - EventTarget, Proxy, ES6 modules, native CSS nesting
@@ -68,7 +75,7 @@ import { Button, Dialog, Calendar } from '@vanilla-bean/components';
 
 - **Live option editor**: every component, every option, type-appropriate controls, updated in real time
 - **Auto-generated API docs**: options tables, method signatures, event listings pulled directly from source annotations
-- **11 real example applications**: async data tables with row actions, localStorage-backed todo, a live HTML/JS/CSS playground with iframe preview, a drawing canvas with a functioning in-game economy
+- **13 example applications**: async data tables with row actions, localStorage-backed todo, a live HTML/JS/CSS playground with iframe preview, a drawing canvas with a functioning in-game economy
 - **Ancestor chain navigation**: each component shows its full inheritance (EventTarget → Elem → Component → ...) with links to each layer's documentation
 
 The explorer is built with VBC itself. It uses the same primitives and patterns you'd use in your own app.
@@ -207,6 +214,21 @@ new Component({
 });
 ```
 
+### Cleanup With `signal`
+
+`component.signal` is an `AbortSignal` that aborts when the component is disconnected, destroyed or rendered again. Hand it to anything that takes one and it ends with the build that started it:
+
+```js
+class Stats extends Component {
+	build() {
+		window.addEventListener('resize', () => this.fit(), { signal: this.signal });
+		fetch('/api/stats', { signal: this.signal })
+			.then(response => response.json())
+			.then(stats => this.show(stats));
+	}
+}
+```
+
 ### Core Modules
 
 | Module | Purpose | Key Features |
@@ -218,7 +240,62 @@ new Component({
 
 All four are available from `'@vanilla-bean/components'` directly. For HTTP caching, [hypertether](https://github.com/fatlard1993/hypertether) is a separate install (`bun add @vanilla-bean/hypertether`).
 
-Serving an app on Bun? **[app](./app/README.md)** (`'@vanilla-bean/components/app'`) builds the client, reloads pages while you work, and serves the files the components load at runtime.
+### Theme and Tokens
+
+The default look is quiet: controls are flat and filled, fields are translucent with a hairline border, headings are plain white, and cards lift off the page by a shade. The louder bevelled button is still there as `variant: 'raised'`, on Button and on Link.
+
+`theme` (also handed to every `styled()` call) carries the steps the library's own components use, so an app can line up with them:
+
+| Token | Values |
+| --- | --- |
+| `space` | `xs` 4px, `sm` 8px, `md` 12px, `lg` 16px, `xl` 24px |
+| `radius` | `sm` 4px, `md` 6px, `lg` 8px, `pill` 999px |
+| `media` | `phone` (under 768px), `wide` (768px and up), `touch` (a coarse pointer) |
+| `colors` roles | `surface`, `overlay`, `muted`, `border`, `info`, `success`, `warning`, `danger`, `selected`, next to the hues (`blue`, `green`, `red`, ...) |
+
+```js
+const Panel = styled(
+	Component,
+	({ colors, radius, space, media }) => `
+	background: ${colors.surface};
+	border: 1px solid ${colors.border};
+	border-radius: ${radius.lg};
+	padding: ${space.lg};
+
+	@media ${media.phone} { padding: ${space.sm}; }
+`,
+);
+```
+
+See [theme](./theme/README.md) for the layers of customization.
+
+### Utilities
+
+Plain helpers ship from the main entry too ([utils](./utils/README.md)). Among them:
+
+- `shuffleArray(array)`, `chance(percentage)` and `weightedChance({ common: 70, rare: 30 })` for randomness
+- `readStorage(key, fallback)` / `writeStorage(key, value)`: localStorage as JSON that never throws (private windows, blocked site data)
+- `connectSocket(path, { onLost, onRestored })`: a WebSocket that reconnects with backoff and keeps its listeners
+- `debounce(callback, delay)`, whose result has a `cancel()` for a call still waiting
+
+### The App Server Kit
+
+Serving an app on Bun? **[app](./app/README.md)** (`'@vanilla-bean/components/app'`) builds the client, reloads pages while you work, and serves the files the components load at runtime. A server is a few lines:
+
+```js
+// server/index.js, run with `bun --hot server/index.js` in development
+import { devConsole, handleExit, serve, serveApp } from '@vanilla-bean/components/app';
+
+const api = async request => undefined; // the app's own routes: a Response, or undefined for what isn't theirs
+
+handleExit(); // Ctrl+C, stop requests and uncaught errors end the process the same way every time
+
+await serve({ port: 8080, router: async request => (await api(request)) ?? serveApp(request) });
+
+devConsole(); // in development: type `b` (or `build`) to rebuild and reload the pages, `stop` to end the server
+```
+
+`serve` refuses cross-site writes and sockets, turns thrown errors into answers, takes the hot reload socket and, in development, watches the client. The `vbc-build` bin builds the client (`client/index.html` → `client/build`) for an app's `"build"` script, and `vbc-service` runs the app as a background service.
 
 ## Component Library
 
@@ -236,17 +313,17 @@ Serving an app on Bun? **[app](./app/README.md)** (`'@vanilla-bean/components/ap
 ### Layout & Structure
 
 - **Page** - The app's root: the page theme, fonts and stylesheets
-- **Toolbar** - A row of controls that wraps, or a page's header bar with a title
-- **Content** - The part of a view that scrolls, optionally as a centered reading column
+- **Toolbar** - A row of controls that wraps, or with `variant: 'bar'` and a `heading` a page's header bar
+- **Content** - The part of a view that scrolls; `column: true` (or a width) keeps it to a centered reading column
 - **Card** - A raised patch holding one record or summary, with an optional accent edge
 - **Router** - Client-side navigation
 - **List** - Dynamic lists with filtering
 - **Table** - Data tables with sorting
-- **Tabs** - A row of tabs, one selected, with optional panels and counts
+- **Tabs** - A row of tabs, one selected, with optional panels and counts; `variant: 'segmented'` draws them as a pill split into its choices
 
 ### Interactive Elements
 
-- **Button** - Action buttons with states, raised or flat
+- **Button** - Action buttons: filled by default, or `variant: 'flat'`, `'chip'` or `'raised'` (the bevelled key that sinks when pressed)
 - **BottomSheet** - Mobile bottom sheet with drag-to-close gesture
 - **Dialog** - Modal dialogs that clean up after closing, plus `Dialog.confirm`
 - **Menu** - Keyboard-navigable item lists
@@ -266,9 +343,9 @@ Serving an app on Bun? **[app](./app/README.md)** (`'@vanilla-bean/components/ap
 
 - **Code** - Syntax-highlighted code blocks
 - **Icon** - Icon system with Font Awesome integration
-- **Link** - Enhanced anchor elements
+- **Link** - Anchors, drawn as a link, a button, or with `variant: 'raised'` as a raised key
 - **TagList** - Tag management, optionally held to a vocabulary
-- **EmptyState** - What an empty list or view shows
+- **EmptyState** - What an empty list or view shows, or with `loading: true` a spinner where its icon goes
 - **SectionLabel** - A quiet heading over a group
 
 ## Real-World Example
@@ -402,11 +479,13 @@ bun run format   # Code formatting with Prettier
 
 ```
 vanilla-bean-components/
-├── app/                # Bun app kit - client build, hot reload, static serving, request matching
+├── app/                # Bun app kit - serve, client build, hot reload, static serving, stores, services
 ├── components/         # 33 pre-built UI components
 ├── Component/          # Core Component class
+├── Elem/               # The element wrapper Component extends
 ├── styled/             # Scoped styling system
 ├── theme/              # Design tokens and helpers
+├── utils/              # Plain helpers: data, dates, storage, sockets, randomness
 ├── demo/               # Component explorer - live option editor, API docs, example apps
 └── docs/               # Additional documentation
 ```
