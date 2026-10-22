@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
 
@@ -65,5 +65,39 @@ describe('buildClient', () => {
 		const { code } = await build({ production: true, define: { VERSION: '"1.2.3"' } });
 
 		expect(code).toContain('1.2.3');
+	});
+
+	test('the files a manifest names are copied into the build at its paths, since the bundler leaves them as written', async () => {
+		const site = join(root, 'site');
+		const outdir = join(root, 'build-manifest');
+
+		mkdirSync(join(site, 'icons'), { recursive: true });
+		writeFileSync(
+			join(site, 'index.html'),
+			'<!doctype html><html><head><link rel="manifest" href="./manifest.json" /></head><body></body></html>',
+		);
+		writeFileSync(
+			join(site, 'manifest.json'),
+			JSON.stringify({
+				icons: [
+					{ src: 'icons/icon-192.png' },
+					{ src: '/icon.svg' },
+					{ src: 'missing.png' },
+					{ src: 'https://x.test/a.png' },
+				],
+				screenshots: [{ src: './wide.png' }],
+			}),
+		);
+		writeFileSync(join(site, 'icons', 'icon-192.png'), 'png');
+		writeFileSync(join(site, 'icon.svg'), '<svg xmlns="http://www.w3.org/2000/svg"/>');
+		writeFileSync(join(site, 'wide.png'), 'wide');
+
+		const result = await buildClient({ entrypoints: [join(site, 'index.html')], outdir });
+
+		expect(result.success).toBe(true);
+		expect(readFileSync(join(outdir, 'icons', 'icon-192.png'), 'utf8')).toBe('png');
+		expect(readFileSync(join(outdir, 'icon.svg'), 'utf8')).toContain('<svg');
+		expect(readFileSync(join(outdir, 'wide.png'), 'utf8')).toBe('wide');
+		expect(existsSync(join(outdir, 'missing.png'))).toBe(false);
 	});
 });

@@ -53,6 +53,8 @@ One `Bun.build` of the client. `vbc-build` runs it with the defaults and exits n
 
 The page names its chunks from the root (`publicPath: '/'`), so a page opened at a deep route (`/games/12`) still finds them. An app served under a path prefix passes `publicPath: ''` to make them relative again.
 
+The bundler hashes a linked `manifest.json` and leaves the paths inside it as written, so `buildClient` copies each file its `icons` and `screenshots` name from beside the page into the build at that path. A missing file is skipped.
+
 ## `hotReload`
 
 - **`watch(buildOptions?, { debounce? }?)`** builds once, then rebuilds whenever a file under the working directory that the last build read changes, and tells every connected page to reload. Server code, logs and databases never trigger a rebuild, because the client wasn't built from them.
