@@ -1,4 +1,8 @@
+import { failureReason } from '@vanilla-bean/hypertether';
+
 import { Component } from '../../Component';
+import { Elem } from '../../Elem';
+import { styled } from '../../styled';
 import { conditionalList } from '../../utils';
 import { Dialog } from '../Dialog';
 import { Form } from '../Form';
@@ -9,12 +13,19 @@ const labelOf = button => (typeof button === 'object' ? button.textContent : but
 const failedRequest = result =>
 	result?.status === 'error' || result?.response?.ok === false || (result instanceof Response && !result.ok);
 
+const reasonOf = result => {
+	const status = result instanceof Response ? result.status : result?.response?.status;
+
+	return failureReason(result) || (status ? `HTTP ${status}` : 'The request failed');
+};
+
 /**
  * A Dialog holding a Form, with Save, Delete (when there is something to delete) and Cancel.
  *
  * Save checks the form, then hands its data to onSave and closes once that settles; onSave returning false, returning
  * a failed request (a hypertether result with status 'error', or a Response that isn't ok), or throwing, keeps the
- * dialog open with the data as typed. Delete asks first when confirmDelete is set. Enter in a
+ * dialog open with the data as typed, and a failed request's reason or the error's message shows above the buttons
+ * until the next try. Delete asks first when confirmDelete is set. Enter in a
  * single-line field saves. Any other button reaches onButtonPress as it would on a Dialog.
  * @param {object} [options] - FormDialog configuration
  * @param {Array<object>} [options.inputs] - Form field definitions, as Form takes them
@@ -40,7 +51,19 @@ const failedRequest = result =>
  *   confirmDelete: `Delete "${category.name}"?`,
  * });
  */
-class FormDialog extends Dialog {
+class FormDialog extends styled(
+	Dialog,
+	({ colors, space }) => `
+		& .failure {
+			margin-top: ${space.md};
+			color: ${colors.light(colors.danger)};
+		}
+
+		& .failure:empty {
+			display: none;
+		}
+	`,
+) {
 	static schema = {
 		size: { default: 'fit' },
 		inputs: {},
@@ -88,6 +111,8 @@ class FormDialog extends Dialog {
 			appendTo: this.body,
 		});
 
+		this.failure = new Elem({ addClass: 'failure', attributes: { role: 'alert' }, appendTo: this.body });
+
 		this.form.elem.addEventListener('keydown', event => {
 			const { target } = event;
 			const singleLine = target.tagName === 'INPUT' && !['checkbox', 'radio', 'button', 'submit'].includes(target.type);
@@ -118,17 +143,25 @@ class FormDialog extends Dialog {
 	async _settle(action) {
 		this.busy = true;
 		this._setBusy(true);
+		this.failure.elem.textContent = '';
 
 		try {
 			const result = await action({ ...this.form.options.data }, this);
 
-			if (result === false || failedRequest(result)) return false;
+			if (result === false) return false;
+
+			if (failedRequest(result)) {
+				this.failure.elem.textContent = reasonOf(result);
+
+				return false;
+			}
 
 			this.close();
 
 			return true;
 		} catch (error) {
 			globalThis.reportError ? globalThis.reportError(error) : console.error(error); // eslint-disable-line no-console
+			this.failure.elem.textContent = error?.message || String(error);
 
 			return false;
 		} finally {
@@ -142,7 +175,11 @@ class FormDialog extends Dialog {
 	 * @returns {Promise<boolean>} Whether it saved and closed
 	 */
 	async save() {
-		if (this.busy || this.form.hasErrors()) return false;
+		if (this.busy) return false;
+
+		this.failure.elem.textContent = '';
+
+		if (this.form.hasErrors()) return false;
 
 		return this._settle(this.options.onSave ?? (() => {}));
 	}

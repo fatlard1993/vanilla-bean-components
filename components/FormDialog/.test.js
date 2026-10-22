@@ -100,6 +100,63 @@ describe('FormDialog', () => {
 		expect(await saved.save()).toBe(true);
 	});
 
+	test('a failed save shows why above the buttons, and the next try clears it', async () => {
+		let result = { status: 'error', body: { error: 'Name taken' }, response: { ok: false, status: 409 } };
+		const dialog = new FormDialog({ inputs: [nameField], data: { name: 'a' }, onSave: () => result });
+		const failure = () => dialog.failure.elem;
+
+		expect(failure().textContent).toBe('');
+
+		await dialog.save();
+
+		expect(failure().textContent).toBe('Name taken');
+		expect(failure()).toHaveAttribute('role', 'alert');
+
+		let finish;
+		result = new Promise(resolve => (finish = resolve));
+		const retry = dialog.save();
+
+		expect(failure().textContent).toBe('');
+
+		finish({ status: 'error', body: 'Server down', response: { ok: false, status: 503 } });
+		await retry;
+
+		expect(failure().textContent).toBe('Server down');
+	});
+
+	test('a thrown error shows its message; a Response not ok shows its status', async () => {
+		spyOn(globalThis, 'reportError').mockImplementation(() => {});
+		const throwing = new FormDialog({
+			inputs: [nameField],
+			data: { name: 'a' },
+			onSave: () => {
+				throw new Error('offline');
+			},
+		});
+
+		await throwing.save();
+
+		expect(throwing.failure.elem.textContent).toBe('offline');
+
+		const responding = new FormDialog({
+			inputs: [nameField],
+			data: { name: 'a' },
+			onSave: () => new Response('', { status: 500 }),
+		});
+
+		await responding.save();
+
+		expect(responding.failure.elem.textContent).toBe('HTTP 500');
+	});
+
+	test('onSave returning false shows nothing; the app said why itself', async () => {
+		const dialog = new FormDialog({ inputs: [nameField], data: { name: 'a' }, onSave: () => false });
+
+		await dialog.save();
+
+		expect(dialog.failure.elem.textContent).toBe('');
+	});
+
 	test('Enter in a single-line field saves; Enter in a textarea is a new line', async () => {
 		const onSave = mock();
 		const dialog = new FormDialog({

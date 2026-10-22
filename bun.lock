@@ -8,6 +8,7 @@
         "@ctrl/tinycolor": "^4.2.0",
         "@fontsource-variable/kode-mono": "^5.2.8",
         "@fortawesome/fontawesome-free": "^7.3.1",
+        "@vanilla-bean/hypertether": "^1.1.1",
         "@vanilla-bean/oxject": "^1.0.0",
         "nanoid": "6",
       },
@@ -18,7 +19,6 @@
         "@testing-library/dom": "^10.4.1",
         "@testing-library/jest-dom": "^6.9.1",
         "@testing-library/user-event": "^14.6.1",
-        "@vanilla-bean/hypertether": "^1.0.1",
         "baseline-browser-mapping": "^2.10.43",
         "bun-types": "^1.3.14",
         "caniuse-lite": "^1.0.30001805",
@@ -161,7 +161,7 @@
 
     "@typescript-eslint/visitor-keys": ["@typescript-eslint/visitor-keys@8.62.0", "", { "dependencies": { "@typescript-eslint/types": "8.62.0", "eslint-visitor-keys": "^5.0.0" } }, "sha512-CY3uyFSRbcQv3nnSv8S0+lDftMVz6P963PoRlxrV7ew/Md564g9ut60PYzdLM5qW4jFn93GBF+Soi90ISAN+GQ=="],
 
-    "@vanilla-bean/hypertether": ["@vanilla-bean/hypertether@1.0.1", "", {}, "sha512-+KMBBkC92nK2InyRYelQfI98n5wXt0TbdtFJKpi/ZblEIOeTSEwqQr9V+MfmEyhf6XytJGxm0V6A9jjQWGpMBw=="],
+    "@vanilla-bean/hypertether": ["@vanilla-bean/hypertether@1.1.1", "", {}, "sha512-zLE3BhEo8kj9A+kDLw4FZkQXrRbrtmorxT/LcB4sGrGlTjyoQdkNw/a5AJnpUq9j0HZ/DbnF5bCnB64IW+A7pg=="],
 
     "@vanilla-bean/oxject": ["@vanilla-bean/oxject@1.0.0", "", {}, "sha512-/VusT7+8r61Q8Q6cN0HWGhkpdTr1q0hYu/i9U8glU3nw2fp9CCb071f46nlI/DOsq/BAI1gXEdD8JvS49HS+mg=="],
 

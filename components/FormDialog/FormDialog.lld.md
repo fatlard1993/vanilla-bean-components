@@ -14,6 +14,10 @@ A Dialog that holds a Form and ends in Save, Delete or Cancel. The design decisi
   - new Subject({ inputs: [{ key: "name" }], data: { name: "Garden" }, onSave: () => false, appendTo: document.body }) captures d then await d.save() captures saved -> saved === false && d.elem.isConnected === true
 - a request that comes back failed keeps it open too, since a request library reports failure rather than throwing it
   - new Subject({ inputs: [{ key: "name" }], data: { name: "Garden" }, onSave: () => ({ status: "error", response: { ok: false } }), appendTo: document.body }) captures d then await d.save() captures saved -> saved === false && d.elem.isConnected === true
+- a failed save says why in the dialog, so the person can fix it there; the next try clears it
+  - new Array("Name taken") captures reasons then new Subject({ inputs: [{ key: "name" }], data: { name: "Garden" }, onSave: () => ({ status: "error", body: { error: reasons.shift() ?? "" }, response: { ok: false, status: 409 } }), appendTo: document.body }) captures d then await d.save() then d.elem.querySelector(".failure").textContent captures shown then await d.save() -> shown === "Name taken" && d.elem.querySelector(".failure").textContent === "HTTP 409"
+- a thrown error shows its message
+  - new Array(globalThis.reportError) captures kept then Object.assign(globalThis, { reportError: () => {} }) then new Subject({ inputs: [{ key: "name" }], data: { name: "Garden" }, onSave: () => Promise.reject(new Error("offline")), appendTo: document.body }) captures d then await d.save() then Object.assign(globalThis, { reportError: kept[0] }) -> d.elem.querySelector(".failure").textContent === "offline"
 
 ## Delete appears only when there is something to delete
 

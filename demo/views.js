@@ -87,6 +87,7 @@ const themeDocumentation = styled(DocumentationView, () => '', {
 });
 const utilsDocumentation = styled(DocumentationView, () => '', { folderName: 'utils' });
 const dep_fontawesome_free = styled(DocumentationView, () => '', { folderName: 'dependencies/fontawesome-free' });
+const dep_hypertether = styled(DocumentationView, () => '', { folderName: 'dependencies/hypertether' });
 const dep_kode_mono = styled(DocumentationView, () => '', { folderName: 'dependencies/kode-mono' });
 const dep_nanoid = styled(DocumentationView, () => '', { folderName: 'dependencies/nanoid' });
 const dep_oxject = styled(DocumentationView, () => '', { folderName: 'dependencies/oxject' });
@@ -152,6 +153,7 @@ export default {
 	['/documentation/theme']: themeDocumentation,
 	['/documentation/utils']: utilsDocumentation,
 	['/dependencies/fontawesome-free']: dep_fontawesome_free,
+	['/dependencies/hypertether']: dep_hypertether,
 	['/dependencies/kode-mono']: dep_kode_mono,
 	['/dependencies/nanoid']: dep_nanoid,
 	['/dependencies/oxject']: dep_oxject,
