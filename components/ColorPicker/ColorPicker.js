@@ -3,9 +3,8 @@ import { TinyColor, random as randomColor } from '@ctrl/tinycolor';
 import { debounce, throttle, convertRange } from '../../utils';
 import { Component } from '../../Component';
 import { styled } from '../../styled';
-import theme from '../../theme';
 import { Input } from '../Input';
-import { Button } from '../Button';
+import ColorSwatch from './ColorSwatch';
 import { saturation } from './svg';
 
 const StyledInput = styled(
@@ -99,48 +98,6 @@ const HueIndicator = styled(
 		background: transparent;
 		pointer-events: none;
 	`,
-);
-
-const ColorSwatch = styled(
-	Button,
-	({ colors }) => `
-		margin-top: 3px;
-		margin-right: 3px;
-
-		&.rainbow {
-			animation: rainbow 2s linear;
-			animation-iteration-count: infinite;
-			color: ${colors.black};
-
-			@keyframes rainbow {
-				100%,0%{
-					background-color: ${colors.light(colors.red)};
-				}
-				12%{
-					background-color: ${colors.light(colors.orange)};
-				}
-				25%{
-					background-color: ${colors.light(colors.yellow)};
-				}
-				37%{
-					background-color: ${colors.light(colors.green)};
-				}
-				50%{
-					background-color: ${colors.light(colors.teal)};
-				}
-				62%{
-					background-color: ${colors.light(colors.blue)};
-				}
-				75%{
-					background-color: ${colors.light(colors.purple)};
-				}
-				87%{
-					background-color: ${colors.light(colors.pink)};
-				}
-			}
-		}
-	`,
-	{ icon: 'fill-drip' },
 );
 
 /**
@@ -241,19 +198,7 @@ class ColorPicker extends StyledInput {
 		this.addCleanup('sizeObserver', () => sizeObserver.disconnect());
 
 		this.options.swatches.forEach(color => {
-			new ColorSwatch({
-				appendTo: this.elem,
-
-				onPointerPress: () => this.change(color),
-				...(color === 'random'
-					? { addClass: ['rainbow'] }
-					: {
-							style: {
-								backgroundColor: color,
-								color: theme.colors.mostReadable(color, [theme.colors.white, theme.colors.black]),
-							},
-						}),
-			});
+			new ColorSwatch({ color, appendTo: this.elem, onPointerPress: () => this.change(color) });
 		});
 	}
 

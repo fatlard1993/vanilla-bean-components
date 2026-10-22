@@ -336,6 +336,7 @@ devConsole(); // in development: type `b` (or `build`) to rebuild and reload the
 
 - **Calendar** - Date selection with events
 - **ColorPicker** - Color selection interface
+- **ColorSwatch** - A button filled with a color, or cycling the hues for `random`, as ColorPicker shows its swatches
 - **Keyboard** - Virtual keyboard input
 - **Whiteboard** - Drawing and annotation canvas
 
