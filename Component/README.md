@@ -257,6 +257,7 @@ render()
   ├─ _processOptions()    ← routes every option through _setOption()
   │     priority keys first (onConnected, textContent, content, appendTo, prependTo, value)
   │     then all remaining keys
+  ├─ _applySettling()     ← applies options a setter changed while the above ran
   └─ this.rendered = true
 ```
 

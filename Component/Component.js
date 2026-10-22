@@ -8,6 +8,7 @@ import { observeElementConnection } from './observeElementConnection';
 const _internalProperties = new Set([
 	'cleanup',
 	'_abortController',
+	'_settling',
 	'_destroyCleanup',
 	'rendered',
 	'elemObserver',
@@ -285,6 +286,7 @@ class Component extends Elem {
 
 		const setOption = ({ detail: { key, value } }) => {
 			if (this.rendered) this._setOption(key, value);
+			else this._settling?.push(key);
 		};
 
 		this.options.addEventListener('set', setOption);
@@ -359,6 +361,21 @@ class Component extends Elem {
 	}
 
 	/**
+	 * Applies options that a setter changed while options were first being applied, so a setter that moves another
+	 * option (or its own) lands the same on the first render as on any later one.
+	 * @private
+	 */
+	_applySettling() {
+		for (let pass = 0; this._settling.length > 0 && pass < 8; pass++) {
+			const keys = new Set(this._settling);
+
+			this._settling = [];
+
+			for (const key of keys) this._setOption(key, this.options[key]);
+		}
+	}
+
+	/**
 	 * Orchestrates the render lifecycle: empty → build() → _processOptions() → rendered.
 	 * Ensures subclass structure exists before options are processed.
 	 */
@@ -371,10 +388,14 @@ class Component extends Elem {
 
 		try {
 			this.build();
+			this._settling = [];
 			this._processOptions();
+			this._applySettling();
 		} catch (error) {
 			this.processCleanup();
 			throw error;
+		} finally {
+			this._settling = null;
 		}
 
 		this.rendered = true;

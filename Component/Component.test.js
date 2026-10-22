@@ -532,6 +532,75 @@ describe('Component', () => {
 		});
 	});
 
+	describe('options a setter changes during the first render', () => {
+		test('a setter that moves its own option lands on the first render as on a later one', () => {
+			const shown = [];
+
+			class Pages extends Component {
+				static schema = {
+					view: {
+						set(value) {
+							if (value === 'shop') this.options.view = 'shop_buy';
+							else shown.push(value);
+						},
+					},
+				};
+			}
+
+			const first = new Pages({ view: 'shop' });
+			const later = new Pages({ view: 'sell' });
+
+			later.options.view = 'shop';
+
+			expect(shown).toEqual(['shop_buy', 'sell', 'shop_buy']);
+			expect(first.options.view).toBe('shop_buy');
+			first.destroy();
+			later.destroy();
+		});
+
+		test('a setter that changes another option has that option applied', () => {
+			class Linked extends Component {
+				static schema = {
+					mode: {
+						set(value) {
+							if (value === 'dark') this.options.label = 'Dark';
+						},
+					},
+					label: {
+						set(value) {
+							this.elem.textContent = value;
+						},
+					},
+				};
+			}
+
+			const comp = new Linked({ label: 'Light', mode: 'dark' });
+
+			expect(comp.elem.textContent).toBe('Dark');
+			comp.destroy();
+		});
+
+		test('a setter that never settles stops instead of looping forever', () => {
+			let calls = 0;
+
+			class Restless extends Component {
+				static schema = {
+					count: {
+						set(value) {
+							calls++;
+							this.options.count = value + 1;
+						},
+					},
+				};
+			}
+
+			const comp = new Restless({ count: 0 });
+
+			expect(calls).toBeLessThan(12);
+			comp.destroy();
+		});
+	});
+
 	describe('static schema', () => {
 		test('schema defaults are merged automatically', () => {
 			class TestComp extends Component {
