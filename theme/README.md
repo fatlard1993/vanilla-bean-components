@@ -443,7 +443,7 @@ Built-in color palettes for code syntax highlighting:
 
 | Token | Values |
 | --- | --- |
-| `theme.space` | `xs` 4px, `sm` 8px, `md` 12px, `lg` 16px, `xl` 24px |
+| `theme.space` | `xs` 3px, `sm` 6px, `md` 12px, `lg` 18px, `xl` 24px |
 | `theme.radius` | `sm` 4px (fields), `md` 6px (buttons, cards), `lg` 8px, `pill` 999px (chips) |
 | `theme.media` | `phone` `(max-width: 767px)`, `wide` `(min-width: 768px)`, `touch` `(pointer: coarse)`, for `@media` |
 

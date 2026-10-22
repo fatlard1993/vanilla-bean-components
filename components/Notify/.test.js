@@ -48,12 +48,12 @@ describe('Notify', () => {
 			const newer = toast('newer');
 
 			expect(older.elem).toHaveClass('stacked');
-			expect(height(newer)).toBe(16);
-			expect(height(older)).toBeGreaterThan(16);
+			expect(height(newer)).toBe(18);
+			expect(height(older)).toBeGreaterThan(18);
 
 			newer.destroy();
 
-			expect(height(older)).toBe(16);
+			expect(height(older)).toBe(18);
 			older.destroy();
 		});
 

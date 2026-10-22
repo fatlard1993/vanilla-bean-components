@@ -248,7 +248,7 @@ The default look is quiet: controls are flat and filled, fields are translucent 
 
 | Token | Values |
 | --- | --- |
-| `space` | `xs` 4px, `sm` 8px, `md` 12px, `lg` 16px, `xl` 24px |
+| `space` | `xs` 3px, `sm` 6px, `md` 12px, `lg` 18px, `xl` 24px |
 | `radius` | `sm` 4px, `md` 6px, `lg` 8px, `pill` 999px |
 | `media` | `phone` (under 768px), `wide` (768px and up), `touch` (a coarse pointer) |
 | `colors` roles | `surface`, `overlay`, `muted`, `border`, `info`, `success`, `warning`, `danger`, `selected`, next to the hues (`blue`, `green`, `red`, ...) |

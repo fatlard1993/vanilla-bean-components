@@ -5,12 +5,12 @@ import { Elem } from '../../Elem';
 
 const StyledComponent = styled(
 	Component,
-	({ colors }) => `
+	({ colors, space }) => `
 		padding: 3px 6px;
 		margin: 0;
 		display: inline-flex;
 		align-items: center;
-		gap: 4px;
+		gap: ${space.xs};
 		font-size: 0.85em;
 		line-height: 1;
 		background-color: ${colors.black};
@@ -29,7 +29,7 @@ const StyledComponent = styled(
 			padding: 0;
 			border: none;
 			background: none;
-			gap: 4px;
+			gap: ${space.xs};
 			cursor: text;
 		}
 

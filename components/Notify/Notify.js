@@ -1,12 +1,13 @@
 import { Elem } from '../../Elem';
 import { styled } from '../../styled';
+import { space } from '../../theme/tokens';
 import { Button } from '../Button';
 import { Popover } from '../Popover';
 
 // How long a toast of each type stays before dismissing itself; warnings and errors wait to be tapped
 const TIMEOUT_BY_TYPE = { info: 4000, success: 4000, warning: 0, error: 0 };
-const STACK_EDGE = 16;
-const STACK_GAP = 8;
+const STACK_EDGE = parseInt(space.lg);
+const STACK_GAP = parseInt(space.sm);
 // A toast paused by a pointer or focus gets at least this long once they leave, so it doesn't vanish under the hand
 const RESUME_MIN = 1500;
 

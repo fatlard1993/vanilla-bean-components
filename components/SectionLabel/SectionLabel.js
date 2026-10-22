@@ -13,8 +13,8 @@ import { Component } from '../../Component';
  */
 class SectionLabel extends styled(
 	Component,
-	({ colors }) => `
-		margin: 16px 0 6px;
+	({ colors, space }) => `
+		margin: ${space.lg} 0 ${space.sm};
 		font-size: 0.75em;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;

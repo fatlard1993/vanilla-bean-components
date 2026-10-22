@@ -5,9 +5,9 @@ import { Button } from '../Button';
 
 const StyledComponent = styled(
 	Component,
-	({ colors, radius }) => `
+	({ colors, radius, space }) => `
 		display: flex;
-		gap: 4px;
+		gap: ${space.xs};
 		overflow-x: auto;
 		border-bottom: 1px solid ${colors.alpha(colors.white, 0.12)};
 

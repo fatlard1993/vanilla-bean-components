@@ -19,7 +19,7 @@ const length = value => (typeof value === 'number' ? `${value}px` : value);
  */
 class Toolbar extends styled(
 	Component,
-	({ colors }) => `
+	({ colors, space }) => `
 		display: flex;
 		flex-direction: row;
 		align-items: center;
@@ -45,7 +45,7 @@ class Toolbar extends styled(
 			box-sizing: border-box;
 			min-height: 48px;
 			margin: 0;
-			padding: 8px 12px;
+			padding: ${space.sm} ${space.md};
 			background-color: ${colors.surface};
 			border-bottom: 1px solid ${colors.border};
 		}

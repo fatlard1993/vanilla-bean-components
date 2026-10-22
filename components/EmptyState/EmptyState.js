@@ -19,14 +19,14 @@ import { Icon } from '../Icon';
  */
 class EmptyState extends styled(
 	Component,
-	({ colors }) => `
+	({ colors, space }) => `
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: 8px;
+		gap: ${space.sm};
 		flex: 1;
-		padding: 40px 16px;
+		padding: 40px ${space.lg};
 		text-align: center;
 		color: ${colors.gray};
 
@@ -56,7 +56,7 @@ class EmptyState extends styled(
 		}
 
 		& > .action {
-			margin-top: 8px;
+			margin-top: ${space.sm};
 		}
 
 		& > :empty:not(.icon) {

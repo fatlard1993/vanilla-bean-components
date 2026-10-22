@@ -6,8 +6,8 @@ import { isDev } from '../../utils';
 
 const DialogButton = styled(
 	Button,
-	() => `
-		margin: 4px 4px 4px 0;
+	({ space }) => `
+		margin: ${space.xs} ${space.xs} ${space.xs} 0;
 	`,
 );
 
@@ -36,7 +36,7 @@ const defaultOpenDelay = 16;
  */
 class Dialog extends styled(
 	Component,
-	({ colors }) => `
+	({ colors, space }) => `
 		background-color: ${colors.darker(colors.gray)};
 		color: ${colors.white};
 		flex-direction: column;
@@ -57,7 +57,7 @@ class Dialog extends styled(
 		}
 
 		& .header {
-			padding: 8px 12px;
+			padding: ${space.sm} ${space.md};
 			font-size: 0.9em;
 			font-weight: 600;
 			color: ${colors.white};

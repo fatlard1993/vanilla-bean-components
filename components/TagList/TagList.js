@@ -7,14 +7,14 @@ import Tag from './Tag';
 
 const StyledComponent = styled(
 	Component,
-	() => `
+	({ space }) => `
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: 4px;
+		gap: ${space.xs};
 		list-style: none;
 		margin: 0;
-		padding: 4px;
+		padding: ${space.xs};
 		box-sizing: border-box;
 
 		&.readOnly {
