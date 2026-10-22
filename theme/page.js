@@ -70,6 +70,11 @@ export default theme => `
 
 	a.variant-button { ${_button(theme)} }
 
+	/* The bare a:visited is as specific as a.variant-button, so a visited link drawn as a button keeps its text by this */
+	a.variant-button:visited:not(.disabled) {
+		color: ${theme.colors.white};
+	}
+
 	/*
 	 * The library's own components keep their look when the page's element styles are off. :where() gives these rules no
 	 * specificity, so any rule an app writes still wins.

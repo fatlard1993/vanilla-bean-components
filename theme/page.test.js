@@ -51,6 +51,12 @@ describe('theme.page and theme.elements', () => {
 		expect(theme.page).toContain('@font-face');
 		expect(theme.page).toContain('code[class*="language-"]');
 	});
+
+	test('a visited link drawn as a button keeps the button text, not the visited purple', () => {
+		const visited = theme.page.match(/^\ta\.variant-button:visited:not\(\.disabled\) \{([^}]*)\}/m)?.[1];
+
+		expect(visited).toContain(`color: ${theme.colors.white};`);
+	});
 });
 
 describe('theme colors named for their job', () => {
