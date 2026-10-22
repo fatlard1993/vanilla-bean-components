@@ -105,8 +105,8 @@ export default class DemoMenu extends StyledComponent {
 			appendTo: this,
 		});
 
-		document.addEventListener('keyup', ({ key }) => {
-			if (key === 'm') this.toggle();
+		document.addEventListener('keyup', ({ key, target }) => {
+			if (key === 'm' && !(target.closest?.('input, textarea, select') || target.isContentEditable)) this.toggle();
 			else if (key === 'Escape') this.close();
 		});
 
