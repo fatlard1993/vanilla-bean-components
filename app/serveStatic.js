@@ -1,11 +1,6 @@
 import { dirname, resolve, sep } from 'path';
 
-// What the library itself loads at runtime: Page links the icon and font stylesheets, the code styles the syntax font
-const LIBRARY_ASSET_PACKAGES = [
-	'@fortawesome/fontawesome-free',
-	'@fontsource-variable/kode-mono',
-	'@vanilla-bean/components',
-];
+import { LIBRARY_ASSET_PACKAGES } from './libraryAssets';
 
 const packageRoots = new Map();
 

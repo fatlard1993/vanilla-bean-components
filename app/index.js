@@ -6,6 +6,7 @@ export * from './exit';
 export * from './fields';
 export * from './hotReload';
 export * from './hotReloadPath';
+export * from './libraryAssets';
 export * from './requestMatch';
 export * from './serve';
 export * from './serveApp';

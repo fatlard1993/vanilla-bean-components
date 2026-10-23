@@ -1,7 +1,6 @@
 import { appendStyles, shimCSS } from '../../styled';
 import { Component } from '../../Component';
-
-const dependentStyleSheets = ['@fortawesome/fontawesome-free/css/all.css', '@fontsource-variable/kode-mono/index.css'];
+import { LIBRARY_STYLESHEETS } from '../../app/libraryAssets';
 
 const ELEMENT_STYLES_ID = 'vbc-theme-elements';
 
@@ -43,7 +42,7 @@ class Page extends Component {
 	constructor(options = {}, ...children) {
 		const { styleSheets = [], ...optionsWithoutConfig } = options;
 
-		[...dependentStyleSheets, ...styleSheets].forEach(styleSheet => {
+		[...LIBRARY_STYLESHEETS, ...styleSheets].forEach(styleSheet => {
 			if (!styleSheet) return;
 
 			const { href, scope, id } = typeof styleSheet === 'object' ? styleSheet : { href: styleSheet };
