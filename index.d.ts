@@ -979,6 +979,13 @@ export declare function capitalize(string: string, recursive: boolean, split?: s
 /** @type {(percentage?: number) => boolean} True `percentage` percent of the time */
 export declare const chance: (percentage?: number) => boolean;
 
+/** A schema descriptor for an option drawn as one class from a set: `variant: 'flat'` on an element marked `variant-flat`. Setting it takes away the class of the value before and validates the new one against the set; null or undefined leaves no class. */
+export declare function classEnum(
+	prefix: string,
+	values: Array<string>,
+	config?: Record<string, any>,
+): Record<string, any>;
+
 /** Generate secure unique ID that is safe to use as a class name or id */
 export declare function classSafeNanoid(size?: number): string;
 

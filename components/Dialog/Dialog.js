@@ -1,7 +1,7 @@
 import { styled } from '../../styled';
 import { duration } from '../../theme/tokens';
 import { Button } from '../Button';
-import { Component } from '../../Component';
+import { Component, classEnum } from '../../Component';
 import { Elem } from '../../Elem';
 import { isDev } from '../../utils';
 
@@ -159,23 +159,8 @@ class Dialog extends styled(
 		},
 		// Read directly from this.options.modal in open()
 		modal: { default: true },
-		size: {
-			default: 'small',
-			enum: ['small', 'standard', 'large', 'fit'],
-			set(value) {
-				this.removeClass(/\bsize-\S+\b/g);
-
-				if (value) this.addClass(`size-${value}`);
-			},
-		},
-		variant: {
-			enum: ['info', 'success', 'warning', 'error'],
-			set(value) {
-				this.removeClass(/\bvariant-\S+\b/g);
-
-				if (value) this.addClass(`variant-${value}`);
-			},
-		},
+		size: classEnum('size', ['small', 'standard', 'large', 'fit'], { default: 'small' }),
+		variant: classEnum('variant', ['info', 'success', 'warning', 'error']),
 		body: {
 			set(value) {
 				this.body?.content(value);

@@ -298,6 +298,22 @@ Descriptor fields:
 - `data: true` - force store-only routing. Only needed when a data key's name collides with a real DOM property or method that standard routing would otherwise hit (e.g. a data key named `title`), or for an `on*` callback the component calls itself whose name is also a DOM event (`onChange`, `onInput`): without it, the callback is wired as a listener too and hears its children's bubbling events.
 - `enum: ['small', 'large']` - the closed set of valid values. Assigning anything else (other than null/undefined) throws, listing the valid values. Readable via `component.optionEnum(key)` - the demo's options editor uses this to render value pickers.
 
+An option drawn as one class out of a set (a look, a status, a size) takes its descriptor from `classEnum`, rather than a `set` that clears the old class and adds the new one by hand:
+
+```js
+import { Component, classEnum } from '@vanilla-bean/components';
+
+class Badge extends Component {
+	static schema = {
+		// variant-flat or variant-solid on the element; anything else throws
+		variant: classEnum('variant', ['flat', 'solid']),
+		size: classEnum('size', ['small', 'large'], { default: 'small' }),
+	};
+}
+```
+
+Its third argument takes the `default`, `classes` (a value's classes when they are more than `prefix-value`) and a `set` that runs after the class is placed.
+
 Inheritance semantics: `set` functions chain across the class hierarchy (deepest first), while scalar fields (`default`, `enum`, `data`, `attribute`, `priority`) are decided by the nearest class whose descriptor declares them - so a subclass can override a parent default, opt out of a flag with `data: false`, or lift a constraint with `enum: null`, and a subclass that only adds a `set` leaves the parent's scalars intact.
 
 Two keys are construction-only: `tag` and `autoRender` accept schema defaults but are consumed before the reactive store is created, so they never appear in `this.options` and cannot change after construction.

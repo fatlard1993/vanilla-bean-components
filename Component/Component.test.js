@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { Oxject } from '@vanilla-bean/oxject';
 import { Elem } from '../Elem';
 import Component, { warnOfRetiredOptions } from './Component';
+import { classEnum } from './classEnum';
 
 const user = userEvent.setup();
 
@@ -1425,5 +1426,54 @@ describe('Component', () => {
 			expect(menu.defaultPrevented).toBe(true);
 			item.destroy();
 		});
+	});
+});
+
+describe('classEnum', () => {
+	class Badge extends Component {
+		static schema = {
+			variant: classEnum('variant', ['flat', 'solid']),
+			size: classEnum('size', ['small', 'large'], { default: 'small' }),
+		};
+	}
+
+	test('marks one class of the set, and moves it when the value changes', () => {
+		const badge = new Badge({ variant: 'flat' });
+
+		expect(badge.elem).toHaveClass('variant-flat', 'size-small');
+
+		badge.options.variant = 'solid';
+
+		expect(badge.elem).toHaveClass('variant-solid');
+		expect(badge.elem).not.toHaveClass('variant-flat');
+
+		badge.options.variant = null;
+
+		expect(badge.elem.className).not.toContain('variant-');
+	});
+
+	test('validates against the set, and says what it takes', () => {
+		expect(() => new Badge({ variant: 'loud' })).toThrow('"loud" is not a valid variant');
+		expect(new Badge().optionEnum('size')).toEqual(['small', 'large']);
+	});
+
+	test('classes and set shape what a value does', () => {
+		const seen = [];
+
+		class Shaped extends Component {
+			static schema = {
+				look: classEnum('look', ['a', 'b'], {
+					classes: value => ['look', `look-${value}`],
+					set(value) {
+						seen.push([value, this.hasClass('look')]);
+					},
+				}),
+			};
+		}
+
+		const shaped = new Shaped({ look: 'b' });
+
+		expect(shaped.elem).toHaveClass('look', 'look-b');
+		expect(seen[0]).toEqual(['b', true]);
 	});
 });

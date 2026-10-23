@@ -1,4 +1,5 @@
 import { fontSize } from '../../theme/tokens';
+import { classEnum } from '../../Component';
 import { TooltipWrapper } from '../TooltipWrapper';
 
 /** The decoration every Link tooltip carries, merged onto whatever the caller passed. */
@@ -22,18 +23,12 @@ const linkTooltip = { icon: 'link', style: { fontSize: fontSize.xs } };
 class Link extends TooltipWrapper {
 	static schema = {
 		tag: { default: 'a' },
-		variant: {
+		// A Button's look is drawn on the button variant's base
+		variant: classEnum('variant', ['link', 'button', 'flat', 'chip', 'raised'], {
 			default: 'link',
-			enum: ['link', 'button', 'flat', 'chip', 'raised'],
-			set(value) {
-				this.removeClass(/\bvariant-\S+\b/g);
-				this.addClass(
-					...(['flat', 'chip', 'raised'].includes(value)
-						? ['variant-button', `variant-${value}`]
-						: [`variant-${value}`]),
-				);
-			},
-		},
+			classes: value =>
+				['flat', 'chip', 'raised'].includes(value) ? ['variant-button', `variant-${value}`] : [`variant-${value}`],
+		}),
 		tooltip: {
 			// One source for the decoration, read by both the default and the merge below; it used to
 			// be spelled out twice, once here and once inline in `set()`.

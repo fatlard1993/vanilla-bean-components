@@ -1,5 +1,5 @@
 import { styled } from '../../styled';
-import { Component } from '../../Component';
+import { Component, classEnum } from '../../Component';
 import { cssLength } from '../../utils';
 
 /**
@@ -82,14 +82,7 @@ class Toolbar extends styled(
 				if (this._heading.elem.parentElement !== this.elem) this.elem.prepend(this._heading.elem);
 			},
 		},
-		variant: {
-			enum: ['bar'],
-			set(value) {
-				this.removeClass(/\bvariant-\S+\b/g);
-
-				if (value) this.addClass(`variant-${value}`);
-			},
-		},
+		variant: classEnum('variant', ['bar']),
 	};
 
 	/**

@@ -1,4 +1,4 @@
-import { Component } from '../../Component';
+import { Component, classEnum } from '../../Component';
 import { Elem } from '../../Elem';
 import { styled } from '../../styled';
 import { Button } from '../Button';
@@ -94,14 +94,7 @@ const StyledComponent = styled(
 export default class Tabs extends StyledComponent {
 	static schema = {
 		role: { default: 'tablist' },
-		variant: {
-			enum: ['segmented'],
-			set(value) {
-				this.removeClass(/\bvariant-\S+\b/g);
-
-				if (value) this.addClass(`variant-${value}`);
-			},
-		},
+		variant: classEnum('variant', ['segmented']),
 		tabs: {
 			get default() {
 				return [];

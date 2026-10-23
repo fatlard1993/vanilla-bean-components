@@ -1,3 +1,4 @@
+import { classEnum } from '../../Component';
 import { TooltipWrapper } from '../TooltipWrapper';
 
 /**
@@ -33,14 +34,7 @@ import { TooltipWrapper } from '../TooltipWrapper';
 export default class Button extends TooltipWrapper {
 	static schema = {
 		tag: { default: 'button' },
-		variant: {
-			enum: ['flat', 'chip', 'raised'],
-			set(value) {
-				this.removeClass(/\bvariant-\S+\b/g);
-
-				if (value) this.addClass(`variant-${value}`);
-			},
-		},
+		variant: classEnum('variant', ['flat', 'chip', 'raised']),
 	};
 
 	// The class the theme gives a Button's look to, whatever the page does for bare buttons

@@ -1,5 +1,5 @@
 import { styled } from '../../styled';
-import { Component } from '../../Component';
+import { Component, classEnum } from '../../Component';
 import { TooltipWrapper } from '../TooltipWrapper';
 import { duration, fontSize, radius, space } from '../../theme/tokens';
 
@@ -139,13 +139,9 @@ const StyledLabel = styled(
  */
 class Label extends StyledLabel {
 	static schema = {
-		variant: {
+		variant: classEnum('variant', ['overlay', 'collapsible', 'inline', 'inline-after', 'simple'], {
 			default: 'simple',
-			enum: ['overlay', 'collapsible', 'inline', 'inline-after', 'simple'],
 			set(value) {
-				this.removeClass(/\bvariant-\S+\b/g);
-				this.addClass(`variant-${value}`);
-
 				if (this._labelText) {
 					const shouldBeAfter = value === 'inline-after';
 					const isAfter = this._labelText.elem === this.elem.lastElementChild;
@@ -155,7 +151,7 @@ class Label extends StyledLabel {
 					}
 				}
 			},
-		},
+		}),
 		label: {
 			set(value) {
 				if (typeof value === 'object') this._labelText?.setOptions(value);
