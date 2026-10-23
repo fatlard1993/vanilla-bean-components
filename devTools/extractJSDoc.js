@@ -106,7 +106,11 @@ function extractOptions(content) {
 			return {
 				name: optionName,
 				type: type.trim(),
-				description: description.trim().replace(/\s+/g, ' '),
+				// A description that wraps carries each continuation line's leading *
+				description: description
+					.replace(/\n\s*\*\s?/g, ' ')
+					.trim()
+					.replace(/\s+/g, ' '),
 				optional,
 				default: defaultValue || codeDefaults[optionName] || null,
 				isSubProperty: fullParam.includes('options.'),

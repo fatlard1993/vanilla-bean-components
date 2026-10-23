@@ -302,9 +302,9 @@ export interface ButtonOptions extends TooltipWrapperOptions {
 	icon?: string;
 	/** Tooltip text shown on hover */
 	tooltip?: string;
-	/** 'flat' has no fill, for toolbars and icon buttons; 'chip' is a * small outlined pill, for filters and choices; 'raised' is bevelled and sinks as it's pressed */
+	/** 'flat' has no fill, for toolbars and icon buttons; 'chip' is a small outlined pill, for filters and choices; 'raised' is bevelled and sinks as it's pressed */
 	variant?: 'flat' | 'chip' | 'raised';
-	/** What pressing it does, drawn in that status role: * 'danger' for a delete, 'success' for a confirm. A flat or chip button takes it as its text color */
+	/** What pressing it does, drawn in that status role: 'danger' for a delete, 'success' for a confirm. A flat or chip button takes it as its text color */
 	intent?: 'info' | 'success' | 'warning' | 'danger';
 }
 
@@ -357,7 +357,7 @@ export declare class Calendar extends Component {
 export interface CardOptions extends ComponentOptions {
 	/** A color for the left edge (a CSS color or a theme color) */
 	accent?: string | Record<string, any>;
-	/** Answer hover and focus, and Enter or Space like a press; on by default when * onPointerPress is given */
+	/** Answer hover and focus, and Enter or Space like a press; on by default when onPointerPress is given */
 	interactive?: boolean;
 }
 
@@ -398,7 +398,7 @@ export declare class ColorPicker extends Input {
 export interface ContentOptions extends ComponentOptions {
 	/** Inner padding (a number is pixels); unset, a subclass's own CSS padding applies */
 	padding?: number | string;
-	/** Keep what scrolls to a centered column, for reading on a wide * screen: true is 960px wide, or give the width (a number is pixels). The sides keep at least a 12px gutter. */
+	/** Keep what scrolls to a centered column, for reading on a wide screen: true is 960px wide, or give the width (a number is pixels). The sides keep at least a 12px gutter. */
 	column?: boolean | number | string;
 }
 
@@ -701,7 +701,7 @@ export interface NotifyOptions extends PopoverOptions {
 	x?: number;
 	/** Y position for the notification */
 	y?: number;
-	/** Buttons on the toast, e.g. { textContent: 'Undo', onPress }; onPress gets * (notify, event) and may be async, and the toast closes once it settles unless it returns false */
+	/** Buttons on the toast, e.g. { textContent: 'Undo', onPress }; onPress gets (notify, event) and may be async, and the toast closes once it settles unless it returns false */
 	actions?: Array<Record<string, any>>;
 }
 
@@ -820,7 +820,7 @@ export interface TableOptions extends ComponentOptions {
 	sortProperty?: string;
 	/** Sort direction ('asc' or 'desc') */
 	sortDirection?: 'asc' | 'desc';
-	/** Caller-owned selection state. The table stores it and re-renders * when it is reassigned, but never interprets it; `dataColumn` functions read it back off * `table.options.selection` to render per-row state. Mutating a property of it deliberately does * not re-render, so toggling one row's checkbox does not rebuild the table under the pointer */
+	/** Caller-owned selection state. The table stores it and re-renders when it is reassigned, but never interprets it; `dataColumn` functions read it back off `table.options.selection` to render per-row state. Mutating a property of it deliberately does not re-render, so toggling one row's checkbox does not rebuild the table under the pointer */
 	selection?: any;
 }
 
@@ -835,7 +835,7 @@ export interface TabsOptions extends ComponentOptions {
 	selected?: string;
 	/** Each tab's panel, by id: an element or a Component, shown only while selected */
 	panels?: Record<string, any>;
-	/** 'segmented' is a pill split into its choices, for switching between a * few views of the same thing */
+	/** 'segmented' is a pill split into its choices, for switching between a few views of the same thing */
 	variant?: 'segmented';
 	/** default: "tablist" */
 	role?: string;
