@@ -16,6 +16,7 @@ if echo "$changedFiles" | grep -q '\.lld\.md$'; then
 	fi
 fi
 
+echo "$changedFiles" | grep -q '^app/' && { bun test app || exit 1; }
 echo "$changedFiles" | grep -q 'Component/' && { bun test Component || exit 1; }
 
 if echo "$changedFiles" | grep -q 'components/'; then
@@ -27,6 +28,8 @@ fi
 
 echo "$changedFiles" | grep -q 'Elem/' && { bun test Elem || exit 1; }
 echo "$changedFiles" | grep -q 'styled/' && { bun test styled || exit 1; }
+echo "$changedFiles" | grep -q '^theme/' && { bun test theme || exit 1; }
+echo "$changedFiles" | grep -q '^demo/' && { bun test demo || exit 1; }
 echo "$changedFiles" | grep -q 'utils/' && { bun test utils || exit 1; }
 
 # Checked, not fixed: a fix made now would land beside the pushed commits, not in them
