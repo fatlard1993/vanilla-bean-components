@@ -22,6 +22,9 @@ const RadioButtonInput = styled(
 	theme => `
 		/* Remove most all native input styles */
 		appearance: none;
+		/* The page's field padding would stretch the ring into an oval */
+		padding: 0;
+		background-color: transparent;
 
 		margin: 0;
 		font: inherit;
@@ -43,7 +46,7 @@ const RadioButtonInput = styled(
 		}
 
 		&:checked:before {
-			box-shadow: inset 1em 1em ${theme.colors.blue};
+			box-shadow: inset 1em 1em ${theme.colors.selected};
 		}
 
 		&:focus-visible {

@@ -34,8 +34,14 @@ export default theme => {
 		${focusRing(theme)}
 	}
 
-	&:active, &.active, &.pressed {
+	&:active {
 		filter: brightness(0.88);
+	}
+
+	/* Selected, or latched down: filled in the selected role */
+	&.selected, &.active, &.pressed, &[aria-pressed='true'] {
+		background-color: ${colors.selected};
+		color: ${colors.mostReadable(colors.selected, [colors.white, colors.black])};
 	}
 
 	&.disabled, &:disabled {
@@ -43,10 +49,6 @@ export default theme => {
 		color: ${colors.alpha(colors.white, 0.6)};
 		cursor: no-drop;
 		filter: none;
-	}
-
-	&.selected {
-		box-shadow: 0 0 0 2px ${colors.light(colors.selected)};
 	}
 
 	&:before {
@@ -81,12 +83,11 @@ export default theme => {
 };
 
 /**
- * The raised look: a bevel that sinks as it's pressed. Button's variant 'raised', over the default's colors and shape.
- * @param {object} theme - The theme
- * @param {object} theme.colors - Its colors
+ * The raised look: a bevel that sinks as it's pressed. Button's variant 'raised', over the default's colors and shape,
+ * selected and latched states included.
  * @returns {string} CSS
  */
-export const raised = ({ colors }) => `
+export const raised = () => `
 	padding: 4px 6px 6px 6px;
 	border-radius: 0;
 	filter: none;
@@ -165,10 +166,5 @@ export const raised = ({ colors }) => `
 
 	&.pressed {
 		box-shadow: 0 0 7px 3px rgba(0, 0, 0, 40%), inset 0 0 7px 3px rgba(0, 0, 0, 40%);
-	}
-
-	&.selected {
-		box-shadow: none;
-		outline: 2px dashed ${colors.red};
 	}
 `;

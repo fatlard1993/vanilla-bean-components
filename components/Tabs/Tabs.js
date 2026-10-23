@@ -56,7 +56,7 @@ const StyledComponent = styled(
 			}
 
 			& > .vbc-button[aria-selected='true'] {
-				background-color: ${colors.alpha(colors.blue, 0.3)};
+				background-color: ${colors.alpha(colors.selected, 0.25)};
 				font-weight: normal;
 			}
 		}

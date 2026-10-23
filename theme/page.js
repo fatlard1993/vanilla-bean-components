@@ -111,9 +111,8 @@ export default theme => `
 		}
 
 		&.active, &.selected, &[aria-pressed='true'] {
-			background-color: ${colors.alpha(colors.blue, 0.25)};
-			color: ${colors.lighter(colors.blue)};
-			box-shadow: none;
+			background-color: ${colors.alpha(colors.selected, 0.2)};
+			color: ${colors.light(colors.selected)};
 		}
 
 		&:disabled, &.disabled {
@@ -138,10 +137,9 @@ export default theme => `
 		}
 
 		&.active, &.selected, &[aria-pressed='true'] {
-			border-color: ${colors.light(colors.blue)};
-			background-color: ${colors.alpha(colors.blue, 0.3)};
+			border-color: ${colors.light(colors.selected)};
+			background-color: ${colors.alpha(colors.selected, 0.25)};
 			color: ${colors.white};
-			box-shadow: none;
 		}
 
 		&:disabled, &.disabled {
