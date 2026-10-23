@@ -3,6 +3,7 @@ import { hotReload, serveStatic } from '../app';
 import { parseMarkdown } from '../plugins/markdownLoader';
 import { extractJSDoc } from '../devTools/extractJSDoc.js';
 import { buildOptions } from '../devTools/build.js';
+import { componentReadme } from './componentReadme.js';
 
 const DEP_MODULE_ROUTES = {
 	utils: '#/documentation/utils',
@@ -143,22 +144,19 @@ const server = Bun.serve({
 				}
 			}
 
-			// Check for component documentation requests
+			// A component's README: its own, when it has one, with the reference extracted from its JSDoc after it
 			const componentMatch = path.match(/^\/components\/([^/]+)\/README\.md$/);
 			if (componentMatch) {
 				const componentName = componentMatch[1];
-				const templatePath = './devTools/COMPONENT_README_TEMPLATE.md';
+				const readmePath = `components/${componentName}/README.md`;
+				const readme = Bun.file(readmePath);
+				const markdown = componentReadme({
+					name: componentName,
+					template: await Bun.file('./devTools/COMPONENT_README_TEMPLATE.md').text(),
+					readme: (await readme.exists()) ? await readme.text() : undefined,
+				});
 
-				if (await Bun.file(templatePath).exists()) {
-					let templateContent = await Bun.file(templatePath).text();
-
-					// Replace {ComponentName} placeholders with actual component name
-					templateContent = templateContent.replaceAll('{ComponentName}', componentName);
-
-					// Parse with component directory as context for JSDoc extraction
-					const parsedMarkdown = parseMarkdown(templateContent, `components/${componentName}/README.md`);
-					return Response.json(parsedMarkdown);
-				}
+				return Response.json(parseMarkdown(markdown, readmePath));
 			}
 
 			// Handle regular markdown files
