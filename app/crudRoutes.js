@@ -1,5 +1,7 @@
 import { requestMatch } from './requestMatch';
 
+const notFound = () => Response.json({ error: 'Not found' }, { status: 404 });
+
 /**
  * The REST routes for one store: list and create at `path`, read, update and delete at `path/:id`. The id comes only
  * from the path; a `?id=` search param never names a record. A route answers undefined when it doesn't match, so
@@ -31,16 +33,16 @@ export const crudRoutes =
 		if ((match = one('GET'))) {
 			const entry = store.read(match);
 
-			return entry ? Response.json(entry) : new Response('Not Found', { status: 404 });
+			return entry ? Response.json(entry) : notFound();
 		}
 
 		if ((match = one('PATCH')) || (match = one('PUT'))) {
 			const entry = await store.update({ ...match, update: await request.json() });
 
-			return entry ? Response.json(entry) : new Response('Not Found', { status: 404 });
+			return entry ? Response.json(entry) : notFound();
 		}
 
 		// Search params reach delete as its options (afterDelete reads them), with the id still the path's
 		match = requestMatch('DELETE', `${path}/:id`, request);
-		if (match) return new Response(null, { status: (await store.delete(match)) ? 204 : 404 });
+		if (match) return (await store.delete(match)) ? new Response(null, { status: 204 }) : notFound();
 	};

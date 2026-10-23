@@ -60,6 +60,15 @@ describe('crudRoutes', () => {
 		expect(await missing.json()).toEqual({ error: 'name is required' });
 	});
 
+	test('a missing record answers 404 with a reason', async () => {
+		for (const [method, body] of [['GET'], ['PATCH', { name: 'Go' }], ['DELETE']]) {
+			const missing = await call(method, '/api/games/missing', body);
+
+			expect(missing.status).toBe(404);
+			expect(await missing.json()).toEqual({ error: 'Not found' });
+		}
+	});
+
 	test('anything else is left for the next route', async () => {
 		expect(await call('GET', '/api/players')).toBeUndefined();
 		expect(await call('GET', '/api/games/1/players')).toBeUndefined();

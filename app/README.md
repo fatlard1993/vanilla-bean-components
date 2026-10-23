@@ -125,7 +125,7 @@ await games.delete({ id }); // the id, or false
 
 ### `crudRoutes(path, store, { list? }?)`
 
-The REST routes for a store: `GET path` (every record by id, or an array with `list: true`), `POST path` (201 and the record), and `GET`, `PATCH` (or `PUT`) and `DELETE` at `path/:id` (404 for no such record). The id comes only from the path: a `?id=` search param never names a record. Search params do reach `delete` as its options, for `afterDelete`. It answers `undefined` for anything else, so routers chain with `??`.
+The REST routes for a store: `GET path` (every record by id, or an array with `list: true`), `POST path` (201 and the record), and `GET`, `PATCH` (or `PUT`) and `DELETE` at `path/:id` (404 and `{ error }` for no such record). The id comes only from the path: a `?id=` search param never names a record. Search params do reach `delete` as its options, for `afterDelete`. It answers `undefined` for anything else, so routers chain with `??`.
 
 ## Serving an app
 
