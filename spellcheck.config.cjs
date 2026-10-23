@@ -113,6 +113,8 @@ module.exports = {
 		'webkit',
 		'scrollbar',
 		'overscroll',
+		'dvh',
+		'xxl',
 		'monospace',
 		'osx',
 		'moz',
