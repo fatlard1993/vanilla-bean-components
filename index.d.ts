@@ -716,7 +716,7 @@ export declare class Router extends Component {
 	readonly path: string;
 	/** Gets the matched route for the current path. */
 	readonly route: string;
-	/** Extracts route parameters from a path. */
+	/** Extracts route parameters from a path, decoded. */
 	parseRouteParameters(path?: string): Record<string, any>;
 }
 

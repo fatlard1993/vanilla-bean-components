@@ -50,3 +50,18 @@ describe('Router parameters', () => {
 		await findAllByText(container, 'item b');
 	});
 });
+
+describe('Router matching', () => {
+	test('a route with regex characters matches only itself', () => {
+		const router = new Router({ views: { '/v1.2/notes': View, '/:section/notes': View }, autoRender: false });
+
+		expect(router.pathToRoute('/v1.2/notes')).toBe('/v1.2/notes');
+		expect(router.pathToRoute('/v1x2/notes')).toBe('/:section/notes');
+	});
+
+	test('a parameter comes to the view decoded', () => {
+		const router = new Router({ views: { '/tags/:tag': View }, autoRender: false });
+
+		expect(router.parseRouteParameters('/tags/rock%20%26%20roll')).toEqual({ tag: 'rock & roll' });
+	});
+});

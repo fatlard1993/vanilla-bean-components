@@ -1,5 +1,5 @@
 import { Component } from '../../Component';
-import { routeToRegex } from './utils';
+import { pathMatch } from '../../app/pathMatch';
 
 /**
  * Client-side router component with hash-based or history API routing and dynamic view rendering.
@@ -79,33 +79,16 @@ class Router extends Component {
 			return aParams !== bParams ? aParams - bParams : b.length - a.length;
 		});
 
-		return sorted.find(route => routeToRegex(route).test(path)) || path;
+		return sorted.find(route => pathMatch(route, path)) || path;
 	}
 
 	/**
-	 * Extracts route parameters from a path.
+	 * Extracts route parameters from a path, decoded.
 	 * @param {string} [path] - Path to parse, defaults to current path
 	 * @returns {object} Object containing route parameters
 	 */
 	parseRouteParameters(path = this.path) {
-		const route = this.pathToRoute(path);
-		const routeRegex = routeToRegex(route);
-		let routeParameterValues = path.match(routeRegex);
-		let routeParameterKeys = route.match(routeRegex);
-		const parameters = {};
-
-		if (!routeParameterValues || !routeParameterKeys) return parameters;
-
-		routeParameterValues = routeParameterValues.slice(1);
-		routeParameterKeys = routeParameterKeys.slice(1);
-
-		routeParameterValues.forEach((parameter, index) => {
-			const name = routeParameterKeys[index].slice(1);
-
-			parameters[name] = parameter;
-		});
-
-		return parameters;
+		return pathMatch(this.pathToRoute(path), path) ?? {};
 	}
 
 	build() {

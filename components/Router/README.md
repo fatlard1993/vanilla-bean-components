@@ -76,7 +76,7 @@ router.pathToRoute(path: string): string
 
 ## Route patterns
 
-Routes are matched using exact string equality first, then by replacing `:param` segments with a capture regex. When multiple parameterized patterns could match, routes with fewer `:param` segments are tested first, more specific patterns win without relying on object key order.
+Routes are matched using exact string equality first, then segment by segment, a `:param` segment taking any one segment. Everything else in a pattern is literal (`/v1.2` matches only `/v1.2`). It's the matcher the server's `requestMatch` uses. When multiple parameterized patterns could match, routes with fewer `:param` segments are tested first, more specific patterns win without relying on object key order.
 
 ```js
 views: {
@@ -90,7 +90,7 @@ Query strings are stripped before matching: `#/users/42?sort=name` resolves to `
 
 ## Route parameters
 
-Segments prefixed with `:` in the pattern are extracted and passed as options to the rendered view class:
+Segments prefixed with `:` in the pattern are extracted, decoded (`#/tags/rock%20roll` gives `'rock roll'`), and passed as options to the rendered view class:
 
 ```js
 views: { '/users/:id': UserView }
