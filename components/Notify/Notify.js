@@ -26,7 +26,7 @@ const layOutStack = () => {
 
 const StyledPopover = styled(
 	Popover,
-	({ colors, fonts }) => `
+	({ colors, fonts, media, safeArea }) => `
 		&:before {
 			${fonts.fontAwesomeSolid};
 
@@ -53,7 +53,9 @@ const StyledPopover = styled(
 		& > .notify-actions {
 			display: flex;
 			gap: ${space.sm};
-			margin-left: ${space.md};
+			/* At the toast's far end, however wide a phone stretches it */
+			margin-left: auto;
+			padding-left: ${space.md};
 			align-self: center;
 
 			/* Flat, but still plainly a button on the toast's colour */
@@ -65,8 +67,15 @@ const StyledPopover = styled(
 
 		&.stacked {
 			position: fixed;
-			inset: auto ${STACK_EDGE}px auto auto;
+			inset: auto calc(${STACK_EDGE}px + ${safeArea.right}) auto auto;
 			margin: 0;
+
+			/* A phone's toasts span its width */
+			@media ${media.phone} {
+				left: calc(${space.md} + ${safeArea.left});
+				right: calc(${space.md} + ${safeArea.right});
+				width: auto;
+			}
 			transition: bottom 0.2s ease-out;
 		}
 	`,

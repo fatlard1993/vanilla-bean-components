@@ -29,7 +29,7 @@ const dialog = new Dialog({
 | `onButtonPress` | `Function` | - | Called when any `buttons` entry is pressed. Receives `{ button, closeDialog, event }` |
 | `openOnRender` | `number\|boolean` | `16` | Auto-open delay in ms after render. Set to `false` to disable auto-open |
 | `modal` | `boolean` | `true` | Open as a modal (with backdrop) vs. non-modal |
-| `size` | `string` | `'small'` | Dialog dimensions: `'small'` (420×210px), `'standard'` (840×420px), `'large'` (90vw×90vh) |
+| `size` | `string` | `'small'` | Dialog dimensions: `'small'` (420×210px), `'standard'` (640×360px), `'large'` (90vw×90vh), `'fit'` (as tall as its content); any of them shrinks to fit a phone's screen |
 | `variant` | `string` | - | Color theme: `'info'`, `'success'`, `'warning'`, `'error'` |
 | `closeDialog` | `Function` | - | Override the default close behavior used inside `onButtonPress` |
 | `removeOnClose` | `boolean` | `true` | Destroy the dialog once it has closed and faded out. Set to `false` to keep one dialog and open it again |

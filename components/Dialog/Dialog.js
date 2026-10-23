@@ -36,7 +36,7 @@ const defaultOpenDelay = 16;
  */
 class Dialog extends styled(
 	Component,
-	({ colors, elevation, radius, space }) => `
+	({ colors, elevation, radius, safeArea, space }) => `
 		background-color: ${colors.surface};
 		color: ${colors.white};
 		flex-direction: column;
@@ -83,6 +83,10 @@ class Dialog extends styled(
 			min-height: 40px;
 		}
 
+		/* Whatever its size, it fits a phone's screen, clear of the notch and the home indicator */
+		max-width: calc(100vw - 2 * ${space.md} - ${safeArea.left} - ${safeArea.right});
+		max-height: calc(100dvh - 2 * ${space.md} - ${safeArea.top} - ${safeArea.bottom});
+
 		&.size-small {
 			width: 420px;
 			height: 210px;
@@ -103,7 +107,7 @@ class Dialog extends styled(
 			width: min(640px, 95vw);
 			height: auto;
 			bottom: auto;
-			max-height: 90vh;
+			max-height: min(90vh, calc(100dvh - 2 * ${space.md} - ${safeArea.top} - ${safeArea.bottom}));
 		}
 
 		&::backdrop {

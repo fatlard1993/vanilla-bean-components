@@ -14,7 +14,7 @@ import { elevation, radius } from '../../theme/tokens';
  */
 class BottomSheet extends styled(
 	Component,
-	({ colors }) => `
+	({ colors, safeArea }) => `
 		position: fixed;
 		bottom: 0;
 		left: 0;
@@ -27,6 +27,9 @@ class BottomSheet extends styled(
 		border-radius: ${radius.lg} ${radius.lg} 0 0;
 		box-shadow: ${elevation.lg};
 		max-height: 85vh;
+		max-height: 85dvh;
+		/* Its content clears the home indicator and the rounded corners */
+		padding: 0 ${safeArea.right} ${safeArea.bottom} ${safeArea.left};
 		z-index: 1000;
 		transform: translateY(100%);
 		transition: transform 0.3s ease;

@@ -18,7 +18,7 @@ import { cssLength } from '../../utils';
  */
 class Toolbar extends styled(
 	Component,
-	({ colors, space }) => `
+	({ colors, safeArea, space }) => `
 		display: flex;
 		flex-direction: row;
 		align-items: center;
@@ -44,7 +44,9 @@ class Toolbar extends styled(
 			box-sizing: border-box;
 			min-height: 48px;
 			margin: 0;
-			padding: ${space.sm} ${space.md};
+			/* At the top of the screen, it reaches under a phone's notch and keeps its contents clear of it */
+			padding: calc(${space.sm} + ${safeArea.top}) calc(${space.md} + ${safeArea.right}) ${space.sm}
+				calc(${space.md} + ${safeArea.left});
 			background-color: ${colors.surface};
 			border-bottom: 1px solid ${colors.border};
 		}
