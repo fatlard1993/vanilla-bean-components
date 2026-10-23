@@ -31,7 +31,7 @@ A launcher's links are the content, pressed like keys, so they take the bevelled
 A link's tooltip is what tells a reader it leaves the page, so the icon is part of the default rather than something each call site remembers. A caller passing a plain string still gets it -- the default is merged onto their value, not replaced by it.
 
 - the tooltip carries the link icon whether the caller passed a string or nothing at all
-  - new Subject({ href: "https://example.com", textContent: "o", tooltip: "text tip", appendTo: document.body }) captures withString then new Subject({ href: "https://example.com", textContent: "o", appendTo: document.body }) captures byDefault -> withString.elem.querySelector("[popover]").style.fontSize === "12px" && byDefault.elem.querySelector("[popover]").style.fontSize === "12px" && withString.elem.querySelector("[popover]").textContent === "text tip"
+  - new Subject({ href: "https://example.com", textContent: "o", tooltip: "text tip", appendTo: document.body }) captures withString then new Subject({ href: "https://example.com", textContent: "o", appendTo: document.body }) captures byDefault -> withString.elem.querySelector("[popover]").style.fontSize === "0.75em" && byDefault.elem.querySelector("[popover]").style.fontSize === "0.75em" && withString.elem.querySelector("[popover]").textContent === "text tip"
 
 ## A link can go without its tooltip
 
