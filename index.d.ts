@@ -102,6 +102,33 @@ import type { RequestOptions, RequestResult, Resource, ResourceOptions } from '@
 export type { RequestOptions, RequestResult, Resource, ResourceOptions };
 export { GET, POST, PUT, PATCH, DELETE, resource, failureReason, resetRequest } from '@vanilla-bean/hypertether';
 
+/** A versioned update refused because the record changed since the version it was made against */
+export interface CrudConflict<T = Record<string, any>> {
+	/** The stored record, from the 409's `current` */
+	current: T;
+	/** The body that was sent */
+	changes: Partial<T> & { _v?: number };
+	/** The fields sent that the stored record holds otherwise */
+	fields: Array<{ key: string; ours: unknown; theirs: unknown }>;
+}
+
+export interface CrudUpdateOptions<T = Record<string, any>> extends RequestOptions<T> {
+	/** Answer a conflict with the fields to send over the stored version, or nothing to leave it for the caller */
+	onConflict?: (
+		conflict: CrudConflict<T>,
+	) => (Partial<T> | null | undefined | void) | Promise<Partial<T> | null | undefined | void>;
+}
+
+export interface CrudResource extends Omit<Resource, 'update'> {
+	update: <T = Record<string, any>>(
+		id: string | number,
+		options?: CrudUpdateOptions<T>,
+	) => Promise<RequestResult<T> & { conflict?: CrudConflict<T> }>;
+}
+
+/** The client half of crudRoutes: hypertether's `resource` for a collection crudRoutes serves, whose update comes back with a `conflict` when a versioned store refuses it */
+export declare function crudResource(path: string, options?: ResourceOptions): CrudResource;
+
 // ── Elem ───────────────────────────────────────────────────────────────────────
 
 export interface ElemOptions {
