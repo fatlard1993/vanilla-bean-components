@@ -12,3 +12,6 @@ build
 .lldtdd-tmp/
 # Per-machine Claude Code session state, never part of the project.
 .claude/
+
+# lldtdd mutation runs write these beside the module under test, and remove them when done
+.lldtdd-mut-*
