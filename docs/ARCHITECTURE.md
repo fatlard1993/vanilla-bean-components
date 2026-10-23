@@ -348,3 +348,41 @@ UI Components (Button, Input, Dialog, ...)
 ```
 
 No circular dependencies exist in this graph.
+
+---
+
+## App Kit
+
+`app/` is the server half: a Bun kit an app's server is built from (`serve`, `buildClient`, `hotReload`, `serveStatic`, `serveApp`, `createStore`, `crudRoutes`, `service`, `devConsole`). It's its own entry, `@vanilla-bean/components/app`, with its own types in `app/index.d.ts`, so a page never imports server code by importing the library. [app/README.md](../app/README.md) documents each piece; this section is about where it meets the client.
+
+### Client/server seams
+
+Where the page and the server must agree, the agreement is one small module with no dependencies, imported by both sides, so neither can drift:
+
+| Module | The page | The server |
+| --- | --- | --- |
+| `app/hotReloadPath.js` (`HOT_RELOAD_PATH`) | `app/reloadOnBuild.js` connects there, through `connectSocket` (utils/socket.js), and reloads on a build or a restart | `hotReload.upgrade` takes sockets there, and only there |
+| `app/libraryAssets.js` (`LIBRARY_STYLESHEETS`, `LIBRARY_ASSET_PACKAGES`) | `Page` links the stylesheets, by package path | `serveStatic` answers from those stylesheets' packages (derived from the same list), plus the library's own |
+| `app/pathMatch.js` (`pathMatch`) | `Router` matches routes and reads their parameters | `requestMatch`, and with it `crudRoutes`, matches requests |
+
+`pathMatch(pattern, path)` treats everything but a `:name` segment literally (`/v1.2` matches only itself), matches the whole path, and returns each named segment decoded, or `null`. So `/tags/:tag` gives `'rock & roll'` for `/tags/rock%20%26%20roll` in a hash route and in a request alike.
+
+### Response shape
+
+A store's errors carry their status, and `withErrors` (which `serve` wraps every router in) turns them into answers. Through `crudRoutes`:
+
+| Request | Answer |
+| --- | --- |
+| `GET path` | 200, every record by id (an array with `list: true`) |
+| `POST path` | 201, the created record |
+| `GET path/:id` | 200, the record |
+| `PATCH` or `PUT path/:id` | 200, the updated record |
+| `DELETE path/:id` | 204, no body |
+| No such record | 404, `{ error: 'Not found' }` |
+| A field of the wrong shape, a required one missing (`ValidationError`) | 400, `{ error }` naming the field |
+| A body that isn't JSON | 400, `{ error: 'Invalid JSON' }` |
+| An update carrying a `_v` other than the stored one (`ConflictError`, `versioned` stores) | 409, `{ error, _conflict: true, current }`, `current` being the stored record |
+| Any other error with a 4xx `status` | that status, `{ error }` |
+| Anything else thrown | 500, `Server Error` as text, the error logged |
+
+A versioned record carries `_v`, and an update that sends it back is checked against the stored one; an update without `_v` isn't checked. `_conflict` marks a 409 as a version conflict rather than some other refusal, and `current` is what the client needs to show the change it missed.
