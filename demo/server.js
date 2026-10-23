@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { hotReload, serveStatic } from '../app';
+import { requestMatch, serve, serveStatic } from '../app';
 import { parseMarkdown } from '../plugins/markdownLoader';
 import { extractJSDoc } from '../devTools/extractJSDoc.js';
 import { buildOptions } from '../devTools/build.js';
@@ -17,12 +17,28 @@ const DEP_KNOWN_ROUTES = {
 	theme: '#/documentation/theme',
 };
 
-const clients = {};
+const MARKDOWN_CHEATSHEET =
+	'https://raw.githubusercontent.com/lifeparticle/Markdown-Cheatsheet/refs/heads/main/README.md';
+
+// Each dependency's README, by the demo's name for it: dependencies/oxject → @vanilla-bean/oxject
+const { dependencies = {} } = await Bun.file('./package.json').json();
+const dependencyDocs = Object.fromEntries(
+	Object.keys(dependencies).map(name => [name.replace(/^@[^/]+\//, ''), `node_modules/${name}/README.md`]),
+);
+
+const existing = async path => {
+	const file = Bun.file(path);
+
+	return (await file.exists()) ? file : undefined;
+};
+
+const notFound = path => Response.json({ error: `Not found: ${path}` }, { status: 404 });
 
 // ─── Collaborative form state ─────────────────────────────────────────────────
 // Tracks presence and focus for the CollaborativeForm example.
 // Values are relayed but not stored - they live in each client's state.
 
+const clients = {};
 const formUsers = {};
 
 function broadcastForm(message, excludeClientId = null) {
@@ -33,218 +49,175 @@ function broadcastForm(message, excludeClientId = null) {
 	}
 }
 
-const server = Bun.serve({
-	port: 9999,
-	fetch: async request => {
-		if (hotReload.upgrade(request, server)) return;
+const websocket = {
+	open(socket) {
+		clients[socket.data.clientId] = socket;
+	},
+	message(socket, raw) {
+		const { clientId } = socket.data;
+		let message;
 
-		const url = new URL(request.url);
-		const path = url.pathname;
-
-		if (request.method === 'GET' && path === '/ws') {
-			const success = server.upgrade(request, { data: { clientId: nanoid() } });
-
-			return success ? undefined : new Response('WebSocket upgrade error', { status: 400 });
+		try {
+			message = JSON.parse(raw);
+		} catch {
+			return;
 		}
 
-		console.log(path);
+		if (!message.type?.startsWith('form:')) return;
 
-		if (request.method === 'GET' && path === '/api-pass') {
-			const result = await fetch(url.searchParams.get('api'));
-			console.log(result);
+		if (message.type === 'form:join') {
+			formUsers[clientId] = { ...message.data, focusedField: null };
 
-			return Response.json(
-				await (result.headers.get('Content-Type').includes('application/json') ? result.json() : result.text()),
+			// Send current presence to the new joiner
+			socket.send(
+				JSON.stringify({
+					type: 'form:state',
+					data: { users: Object.values(formUsers).filter(u => u.userId !== message.data.userId) },
+				}),
 			);
+
+			broadcastForm(message, clientId);
+		} else if (message.type === 'form:focus') {
+			if (formUsers[clientId]) formUsers[clientId].focusedField = message.data.fieldId;
+			broadcastForm(message, clientId);
+		} else if (message.type === 'form:blur') {
+			if (formUsers[clientId]) formUsers[clientId].focusedField = null;
+			broadcastForm(message, clientId);
+		} else if (message.type === 'form:input') {
+			broadcastForm(message, clientId);
+		}
+	},
+	close(socket) {
+		const { clientId } = socket.data;
+
+		if (formUsers[clientId]) {
+			const { userId } = formUsers[clientId];
+			delete formUsers[clientId];
+			broadcastForm({ type: 'form:leave', data: { userId } });
 		}
 
-		if (path.endsWith('markdown/README.md')) {
-			let response = await fetch(
-				'https://raw.githubusercontent.com/lifeparticle/Markdown-Cheatsheet/refs/heads/main/README.md',
-			);
-			response = await response.text();
-			response = parseMarkdown(response);
+		delete clients[clientId];
+	},
+};
 
-			return Response.json(response);
+// ─── Routes ───────────────────────────────────────────────────────────────────
+
+const componentRoutes = {
+	// The demo view's live run of the component's lld document
+	'lld-run.json': async name => {
+		const lldFile = `components/${name}/${name}.lld.md`;
+
+		if (!(await existing(lldFile))) return notFound(lldFile);
+
+		const run = Bun.spawn(['bun', 'run', 'devTools/lldRunner.js', lldFile], { stdout: 'pipe', stderr: 'ignore' });
+		const output = await new Response(run.stdout).text();
+
+		await run.exited;
+
+		try {
+			return Response.json(JSON.parse(output));
+		} catch {
+			return Response.json({ error: `lldRunner wrote no JSON: ${output.slice(0, 500)}` });
 		}
+	},
+	'dependencies.json': name => {
+		const { imports } = extractJSDoc(`components/${name}/${name}.js`);
+		const seen = new Set();
+		const deps = [];
 
-		if (path.match(/\.lld\.md$/)) {
-			const filePath = path.slice(1);
-			if (await Bun.file(filePath).exists()) {
-				return Response.json({ raw: await Bun.file(filePath).text() });
-			}
+		imports.forEach(imp => {
+			const moduleRoot = imp.module.replace(/\/.*$/, '');
+			const moduleRoute = DEP_MODULE_ROUTES[moduleRoot] ?? DEP_MODULE_ROUTES[imp.module];
 
-			return Response.json({ error: `Not found: ${filePath}` }, { status: 404 });
-		}
-
-		if (path.match(/^\/components\/[^/]+\/lld-run\.json$/)) {
-			const componentName = path.match(/^\/components\/([^/]+)\//)[1];
-			const lldFile = `components/${componentName}/${componentName}.lld.md`;
-
-			if (!(await Bun.file(lldFile).exists())) {
-				return Response.json({ error: `Not found: ${lldFile}` }, { status: 404 });
-			}
-
-			const proc = Bun.spawn(['bun', 'run', 'devTools/lldRunner.js', lldFile], {
-				stdout: 'pipe',
-				stderr: 'ignore',
-				cwd: process.cwd(),
+			imp.imports.forEach(importName => {
+				if (seen.has(importName)) return;
+				seen.add(importName);
+				const route =
+					moduleRoute ?? DEP_KNOWN_ROUTES[importName] ?? (/^[A-Z]/.test(importName) ? `#/${importName}` : null);
+				deps.push({ name: importName, route });
 			});
+		});
 
-			await proc.exited;
+		return Response.json(deps);
+	},
+	'demo.js': async name => {
+		const demo = await existing(`components/${name}/demo.js`);
 
-			const out = await new Response(proc.stdout).text();
+		return demo && Response.json(await demo.text());
+	},
+	// Its own README, when it has one, with the reference extracted from its JSDoc after it
+	'README.md': async name => {
+		const readmePath = `components/${name}/README.md`;
+		const readme = await existing(readmePath);
+		const markdown = componentReadme({
+			name,
+			template: await Bun.file('devTools/COMPONENT_README_TEMPLATE.md').text(),
+			readme: await readme?.text(),
+		});
 
-			try {
-				return Response.json(JSON.parse(out));
-			} catch {
-				return Response.json({ error: `lldRunner produced no parseable output: ${out.slice(0, 500)}` });
-			}
-		}
+		return Response.json(parseMarkdown(markdown, readmePath));
+	},
+};
 
-		if (path.match(/^\/components\/[^/]+\/dependencies\.json$/)) {
-			const componentName = path.match(/^\/components\/([^/]+)\//)[1];
-			const { imports } = extractJSDoc(`components/${componentName}/${componentName}.js`);
-			const seen = new Set();
-			const deps = [];
-			imports.forEach(imp => {
-				const moduleRoot = imp.module.replace(/\/.*$/, '');
-				const moduleRoute = DEP_MODULE_ROUTES[moduleRoot] ?? DEP_MODULE_ROUTES[imp.module];
-				imp.imports.forEach(name => {
-					if (seen.has(name)) return;
-					seen.add(name);
-					const route = moduleRoute ?? DEP_KNOWN_ROUTES[name] ?? (/^[A-Z]/.test(name) ? `#/${name}` : null);
-					deps.push({ name, route });
-				});
-			});
-			return Response.json(deps);
-		}
+const router = async (request, server) => {
+	const { pathname } = new URL(request.url);
+	let match;
 
-		if (path.match(/^\/components\/[^/]+\/demo\.js$/)) {
-			const filePath = path.slice(1);
-			if (await Bun.file(filePath).exists()) {
-				return Response.json(await Bun.file(filePath).text());
-			}
-		}
+	if (requestMatch('GET', '/ws', request)) {
+		return server.upgrade(request, { data: { clientId: nanoid() } })
+			? undefined
+			: new Response('WebSocket upgrade error', { status: 400 });
+	}
 
-		if (path.endsWith('.md')) {
-			console.log('Load Markdown', { path });
+	if ((match = requestMatch('GET', '/api-pass', request))) {
+		const result = await fetch(match.api);
 
-			// Serve npm package READMEs from node_modules
-			const { dependencies: deps = {} } = JSON.parse(await Bun.file('./package.json').text());
-			const npmPackages = Object.fromEntries(
-				Object.keys(deps).map(pkg => [`dependencies/${pkg.replace(/^@[^/]+\//, '')}`, pkg]),
-			);
-			const npmKey = path.replace(/^\//, '').replace(/\/README\.md$/, '');
-			if (npmPackages[npmKey]) {
-				const pkgReadme = `node_modules/${npmPackages[npmKey]}/README.md`;
-				if (await Bun.file(pkgReadme).exists()) {
-					const content = await Bun.file(pkgReadme).text();
-					return Response.json(parseMarkdown(content, pkgReadme));
-				}
-			}
-
-			// A component's README: its own, when it has one, with the reference extracted from its JSDoc after it
-			const componentMatch = path.match(/^\/components\/([^/]+)\/README\.md$/);
-			if (componentMatch) {
-				const componentName = componentMatch[1];
-				const readmePath = `components/${componentName}/README.md`;
-				const readme = Bun.file(readmePath);
-				const markdown = componentReadme({
-					name: componentName,
-					template: await Bun.file('./devTools/COMPONENT_README_TEMPLATE.md').text(),
-					readme: (await readme.exists()) ? await readme.text() : undefined,
-				});
-
-				return Response.json(parseMarkdown(markdown, readmePath));
-			}
-
-			// Handle regular markdown files
-			const filePath = path.slice(1);
-			if (await Bun.file(filePath).exists()) {
-				const fileContent = await Bun.file(filePath).text();
-				const stripped = fileContent.replace(/^#[^\n]*\n+/, '');
-				const parsedMarkdown = parseMarkdown(stripped, filePath);
-				return Response.json(parsedMarkdown);
-			}
-		}
-
-		if (path.endsWith('design.excalidraw.png')) {
-			const designPath = `components/${path.slice(1)}`;
-
-			if (await Bun.file(designPath).exists()) {
-				console.log('Load excalidraw design', { path });
-
-				return new Response(Bun.file(designPath));
-			}
-		}
-
-		if (path.startsWith('/img/')) {
-			const image = Bun.file(path.slice(1));
-
-			if (await image.exists()) return new Response(image);
-		}
-
-		return (
-			(await serveStatic(request, { root: 'demo/build', packages: ['emoji-js'] })) ??
-			new Response(`File Not Found: ${path}`, { status: 404 })
+		return Response.json(
+			await (result.headers.get('Content-Type')?.includes('application/json') ? result.json() : result.text()),
 		);
-	},
-	websocket: {
-		open(socket) {
-			if (socket.data.hotReload) hotReload.websocket.open(socket);
-			else clients[socket.data.clientId] = socket;
-		},
-		message(socket, raw) {
-			const { clientId } = socket.data;
-			let message;
+	}
 
-			try {
-				message = JSON.parse(raw);
-			} catch {
-				return;
-			}
+	if (requestMatch('GET', '/markdown/README.md', request)) {
+		return Response.json(parseMarkdown(await (await fetch(MARKDOWN_CHEATSHEET)).text(), 'markdown/README.md'));
+	}
 
-			if (!message.type?.startsWith('form:')) return;
+	if ((match = requestMatch('POST', '/components/:name/lld-run.json', request))) {
+		return componentRoutes['lld-run.json'](match.name);
+	}
 
-			if (message.type === 'form:join') {
-				formUsers[clientId] = { ...message.data, focusedField: null };
+	if ((match = requestMatch('GET', '/components/:name/:file', request)) && componentRoutes[match.file]) {
+		const response = await componentRoutes[match.file](match.name);
 
-				// Send current presence to the new joiner
-				socket.send(
-					JSON.stringify({
-						type: 'form:state',
-						data: { users: Object.values(formUsers).filter(u => u.userId !== message.data.userId) },
-					}),
-				);
+		if (response) return response;
+	}
 
-				broadcastForm(message, clientId);
-			} else if (message.type === 'form:focus') {
-				if (formUsers[clientId]) formUsers[clientId].focusedField = message.data.fieldId;
-				broadcastForm(message, clientId);
-			} else if (message.type === 'form:blur') {
-				if (formUsers[clientId]) formUsers[clientId].focusedField = null;
-				broadcastForm(message, clientId);
-			} else if (message.type === 'form:input') {
-				broadcastForm(message, clientId);
-			}
-		},
-		close(socket) {
-			hotReload.websocket.close(socket);
+	if (request.method === 'GET' && pathname.endsWith('.lld.md')) {
+		const lld = await existing(pathname.slice(1));
 
-			const { clientId } = socket.data;
+		return lld ? Response.json({ raw: await lld.text() }) : notFound(pathname.slice(1));
+	}
 
-			if (formUsers[clientId]) {
-				const { userId } = formUsers[clientId];
-				delete formUsers[clientId];
-				broadcastForm({ type: 'form:leave', data: { userId } });
-			}
+	if ((match = requestMatch('GET', '/dependencies/:name/README.md', request)) && dependencyDocs[match.name]) {
+		const readme = await existing(dependencyDocs[match.name]);
 
-			delete clients[clientId];
-		},
-	},
-});
+		if (readme) return Response.json(parseMarkdown(await readme.text(), dependencyDocs[match.name]));
+	}
 
-console.log(`Listening on ${server.hostname}:${server.port}`);
+	// Any other markdown in the project (docs/, app/README.md, …), its title left to the page
+	if (request.method === 'GET' && pathname.endsWith('.md')) {
+		const markdown = await existing(pathname.slice(1));
 
-if (process.env.NODE_ENV === 'development') await hotReload.watch(buildOptions);
+		if (markdown)
+			return Response.json(parseMarkdown((await markdown.text()).replace(/^#[^\n]*\n+/, ''), pathname.slice(1)));
+	}
+
+	if ((match = requestMatch('GET', '/:name/design.excalidraw.png', request))) {
+		const design = await existing(`components/${match.name}/design.excalidraw.png`);
+
+		if (design) return new Response(design);
+	}
+
+	return serveStatic(request, { root: 'demo/build', packages: ['emoji-js'] });
+};
+
+await serve({ port: 9999, router, websocket, build: buildOptions });
