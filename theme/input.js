@@ -1,5 +1,5 @@
 import focusRing from './focus';
-import { radius, space } from './tokens';
+import { duration, radius, space } from './tokens';
 
 export const number = (_theme, selector = "input:where([type='number'])") => `
 	${selector} {
@@ -60,7 +60,7 @@ export default theme => {
 	background-color: ${colors.alpha(colors.white, 0.06)};
 	accent-color: ${colors.selected};
 	outline: none;
-	transition: border-color 0.15s, box-shadow 0.15s;
+	transition: border-color ${duration.fast}, background-color ${duration.fast};
 
 	/* A select's list is drawn on its own, with nothing behind a translucent fill */
 	& option {

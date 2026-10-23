@@ -1,7 +1,7 @@
 import { styled } from '../../styled';
 import { Component } from '../../Component';
 import { Elem } from '../../Elem';
-import { elevation, radius } from '../../theme/tokens';
+import { duration, elevation, radius } from '../../theme/tokens';
 
 /**
  * Mobile-friendly bottom sheet with drag-to-close gesture.
@@ -32,7 +32,7 @@ class BottomSheet extends styled(
 		padding: 0 ${safeArea.right} ${safeArea.bottom} ${safeArea.left};
 		z-index: 1000;
 		transform: translateY(100%);
-		transition: transform 0.3s ease;
+		transition: transform ${duration.base} ease;
 
 		&.open {
 			transform: translateY(0);

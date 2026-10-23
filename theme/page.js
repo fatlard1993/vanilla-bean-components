@@ -35,6 +35,16 @@ export default theme => `
 		${focusRing(theme)}
 	}
 
+	/* Asked for less motion, nothing slides, spins or fades: it is simply there */
+	@media (prefers-reduced-motion: reduce) {
+		*, *::before, *::after, ::backdrop {
+			animation-duration: 0.01ms !important;
+			animation-iteration-count: 1 !important;
+			transition-duration: 0.01ms !important;
+			scroll-behavior: auto !important;
+		}
+	}
+
 	::selection {
 		background: ${colors.lighter(colors.selected)};
 		color: ${colors.black};

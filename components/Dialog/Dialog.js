@@ -1,4 +1,5 @@
 import { styled } from '../../styled';
+import { duration } from '../../theme/tokens';
 import { Button } from '../Button';
 import { Component } from '../../Component';
 import { Elem } from '../../Elem';
@@ -49,12 +50,12 @@ class Dialog extends styled(
 		top: 50%;
 		transform: translateY(-50%);
 		opacity: 0;
-		transition: display 0.3s allow-discrete, overlay 0.3s allow-discrete;
-		animation: dialogFadeOut 0.3s ease-out forwards;
+		transition: display ${duration.base} allow-discrete, overlay ${duration.base} allow-discrete;
+		animation: dialogFadeOut ${duration.base} ease-out forwards;
 
 		&[open] {
 			display: flex;
-			animation: dialogFadeIn 0.3s ease-out forwards;
+			animation: dialogFadeIn ${duration.base} ease-out forwards;
 		}
 
 		& .header {

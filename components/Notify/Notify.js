@@ -1,6 +1,6 @@
 import { Elem } from '../../Elem';
 import { styled } from '../../styled';
-import { space } from '../../theme/tokens';
+import { duration, space } from '../../theme/tokens';
 import { Button } from '../Button';
 import { Popover } from '../Popover';
 
@@ -76,7 +76,7 @@ const StyledPopover = styled(
 				right: calc(${space.md} + ${safeArea.right});
 				width: auto;
 			}
-			transition: bottom 0.2s ease-out;
+			transition: bottom ${duration.fast} ease-out;
 		}
 	`,
 );

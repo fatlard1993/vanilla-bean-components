@@ -1,5 +1,5 @@
 import focusRing from './focus';
-import { radius, space } from './tokens';
+import { duration, radius, space } from './tokens';
 
 export default theme => {
 	const { colors, fonts } = theme;
@@ -23,7 +23,7 @@ export default theme => {
 	overflow: visible;
 	cursor: pointer;
 	touch-action: manipulation;
-	transition: filter 0.15s, background-color 0.15s, color 0.15s;
+	transition: filter ${duration.fast}, background-color ${duration.fast}, color ${duration.fast};
 
 	/* Lighter and darker by filter, so a button given a color of its own still answers the pointer */
 	&:hover, &:focus-visible {

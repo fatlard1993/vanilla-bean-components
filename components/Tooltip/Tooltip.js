@@ -1,6 +1,6 @@
 import { styled } from '../../styled';
 import { Popover } from '../Popover';
-import { radius, space } from '../../theme/tokens';
+import { duration, radius, space } from '../../theme/tokens';
 
 const StyledPopover = styled(
 	Popover,
@@ -18,13 +18,13 @@ const StyledPopover = styled(
 		color: ${colors.black};
 		opacity: 0;
 		transform: scaleX(0);
-		transition: opacity 0.4s, transform 0.1s, overlay 0.4s allow-discrete, display 0.4s allow-discrete;
+		transition: opacity ${duration.base}, transform ${duration.fast}, overlay ${duration.base} allow-discrete, display ${duration.base} allow-discrete;
 		text-indent: 0;
 
 		&:popover-open {
 			opacity: 1;
 			transform: scaleX(1);
-			transition: overlay 0.4s allow-discrete, display 0.4s allow-discrete, opacity 0.4s, transform 0.4s;
+			transition: overlay ${duration.base} allow-discrete, display ${duration.base} allow-discrete, opacity ${duration.base}, transform ${duration.base};
 		}
 
 		@starting-style {

@@ -1,7 +1,7 @@
 import { styled } from '../../styled';
 import { Component } from '../../Component';
 import { TooltipWrapper } from '../TooltipWrapper';
-import { fontSize, radius, space } from '../../theme/tokens';
+import { duration, fontSize, radius, space } from '../../theme/tokens';
 
 const StyledLabel = styled(
 	TooltipWrapper,
@@ -14,11 +14,7 @@ const StyledLabel = styled(
 		padding: ${space.sm} ${space.md};
 		background-color: ${colors.raised};
 		color: ${colors.white};
-		transition: all 0.5s;
-
-		&:after {
-			transition: all 0.5s;
-		}
+		transition: width ${duration.base}, background-color ${duration.base}, border-color ${duration.base};
 
 		/* Its own label, not one inside what it holds (a RadioButton's options are labels too) */
 		& > label {
@@ -33,12 +29,12 @@ const StyledLabel = styled(
 				position: relative;
 				z-index: 1;
 				transform: translate(0, 0);
-				transition: transform 0.5s, color 0.5s;
+				transition: transform ${duration.base}, color ${duration.base};
 			}
 
 			& input {
 				transform: translate(0, 0);
-				transition: transform 0.5s;
+				transition: transform ${duration.base};
 			}
 		}
 
@@ -116,7 +112,7 @@ const StyledLabel = styled(
 					padding-right: ${space.sm};
 					color: ${colors.white};
 
-					transition: opacity 0.8s, color 1s;
+					transition: opacity ${duration.slow}, color ${duration.slow};
 				}
 			}
 		}

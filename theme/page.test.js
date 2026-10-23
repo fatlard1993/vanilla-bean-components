@@ -99,3 +99,16 @@ describe('the type scale', () => {
 		expect(size('h3')).toBe(theme.fontSize.lg);
 	});
 });
+
+describe('motion', () => {
+	test('asked for less, the page stills every transition and animation, once, for everything', () => {
+		const reduced = theme.page.match(/@media \(prefers-reduced-motion: reduce\) \{([\s\S]*?)\n\t\}/)?.[1];
+
+		expect(reduced).toContain('transition-duration: 0.01ms !important;');
+		expect(reduced).toContain('animation-iteration-count: 1 !important;');
+	});
+
+	test('no transition is of everything', () => {
+		expect(theme.page).not.toMatch(/transition: all/);
+	});
+});

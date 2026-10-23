@@ -1,4 +1,5 @@
 import { styled } from '../../styled';
+import { duration } from '../../theme/tokens';
 import { Component } from '../../Component';
 
 /**
@@ -36,7 +37,7 @@ class Card extends styled(
 
 		&.interactive {
 			cursor: pointer;
-			transition: background-color 0.15s;
+			transition: background-color ${duration.fast};
 
 			&:hover, &:focus-visible {
 				background-color: ${colors.alpha(colors.white, 0.09)};

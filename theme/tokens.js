@@ -29,3 +29,6 @@ export const fontSize = Object.freeze({
 	xl: '1.25em',
 	xxl: '1.5em',
 });
+
+/** How long things take to move: fast for a hover or press, base for something opening, slow for what eases in behind */
+export const duration = Object.freeze({ fast: '0.15s', base: '0.3s', slow: '0.6s' });

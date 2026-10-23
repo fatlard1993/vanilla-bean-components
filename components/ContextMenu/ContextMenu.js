@@ -3,7 +3,7 @@ import { Elem } from '../../Elem';
 import { styled } from '../../styled';
 import { Menu } from '../Menu';
 import { Popover } from '../Popover';
-import { fontSize, space } from '../../theme/tokens';
+import { duration, fontSize, space } from '../../theme/tokens';
 
 // Between the menu and the button it hangs from, and between the menu and the viewport's edge
 const ANCHOR_GAP = 4;
@@ -52,8 +52,8 @@ const Reticle = styled(
 	transform-origin: 50% 56%;
 	transform: rotateZ(0deg);
 	transition:
-		transform 0.3s ease-out,
-		color 0.4s ease-out;
+		transform ${duration.base} ease-out,
+		color ${duration.base} ease-out;
 	background: radial-gradient(circle at 50% 56%, var(--reticle-color) 2px, transparent 2px);
 
 	&::before {
@@ -92,17 +92,17 @@ const StyledPopover = styled(
 		overflow: hidden auto;
 		transform: scaleY(0);
 		transition:
-			opacity 0.3s,
-			transform 0.1s,
-			overlay 0.3s allow-discrete,
-			display 0.3s allow-discrete;
+			opacity ${duration.base},
+			transform ${duration.fast},
+			overlay ${duration.base} allow-discrete,
+			display ${duration.base} allow-discrete;
 
 		&::backdrop {
 			background-color: ${colors.alpha(colors.black, 0)};
 			transition:
-				display 0.7s allow-discrete,
-				overlay 0.7s allow-discrete,
-				background-color 0.7s;
+				display ${duration.slow} allow-discrete,
+				overlay ${duration.slow} allow-discrete,
+				background-color ${duration.slow};
 		}
 
 		/* It unfolds from where it was asked for, and dims the page behind it */
@@ -110,10 +110,10 @@ const StyledPopover = styled(
 			opacity: 1;
 			transform: scaleY(1);
 			transition:
-				overlay 0.6s allow-discrete,
-				display 0.6s allow-discrete,
-				opacity 0.6s,
-				transform 0.6s;
+				overlay ${duration.slow} allow-discrete,
+				display ${duration.slow} allow-discrete,
+				opacity ${duration.slow},
+				transform ${duration.slow};
 
 			&::backdrop {
 				background-color: ${colors.overlay};
