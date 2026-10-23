@@ -123,6 +123,22 @@ await games.delete({ id }); // the id, or false
 - **`versioned: true`** numbers each record's versions in `_v`. An update carrying an older `_v` throws a `ConflictError` holding the stored record as `current`, so two people editing one record don't silently overwrite each other. An update that leaves `_v` out isn't checked, so a client that should be guarded must send it. Changes to a store take turns, so a hook that awaits never lets another change slip in between.
 - **`hooks`**: `beforeCreate(entry, body)` and `beforeUpdate(changes, current)` can amend or refuse; `afterDelete(id, options, entry)` runs with the record gone, and throwing puts it back (for a delete that would orphan something); `beforeWrite(entries)` sees the records a change touches (for an update, the old and the new) just before the write.
 
+### `fieldTypes`, `normalizeFields(fields)`, `validateFields(fields, data, { partial? }?)`
+
+The field handling `createStore` is built on, for checking a body that isn't headed for a store (a search, a command).
+
+```js
+const fields = normalizeFields({ name: { type: 'string', required: true }, players: { type: 'number' } });
+
+validateFields(fields, { name: 'Chess', players: '2', cheat: true }); // → { name: 'Chess', players: 2 }
+validateFields(fields, { players: 4 }, { partial: true }); // → { players: 4 }
+validateFields(fields, { players: 'many' }); // throws ValidationError('name is required')
+```
+
+- **`fieldTypes`** holds the built-in types by name: `string`, `number`, `boolean`, `stringArray`, `object` and `any`. Each is `{ parse(value), empty() }`: `parse` returns what's stored or throws a `ValidationError`, and `empty` makes the unset value fresh each time, so no two records share a list. A type of your own has the same shape.
+- **`normalizeFields(fields)`** makes any of the shorthands uniform, name to `{ type, required, default? }` with `type` resolved to its object: a list of names (each `any`), a map of name to default value, or a map of name to `{ type?, required?, default? }`. An unknown type name throws.
+- **`validateFields(fields, data, { partial? })`** returns only the known fields, each parsed. A field missing from `data` gets its `default` (a function default called, any other copied) or its type's empty value, and a `required` one throws. With `partial: true`, for an update, a missing field is left out instead. A value of the wrong shape, or a required one left empty, throws a `ValidationError` naming the field; so does a `data` that isn't an object.
+
 ### `crudRoutes(path, store, { list? }?)`
 
 The REST routes for a store: `GET path` (every record by id, or an array with `list: true`), `POST path` (201 and the record), and `GET`, `PATCH` (or `PUT`) and `DELETE` at `path/:id` (404 and `{ error }` for no such record). The id comes only from the path: a `?id=` search param never names a record. Search params do reach `delete` as its options, for `afterDelete`. It answers `undefined` for anything else, so routers chain with `??`.
