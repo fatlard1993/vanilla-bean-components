@@ -79,7 +79,8 @@ export default class TooltipWrapper extends StyledIcon {
 			});
 
 			this.on({
-				targetEvent: 'focus',
+				// focusin and focusout bubble, so a focused child (a wrapped input, say) shows the tooltip too
+				targetEvent: 'focusin',
 				callback: () => {
 					clearTimeout(this.tooltipTimeout);
 					const { left, bottom } = this.elem.getBoundingClientRect();
@@ -88,8 +89,9 @@ export default class TooltipWrapper extends StyledIcon {
 			});
 
 			this.on({
-				targetEvent: 'blur',
-				callback: () => {
+				targetEvent: 'focusout',
+				callback: ({ relatedTarget }) => {
+					if (this.elem.contains(relatedTarget)) return;
 					clearTimeout(this.tooltipTimeout);
 					this._tooltip?.hide();
 				},

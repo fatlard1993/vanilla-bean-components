@@ -44,6 +44,9 @@ const commonEvents = new Set([
 	'pointerout',
 	'pointerleave',
 	'contextmenu',
+	'focus',
+	'focusin',
+	'focusout',
 ]);
 
 // A long press: held this long, without moving further than this
@@ -477,7 +480,7 @@ class Component extends Elem {
 
 		if (key.startsWith('on') && value) {
 			const targetEvent = key.replace(/^on/, '').toLowerCase();
-			if (this.on({ targetEvent, id: key, callback: value })) return;
+			if (this._listen({ targetEvent, id: key, callback: value })) return;
 			if (typeof this[key] !== 'function') {
 				// Declared callback options (e.g. onSort, onButtonPress) live in this.options,
 				// invoked by the component itself rather than the event system
@@ -721,6 +724,28 @@ class Component extends Elem {
 	 * @returns {boolean} True if event type was recognized and registered, false if unsupported
 	 */
 	on({ targetEvent, id = targetEvent, callback }) {
+		const registered = this._listen({ targetEvent, id, callback });
+
+		if (!registered && callback && isDev) {
+			// eslint-disable-next-line no-console
+			console.warn(
+				`Component.on(): "${targetEvent}" is not a recognized event, so nothing is listening. Add "${targetEvent}" to static events to register it as a custom event.`,
+			);
+		}
+
+		return registered;
+	}
+
+	/**
+	 * on() without its warning, for option routing that falls back to a method of the same name.
+	 * @param {object} config - As for on()
+	 * @param {string} config.targetEvent - Event type to listen for
+	 * @param {string} [config.id] - Unique identifier for cleanup management
+	 * @param {Function} config.callback - Event handler function
+	 * @returns {boolean} True if the event type was recognized and registered
+	 * @private
+	 */
+	_listen({ targetEvent, id = targetEvent, callback }) {
 		if (!callback) return false;
 
 		if (commonEvents.has(targetEvent) || this.__registeredEvents.has(targetEvent)) {

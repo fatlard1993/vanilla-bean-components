@@ -1033,6 +1033,31 @@ describe('Component', () => {
 			expect(received).toEqual(['open', 'close']);
 			comp.destroy();
 		});
+
+		test('focus, focusin and focusout are recognized', () => {
+			const comp = new Component({ tag: 'button', appendTo: container });
+			const heard = [];
+
+			for (const targetEvent of ['focus', 'focusin', 'focusout']) {
+				expect(comp.on({ targetEvent, callback: () => heard.push(targetEvent) })).toBe(true);
+			}
+
+			comp.elem.focus();
+			comp.elem.blur();
+			expect(heard).toEqual(['focus', 'focusin', 'focusout']);
+			comp.destroy();
+		});
+
+		test('on() warns of an event it does not recognize, instead of dropping it silently', () => {
+			const warn = spyOn(console, 'warn').mockImplementation(() => {});
+			const comp = new Component();
+
+			expect(comp.on({ targetEvent: 'nonsense', callback: () => {} })).toBe(false);
+			expect(warn.mock.calls.some(([message]) => message.includes('"nonsense" is not a recognized event'))).toBe(true);
+
+			warn.mockRestore();
+			comp.destroy();
+		});
 	});
 
 	describe('static prepareOptions', () => {
