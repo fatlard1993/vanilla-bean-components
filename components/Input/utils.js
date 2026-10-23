@@ -53,7 +53,7 @@ export const updateValidationErrors = ({ elem, validations, value }) => {
 						height: '18px',
 						fontSize: '12px',
 						padding: 0,
-						backgroundColor: colors.red,
+						backgroundColor: colors.danger,
 					}),
 					onPointerPress: event => errorPopover.show({ x: event.clientX, y: event.clientY }),
 				});
