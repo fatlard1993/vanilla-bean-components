@@ -1,5 +1,5 @@
 import { Oxject } from '@vanilla-bean/oxject';
-import { Component, Input, Elem, styled } from '../..';
+import { Component, Input, Elem, connectSocket, styled } from '../..';
 
 import ExampleView from '../DemoView/ExampleView';
 import exampleCode from './CollaborativeForm.js.asText';
@@ -246,23 +246,15 @@ class CollaborativeForm extends FormWrap {
 
 		this.addCleanup('state', () => state.destroy());
 
-		const ws = new WebSocket(`ws://${location.host}/ws`);
+		// Comes back after a dropped connection, and joins again when it does
+		const socket = connectSocket('/ws');
+		const send = message => socket.send(message);
 
-		const send = message => {
-			if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(message));
-		};
-
-		ws.addEventListener('open', () => {
+		socket.addEventListener('open', () => {
 			send({ type: 'form:join', data: { userId: myId, name: myName, color: myColor } });
 		});
 
-		ws.addEventListener('message', ({ data }) => {
-			let message;
-			try {
-				message = JSON.parse(data);
-			} catch {
-				return;
-			}
+		socket.onMessage(message => {
 			if (!message.type?.startsWith('form:')) return;
 
 			const users = new Map(state.users);
@@ -289,7 +281,7 @@ class CollaborativeForm extends FormWrap {
 			}
 		});
 
-		this.addCleanup('ws', () => ws.close());
+		this.addCleanup('socket', () => socket.close());
 
 		new Presence({ state, myId, myName, myColor, appendTo: this });
 
