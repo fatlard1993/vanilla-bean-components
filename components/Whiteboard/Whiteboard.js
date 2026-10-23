@@ -1,4 +1,4 @@
-import { throttle } from '../../utils/data';
+import { pointerGesture } from '../../utils/gesture';
 import { Component } from '../../Component';
 import { radius } from '../../theme/tokens';
 
@@ -72,7 +72,28 @@ export default class Whiteboard extends Component {
 	build() {
 		this.canvas = this.elem.getContext('2d');
 
-		this.pointers = {};
+		this._gesture = pointerGesture({
+			down: event => {
+				const { x, y } = this.getPosition(event);
+
+				return { x, y, line: [{ x, y }] };
+			},
+			move: event => {
+				if (this.options.readOnly) return;
+
+				event.preventDefault();
+				this.drawEvent(event);
+			},
+			up: (event, { line }) => {
+				this.emit('line', { event, color: this.options.color, width: this.options.lineWidth, line });
+
+				if (line.length === 0) this.drawEvent(event, true);
+			},
+			// `??`, not `||`: 0 is a legitimate throttle meaning "draw every move event", and `||`
+			// discarded it in favour of the derived rate -- so the one value a caller reaching for
+			// maximum fidelity would pass was the one value that silently did nothing.
+			throttle: () => this.options.drawThrottle ?? Math.max(Math.min(this.options.lineWidth + 3, 24), 6),
+		});
 
 		const boundInteractionInit = this.interactionInit.bind(this);
 		this.elem.addEventListener('pointerdown', boundInteractionInit);
@@ -88,69 +109,14 @@ export default class Whiteboard extends Component {
 
 		event.preventDefault();
 
-		const { pointerId } = event;
-		const { x, y } = this.getPosition(event);
+		if (!this._gesture.active) this.replaceCleanup('gestureListeners', () => this._gesture.clear());
 
-		this.pointers[pointerId] = { x, y, line: [{ x, y }] };
+		this._gesture.start(event);
+	}
 
-		this.activePointerCount = Object.values(this.pointers).filter(_ => !!_).length;
-
-		if (this.pointerInteracting) return;
-
-		this.pointers[pointerId].initiator = true;
-		this.pointerInteracting = true;
-
-		const move = throttle(
-			(event => {
-				if (this.options.readOnly || !this.pointers[event.pointerId]) return;
-
-				event.preventDefault();
-
-				this.drawEvent.call(this, event);
-			}).bind(this),
-			// `??`, not `||`: 0 is a legitimate throttle meaning "draw every move event", and `||`
-			// discarded it in favour of the derived rate -- so the one value a caller reaching for
-			// maximum fidelity would pass was the one value that silently did nothing.
-			this.options.drawThrottle ?? Math.max(Math.min(this.options.lineWidth + 3, 24), 6),
-		);
-		const removePointer = event => {
-			if (!this.pointers[event.pointerId]) return;
-
-			event.preventDefault();
-
-			this.emit('line', {
-				event,
-				color: this.options.color,
-				width: this.options.lineWidth,
-				line: this.pointers[event.pointerId].line,
-			});
-
-			if (this.pointers[event.pointerId].line.length === 0) this.drawEvent(event, true);
-
-			delete this.pointers[event.pointerId];
-			this.activePointerCount = Object.values(this.pointers).filter(_ => !!_).length;
-
-			if (this.activePointerCount === 0) {
-				this.pointerInteracting = false;
-
-				document.removeEventListener('pointermove', move);
-				document.removeEventListener('pointerup', removePointer);
-				document.removeEventListener('pointerleave', removePointer);
-				document.removeEventListener('pointercancel', removePointer);
-			}
-		};
-
-		document.addEventListener('pointermove', move);
-		document.addEventListener('pointerup', removePointer);
-		document.addEventListener('pointerleave', removePointer);
-		document.addEventListener('pointercancel', removePointer);
-
-		this.replaceCleanup('gestureListeners', () => {
-			document.removeEventListener('pointermove', move);
-			document.removeEventListener('pointerup', removePointer);
-			document.removeEventListener('pointerleave', removePointer);
-			document.removeEventListener('pointercancel', removePointer);
-		});
+	/** @returns {object} Each drawing pointer's position and line so far, by pointerId */
+	get pointers() {
+		return this._gesture.pointers;
 	}
 
 	drawEvent(event, cap = false) {
@@ -204,6 +170,6 @@ export default class Whiteboard extends Component {
 		// Erasing the picture and forgetting the in-progress gesture are two separate jobs. Clearing
 		// only the pixels left every active pointer still registered, so the next pointermove resumed
 		// the old stroke and drew a line from wherever the pointer had been before the clear.
-		this.pointers = {};
+		this._gesture.clear();
 	}
 }

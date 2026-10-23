@@ -1,6 +1,6 @@
 import { TinyColor, random as randomColor } from '@ctrl/tinycolor';
 
-import { debounce, throttle, convertRange } from '../../utils';
+import { debounce, convertRange, pointerGesture } from '../../utils';
 import { Component } from '../../Component';
 import { styled } from '../../styled';
 import { Input } from '../Input';
@@ -160,7 +160,10 @@ class ColorPicker extends StyledInput {
 	}
 
 	build() {
-		this.pointers = {};
+		const areaMove = event => this[`${this._gestureArea}Move`](event);
+
+		// A release moves too, so where the pointer let go is where the color lands
+		this._gesture = pointerGesture({ move: areaMove, up: areaMove, throttle: 60 });
 
 		this.textInput = new Input({
 			type: 'text',
@@ -298,50 +301,13 @@ class ColorPicker extends StyledInput {
 	interactionInit(event) {
 		event.preventDefault();
 
-		const { pointerId } = event;
+		if (!this._gesture.active) {
+			// The area the gesture started in is the one it moves
+			this._gestureArea = this.hueArea.elem.contains(event.target) ? 'hue' : 'picker';
+			this.replaceCleanup('gestureListeners', () => this._gesture.clear());
+		}
 
-		if (!this.pointers[pointerId]) this.pointers[pointerId] = {};
-
-		this.activePointerCount = Object.values(this.pointers).filter(_ => !!_).length;
-
-		if (this.pointerInteracting) return;
-
-		this.pointerInteracting = true;
-		this.pointers[pointerId].initiator = true;
-
-		const move = throttle(this[`${event.target === this.hueArea.elem ? 'hue' : 'picker'}Move`].bind(this), 60);
-		const removePointer = event => {
-			event.preventDefault();
-
-			if (!this.pointers[event.pointerId]) return;
-
-			move(event);
-
-			delete this.pointers[event.pointerId];
-
-			this.activePointerCount = Object.values(this.pointers).filter(_ => !!_).length;
-
-			if (this.activePointerCount === 0) {
-				this.pointerInteracting = false;
-
-				document.removeEventListener('pointermove', move);
-				document.removeEventListener('pointerup', removePointer);
-				document.removeEventListener('pointerleave', removePointer);
-				document.removeEventListener('pointercancel', removePointer);
-			}
-		};
-
-		document.addEventListener('pointermove', move);
-		document.addEventListener('pointerup', removePointer);
-		document.addEventListener('pointerleave', removePointer);
-		document.addEventListener('pointercancel', removePointer);
-
-		this.replaceCleanup('gestureListeners', () => {
-			document.removeEventListener('pointermove', move);
-			document.removeEventListener('pointerup', removePointer);
-			document.removeEventListener('pointerleave', removePointer);
-			document.removeEventListener('pointercancel', removePointer);
-		});
+		this._gesture.start(event);
 	}
 
 	pickerMove(event) {
@@ -349,7 +315,9 @@ class ColorPicker extends StyledInput {
 
 		const { pointerId } = event;
 
-		if (!this.pointers[pointerId] || !this.pointers[pointerId].initiator || this.activePointerCount > 2) return;
+		const pointer = this._gesture.pointers[pointerId];
+
+		if (!pointer?.initiator || this._gesture.count > 2) return;
 
 		const indicatorOffsetX = this.pickerIndicator.elem.clientWidth / 2;
 		const indicatorOffsetY = this.pickerIndicator.elem.clientHeight / 2;
@@ -374,11 +342,13 @@ class ColorPicker extends StyledInput {
 
 		const { pointerId } = event;
 
-		if (!this.pointers[pointerId] || !this.pointers[pointerId].initiator || this.activePointerCount > 2) return;
+		const pointer = this._gesture.pointers[pointerId];
 
-		const prevX = this.pointers[pointerId].prevX ?? event.clientX;
+		if (!pointer?.initiator || this._gesture.count > 2) return;
+
+		const prevX = pointer.prevX ?? event.clientX;
 		const delta = event.clientX - prevX;
-		this.pointers[pointerId].prevX = event.clientX;
+		pointer.prevX = event.clientX;
 
 		const hueAreaWidth = this.hueArea.elem.clientWidth;
 		const newHue = (this.hue - (delta / hueAreaWidth) * 360 + 720) % 360;
