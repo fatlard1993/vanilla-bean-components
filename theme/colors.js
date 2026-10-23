@@ -46,6 +46,10 @@ const roles = {
 	surface: () => colors.darker(colors.gray),
 	// The lift of a card, or a group of fields, off whatever it sits on
 	raised: () => colors.alpha(colors.white, 0.05),
+	// The library's own accent: the edge of whatever floats over the page
+	accent: () => colors.teal,
+	// The edge itself: a dialog's, a popover's, a menu's, a sheet's
+	edge: () => colors.alpha(colors.light(colors.accent), 0.6),
 	// The dimming behind a dialog
 	overlay: () => colors.alpha(colors.vantablack, 0.6),
 	warning: () => colors.yellow,

@@ -1,7 +1,7 @@
 import { styled } from '../../styled';
 import { Component } from '../../Component';
 import { Elem } from '../../Elem';
-import { radius } from '../../theme/tokens';
+import { elevation, radius } from '../../theme/tokens';
 
 /**
  * Mobile-friendly bottom sheet with drag-to-close gesture.
@@ -21,8 +21,11 @@ class BottomSheet extends styled(
 		right: 0;
 		display: flex;
 		flex-direction: column;
-		background: ${colors.darker(colors.gray)};
-		border-top: 1px solid ${colors.border};
+		background: ${colors.surface};
+		border: 1px solid ${colors.edge};
+		border-bottom: none;
+		border-radius: ${radius.lg} ${radius.lg} 0 0;
+		box-shadow: ${elevation.lg};
 		max-height: 85vh;
 		z-index: 1000;
 		transform: translateY(100%);
@@ -48,7 +51,7 @@ class BottomSheet extends styled(
 				width: 40px;
 				height: 4px;
 				border-radius: ${radius.pill};
-				background: rgba(255,255,255,0.2);
+				background: ${colors.alpha(colors.white, 0.2)};
 				pointer-events: none;
 			}
 		}

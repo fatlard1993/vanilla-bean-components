@@ -35,6 +35,8 @@ describe('theme colors', () => {
 		const roles = [
 			'surface',
 			'raised',
+			'accent',
+			'edge',
 			'overlay',
 			'warning',
 			'success',

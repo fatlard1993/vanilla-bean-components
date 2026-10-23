@@ -4,7 +4,7 @@ import fonts from './fonts';
 import _input from './input';
 import _page, { elements as _elements } from './page';
 import safeArea from './safeArea';
-import { media, radius, space } from './tokens';
+import { elevation, media, radius, space } from './tokens';
 
 const theme = {
 	colors,
@@ -13,6 +13,7 @@ const theme = {
 	space,
 	radius,
 	media,
+	elevation,
 	/**
 	 * The focus ring's declarations, for under :focus-visible
 	 * @param {string} [offset] - How far outside the edge it sits; negative for inside

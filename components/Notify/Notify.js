@@ -39,7 +39,8 @@ const StyledPopover = styled(
 			.map(
 				([type, color]) => `
 		&.${type} {
-			background-color: ${colors.blackish(color)};
+			/* The one surface, tinted by its status */
+			background: linear-gradient(${colors.alpha(color, 0.14)}, ${colors.alpha(color, 0.14)}) ${colors.surface};
 			border-color: ${colors.light(color)};
 
 			&:before {

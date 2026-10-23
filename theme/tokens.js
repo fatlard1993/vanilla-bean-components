@@ -10,3 +10,9 @@ export const media = Object.freeze({
 	wide: '(min-width: 768px)',
 	touch: '(pointer: coarse)',
 });
+
+/** Shadows that lift what floats off the page: sm under a popover, menu or toast, lg under a dialog or sheet */
+export const elevation = Object.freeze({
+	sm: '0 4px 16px rgb(0 0 0 / 0.5)',
+	lg: '0 8px 40px rgb(0 0 0 / 0.7)',
+});

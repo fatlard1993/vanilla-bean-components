@@ -36,15 +36,16 @@ const defaultOpenDelay = 16;
  */
 class Dialog extends styled(
 	Component,
-	({ colors, space }) => `
-		background-color: ${colors.darker(colors.gray)};
+	({ colors, elevation, radius, space }) => `
+		background-color: ${colors.surface};
 		color: ${colors.white};
 		flex-direction: column;
 		padding: 0;
 		margin: 0 auto;
-		border: 1px solid ${colors.alpha(colors.light(colors.teal), 0.6)};
-		box-shadow: 0 8px 40px ${colors.alpha(colors.vantablack, 0.7)};
-		border-radius: 0;
+		border: 1px solid ${colors.edge};
+		box-shadow: ${elevation.lg};
+		border-radius: ${radius.md};
+		overflow: hidden;
 		top: 50%;
 		transform: translateY(-50%);
 		opacity: 0;
@@ -62,7 +63,7 @@ class Dialog extends styled(
 			font-weight: 600;
 			color: ${colors.white};
 			background-color: ${colors.alpha(colors.vantablack, 0.25)};
-			border-bottom: 1px solid ${colors.alpha(colors.light(colors.teal), 0.2)};
+			border-bottom: 1px solid ${colors.alpha(colors.light(colors.accent), 0.2)};
 			margin: 0;
 		}
 
@@ -106,7 +107,7 @@ class Dialog extends styled(
 		}
 
 		&::backdrop {
-			background-color: ${colors.black.setAlpha(0.85)};
+			background-color: ${colors.overlay};
 			backdrop-filter: blur(2px);
 		}
 
@@ -122,7 +123,7 @@ class Dialog extends styled(
 			.join('\n')}
 
 		&.variant-error {
-			box-shadow: 0 0 32px ${colors.alpha(colors.danger, 0.14)}, 0 8px 40px ${colors.alpha(colors.vantablack, 0.7)};
+			box-shadow: 0 0 32px ${colors.alpha(colors.danger, 0.14)}, ${elevation.lg};
 		}
 
 		@keyframes dialogFadeIn {

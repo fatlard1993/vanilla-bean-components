@@ -1,6 +1,6 @@
 import { styled } from '../../styled';
 import { Popover } from '../Popover';
-import { space } from '../../theme/tokens';
+import { radius, space } from '../../theme/tokens';
 
 const StyledPopover = styled(
 	Popover,
@@ -11,7 +11,10 @@ const StyledPopover = styled(
 		pointer-events: none;
 		max-width: 240px;
 		margin: auto;
+		/* Inverted, so a hint reads apart from the surfaces it floats over */
 		background-color: ${colors.white};
+		border-color: ${colors.white};
+		border-radius: ${radius.sm};
 		color: ${colors.black};
 		opacity: 0;
 		transform: scaleX(0);

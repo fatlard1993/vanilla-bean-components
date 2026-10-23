@@ -116,7 +116,7 @@ const StyledPopover = styled(
 				transform 0.6s;
 
 			&::backdrop {
-				background-color: ${colors.alpha(colors.black, 0.25)};
+				background-color: ${colors.overlay};
 			}
 		}
 
