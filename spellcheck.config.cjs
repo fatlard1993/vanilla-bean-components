@@ -112,6 +112,7 @@ module.exports = {
 		'javascript',
 		'webkit',
 		'scrollbar',
+		'overscroll',
 		'monospace',
 		'osx',
 		'moz',
