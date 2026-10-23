@@ -35,7 +35,7 @@ Create an `index.html` file:
 
 When data changes in VBC, **you** decide what updates, through explicit handlers you write. No reconciliation loop. No dependency graph. No magic.
 
-> This guide uses `Oxject` for reactive state (included in VBC, no separate install) and `hypertether` for data fetching (`bun add @vanilla-bean/hypertether`).
+> This guide uses `Oxject` for reactive state and `hypertether` for data fetching, both included in VBC, no separate install.
 
 Create `main.js`:
 
@@ -243,7 +243,7 @@ Most cases don't reach 5. Subscribers handle simple reactive updates. `static sc
 
 VBC is structured in three tiers, each building on the one below:
 
-**Primitives**: `Elem`, `Component`, `Oxject`, `styled`. The reactive core. All four come with VBC. Add `hypertether` (`bun add @vanilla-bean/hypertether`) for HTTP caching, it's the only one that's a separate install.
+**Primitives**: `Elem`, `Component`, `Oxject`, `styled`. The reactive core. All four come with VBC, and so does HTTP caching: hypertether's `GET`, `POST` and the rest are exported alongside them.
 
 **Components**: `Button`, `Dialog`, `Table`, `Form`, `Calendar`, etc. A second tier of building blocks that handle real, cross-cutting concerns: keyboard activation, focus management, accessibility, form validation, modal behavior, data rendering. These aren't examples. They're production-quality composed primitives you use directly when they fit your needs.
 
@@ -365,8 +365,7 @@ const contactForm = new Form({
 Components render synchronously. Data flows in after the initial render via `options`, the reactive hydration layer. Structure goes in `build()`, reactive updates wire through subscribers declared alongside that structure.
 
 ```js
-import { Component, Elem } from '@vanilla-bean/components';
-import { GET } from '@vanilla-bean/hypertether';
+import { Component, Elem, GET } from '@vanilla-bean/components';
 
 class UserList extends Component {
 	build() {
@@ -404,10 +403,10 @@ When a POST invalidates `'users'`, `onResponse` runs and the list rebuilds, no r
 
 ## HTTP Requests with Caching
 
-[hypertether](https://github.com/fatlard1993/hypertether) is the companion HTTP layer. It handles the full data lifecycle: fetch, cache, invalidate, and refetch. When a mutation declares `invalidates: ['users']`, every subscriber that registered `onResponse` receives fresh data, no global store, no pub/sub setup required.
+[hypertether](https://github.com/fatlard1993/hypertether) is the companion HTTP layer, exported from VBC. It handles the full data lifecycle: fetch, cache, invalidate, and refetch. When a mutation declares `invalidates: ['users']`, every subscriber that registered `onResponse` receives fresh data, no global store, no pub/sub setup required.
 
 ```js
-import { GET, POST } from '@vanilla-bean/hypertether';
+import { GET, POST } from '@vanilla-bean/components';
 
 // Cached GET - onResponse fires whenever 'users' is invalidated
 const { body: users } = await GET('/api/users', {
@@ -484,6 +483,6 @@ const StyledCard = styled.Component`
 
 6. **Master styling**: The [styled system documentation](../styled/README.md) covers theme integration, native CSS nesting, and scoped CSS patterns.
 
-7. **HTTP and caching**: [hypertether](https://github.com/fatlard1993/hypertether) is the companion HTTP layer, handling caching, subscriptions, and cache invalidation. Wire API responses into component options via `onResponse`.
+7. **HTTP and caching**: [hypertether](https://github.com/fatlard1993/hypertether) is the companion HTTP layer, exported from VBC, handling caching, subscriptions, and cache invalidation. Wire API responses into component options via `onResponse`. For a collection the app kit's `crudRoutes` serves, `crudResource` adds the version conflicts.
 
 8. **Fork when your needs reach the foundation**: If requirements eventually penetrate to the primitive layer itself, not just building on top but needing the primitives to behave differently, clone the repository and own it. The source is plain JavaScript following explicit patterns; it's genuinely maintainable. Most projects build very far before that point arrives.
