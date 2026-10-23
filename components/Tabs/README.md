@@ -28,10 +28,6 @@
 
 [[extract-imports Tabs.js]]
 
-## Design
-
-![design](../Tabs/design.excalidraw.png)
-
 ## Segmented
 
 `variant: 'segmented'` draws the same tabs as a pill split into its choices: for switching between a few views of the same thing (by day / by project, list / chart). It keeps the tabs' keyboard behaviour and roles.
