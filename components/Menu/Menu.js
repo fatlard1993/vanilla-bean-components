@@ -8,7 +8,7 @@ const itemsOf = elem =>
 
 const StyledList = styled(
 	List,
-	({ colors }) => `
+	({ colors, focusRing }) => `
 		margin: 0;
 		padding: 0;
 		list-style: none;
@@ -22,14 +22,13 @@ const StyledList = styled(
 				border-bottom: none !important;
 			}
 
-			&:hover, &:focus, &:focus-visible, & a:hover, & a:focus, & a:focus-visible  {
-				color: ${colors.light(colors.selected)} !important;
-				border-color: ${colors.light(colors.selected)};
+			&:hover, & a:hover {
+				background-color: ${colors.alpha(colors.white, 0.08)};
 			}
 
+			/* Inside the row: a menu in a popover clips what reaches past its edge */
 			&:focus-visible, & a:focus-visible {
-				outline: 2px solid ${colors.light(colors.selected)};
-				outline-offset: -2px;
+				${focusRing('-2px')}
 			}
 		}
 	`,

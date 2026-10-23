@@ -1,6 +1,10 @@
+import focusRing from './focus';
 import { radius, space } from './tokens';
 
-export default ({ colors, fonts }) => `
+export default theme => {
+	const { colors, fonts } = theme;
+
+	return `
 	display: inline-block;
 	/* 32px tall at the page's size, from the line and the padding; a button with smaller text is smaller */
 	line-height: 1.25;
@@ -12,7 +16,6 @@ export default ({ colors, fonts }) => `
 	background-color: ${colors.blue};
 	border: none;
 	border-radius: ${radius.md};
-	outline-color: ${colors.lighter(colors.selected)};
 	text-align: center;
 	position: relative;
 	white-space: nowrap;
@@ -25,6 +28,10 @@ export default ({ colors, fonts }) => `
 	/* Lighter and darker by filter, so a button given a color of its own still answers the pointer */
 	&:hover, &:focus-visible {
 		filter: brightness(1.15);
+	}
+
+	&:focus-visible {
+		${focusRing(theme)}
 	}
 
 	&:active, &.active, &.pressed {
@@ -71,6 +78,7 @@ export default ({ colors, fonts }) => `
 		}
 	}
 `;
+};
 
 /**
  * The raised look: a bevel that sinks as it's pressed. Button's variant 'raised', over the default's colors and shape.

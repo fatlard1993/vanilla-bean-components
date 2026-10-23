@@ -1,3 +1,4 @@
+import focusRing from './focus';
 import { radius, space } from './tokens';
 
 export const number = (_theme, selector = "input:where([type='number'])") => `
@@ -6,7 +7,7 @@ export const number = (_theme, selector = "input:where([type='number'])") => `
 	}
 `;
 
-export const checkbox = ({ colors }, selector = "input:where([type='checkbox'])") => `
+export const checkbox = (theme, selector = "input:where([type='checkbox'])") => `
 	${selector} {
 		/* Remove most all native input styles */
 		appearance: none;
@@ -35,16 +36,19 @@ export const checkbox = ({ colors }, selector = "input:where([type='checkbox'])"
 		}
 
 		&:checked:before {
-			box-shadow: inset 1em 1em ${colors.selected};
+			box-shadow: inset 1em 1em ${theme.colors.selected};
 		}
 
-		&:focus {
-			border: 0.15em solid currentColor;
+		&:focus-visible {
+			${focusRing(theme)}
 		}
 	}
 `;
 
-export default ({ colors }) => `
+export default theme => {
+	const { colors } = theme;
+
+	return `
 	display: block;
 	box-sizing: border-box;
 	width: 100%;
@@ -68,9 +72,9 @@ export default ({ colors }) => `
 		color: ${colors.alpha(colors.white, 0.35)};
 	}
 
-	&:focus, &:focus-within {
-		border-color: ${colors.light(colors.blue)};
-		box-shadow: 0 0 0 2px ${colors.alpha(colors.blue, 0.35)};
+	/* A field drawn around an editor of its own rings when the editor has focus */
+	&:focus-visible, &:has(:focus-visible) {
+		${focusRing(theme)}
 	}
 
 	&:disabled {
@@ -83,3 +87,4 @@ export default ({ colors }) => `
 		background-color: ${colors.alpha(colors.danger, 0.2)};
 	}
 `;
+};

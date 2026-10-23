@@ -5,7 +5,7 @@ import { formatDuration, formatTime } from './utils';
 
 const StyledEvent = styled(
 	Component,
-	({ colors }) => `
+	({ colors, focusRing }) => `
 		cursor: pointer;
 		color: ${colors.mostReadable(colors.selected, [colors.white, colors.black])};
 		background-color: ${colors.selected};
@@ -14,10 +14,13 @@ const StyledEvent = styled(
 			pointer-events: none;
 		}
 
-		&:hover,
+		&:hover {
+			filter: brightness(1.15);
+		}
+
+		/* Inside the event: its cell clips what reaches past it */
 		&:focus-visible {
-			outline: 2px solid ${colors.light(colors.selected)};
-			outline-offset: -2px;
+			${focusRing('-2px')}
 		}
 	`,
 );

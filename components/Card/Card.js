@@ -14,7 +14,7 @@ import { Component } from '../../Component';
  */
 class Card extends styled(
 	Component,
-	({ colors, radius, space }) => `
+	({ colors, focusRing, radius, space }) => `
 		display: block;
 		box-sizing: border-box;
 		min-width: 0;
@@ -40,6 +40,10 @@ class Card extends styled(
 
 			&:hover, &:focus-visible {
 				background-color: ${colors.alpha(colors.white, 0.09)};
+			}
+
+			&:focus-visible {
+				${focusRing()}
 			}
 		}
 

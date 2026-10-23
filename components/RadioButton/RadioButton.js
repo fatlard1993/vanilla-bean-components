@@ -3,17 +3,13 @@ import { Component } from '../../Component';
 
 const RadioButtonLabel = styled(
 	Component,
-	({ colors }) => `
+	() => `
 		line-height: 1.1;
 		display: grid;
 		grid-template-columns: 1em auto;
 		gap: 0.5em;
 		width: fit-content;
 		cursor: pointer;
-
-		&:focus-within {
-			color: ${colors.blue};
-		}
 
 		& + label {
 			margin-top: 1em;
@@ -23,7 +19,7 @@ const RadioButtonLabel = styled(
 
 const RadioButtonInput = styled(
 	Component,
-	({ colors }) => `
+	theme => `
 		/* Remove most all native input styles */
 		appearance: none;
 
@@ -47,12 +43,11 @@ const RadioButtonInput = styled(
 		}
 
 		&:checked:before {
-			box-shadow: inset 1em 1em ${colors.blue};
+			box-shadow: inset 1em 1em ${theme.colors.blue};
 		}
 
 		&:focus-visible {
-			outline: 2px solid ${colors.blue};
-			outline-offset: 2px;
+			${theme.focusRing()}
 		}
 	`,
 );

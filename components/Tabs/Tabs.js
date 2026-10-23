@@ -5,7 +5,7 @@ import { Button } from '../Button';
 
 const StyledComponent = styled(
 	Component,
-	({ colors, radius, space }) => `
+	({ colors, focusRing, radius, space }) => `
 		display: flex;
 		gap: ${space.xs};
 		overflow-x: auto;
@@ -22,6 +22,11 @@ const StyledComponent = styled(
 
 		& > .vbc-button:hover {
 			color: ${colors.white};
+		}
+
+		/* Inside the tab: the row scrolls, and clips what reaches past it */
+		& > .vbc-button:focus-visible {
+			${focusRing('-2px')}
 		}
 
 		/* Selected reads by its underline and weight as well as its colour */

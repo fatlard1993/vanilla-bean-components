@@ -5,7 +5,7 @@ import { Elem } from '../../Elem';
 
 const StyledComponent = styled(
 	Component,
-	({ colors, radius, space }) => `
+	({ colors, focusRing, radius, space }) => `
 		padding: ${space.xs} ${space.sm};
 		margin: 0;
 		display: inline-flex;
@@ -23,6 +23,10 @@ const StyledComponent = styled(
 
 		&:not(.readOnly):not(.add-tag):hover {
 			border-color: ${colors.light(colors.teal)};
+		}
+
+		&:focus-visible {
+			${focusRing()}
 		}
 
 		&.add-tag {

@@ -1,6 +1,7 @@
 import _button, { raised } from './button';
 import { bareCode, codeFonts, highlightedCode } from './code';
 import colors from './colors';
+import focusRing from './focus';
 import fonts from './fonts';
 import _input, { number, checkbox } from './input';
 import _scrollbar from './scrollbar';
@@ -27,6 +28,11 @@ export default theme => `
 		background: ${colors.black};
 		color: ${colors.white};
 		margin: 0;
+	}
+
+	/* Whatever takes keyboard focus shows the one ring, at no specificity, so an app's own focus style still wins */
+	:where(:focus-visible) {
+		${focusRing(theme)}
 	}
 
 	::selection {

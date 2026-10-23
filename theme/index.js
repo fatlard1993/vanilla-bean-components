@@ -1,4 +1,5 @@
 import colors from './colors';
+import focusRing from './focus';
 import fonts from './fonts';
 import _input from './input';
 import _page, { elements as _elements } from './page';
@@ -12,6 +13,12 @@ const theme = {
 	space,
 	radius,
 	media,
+	/**
+	 * The focus ring's declarations, for under :focus-visible
+	 * @param {string} [offset] - How far outside the edge it sits; negative for inside
+	 * @returns {string} CSS
+	 */
+	focusRing: offset => focusRing(theme, offset),
 	get input() {
 		return _input(this);
 	},

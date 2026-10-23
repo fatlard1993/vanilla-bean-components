@@ -77,3 +77,15 @@ describe('theme.safeArea', () => {
 		});
 	});
 });
+
+describe('the focus ring', () => {
+	test('is one ring in the selected role, on keyboard focus, for anything the page focuses and for the controls', () => {
+		const ring = theme.focusRing();
+
+		expect(ring).toContain(`outline: 2px solid ${theme.colors.light(theme.colors.selected)};`);
+		expect(ring).toContain('outline-offset: 2px;');
+		expect(theme.focusRing('-2px')).toContain('outline-offset: -2px;');
+		expect(theme.page).toMatch(/:where\(:focus-visible\) \{\s*outline: 2px solid/);
+		expect(theme.input).toContain(ring.trim().split('\n')[0]);
+	});
+});
