@@ -55,7 +55,7 @@ class FormDialog extends styled(
 	Dialog,
 	({ colors, space }) => `
 		& .failure {
-			margin-top: ${space.md};
+			padding: 0 ${space.md} ${space.sm};
 			color: ${colors.light(colors.danger)};
 		}
 
@@ -111,7 +111,9 @@ class FormDialog extends styled(
 			appendTo: this.body,
 		});
 
-		this.failure = new Elem({ addClass: 'failure', attributes: { role: 'alert' }, appendTo: this.body });
+		// Next to the buttons it answers, below whatever else the dialog holds
+		this.failure = new Elem({ addClass: 'failure', attributes: { role: 'alert' } });
+		this._footer.elem.before(this.failure.elem);
 
 		this.form.elem.addEventListener('keydown', event => {
 			const { target } = event;
