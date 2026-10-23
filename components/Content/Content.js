@@ -1,8 +1,7 @@
 import { styled } from '../../styled';
 import { Component } from '../../Component';
+import { cssLength } from '../../utils';
 import { space } from '../../theme/tokens';
-
-const length = value => (typeof value === 'number' ? `${value}px` : value);
 
 /**
  * The part of a view that scrolls: it takes the room a toolbar or header leaves and scrolls what doesn't fit, so the
@@ -33,14 +32,14 @@ class Content extends styled(
 		padding: {
 			set(value) {
 				if (value === undefined || value === null) this.elem.style.removeProperty('padding');
-				else this.elem.style.padding = length(value);
+				else this.elem.style.padding = cssLength(value);
 			},
 		},
 		column: {
 			set(value) {
 				this.toggleClass('column', !!value);
 
-				if (value && value !== true) this.elem.style.setProperty('--content-column', length(value));
+				if (value && value !== true) this.elem.style.setProperty('--content-column', cssLength(value));
 				else this.elem.style.removeProperty('--content-column');
 			},
 		},

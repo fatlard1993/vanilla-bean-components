@@ -1,4 +1,4 @@
-import { isDescendantOf } from './element';
+import { cssLength, isDescendantOf } from './element';
 
 describe('element utilities', () => {
 	beforeEach(() => {
@@ -164,5 +164,14 @@ describe('element utilities', () => {
 			expect(isDescendantOf(element, element)).toBe(false);
 			expect(isDescendantOf(document.body, element)).toBe(false);
 		});
+	});
+});
+
+describe('cssLength', () => {
+	test('a number is pixels; a string passes through', () => {
+		expect(cssLength(12)).toBe('12px');
+		expect(cssLength(0)).toBe('0px');
+		expect(cssLength('1rem')).toBe('1rem');
+		expect(cssLength(undefined)).toBeUndefined();
 	});
 });

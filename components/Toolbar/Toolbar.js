@@ -1,7 +1,6 @@
 import { styled } from '../../styled';
 import { Component } from '../../Component';
-
-const length = value => (typeof value === 'number' ? `${value}px` : value);
+import { cssLength } from '../../utils';
 
 /**
  * A row of controls: buttons, a search field, filters. It wraps onto more lines when it runs out of room, unless told
@@ -55,7 +54,7 @@ class Toolbar extends styled(
 		gap: {
 			default: 12,
 			set(value) {
-				this.elem.style.gap = length(value);
+				this.elem.style.gap = cssLength(value);
 			},
 		},
 		wrap: {

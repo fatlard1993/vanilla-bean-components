@@ -41,3 +41,12 @@ export const getElementsContainingText = (text, options = {}) => {
 
 	return nodes;
 };
+
+/**
+ * A CSS length from a number of pixels or a CSS string, as an option a component takes as either.
+ * @example cssLength(12) // '12px'
+ * @example cssLength('1rem') // '1rem'
+ * @param {number|string} value - Pixels, or any CSS length
+ * @returns {string} The CSS length (anything not a number passes through)
+ */
+export const cssLength = value => (typeof value === 'number' ? `${value}px` : value);

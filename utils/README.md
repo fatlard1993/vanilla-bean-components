@@ -157,6 +157,10 @@ Whether `element` is anywhere inside `parentElement` in the DOM tree.
 
 Returns all DOM elements whose visible text content matches `text`. Useful for testing and demo navigation.
 
+### `cssLength(value)`
+
+A number as pixels, anything else as given: `cssLength(12)` is `'12px'`, `cssLength('1rem')` is `'1rem'`. For an option that takes either.
+
 ## Gesture
 
 ### `pointerGesture({ down?, move?, up?, throttle? }?)`
