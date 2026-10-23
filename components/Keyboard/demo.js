@@ -9,7 +9,7 @@ export default class Demo extends DemoView {
 			onKeyUp: console.log,
 			onKeyPress: event => {
 				const { key } = event.detail;
-				const shiftKey = event.target.elem.querySelector('button.shift')?._component;
+				const shiftKey = this.component.elem.querySelector('button.shift')?._component;
 
 				if (key === 'number' || key === 'simple') this.component.setLayout(key);
 				else if (key === 'backspace') this.output.elem.textContent = this.output.elem.textContent.slice(0, -1);

@@ -139,7 +139,7 @@ new Component({
 });
 ```
 
-The recognized native events are `click`, the pointer events, `contextmenu`, `focus`, `focusin` and `focusout`, plus the input events below. For press interactions prefer `onPointerPress`.
+The recognized native events are `click`, the pointer events, `contextmenu`, `focus`, `focusin` and `focusout`, plus the input events below. An `on*` option for a declared custom event keeps its case (`onSelectDay` hears `selectDay`); any other is lowercased to a native name (`onKeyUp` hears `keyup`). For press interactions prefer `onPointerPress`.
 
 ### Enhanced Input Events
 

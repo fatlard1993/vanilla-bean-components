@@ -1034,6 +1034,19 @@ describe('Component', () => {
 			comp.destroy();
 		});
 
+		test('a camelCase event keeps its case: onSelectDay hears selectDay', () => {
+			class TestComp extends Component {
+				static events = ['selectDay'];
+			}
+
+			const onSelectDay = mock();
+			const comp = new TestComp({ onSelectDay });
+			comp.emit('selectDay', 'today');
+			expect(onSelectDay).toHaveBeenCalledTimes(1);
+			expect(onSelectDay.mock.calls[0][0].detail).toBe('today');
+			comp.destroy();
+		});
+
 		test('focus, focusin and focusout are recognized', () => {
 			const comp = new Component({ tag: 'button', appendTo: container });
 			const heard = [];

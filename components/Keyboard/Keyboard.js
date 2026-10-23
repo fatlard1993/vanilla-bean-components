@@ -20,6 +20,9 @@ const KeyRow = styled(
  * @param {boolean} [options.tactileResponse=true] - Whether to provide haptic feedback on key press
  * @param {object} [options.keyDefinitions] - Key configuration object mapping key names to definitions
  * @param {object} [options.layouts] - Layout configuration object mapping layout names to key arrays
+ * @param {Function} [options.onKeyDown] - Hears `keyDown`: a key pressed down; `event.detail` holds key, keyDefinition, target and event
+ * @param {Function} [options.onKeyUp] - Hears `keyUp`: a key let go
+ * @param {Function} [options.onKeyPress] - Hears `keyPress`: a key pressed and let go
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Keyboard} Keyboard component instance
  */
@@ -65,6 +68,8 @@ class Keyboard extends Component {
 		},
 		tactileResponse: { default: true },
 	};
+
+	static events = ['keyDown', 'keyUp', 'keyPress'];
 
 	// todo native keyboard events https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/KeyboardEvent
 

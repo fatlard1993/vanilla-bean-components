@@ -547,6 +547,12 @@ export interface KeyboardOptions extends ComponentOptions {
 	keyDefinitions?: Record<string, any>;
 	/** Layout configuration object mapping layout names to key arrays */
 	layouts?: Record<string, any>;
+	/** Hears `keyDown`: a key pressed down; `event.detail` holds key, keyDefinition, target and event */
+	onKeyDown?: (...args: any[]) => any;
+	/** Hears `keyUp`: a key let go */
+	onKeyUp?: (...args: any[]) => any;
+	/** Hears `keyPress`: a key pressed and let go */
+	onKeyPress?: (...args: any[]) => any;
 }
 
 export declare class Keyboard extends Component {

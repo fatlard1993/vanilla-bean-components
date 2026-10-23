@@ -479,7 +479,10 @@ class Component extends Elem {
 		}
 
 		if (key.startsWith('on') && value) {
-			const targetEvent = key.replace(/^on/, '').toLowerCase();
+			const eventName = key.slice(2);
+			const declaredEvent = eventName.charAt(0).toLowerCase() + eventName.slice(1);
+			// A declared custom event keeps its case (onKeyDown hears keyDown); anything else is a native event name
+			const targetEvent = this.__registeredEvents.has(declaredEvent) ? declaredEvent : eventName.toLowerCase();
 			if (this._listen({ targetEvent, id: key, callback: value })) return;
 			if (typeof this[key] !== 'function') {
 				// Declared callback options (e.g. onSort, onButtonPress) live in this.options,
