@@ -6,7 +6,7 @@ import { ContextMenu } from '.';
 
 export default class Demo extends DemoView {
 	build() {
-		const say = textContent => () => new Notify({ type: 'info', textContent });
+		const say = textContent => () => new Notify({ intent: 'info', textContent });
 
 		this.component = new ContextMenu({
 			items: [

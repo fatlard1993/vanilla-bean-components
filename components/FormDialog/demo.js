@@ -21,9 +21,9 @@ export default class Demo extends DemoView {
 					if (data.name === 'taken') return { status: 'error', body: { error: 'That name is taken' } };
 
 					Object.assign(record, data);
-					new Notify({ type: 'success', content: `Saved ${record.name}` });
+					new Notify({ intent: 'success', content: `Saved ${record.name}` });
 				},
-				onDelete: () => new Notify({ type: 'info', content: `Deleted ${record.name}` }),
+				onDelete: () => new Notify({ intent: 'info', content: `Deleted ${record.name}` }),
 				confirmDelete: `Delete "${record.name}"?`,
 			});
 

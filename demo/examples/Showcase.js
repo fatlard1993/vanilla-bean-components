@@ -227,7 +227,7 @@ export default class Showcase extends View {
 													notes.unshift({ field: noteField.elem.value, text: noteText.elem.value });
 													noteText.options.value = '';
 													renderNotes();
-													new Notify({ type: 'success', content: 'Note saved' });
+													new Notify({ intent: 'success', content: 'Note saved' });
 												},
 											}),
 											new Button({

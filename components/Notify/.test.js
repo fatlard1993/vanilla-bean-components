@@ -14,20 +14,28 @@ describe('Notify', () => {
 		await findByText(container, textContent);
 	});
 
+	test('intent is drawn as its class and picks an icon; the old names are gone', () => {
+		const danger = new Notify({ intent: 'danger', autoOpen: false, appendTo: container });
+
+		expect(danger.elem).toHaveClass('intent-danger', 'fa-skull-crossbones');
+		expect(danger.elem.getAttribute('role')).toBe('alert');
+		expect(() => new Notify({ intent: 'error', autoOpen: false, appendTo: container })).toThrow();
+	});
+
 	describe('timeout', () => {
-		test('info and success dismiss themselves; warning and error wait to be tapped', () => {
-			const timeouts = ['info', 'success', 'warning', 'error'].map(
-				type => new Notify({ type, autoOpen: false, appendTo: container }).options.timeout,
+		test('info and success dismiss themselves; warning and danger wait to be tapped', () => {
+			const timeouts = ['info', 'success', 'warning', 'danger'].map(
+				intent => new Notify({ intent, autoOpen: false, appendTo: container }).options.timeout,
 			);
 
 			expect(timeouts).toEqual([4000, 4000, 0, 0]);
 		});
 
 		test('a timeout given, zero included, wins', () => {
-			expect(new Notify({ type: 'info', timeout: 0, autoOpen: false, appendTo: container }).options.timeout).toBe(0);
-			expect(new Notify({ type: 'error', timeout: 9000, autoOpen: false, appendTo: container }).options.timeout).toBe(
-				9000,
-			);
+			expect(new Notify({ intent: 'info', timeout: 0, autoOpen: false, appendTo: container }).options.timeout).toBe(0);
+			expect(
+				new Notify({ intent: 'danger', timeout: 9000, autoOpen: false, appendTo: container }).options.timeout,
+			).toBe(9000);
 		});
 	});
 

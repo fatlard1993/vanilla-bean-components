@@ -9,9 +9,9 @@ Native `<dialog>` element wrapper. The decision to use the native element rather
 - `openOnRender` defaults to a small delay so the dialog is guaranteed to be attached before `showModal()` is called; opening before attachment fails silently
   - does setting openOnRender: false prevent the dialog from opening on its own?
 
-## Invalid sizes and variants fail loudly rather than rendering in an unknown state
+## Invalid sizes and intents fail loudly rather than rendering in an unknown state
 
-- an unrecognized size or variant throws at the point of assignment, not later when layout breaks
+- an unrecognized size or intent throws at the point of assignment, not later when layout breaks
   - does an unrecognized size value throw?
 
 ## Header, body, and footer are stable references - options update them in place

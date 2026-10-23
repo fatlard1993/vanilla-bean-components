@@ -171,7 +171,7 @@ class DlcWhiteboard extends (styled.Component`
 				checkoutBtn.onPointerPress(({ clientX, clientY }) => {
 					const total = getTotal();
 					if (total > this.options.credits) {
-						new Notify({ type: 'error', content: 'Not enough credits', timeout: 2000, x: clientX, y: clientY });
+						new Notify({ intent: 'danger', content: 'Not enough credits', timeout: 2000, x: clientX, y: clientY });
 						return;
 					}
 					storeItems.forEach((item, i) => {
@@ -234,7 +234,7 @@ class DlcWhiteboard extends (styled.Component`
 						const amount = payment === '1337' ? randInt(10, 20) : randInt(paymentLength / 4, paymentLength * 1.2);
 
 						if (paymentLength <= 1 || payment === 'love') {
-							new Notify({ type: 'error', content: 'Stingy', timeout: 500, x: event.clientX, y: event.clientY });
+							new Notify({ intent: 'danger', content: 'Stingy', timeout: 500, x: event.clientX, y: event.clientY });
 							closeDialog();
 							return;
 						}
@@ -304,7 +304,7 @@ class DlcWhiteboard extends (styled.Component`
 				if (!this._lowInkNotified && prevInk > 1 && this.options.ink <= 1) {
 					this._lowInkNotified = true;
 					new Notify({
-						type: 'warning',
+						intent: 'warning',
 						content: 'Low ink! Head to the DLC store.',
 						x: event.clientX,
 						y: event.clientY,
@@ -313,7 +313,7 @@ class DlcWhiteboard extends (styled.Component`
 
 				if (prevInk > 0 && this.options.ink <= 0) {
 					new Notify({
-						type: 'error',
+						intent: 'danger',
 						content: "Looks like you've run out of ink, buy more in the store!",
 						x: event.clientX,
 						y: event.clientY,

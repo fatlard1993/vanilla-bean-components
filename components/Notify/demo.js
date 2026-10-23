@@ -5,7 +5,7 @@ import { Notify } from '.';
 export default class Demo extends DemoView {
 	build() {
 		this.component = new Notify({
-			type: 'info',
+			intent: 'info',
 			textContent: 'textContent',
 			autoOpen: false,
 			onPointerPress: () => this.component.hide(),
@@ -26,7 +26,7 @@ export default class Demo extends DemoView {
 			textContent: 'Delete something',
 			onPointerPress: () =>
 				new Notify({
-					type: 'warning',
+					intent: 'warning',
 					timeout: 8000,
 					content: 'Deleted 3 bookmarks',
 					actions: [

@@ -304,6 +304,8 @@ export interface ButtonOptions extends TooltipWrapperOptions {
 	tooltip?: string;
 	/** 'flat' has no fill, for toolbars and icon buttons; 'chip' is a * small outlined pill, for filters and choices; 'raised' is bevelled and sinks as it's pressed */
 	variant?: 'flat' | 'chip' | 'raised';
+	/** What pressing it does, drawn in that status role: * 'danger' for a delete, 'success' for a confirm. A flat or chip button takes it as its text color */
+	intent?: 'info' | 'success' | 'warning' | 'danger';
 }
 
 export declare class Button extends TooltipWrapper {
@@ -430,8 +432,8 @@ export declare class ContextMenu extends Popover {
 export interface DialogOptions extends ComponentOptions {
 	/** Dialog size; 'fit' is as tall as its content (default: "small") */
 	size?: 'small' | 'standard' | 'large' | 'fit';
-	/** Color variant */
-	variant?: 'info' | 'success' | 'warning' | 'error';
+	/** What the dialog is about, drawn in that status role */
+	intent?: 'info' | 'success' | 'warning' | 'danger';
 	/** Auto-open delay in ms, or false to disable (default: 16) */
 	openOnRender?: number | boolean;
 	/** Whether to open as modal dialog (default: true) */
@@ -689,11 +691,11 @@ export declare class Menu extends List {
 }
 
 export interface NotifyOptions extends PopoverOptions {
-	/** Notification type ('info', 'success', 'warning', 'error') (default: "success") */
-	type?: 'info' | 'success' | 'warning' | 'error';
-	/** Auto-dismiss timeout in milliseconds; defaults to 4000 for info and success, and 0 (stay until tapped) for warning and error */
+	/** What the message is about, drawn in that status role (default: "success") */
+	intent?: 'info' | 'success' | 'warning' | 'danger';
+	/** Auto-dismiss timeout in milliseconds; defaults to 4000 for info and success, and 0 (stay until tapped) for warning and danger */
 	timeout?: number;
-	/** Custom icon name, defaults to type-appropriate icon */
+	/** Custom icon name, defaults to the intent's icon */
 	icon?: string;
 	/** X position for the notification; without x and y it stacks in the bottom-right corner */
 	x?: number;

@@ -1,5 +1,5 @@
 import { styled } from '../../styled';
-import { duration } from '../../theme/tokens';
+import { duration, intents } from '../../theme/tokens';
 import { Button } from '../Button';
 import { Component, classEnum } from '../../Component';
 import { Elem } from '../../Elem';
@@ -18,11 +18,11 @@ const defaultOpenDelay = 16;
  * Modal and non-modal dialog component with customizable appearance and behavior.
  *
  * Provides native HTML dialog functionality with enhanced styling, animations, and configurable
- * header/body/footer sections. Supports different sizes, color variants, and button configurations.
+ * header/body/footer sections. Supports different sizes, an intent that colors it, and button configurations.
  * @param {object} [options] - Dialog configuration options
  * @param {string} [options.tag] - HTML tag, uses native dialog element
  * @param {('small'|'standard'|'large'|'fit')} [options.size] - Dialog size; 'fit' is as tall as its content
- * @param {('info'|'success'|'warning'|'error')} [options.variant] - Color variant
+ * @param {('info'|'success'|'warning'|'danger')} [options.intent] - What the dialog is about, drawn in that status role
  * @param {number|boolean} [options.openOnRender] - Auto-open delay in ms, or false to disable
  * @param {boolean} [options.modal] - Whether to open as modal dialog
  * @param {string} [options.header] - Header text content
@@ -116,18 +116,18 @@ class Dialog extends styled(
 			backdrop-filter: blur(2px);
 		}
 
-		${Object.entries({ info: colors.info, success: colors.success, warning: colors.warning, error: colors.danger })
+		${intents
 			.map(
-				([variant, color]) => `
-		&.variant-${variant} {
-			border-color: ${colors.alpha(color, 0.6)};
-			& .header { color: ${colors.lighter(color)}; border-color: ${colors.alpha(color, 0.2)}; }
-			& .footer button { background-color: ${color}; color: ${colors.mostReadable(color, [colors.white, colors.black])}; }
+				intent => `
+		&.intent-${intent} {
+			border-color: ${colors.alpha(colors[intent], 0.6)};
+			& .header { color: ${colors.lighter(colors[intent])}; border-color: ${colors.alpha(colors[intent], 0.2)}; }
+			& .footer button { background-color: ${colors[intent]}; color: ${colors.mostReadable(colors[intent], [colors.white, colors.black])}; }
 		}`,
 			)
 			.join('\n')}
 
-		&.variant-error {
+		&.intent-danger {
 			box-shadow: 0 0 32px ${colors.alpha(colors.danger, 0.14)}, ${elevation.lg};
 		}
 
@@ -160,7 +160,7 @@ class Dialog extends styled(
 		// Read directly from this.options.modal in open()
 		modal: { default: true },
 		size: classEnum('size', ['small', 'standard', 'large', 'fit'], { default: 'small' }),
-		variant: classEnum('variant', ['info', 'success', 'warning', 'error']),
+		intent: classEnum('intent', intents),
 		body: {
 			set(value) {
 				this.body?.content(value);

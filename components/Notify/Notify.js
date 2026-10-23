@@ -1,11 +1,18 @@
 import { Elem } from '../../Elem';
 import { styled } from '../../styled';
-import { duration, space } from '../../theme/tokens';
+import { classEnum } from '../../Component';
+import { duration, intents, space } from '../../theme/tokens';
 import { Button } from '../Button';
 import { Popover } from '../Popover';
 
-// How long a toast of each type stays before dismissing itself; warnings and errors wait to be tapped
-const TIMEOUT_BY_TYPE = { info: 4000, success: 4000, warning: 0, error: 0 };
+// How long a toast of each intent stays before dismissing itself; warnings and dangers wait to be tapped
+const TIMEOUT_BY_INTENT = { info: 4000, success: 4000, warning: 0, danger: 0 };
+const ICON_BY_INTENT = {
+	info: 'circle-info',
+	success: 'check',
+	warning: 'triangle-exclamation',
+	danger: 'skull-crossbones',
+};
 const STACK_EDGE = parseInt(space.lg);
 const STACK_GAP = parseInt(space.sm);
 // A toast paused by a pointer or focus gets at least this long once they leave, so it doesn't vanish under the hand
@@ -35,16 +42,16 @@ const StyledPopover = styled(
 			padding: 0 ${space.sm} 0 0;
 		}
 
-		${Object.entries({ info: colors.info, success: colors.success, warning: colors.warning, error: colors.danger })
+		${intents
 			.map(
-				([type, color]) => `
-		&.${type} {
+				intent => `
+		&.intent-${intent} {
 			/* The one surface, tinted by its status */
-			background: linear-gradient(${colors.alpha(color, 0.14)}, ${colors.alpha(color, 0.14)}) ${colors.surface};
-			border-color: ${colors.light(color)};
+			background: linear-gradient(${colors.alpha(colors[intent], 0.14)}, ${colors.alpha(colors[intent], 0.14)}) ${colors.surface};
+			border-color: ${colors.light(colors[intent])};
 
 			&:before {
-				color: ${colors.light(color)};
+				color: ${colors.light(colors[intent])};
 			}
 		}`,
 			)
@@ -82,15 +89,15 @@ const StyledPopover = styled(
 );
 
 /**
- * Notification popover component with type-based styling and auto-dismiss functionality.
+ * Notification popover component with intent-based styling and auto-dismiss functionality.
  *
  * Extends Popover to provide notification-specific behavior including automatic icons,
- * color-coded styling based on notification type, and optional timeout dismissal.
+ * color-coded styling based on its intent, and optional timeout dismissal.
  * @param {object} [options={}] - Notify configuration options
- * @param {string} [options.type='success'] - Notification type ('info', 'success', 'warning', 'error')
+ * @param {('info'|'success'|'warning'|'danger')} [options.intent='success'] - What the message is about, drawn in that status role
  * @param {string|Component} [options.content] - Notification content to display
- * @param {number} [options.timeout] - Auto-dismiss timeout in milliseconds; defaults to 4000 for info and success, and 0 (stay until tapped) for warning and error
- * @param {string} [options.icon] - Custom icon name, defaults to type-appropriate icon
+ * @param {number} [options.timeout] - Auto-dismiss timeout in milliseconds; defaults to 4000 for info and success, and 0 (stay until tapped) for warning and danger
+ * @param {string} [options.icon] - Custom icon name, defaults to the intent's icon
  * @param {number} [options.x] - X position for the notification; without x and y it stacks in the bottom-right corner
  * @param {number} [options.y] - Y position for the notification
  * @param {Array<object>} [options.actions] - Buttons on the toast, e.g. { textContent: 'Undo', onPress }; onPress gets
@@ -100,7 +107,7 @@ const StyledPopover = styled(
  */
 export default class Notify extends StyledPopover {
 	static schema = {
-		type: { default: 'success', enum: ['info', 'success', 'warning', 'error'] },
+		intent: classEnum('intent', intents, { default: 'success' }),
 		timeout: {
 			set(value) {
 				this._startTimer(value);
@@ -114,7 +121,7 @@ export default class Notify extends StyledPopover {
 	};
 
 	static prepareOptions(options) {
-		const { type } = options;
+		const { intent } = options;
 
 		const placed = options.x !== undefined && options.y !== undefined;
 
@@ -131,14 +138,12 @@ export default class Notify extends StyledPopover {
 		}
 
 		return {
-			role: type === 'error' || type === 'warning' ? 'alert' : 'status',
+			role: intent === 'danger' || intent === 'warning' ? 'alert' : 'status',
 			'aria-atomic': 'true',
 			...options,
-			timeout: options.timeout ?? TIMEOUT_BY_TYPE[type],
-			addClass: [type, !placed && 'stacked'].concat(options.addClass),
-			icon:
-				options.icon ||
-				{ info: 'circle-info', success: 'check', warning: 'triangle-exclamation', error: 'skull-crossbones' }[type],
+			timeout: options.timeout ?? TIMEOUT_BY_INTENT[intent],
+			addClass: [!placed && 'stacked'].concat(options.addClass),
+			icon: options.icon || ICON_BY_INTENT[intent],
 		};
 	}
 

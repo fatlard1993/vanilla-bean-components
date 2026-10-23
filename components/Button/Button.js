@@ -1,4 +1,5 @@
 import { classEnum } from '../../Component';
+import { intents } from '../../theme/tokens';
 import { TooltipWrapper } from '../TooltipWrapper';
 
 /**
@@ -15,6 +16,8 @@ import { TooltipWrapper } from '../TooltipWrapper';
  * @param {boolean} [options.disabled] - Whether button is disabled
  * @param {('flat'|'chip'|'raised')} [options.variant] - 'flat' has no fill, for toolbars and icon buttons; 'chip' is a
  *   small outlined pill, for filters and choices; 'raised' is bevelled and sinks as it's pressed
+ * @param {('info'|'success'|'warning'|'danger')} [options.intent] - What pressing it does, drawn in that status role:
+ *   'danger' for a delete, 'success' for a confirm. A flat or chip button takes it as its text color
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Button} Button component instance
  * @example
@@ -35,6 +38,7 @@ export default class Button extends TooltipWrapper {
 	static schema = {
 		tag: { default: 'button' },
 		variant: classEnum('variant', ['flat', 'chip', 'raised']),
+		intent: classEnum('intent', intents),
 	};
 
 	// The class the theme gives a Button's look to, whatever the page does for bare buttons

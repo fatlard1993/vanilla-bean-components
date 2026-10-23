@@ -1,6 +1,6 @@
 # Dialog
 
-Modal and non-modal dialog component built on the native `<dialog>` element with animated open/close, configurable sizes, color variants, and flexible button configurations.
+Modal and non-modal dialog component built on the native `<dialog>` element with animated open/close, configurable sizes, an intent that colors it, and flexible button configurations.
 
 ## Usage
 
@@ -10,7 +10,7 @@ import { Dialog } from '@vanilla-bean/components';
 const dialog = new Dialog({
 	header: 'Confirm Action',
 	body: 'Are you sure you want to proceed?',
-	buttons: ['Cancel', { text: 'Confirm', variant: 'success' }],
+	buttons: ['Cancel', { textContent: 'Confirm', intent: 'success' }],
 	onButtonPress: ({ button, closeDialog }) => {
 		console.log('pressed', button);
 		closeDialog();
@@ -24,13 +24,13 @@ const dialog = new Dialog({
 | --- | --- | --- | --- |
 | `header` | `string` | - | Text rendered in the `<h2>` header |
 | `body` | `string\|Component\|Array` | - | Content for the scrollable body section. Reactive: updating `options.body` replaces content |
-| `buttons` | `Array<string\|object>` | - | Shorthand footer buttons. Each entry is a string label or `{ textContent, variant?, onPointerPress?, ...buttonOptions }` |
+| `buttons` | `Array<string\|object>` | - | Shorthand footer buttons. Each entry is a string label or `{ textContent, intent?, variant?, onPointerPress?, ...buttonOptions }` |
 | `footer` | `Array<Component>` | - | Fully custom footer components. Takes precedence over `buttons` |
 | `onButtonPress` | `Function` | - | Called when any `buttons` entry is pressed. Receives `{ button, closeDialog, event }` |
 | `openOnRender` | `number\|boolean` | `16` | Auto-open delay in ms after render. Set to `false` to disable auto-open |
 | `modal` | `boolean` | `true` | Open as a modal (with backdrop) vs. non-modal |
 | `size` | `string` | `'small'` | Dialog dimensions: `'small'` (420×210px), `'standard'` (640×360px), `'large'` (90vw×90vh), `'fit'` (as tall as its content); any of them shrinks to fit a phone's screen |
-| `variant` | `string` | - | Color theme: `'info'`, `'success'`, `'warning'`, `'error'` |
+| `intent` | `string` | - | What the dialog is about, drawn in that status role: `'info'`, `'success'`, `'warning'`, `'danger'`; it colors the edge, the header and the footer buttons |
 | `closeDialog` | `Function` | - | Override the default close behavior used inside `onButtonPress` |
 | `removeOnClose` | `boolean` | `true` | Destroy the dialog once it has closed and faded out. Set to `false` to keep one dialog and open it again |
 | `appendTo` | `Element` | `document.body` | Where to append the dialog in the DOM |
@@ -60,14 +60,14 @@ Dialog.confirm({ confirmLabel, cancelLabel = 'Cancel', ...dialogOptions }): Prom
 ```
 
 ```js
-if (await Dialog.confirm({ header: 'Delete this bookmark?', confirmLabel: 'Delete', variant: 'warning' })) remove();
+if (await Dialog.confirm({ header: 'Delete this bookmark?', confirmLabel: 'Delete', intent: 'danger' })) remove();
 ```
 
-Enums are exposed as instance properties for validation reference:
+The values an option takes are read with `optionEnum`:
 
 ```js
-dialog.size_enum; // ['small', 'standard', 'large']
-dialog.variant_enum; // ['info', 'success', 'warning', 'error']
+dialog.optionEnum('size'); // ['small', 'standard', 'large', 'fit']
+dialog.optionEnum('intent'); // ['info', 'success', 'warning', 'danger']
 ```
 
 ## Events
@@ -87,7 +87,7 @@ import { Button } from '@vanilla-bean/components';
 const dialog = new Dialog({
 	header: 'Results',
 	size: 'standard',
-	variant: 'info',
+	intent: 'info',
 	body: 'Loading...',
 	buttons: ['Dismiss'],
 	openOnRender: false,

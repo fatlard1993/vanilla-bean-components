@@ -32,3 +32,6 @@ export const fontSize = Object.freeze({
 
 /** How long things take to move: fast for a hover or press, base for something opening, slow for what eases in behind */
 export const duration = Object.freeze({ fast: '0.15s', base: '0.3s', slow: '0.6s' });
+
+/** What a dialog, a toast or a button is about: each is a color role of the same name */
+export const intents = Object.freeze(['info', 'success', 'warning', 'danger']);

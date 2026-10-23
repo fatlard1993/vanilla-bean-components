@@ -1,21 +1,21 @@
 # Notify
 
-A toast: a short message that says what just happened. Its `type` (`info`, `success`, `warning`, `error`) picks its colour, its icon, how loudly a screen reader announces it, and how long it stays. Pressing it anywhere dismisses it.
+A toast: a short message that says what just happened. Its `intent` (`info`, `success`, `warning`, `danger`, the status roles of the same names) picks its colour, its icon, how loudly a screen reader announces it, and how long it stays. Pressing it anywhere dismisses it.
 
 ## Usage
 
 ```js
 import { Notify } from '@vanilla-bean/components';
 
-new Notify({ type: 'success', content: 'Saved' });
-new Notify({ type: 'error', content: 'Could not reach the server' });
+new Notify({ intent: 'success', content: 'Saved' });
+new Notify({ intent: 'danger', content: 'Could not reach the server' });
 ```
 
 Without an `x` and `y` it joins a stack in the bottom-right corner, the newest at the bottom; with them it's placed at that point. The stack keeps clear of a phone's home indicator. An app with a bar along the bottom edge lifts it above the bar with `--vbc-notify-offset`, e.g. `:root { --vbc-notify-offset: 56px; }` inside the media query where the bar shows.
 
 ## How long it stays
 
-Info and success leave after four seconds. A warning or an error may need acting on, so it stays until pressed. A `timeout` given, zero included, overrides either. A pointer over the toast, or focus inside it, holds it open; once they leave it stays at least another moment and a half.
+Info and success leave after four seconds. A warning or a danger may need acting on, so it stays until pressed. A `timeout` given, zero included, overrides either. A pointer over the toast, or focus inside it, holds it open; once they leave it stays at least another moment and a half.
 
 ## Actions
 
@@ -23,7 +23,7 @@ Info and success leave after four seconds. A warning or an error may need acting
 
 ```js
 new Notify({
-	type: 'warning',
+	intent: 'warning',
 	timeout: 10000,
 	content: 'Deleted 3 bookmarks',
 	actions: [{ textContent: 'Undo', onPress: () => restore(deleted) }],
@@ -40,11 +40,11 @@ new Notify({
 
 | Option    | Type                | Default     | Description                                            |
 | --------- | ------------------- | ----------- | ------------------------------------------------------ |
-| `type`    | `string`            | `'success'` | `info`, `success`, `warning` or `error`                |
+| `intent`  | `string`            | `'success'` | `info`, `success`, `warning` or `danger`               |
 | `content` | `string\|Component` | -           | The message                                            |
-| `timeout` | `number`            | by type     | Milliseconds before it leaves; `0` stays until pressed |
+| `timeout` | `number`            | by intent   | Milliseconds before it leaves; `0` stays until pressed |
 | `actions` | `Array<object>`     | -           | Buttons on the toast, `{ textContent, onPress }`       |
-| `icon`    | `string`            | by type     | A Font Awesome icon name in place of the type's        |
+| `icon`    | `string`            | by intent   | A Font Awesome icon name in place of the intent's      |
 | `x`, `y`  | `number`            | -           | Place it at a point instead of in the stack            |
 
 Everything else is a [Popover](../Popover/README.md) option.

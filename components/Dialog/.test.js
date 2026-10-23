@@ -78,20 +78,20 @@ describe('Dialog', () => {
 		expect(dialog.elem.className).not.toContain('size-large');
 	});
 
-	test('sets variant classes correctly', () => {
+	test('sets intent classes correctly', () => {
 		const dialog = new Dialog({
-			variant: 'error',
+			intent: 'danger',
 			openOnRender: false,
 			appendTo: container,
 		});
 
 		// eslint-disable-next-line testing-library/no-node-access
 		const dialogElement = container.querySelector('dialog');
-		expect(dialogElement.className).toContain('variant-error');
+		expect(dialogElement.className).toContain('intent-danger');
 
-		dialog.options.variant = 'success';
-		expect(dialog.elem.className).toContain('variant-success');
-		expect(dialog.elem.className).not.toContain('variant-error');
+		dialog.options.intent = 'success';
+		expect(dialog.elem.className).toContain('intent-success');
+		expect(dialog.elem.className).not.toContain('intent-danger');
 	});
 
 	test('validates size enum', () => {
@@ -100,10 +100,10 @@ describe('Dialog', () => {
 		}).toThrow('"invalid" is not a valid size');
 	});
 
-	test('validates variant enum', () => {
+	test('validates intent enum', () => {
 		expect(() => {
-			new Dialog({ variant: 'invalid', openOnRender: false, appendTo: container });
-		}).toThrow('"invalid" is not a valid variant');
+			new Dialog({ intent: 'invalid', openOnRender: false, appendTo: container });
+		}).toThrow('"invalid" is not a valid intent');
 	});
 
 	test('has correct default options', () => {

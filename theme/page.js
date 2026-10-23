@@ -6,7 +6,7 @@ import fonts from './fonts';
 import _input, { number, checkbox } from './input';
 import _scrollbar from './scrollbar';
 import _table from './table';
-import { fontSize, radius, space } from './tokens';
+import { fontSize, intents, radius, space } from './tokens';
 
 export default theme => `
 	html {
@@ -160,6 +160,25 @@ export default theme => `
 
 	/* The bevelled look that sinks as it's pressed */
 	.vbc-button:where(.variant-raised), a.variant-button:where(.variant-raised) { ${raised(theme)} }
+
+	/* A button that says what pressing it does: filled in its status role, or, flat or a chip, written in it */
+	${intents
+		.map(
+			intent => `
+	.vbc-button:where(.intent-${intent}):where(:not(.variant-flat, .variant-chip, .disabled, :disabled)) {
+		background-color: ${colors[intent]};
+		color: ${colors.mostReadable(colors[intent], [colors.white, colors.black])};
+	}
+
+	.vbc-button:where(.intent-${intent}):where(.variant-flat, .variant-chip):where(:not(.disabled, :disabled)) {
+		color: ${colors.light(colors[intent])};
+	}
+
+	.vbc-button:where(.intent-${intent}.variant-chip) {
+		border-color: ${colors.alpha(colors.light(colors[intent]), 0.5)};
+	}`,
+		)
+		.join('\n')}
 
 	/* Rendered markdown: headings marked with their level, in the document green */
 	.vbc-markdown {

@@ -2,12 +2,12 @@
 
 > ./Notify.js
 
-Transient notification that self-destructs. The design choice is that click-to-dismiss is always on; every notification is interactive, not a passive message. The `type` option drives icon and color selection so callers communicate intent rather than manually picking icons.
+Transient notification that self-destructs. The design choice is that click-to-dismiss is always on; every notification is interactive, not a passive message. The `intent` option drives icon and color selection so callers say what the message is about rather than manually picking icons; its values are the status color roles.
 
-## Type communicates intent; the component selects the appropriate icon
+## Intent selects the appropriate icon
 
-- callers pass `type: 'error'` and the component picks the matching icon; a custom `icon` option overrides this only when the standard mapping doesn't fit
-  - new Subject({ type: "success", textContent: "x" }) captures ok then new Subject({ type: "error", textContent: "x" }) captures bad then [ok, bad].map(n => (n.elem.className.match(/fa-[\w-]+/g) || []).join(" ")) captures icons -> icons[0].includes("fa-") && icons[1].includes("fa-") && icons[0] !== icons[1]
+- callers pass `intent: 'danger'` and the component picks the matching icon; a custom `icon` option overrides this only when the standard mapping doesn't fit
+  - new Subject({ intent: "success", textContent: "x" }) captures ok then new Subject({ intent: "danger", textContent: "x" }) captures bad then [ok, bad].map(n => (n.elem.className.match(/fa-[\w-]+/g) || []).join(" ")) captures icons -> icons[0].includes("fa-") && icons[1].includes("fa-") && icons[0] !== icons[1]
 
 ## Clicking anywhere on the notification dismisses it - the whole surface is the target
 
@@ -23,20 +23,20 @@ Notifications are temporary and should be easy to clear, so there is no separate
 
 ## Severity decides how assertively the notification announces
 
-A screen reader interrupts for `alert` and waits for a quiet moment for `status`. Errors and warnings are worth interrupting for; a success or an informational note is not, and interrupting for those trains people to ignore the ones that matter.
+A screen reader interrupts for `alert` and waits for a quiet moment for `status`. Dangers and warnings are worth interrupting for; a success or an informational note is not, and interrupting for those trains people to ignore the ones that matter.
 
-- `error` and `warning` announce as alerts; every other type announces politely
-  - new Subject({ type: "error", content: "m", appendTo: document.body }) captures err then new Subject({ type: "warning", content: "m", appendTo: document.body }) captures warn then new Subject({ type: "success", content: "m", appendTo: document.body }) captures ok then new Subject({ type: "info", content: "m", appendTo: document.body }) captures info -> err.elem.getAttribute("role") === "alert" && warn.elem.getAttribute("role") === "alert" && ok.elem.getAttribute("role") === "status" && info.elem.getAttribute("role") === "status"
+- `danger` and `warning` announce as alerts; every other intent announces politely
+  - new Subject({ intent: "danger", content: "m", appendTo: document.body }) captures err then new Subject({ intent: "warning", content: "m", appendTo: document.body }) captures warn then new Subject({ intent: "success", content: "m", appendTo: document.body }) captures ok then new Subject({ intent: "info", content: "m", appendTo: document.body }) captures info -> err.elem.getAttribute("role") === "alert" && warn.elem.getAttribute("role") === "alert" && ok.elem.getAttribute("role") === "status" && info.elem.getAttribute("role") === "status"
 
 - a falsy `timeout` means the notification stays until something dismisses it; a positive one dismisses it after that long
   - new Subject({ content: "stay", timeout: 0, appendTo: document.body }) captures kept then new Subject({ content: "go", timeout: 30, appendTo: document.body }) captures going then await new Promise(r => setTimeout(r, 90)) -> kept.elem.isConnected === true && going.elem.isConnected === false
 
 ## Severity also decides how long it stays
 
-A success or an informational note says something that needs no answer, so it leaves on its own. A warning or an error may need acting on, so it waits to be tapped. A `timeout` given, zero included, overrides either.
+A success or an informational note says something that needs no answer, so it leaves on its own. A warning or a danger may need acting on, so it waits to be tapped. A `timeout` given, zero included, overrides either.
 
-- info and success dismiss themselves after four seconds; warning and error stay until dismissed
-  - new Subject({ type: "info", autoOpen: false, appendTo: document.body }) captures info then new Subject({ type: "error", autoOpen: false, appendTo: document.body }) captures error -> info.options.timeout === 4000 && error.options.timeout === 0
+- info and success dismiss themselves after four seconds; warning and danger stay until dismissed
+  - new Subject({ intent: "info", autoOpen: false, appendTo: document.body }) captures info then new Subject({ intent: "danger", autoOpen: false, appendTo: document.body }) captures error -> info.options.timeout === 4000 && error.options.timeout === 0
 
 ## Toasts placed at no point stack in a corner
 

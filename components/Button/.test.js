@@ -98,4 +98,16 @@ describe('Button', () => {
 		expect(flat.elem).not.toHaveClass('variant-flat');
 		expect(() => new Button({ variant: 'loud' })).toThrow();
 	});
+
+	test('intent marks what pressing it does, apart from its look', () => {
+		const remove = new Button({ textContent: 'Delete', intent: 'danger', variant: 'flat', appendTo: container });
+
+		expect(remove.elem).toHaveClass('intent-danger', 'variant-flat');
+
+		remove.options.intent = 'success';
+
+		expect(remove.elem).toHaveClass('intent-success');
+		expect(remove.elem).not.toHaveClass('intent-danger');
+		expect(() => new Button({ intent: 'error' })).toThrow('"error" is not a valid intent');
+	});
 });
