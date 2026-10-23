@@ -2,13 +2,13 @@
 
 > ./Menu.js
 
-Styled list whose items emit a registered `select` CustomEvent, with the activation event in `detail`. The design decision: pointer and keyboard activation both resolve to the same `select` event -- the same principle Button applies to `onPointerPress` -- so keyboard and pointer users get the same experience without separate handlers. `onSelect` is the option-form listener for the event.
+Styled list whose items emit a registered `itemPress` CustomEvent, with the item and the activation event in `detail`. The design decision: pointer and keyboard activation both resolve to the same `itemPress` event -- the same principle Button applies to `onPointerPress` -- so keyboard and pointer users get the same experience without separate handlers. `onItemPress` is the option-form listener for the event; it is named for what was pressed, as Dialog's `onButtonPress` is.
 
-## Selecting a menu item works the same way regardless of input method
+## Pressing a menu item works the same way regardless of input method
 
-- clicking, touching, Space/Enter, and screen reader activation all emit `select`; one event, no separate keyboard path
-  - does clicking a menu item invoke onSelect?
-  - does pressing Enter on a focused menu item invoke onSelect?
+- clicking, touching, Space/Enter, and screen reader activation all emit `itemPress`; one event, no separate keyboard path
+  - does clicking a menu item invoke onItemPress?
+  - does pressing Enter on a focused menu item invoke onItemPress?
 
 ## Menu renders any item format that List supports
 
@@ -23,10 +23,10 @@ A menu is one stop for the keyboard, not one stop per item: tabbing past a ten-i
   - new Subject({ items: [{ textContent: "a" }, { textContent: "b" }, { textContent: "c" }], appendTo: document.body }) captures m then Array.from(m.elem.querySelectorAll("li")).map(li => li.getAttribute("tabindex")) captures tabs -> tabs.join() === "0,-1,-1"
 - an items list that is absent renders an empty menu rather than throwing
   - new Subject({ items: undefined, appendTo: document.body }) captures missing then new Subject({ items: null, appendTo: document.body }) captures empty -> missing.elem.querySelectorAll("li").length === 0 && empty.elem.querySelectorAll("li").length === 0
-- activation on a node outside the menu selects nothing, so a menu never claims an event that was not its own
-  - new Array() captures fired then new Subject({ items: [{ textContent: "a" }], onSelect: () => fired.push(1), appendTo: document.body }) captures m then document.createElement("li") captures outsider then document.body.append(outsider) then outsider.click() -> fired.length === 0
-- pressing the menu's own padding selects nothing either; only a press that lands on an item counts
-  - new Array() captures fired then new Subject({ items: [{ textContent: "a" }], onSelect: () => fired.push(1), appendTo: document.body }) captures m then m.elem.click() then fired.length captures afterRootPress then m.elem.querySelector("li") captures item then item.click() -> afterRootPress === 0 && fired.length === 1
+- activation on a node outside the menu presses nothing, so a menu never claims an event that was not its own
+  - new Array() captures fired then new Subject({ items: [{ textContent: "a" }], onItemPress: () => fired.push(1), appendTo: document.body }) captures m then document.createElement("li") captures outsider then document.body.append(outsider) then outsider.click() -> fired.length === 0
+- pressing the menu's own padding presses nothing either; only a press that lands on an item counts
+  - new Array() captures fired then new Subject({ items: [{ textContent: "a" }], onItemPress: () => fired.push(1), appendTo: document.body }) captures m then m.elem.click() then fired.length captures afterRootPress then m.elem.querySelector("li") captures item then item.click() -> afterRootPress === 0 && fired.length === 1
 
 ## Arrow keys move focus within the menu and wrap at both ends
 

@@ -95,15 +95,19 @@ describe('Notify', () => {
 
 		test('an action runs, then the toast closes once it settles', async () => {
 			let finish;
-			const onPress = mock(() => new Promise(resolve => (finish = resolve)));
-			const notify = new Notify({ content: 'm', actions: [{ textContent: 'Undo', onPress }], appendTo: container });
+			const onPointerPress = mock(() => new Promise(resolve => (finish = resolve)));
+			const notify = new Notify({
+				content: 'm',
+				actions: [{ textContent: 'Undo', onPointerPress }],
+				appendTo: container,
+			});
 			const undo = getByRole(container, 'button', { name: 'Undo', hidden: true });
 
 			await userEvent.setup().click(undo);
 			await userEvent.setup().click(undo);
 
-			expect(onPress).toHaveBeenCalledTimes(1);
-			expect(onPress.mock.calls[0][0]).toBe(notify);
+			expect(onPointerPress).toHaveBeenCalledTimes(1);
+			expect(onPointerPress.mock.calls[0][0]).toBe(notify);
 			expect(undo).toBeDisabled();
 			expect(notify.elem.isConnected).toBe(true);
 
@@ -116,7 +120,7 @@ describe('Notify', () => {
 		test('an action returning false keeps the toast, with its actions ready again', async () => {
 			const notify = new Notify({
 				content: 'm',
-				actions: [{ textContent: 'Retry', onPress: () => false }],
+				actions: [{ textContent: 'Retry', onPointerPress: () => false }],
 				appendTo: container,
 			});
 			const retry = getByRole(container, 'button', { name: 'Retry', hidden: true });
@@ -148,7 +152,7 @@ describe('Notify', () => {
 			const notify = new Notify({
 				content: 'm',
 				timeout: 40,
-				actions: [{ textContent: 'Undo', onPress: () => new Promise(resolve => (finish = resolve)) }],
+				actions: [{ textContent: 'Undo', onPointerPress: () => new Promise(resolve => (finish = resolve)) }],
 				appendTo: container,
 			});
 

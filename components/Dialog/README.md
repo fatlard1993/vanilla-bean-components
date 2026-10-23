@@ -26,7 +26,7 @@ const dialog = new Dialog({
 | `body` | `string\|Component\|Array` | - | Content for the scrollable body section. Reactive: updating `options.body` replaces content |
 | `buttons` | `Array<string\|object>` | - | Shorthand footer buttons. Each entry is a string label or `{ textContent, intent?, variant?, onPointerPress?, ...buttonOptions }` |
 | `footer` | `Array<Component>` | - | Fully custom footer components. Takes precedence over `buttons` |
-| `onButtonPress` | `Function` | - | Called when any `buttons` entry is pressed. Receives `{ button, closeDialog, event }` |
+| `onButtonPress` | `Function` | - | Called when any `buttons` entry is pressed, after that button's own `onPointerPress`. Receives `{ button, closeDialog, event, dialog }` |
 | `openOnRender` | `number\|boolean` | `16` | Auto-open delay in ms after render. Set to `false` to disable auto-open |
 | `modal` | `boolean` | `true` | Open as a modal (with backdrop) vs. non-modal |
 | `size` | `string` | `'small'` | Dialog dimensions: `'small'` (420×210px), `'standard'` (640×360px), `'large'` (90vw×90vh), `'fit'` (as tall as its content); any of them shrinks to fit a phone's screen |
@@ -42,7 +42,10 @@ onButtonPress: ({ button, closeDialog, event }) => { ... }
 // button      - the original entry from the buttons array (string or object)
 // closeDialog - function that closes the dialog (calls dialog.close() by default)
 // event       - the pointer event that triggered the press
+// dialog      - the dialog
 ```
+
+The press names follow one rule across the library: what is pressed takes `onPointerPress` (a Button, a Card, a menu item, a toast's action, a dialog button entry), and a container that hears a press on any of its parts names the part, as `onButtonPress` here and Menu's `onItemPress`. A part's own handler runs first.
 
 ## Methods
 

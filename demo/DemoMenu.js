@@ -74,8 +74,8 @@ export default class DemoMenu extends StyledComponent {
 			items: Object.keys(menuItems)
 				.map(item => capitalize(fromCamelCase(item, ' '), true))
 				.sort(orderBy({ direction: 'asc' })),
-			onSelect: ({ detail: { target } }) => {
-				this.openSubMenu(toCamelCase(target.textContent));
+			onItemPress: ({ detail: { item } }) => {
+				this.openSubMenu(toCamelCase(item.textContent));
 			},
 			appendTo: this.menuPopover,
 		});

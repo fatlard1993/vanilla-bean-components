@@ -446,7 +446,7 @@ export interface DialogOptions extends ComponentOptions {
 	footer?: Array<Component>;
 	/** Button configurations for default footer */
 	buttons?: Array<string | Record<string, any>>;
-	/** Handler for button press events */
+	/** Hears a press on any of `buttons`, with { button, event, dialog, closeDialog }; a button's own onPointerPress runs first */
 	onButtonPress?: (...args: any[]) => any;
 	/** Custom close function */
 	closeDialog?: (...args: any[]) => any;
@@ -678,8 +678,8 @@ export declare class List extends Component {
 export interface MenuOptions extends ListOptions {
 	/** Array of menu items to render */
 	items?: Array<any>;
-	/** Handler for the "select" CustomEvent fired when a menu item is activated; the activation event is in event.detail */
-	onSelect?: (...args: any[]) => any;
+	/** Hears `itemPress`, an item pressed by pointer or keyboard; `event.detail` holds the item (its li) and the press's event */
+	onItemPress?: (...args: any[]) => any;
 	/** Custom component class for rendering menu items */
 	ListItemComponent?: Component;
 	/** default: "menu" */
@@ -701,7 +701,7 @@ export interface NotifyOptions extends PopoverOptions {
 	x?: number;
 	/** Y position for the notification */
 	y?: number;
-	/** Buttons on the toast, e.g. { textContent: 'Undo', onPress }; onPress gets (notify, event) and may be async, and the toast closes once it settles unless it returns false */
+	/** Buttons on the toast, e.g. { textContent: 'Undo', onPointerPress }; its onPointerPress gets (notify, event) and may be async, and the toast closes once it settles unless it returns false */
 	actions?: Array<Record<string, any>>;
 }
 

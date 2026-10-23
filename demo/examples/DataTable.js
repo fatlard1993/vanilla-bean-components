@@ -101,7 +101,7 @@ export default class Example extends ExampleView {
 									{ state: 'auto', x: event.clientX, y: event.clientY },
 									new Menu({
 										items: [`Remind ${rowData.name}`, `Forgive ${rowData.name}`],
-										onSelect: console.log,
+										onItemPress: console.log,
 									}),
 								);
 							},

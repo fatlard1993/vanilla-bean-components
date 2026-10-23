@@ -9,7 +9,7 @@ export default class Demo extends DemoView {
 				'two',
 				{ textContent: 'three', styles: ({ colors }) => ({ color: colors.red }) },
 			],
-			onSelect: console.log,
+			onItemPress: console.log,
 			style: { width: '60px' },
 		});
 	}

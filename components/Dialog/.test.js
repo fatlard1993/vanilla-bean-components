@@ -188,6 +188,25 @@ describe('Dialog', () => {
 		);
 	});
 
+	test("a button's own onPointerPress runs, then onButtonPress hears which button it was", async () => {
+		const calls = [];
+		const own = { textContent: 'Own', onPointerPress: event => calls.push(['own', event.type]) };
+
+		new Dialog({
+			buttons: [own],
+			onButtonPress: ({ button }) => calls.push(['dialog', button]),
+			openOnRender: false,
+			appendTo: container,
+		});
+
+		(await findByText(container, 'Own')).click();
+
+		expect(calls).toEqual([
+			['own', 'click'],
+			['dialog', own],
+		]);
+	});
+
 	test('rebuilds footer when buttons option changes', async () => {
 		const dialog = new Dialog({ buttons: ['One'], openOnRender: false, appendTo: container });
 

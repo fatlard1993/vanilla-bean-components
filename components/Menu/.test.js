@@ -15,19 +15,20 @@ describe('Menu', () => {
 		listItems.forEach((item, index) => expect(item.textContent).toBe(items[index].textContent));
 	});
 
-	test('a click on an item, or on something inside one, selects; a heading row does not', () => {
-		const select = mock();
+	test('a click on an item, or on something inside one, presses it; a heading row does not', () => {
+		const press = mock();
 		const menu = new Menu({ items: [{ textContent: 'Rename' }], appendTo: container });
 		const [item] = getAllByRole(container, 'listitem');
 		const inner = new Elem({ tag: 'li', textContent: 'nested', appendTo: new Elem({ tag: 'ul', appendTo: item }) });
 		const heading = new Elem({ tag: 'li', textContent: 'Files', attributes: { role: 'presentation' }, appendTo: menu });
 
-		menu.on({ targetEvent: 'select', callback: select });
+		menu.on({ targetEvent: 'itemPress', callback: press });
 
 		inner.elem.click();
 		heading.elem.click();
 
-		expect(select).toHaveBeenCalledTimes(1);
+		expect(press).toHaveBeenCalledTimes(1);
+		expect(press.mock.calls[0][0].detail.item).toBe(item);
 	});
 });
 
@@ -48,27 +49,28 @@ describe('Menu', () => {
 		document.body.replaceChildren();
 	});
 
-	describe('select event', () => {
-		test('onSelect registers without warnings and fires on a click', () => {
+	describe('itemPress event', () => {
+		test('onItemPress registers without warnings and fires on a click', () => {
 			const received = [];
-			menu = new Menu({ items: ['one', 'two'], onSelect: event => received.push(event), appendTo: document.body });
+			menu = new Menu({ items: ['one', 'two'], onItemPress: event => received.push(event), appendTo: document.body });
 
-			expect(warnings.filter(warning => warning.includes('onSelect'))).toEqual([]);
+			expect(warnings.filter(warning => warning.includes('onItemPress'))).toEqual([]);
 
 			const [li] = getAllByRole(menu.elem, 'listitem');
 			li.click();
 
 			expect(received.length).toBe(1);
-			expect(received[0].type).toBe('select');
-			expect(received[0].detail.target).toBe(li);
+			expect(received[0].type).toBe('itemPress');
+			expect(received[0].detail.item).toBe(li);
+			expect(received[0].detail.event.type).toBe('click');
 		});
 
-		test('Enter and Space press the focused item: its own handler runs, and select comes from that click', () => {
+		test('Enter and Space press the focused item: its own handler runs, and itemPress comes from that click', () => {
 			const received = [];
 			const pressed = [];
 			menu = new Menu({
 				items: [{ textContent: 'one', onPointerPress: () => pressed.push('one') }, 'two'],
-				onSelect: event => received.push(event),
+				onItemPress: event => received.push(event),
 				appendTo: document.body,
 			});
 
@@ -78,8 +80,8 @@ describe('Menu', () => {
 			menu.elem.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
 
 			expect(pressed).toEqual(['one', 'one']);
-			expect(received.map(event => event.detail.type)).toEqual(['click', 'click']);
-			expect(received[0].detail.target).toBe(li);
+			expect(received.map(event => event.detail.event.type)).toEqual(['click', 'click']);
+			expect(received[0].detail.item).toBe(li);
 		});
 	});
 });

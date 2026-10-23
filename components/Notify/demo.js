@@ -32,7 +32,7 @@ export default class Demo extends DemoView {
 					actions: [
 						{
 							textContent: 'Undo',
-							onPress: () =>
+							onPointerPress: () =>
 								new Promise(resolve => setTimeout(resolve, 600)).then(() => new Notify({ content: 'Restored' })),
 						},
 					],

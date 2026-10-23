@@ -100,8 +100,8 @@ const StyledPopover = styled(
  * @param {string} [options.icon] - Custom icon name, defaults to the intent's icon
  * @param {number} [options.x] - X position for the notification; without x and y it stacks in the bottom-right corner
  * @param {number} [options.y] - Y position for the notification
- * @param {Array<object>} [options.actions] - Buttons on the toast, e.g. { textContent: 'Undo', onPress }; onPress gets
- * (notify, event) and may be async, and the toast closes once it settles unless it returns false
+ * @param {Array<object>} [options.actions] - Buttons on the toast, e.g. { textContent: 'Undo', onPointerPress }; its
+ * onPointerPress gets (notify, event) and may be async, and the toast closes once it settles unless it returns false
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Notify} Notify component instance
  */
@@ -220,7 +220,7 @@ export default class Notify extends StyledPopover {
 		this._actions = new Elem({ addClass: 'notify-actions', appendTo: this.elem });
 
 		const buttons = actions.map(
-			({ onPress, ...buttonOptions }) =>
+			({ onPointerPress, ...buttonOptions }) =>
 				new Button({
 					variant: 'flat',
 					...buttonOptions,
@@ -233,7 +233,7 @@ export default class Notify extends StyledPopover {
 						this._acting = true;
 
 						try {
-							if ((await onPress?.(this, event)) === false) return;
+							if ((await onPointerPress?.(this, event)) === false) return;
 
 							this.destroy();
 						} catch (error) {

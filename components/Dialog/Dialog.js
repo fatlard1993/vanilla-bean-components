@@ -29,7 +29,8 @@ const defaultOpenDelay = 16;
  * @param {string|Component} [options.body] - Body content
  * @param {Array<Component>} [options.footer] - Custom footer components
  * @param {Array<string|object>} [options.buttons] - Button configurations for default footer
- * @param {Function} [options.onButtonPress] - Handler for button press events
+ * @param {Function} [options.onButtonPress] - Hears a press on any of `buttons`, with { button, event, dialog, closeDialog };
+ *   a button's own onPointerPress runs first
  * @param {Function} [options.closeDialog] - Custom close function
  * @param {boolean} [options.removeOnClose] - Destroy the dialog once it has closed and faded out; false keeps it to open again
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
@@ -248,19 +249,23 @@ class Dialog extends styled(
 	_footerContent() {
 		return (
 			this.options.footer ||
-			this.options.buttons?.map(
-				button =>
-					new DialogButton({
-						onPointerPress: event =>
-							this.options.onButtonPress?.({
-								event,
-								button,
-								dialog: this,
-								closeDialog: this.options.closeDialog || (() => this.close()),
-							}),
-						...(typeof button === 'object' ? button : { textContent: button }),
-					}),
-			)
+			this.options.buttons?.map(button => {
+				const { onPointerPress, ...buttonOptions } = typeof button === 'object' ? button : { textContent: button };
+
+				// The button's own press first, then the dialog's, which hears every button by what was pressed
+				return new DialogButton({
+					...buttonOptions,
+					onPointerPress: event => {
+						onPointerPress?.(event);
+						this.options.onButtonPress?.({
+							event,
+							button,
+							dialog: this,
+							closeDialog: this.options.closeDialog || (() => this.close()),
+						});
+					},
+				});
+			})
 		);
 	}
 

@@ -26,25 +26,25 @@ new Notify({
 	intent: 'warning',
 	timeout: 10000,
 	content: 'Deleted 3 bookmarks',
-	actions: [{ textContent: 'Undo', onPress: () => restore(deleted) }],
+	actions: [{ textContent: 'Undo', onPointerPress: () => restore(deleted) }],
 });
 ```
 
-- `onPress` gets `(notify, event)` and may be async. Once it settles the toast closes, unless it returns `false`.
+- `onPointerPress` gets `(notify, event)` and may be async. Once it settles the toast closes, unless it returns `false`.
 - While one runs, the actions are disabled, so a second press can't run it twice.
 - A throw keeps the toast open with its actions ready again, and is reported.
-- An action without `onPress` just closes the toast, e.g. `{ textContent: 'Dismiss' }`.
+- An action without `onPointerPress` just closes the toast, e.g. `{ textContent: 'Dismiss' }`.
 - Each action is a flat [Button](../Button/README.md); any other Button option passes through.
 
 ## Options
 
-| Option    | Type                | Default     | Description                                            |
-| --------- | ------------------- | ----------- | ------------------------------------------------------ |
-| `intent`  | `string`            | `'success'` | `info`, `success`, `warning` or `danger`               |
-| `content` | `string\|Component` | -           | The message                                            |
-| `timeout` | `number`            | by intent   | Milliseconds before it leaves; `0` stays until pressed |
-| `actions` | `Array<object>`     | -           | Buttons on the toast, `{ textContent, onPress }`       |
-| `icon`    | `string`            | by intent   | A Font Awesome icon name in place of the intent's      |
-| `x`, `y`  | `number`            | -           | Place it at a point instead of in the stack            |
+| Option    | Type                | Default     | Description                                             |
+| --------- | ------------------- | ----------- | ------------------------------------------------------- |
+| `intent`  | `string`            | `'success'` | `info`, `success`, `warning` or `danger`                |
+| `content` | `string\|Component` | -           | The message                                             |
+| `timeout` | `number`            | by intent   | Milliseconds before it leaves; `0` stays until pressed  |
+| `actions` | `Array<object>`     | -           | Buttons on the toast, `{ textContent, onPointerPress }` |
+| `icon`    | `string`            | by intent   | A Font Awesome icon name in place of the intent's       |
+| `x`, `y`  | `number`            | -           | Place it at a point instead of in the stack             |
 
 Everything else is a [Popover](../Popover/README.md) option.

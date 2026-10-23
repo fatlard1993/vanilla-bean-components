@@ -41,7 +41,7 @@ const StyledList = styled(
  * borders, and click handling. Provides consistent menu appearance and behavior.
  * @param {object} [options={}] - Menu configuration options
  * @param {Array<*>} [options.items] - Array of menu items to render
- * @param {Function} [options.onSelect] - Handler for the "select" CustomEvent fired when a menu item is activated; the activation event is in event.detail
+ * @param {Function} [options.onItemPress] - Hears `itemPress`, an item pressed by pointer or keyboard; `event.detail` holds the item (its li) and the press's event
  * @param {Component} [options.ListItemComponent] - Custom component class for rendering menu items
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Menu} Menu component instance
@@ -58,21 +58,23 @@ export default class Menu extends StyledList {
 		},
 	};
 
-	static events = ['select'];
+	static events = ['itemPress'];
 
 	build() {
 		this.on({
 			targetEvent: 'click',
-			id: 'menuSelect',
+			id: 'menuItemPress',
 			callback: event => {
-				// Selecting requires an item, the same way the keyboard path below requires a focused
+				// A press requires an item, the same way the keyboard path below requires a focused
 				// one. Emitting for any click on the menu meant clicking the padding, the gap
-				// between items, or the border fired `select` with nothing selected, leaving every
+				// between items, or the border fired with nothing pressed, leaving every
 				// consumer to work out from the event whether an item had actually been hit.
-				const item = event.target?.closest?.('li');
-				if (!item || !this.elem.contains(item) || item.getAttribute('role') === 'presentation') return;
+				// The menu's own row, however deep in it the press landed
+				let item = event.target?.closest?.('li');
+				while (item && item.parentElement !== this.elem) item = item.parentElement?.closest('li');
+				if (!item || item.getAttribute('role') === 'presentation') return;
 
-				this.emit('select', event);
+				this.emit('itemPress', { item, event });
 			},
 		});
 
@@ -98,7 +100,7 @@ export default class Menu extends StyledList {
 					e.preventDefault();
 					next = items[items.length - 1];
 				} else if ((e.key === 'Enter' || e.key === ' ') && currentIndex >= 0) {
-					// The keyboard presses the item, so its own handler runs and select comes from the one click path
+					// The keyboard presses the item, so its own handler runs and itemPress comes from the one click path
 					e.preventDefault();
 					items[currentIndex].click();
 					return;
