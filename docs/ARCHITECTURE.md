@@ -355,6 +355,8 @@ No circular dependencies exist in this graph.
 
 `app/` is the server half: a Bun kit an app's server is built from (`serve`, `buildClient`, `hotReload`, `serveStatic`, `serveApp`, `createStore`, `crudRoutes`, `service`, `devConsole`). It's its own entry, `@vanilla-bean/components/app`, with its own types in `app/index.d.ts`, so a page never imports server code by importing the library. [app/README.md](../app/README.md) documents each piece; this section is about where it meets the client.
 
+The client half is in the library proper: `connectSocket` for sockets, and for data [hypertether](https://github.com/fatlard1993/hypertether) (re-exported from the root, as Oxject is) and `crudResource` (utils/crud.js), which speaks `crudRoutes`' protocol.
+
 ### Client/server seams
 
 Where the page and the server must agree, the agreement is one small module with no dependencies, imported by both sides, so neither can drift:
@@ -386,3 +388,5 @@ A store's errors carry their status, and `withErrors` (which `serve` wraps every
 | Anything else thrown | 500, `Server Error` as text, the error logged |
 
 A versioned record carries `_v`, and an update that sends it back is checked against the stored one; an update without `_v` isn't checked. `_conflict` marks a 409 as a version conflict rather than some other refusal, and `current` is what the client needs to show the change it missed.
+
+`crudResource(path)` reads these answers on the page. Each is hypertether's result as it came (`failureReason` gives the `{ error }`), except a 409 with `_conflict`, which comes back with `conflict: { current, changes, fields }`. An update whose fields already hold what it sent is sent again over `current._v`; for the rest, `onConflict` can answer with what to send over `current._v`, or leave it to the caller. `utils/crud.test.js` runs it against `serve`, `crudRoutes` and a versioned `createStore`, so the two halves are checked against each other rather than against a copy of the shape. Queueing writes while offline stays an app's own.

@@ -143,6 +143,8 @@ validateFields(fields, { players: 'many' }); // throws ValidationError('name is 
 
 The REST routes for a store: `GET path` (every record by id, or an array with `list: true`), `POST path` (201 and the record), and `GET`, `PATCH` (or `PUT`) and `DELETE` at `path/:id` (404 and `{ error }` for no such record). The id comes only from the path: a `?id=` search param never names a record. Search params do reach `delete` as its options, for `afterDelete`. It answers `undefined` for anything else, so routers chain with `??`.
 
+The page's half is [`crudResource(path)`](../utils/README.md#collections), from the library itself: the same five requests, through hypertether, with a versioned store's 409 coming back as a `conflict` carrying the stored record.
+
 ## Serving an app
 
 ### `serve({ router, websocket?, build?, ...options })`

@@ -54,11 +54,7 @@ npm install github:fatlard1993/vanilla-bean-components
 yarn add github:fatlard1993/vanilla-bean-components
 ```
 
-Reactive state (`Oxject`) is included in VBC, no separate install. The HTTP examples use [hypertether](https://github.com/fatlard1993/hypertether), which is a separate package:
-
-```bash
-bun add @vanilla-bean/hypertether
-```
+Reactive state (`Oxject`) and HTTP ([hypertether](https://github.com/fatlard1993/hypertether)'s `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `resource`, `failureReason` and `resetRequest`) come with VBC, no separate install.
 
 Import in your application:
 
@@ -239,7 +235,7 @@ class Stats extends Component {
 | **[styled](./styled/README.md)** | Scoped CSS | Theme integration, native CSS nesting, unique class generation |
 | **[Theme](./theme/README.md)** | Design system | Color manipulation, font management, accessibility helpers |
 
-All five are available from `'@vanilla-bean/components'` directly. For HTTP caching, [hypertether](https://github.com/fatlard1993/hypertether) is a separate install (`bun add @vanilla-bean/hypertether`).
+All five are available from `'@vanilla-bean/components'` directly, and so is HTTP: hypertether's requests, cached and refetched on invalidation, and `crudResource`, the client half of the app kit's `crudRoutes` ([utils/README.md](./utils/README.md#collections)). An app that installed `@vanilla-bean/hypertether` itself imports from VBC instead and drops it: two copies of hypertether keep two caches, and a write through one doesn't refetch reads through the other.
 
 ### Theme and Tokens
 
@@ -355,8 +351,7 @@ devConsole(); // in development: type `b` (or `build`) to rebuild and reload the
 Complete user management interface with data loading and state management:
 
 ```js
-import { Component, Oxject, styled } from '@vanilla-bean/components';
-import { GET } from '@vanilla-bean/hypertether';
+import { Component, GET, Oxject, styled } from '@vanilla-bean/components';
 
 // Application state
 const app = new Oxject({

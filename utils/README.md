@@ -103,6 +103,31 @@ const recent = readStorage('recentColors', []);
 writeStorage('recentColors', [color, ...recent]);
 ```
 
+## Collections
+
+### `crudResource(path, options?)`
+
+The client half of the app kit's [`crudRoutes`](../app/README.md#crudroutespath-store--list-): hypertether's `resource` for the collection served at `path` (`list`, `read`, `create`, `update`, `delete`, each resolving to a hypertether result, writes refetching the reads), with an `update` that understands a `versioned` store. `options` go to `resource` (`apiId`, `invalidates`, options for the reads).
+
+An update sent with an older `_v` is refused with 409, `_conflict` and the stored record; it comes back as the result's `conflict`: `{ current, changes, fields }`, `fields` being `{ key, ours, theirs }` for each field sent that the stored record holds otherwise. If no field differs, the update is sent again over the stored `_v` without asking. Otherwise `onConflict(conflict)` may answer with the fields to send instead, sent over the stored `_v` (up to three times), or with nothing, leaving the conflict to the caller. Any other failure, a 404's `{ error: 'Not found' }` among them, is hypertether's result as it came, for `failureReason`.
+
+```js
+import { crudResource, failureReason } from '@vanilla-bean/components';
+
+const games = crudResource('/api/games');
+
+games.list({ onResponse: ({ body }) => (table.options.data = Object.values(body)) }); // refetched after each write
+
+const saved = await games.update(game.id, {
+	body: { name, players, _v: game._v },
+	// Only the name goes over their version; return nothing instead to leave the conflict to the code below
+	onConflict: ({ changes }) => ({ name: changes.name }),
+});
+
+if (saved.conflict) notify(`Changed meanwhile: ${saved.conflict.fields.map(({ key }) => key).join(', ')}`);
+else if (saved.status === 'error') notify(failureReason(saved));
+```
+
 ## Socket
 
 ### `connectSocket(path?, { onLost?, onRestored? }?)`
