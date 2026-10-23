@@ -97,9 +97,15 @@ export default class Popover extends StyledIcon {
 		padding = 24,
 		viewport = this.options.viewport || this.options.appendTo,
 	}) {
-		const { left, bottom, right } = (viewport?.elem ?? viewport).getBoundingClientRect();
+		const { left, top, bottom, right } = (viewport?.elem ?? viewport).getBoundingClientRect();
 
 		const cursorOffset = 12;
+
+		// A point computed off the viewport (a world position, a stale anchor) still shows on it
+		if (right > left && bottom > top) {
+			x = Math.min(Math.max(x, left), right);
+			y = Math.min(Math.max(y, top), bottom);
+		}
 
 		let pastRight = x + maxWidth + padding >= right;
 		const pastLeft = x - maxWidth + padding <= left;

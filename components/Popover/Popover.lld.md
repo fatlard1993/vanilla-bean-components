@@ -10,6 +10,8 @@ Native popover element with edge-aware placement. The design decision: position 
 
 - when the popover would overflow an edge, the position flips; this calculation runs on each `show()` call so it stays accurate as the page scrolls or resizes
   - new Subject({ ...{ maxWidth: 264, maxHeight: 132, state: "manual", outsideClose: false, autoOpen: false, uniqueId: true }, x: 10, y: 10 }) captures near then near.show() then new Subject({ ...{ maxWidth: 264, maxHeight: 132, state: "manual", outsideClose: false, autoOpen: false, uniqueId: true }, x: window.innerWidth - 10, y: 10 }) captures far then far.show() -> near.elem.style.left !== "unset" && far.elem.style.left === "unset" && far.elem.style.right !== "unset"
+- a point off the viewport is pulled onto it, so the popover is never placed out of sight
+  - new Subject({ ...{ maxWidth: 100, maxHeight: 40, state: "manual", outsideClose: false, autoOpen: false, uniqueId: true }, viewport: { getBoundingClientRect: () => ({ left: 0, top: 0, right: 400, bottom: 300 }) }, x: -500, y: -200 }) captures p then p.show() -> p.elem.style.left === "12px" && p.elem.style.top === "12px"
 
 ## autoOpen fires after a short delay, not immediately
 
