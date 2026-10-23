@@ -1,25 +1,26 @@
+import { connectSocket } from '../utils/socket';
 import { HOT_RELOAD_PATH } from './hotReloadPath';
 
-const connect = ({ reconnecting = false } = {}) => {
-	const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-	const socket = new WebSocket(`${protocol}//${window.location.host}${HOT_RELOAD_PATH}`);
+/**
+ * Reload the page on each build of a development server's hot reload, and once it's back after a restart: whatever it
+ * serves then is newer than this page. A page that never connected is served by something that isn't watching, and
+ * isn't retried.
+ * @param {object} [options] - Options
+ * @param {Function} [options.reload] - What reloading is
+ * @returns {object} The socket (connectSocket)
+ */
+export const reloadOnBuild = ({ reload = () => window.location.reload() } = {}) => {
 	let connected = false;
 
-	socket.addEventListener('open', () => {
-		connected = true;
+	const socket = connectSocket(HOT_RELOAD_PATH, { onRestored: reload });
 
-		// The server went away and came back: whatever it serves now is newer than this page
-		if (reconnecting) window.location.reload();
-	});
-
-	socket.addEventListener('message', ({ data }) => {
-		if (data === 'hotReload') window.location.reload();
-	});
-
-	// A page that never connected is served by something that isn't watching; it isn't retried
+	socket.addEventListener('open', () => (connected = true));
 	socket.addEventListener('close', () => {
-		if (connected || reconnecting) setTimeout(() => connect({ reconnecting: true }), 1000);
+		if (!connected) socket.close();
 	});
+	socket.onMessage(data => data === 'hotReload' && reload());
+
+	return socket;
 };
 
-if (process.env.NODE_ENV === 'development') connect();
+if (process.env.NODE_ENV === 'development') reloadOnBuild();

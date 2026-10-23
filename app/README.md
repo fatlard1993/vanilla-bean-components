@@ -65,7 +65,7 @@ The bundler hashes a linked `manifest.json` and leaves the paths inside it as wr
 
 The watcher builds inside the server process, so it ends with the server. `bun --hot` re-runs the server module on each change, and `watch` keeps its one watcher and its connected pages through that, taking the newest build options for the next rebuild.
 
-`@vanilla-bean/components/app/reloadOnBuild` is the page's side. In a development build it connects, reloads on each build, and when the server restarts it reconnects and reloads. In a production build it's empty.
+`@vanilla-bean/components/app/reloadOnBuild` is the page's side. In a development build it connects, reloads on each build, and when the server restarts it reconnects and reloads. In a production build it's empty. It connects through `connectSocket` (utils), so a dropped connection backs off and comes back like any other socket; a page that never connected was served by something not watching, and isn't retried.
 
 ## `serveStatic(request, { root?, packages? }?)`
 
