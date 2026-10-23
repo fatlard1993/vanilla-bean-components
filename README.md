@@ -233,12 +233,13 @@ class Stats extends Component {
 
 | Module | Purpose | Key Features |
 | --- | --- | --- |
+| **[Elem](./Elem/README.md)** | The element wrapper | Fluent methods over a plain HTMLElement, still in reach; what Component extends |
 | **[Component](./Component/README.md)** | Enhanced DOM elements | Lifecycle management, reactive options, automatic cleanup |
 | **Oxject** | Reactive state | Proxy-based reactivity, subscriber system |
 | **[styled](./styled/README.md)** | Scoped CSS | Theme integration, native CSS nesting, unique class generation |
 | **[Theme](./theme/README.md)** | Design system | Color manipulation, font management, accessibility helpers |
 
-All four are available from `'@vanilla-bean/components'` directly. For HTTP caching, [hypertether](https://github.com/fatlard1993/hypertether) is a separate install (`bun add @vanilla-bean/hypertether`).
+All five are available from `'@vanilla-bean/components'` directly. For HTTP caching, [hypertether](https://github.com/fatlard1993/hypertether) is a separate install (`bun add @vanilla-bean/hypertether`).
 
 ### Theme and Tokens
 
@@ -510,7 +511,7 @@ This creates implementation, demo, tests, and documentation files following proj
 5. **Update documentation** - Include README updates and demos
 6. **Run validation** - `bun run lint && bun test` before submitting
 
-See individual component READMEs for architecture patterns and implementation guidelines.
+[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) covers how Elem, Component, styled and the app kit fit together, and [docs/NAMING_CONVENTIONS.md](./docs/NAMING_CONVENTIONS.md) how files, classes and options are named. The component READMEs cover each component.
 
 ## License
 
@@ -518,4 +519,4 @@ MIT License - see [LICENSE](./LICENSE) file for details.
 
 ---
 
-**[Browse Components](./components/)** • **[API Documentation](./docs/)** • **[Live Demo](./demo/)** • **[Getting Started Guide](./docs/GETTING_STARTED.md)** • **[Design Philosophy](./docs/ETHOS.md)**
+**[Browse Components](./components/)** • **[API Documentation](./docs/)** • **[Live Demo](./demo/)** • **[Getting Started Guide](./docs/GETTING_STARTED.md)** • **[Architecture](./docs/ARCHITECTURE.md)** • **[Naming Conventions](./docs/NAMING_CONVENTIONS.md)** • **[Design Philosophy](./docs/ETHOS.md)**
