@@ -4,9 +4,9 @@ import { debounce, throttle, convertRange } from '../../utils';
 import { Component } from '../../Component';
 import { styled } from '../../styled';
 import { Input } from '../Input';
+import { radius, space } from '../../theme/tokens';
 import ColorSwatch from './ColorSwatch';
 import { saturation } from './svg';
-import { radius, space } from '../../theme/tokens';
 
 const StyledInput = styled(
 	Input,

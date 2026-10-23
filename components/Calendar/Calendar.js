@@ -2,10 +2,10 @@
 import { styled } from '../../styled';
 import { Component } from '../../Component';
 
+import { radius, space } from '../../theme/tokens';
 import CalendarEvent from './CalendarEvent';
 import Toolbar, { VIEWS } from './Toolbar';
 import { getDaysInMonth, toNth } from './utils';
-import { radius, space } from '../../theme/tokens';
 
 const StyledComponent = styled(
 	Component,
