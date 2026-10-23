@@ -10,6 +10,7 @@ Object.entries({ Elem, Component, ...components }).forEach(([name, component]) =
 export * from './Component';
 export * from './components';
 export { Oxject } from '@vanilla-bean/oxject';
+export { GET, POST, PUT, PATCH, DELETE, resource, failureReason, resetRequest } from '@vanilla-bean/hypertether';
 export * from './Elem';
 export * from './styled';
 export * from './utils';

@@ -96,6 +96,12 @@ import type {
 export type { OxjectInstance, DeriveInstance, DeriveOptions, Subscription, SubscriberSubscription };
 export { Oxject } from '@vanilla-bean/oxject';
 
+// ── hypertether ──────────────────────────────────────────────────────────────
+
+import type { RequestOptions, RequestResult, Resource, ResourceOptions } from '@vanilla-bean/hypertether';
+export type { RequestOptions, RequestResult, Resource, ResourceOptions };
+export { GET, POST, PUT, PATCH, DELETE, resource, failureReason, resetRequest } from '@vanilla-bean/hypertether';
+
 // ── Elem ───────────────────────────────────────────────────────────────────────
 
 export interface ElemOptions {
