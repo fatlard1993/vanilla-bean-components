@@ -25,13 +25,27 @@ export interface ThemeColors {
 	teal: ThemeColor;
 	white: ThemeColor;
 	black: ThemeColor;
+	// Roles: named for their job, each settable (`theme.colors.danger = myRed`), undefined hands it back to its hues
+	/** Focused, selected, checked and pressed: the focus ring, a chosen tab, a checked box, a latched button */
 	selected: ThemeColor;
-	/** A raised panel or card */
+	/** Anything that floats over the page: a dialog, popover, menu, sheet, toast or top bar */
 	surface: ThemeColor;
-	/** The dimming behind a dialog or sheet */
+	/** The lift of a card, or a group of fields, off whatever it sits on */
+	raised: ThemeColor;
+	/** The dimming behind a dialog or context menu */
 	overlay: ThemeColor;
-	/** The library's warning color (Notify and Dialog's warning variant) */
+	/** The library's own accent (teal) */
+	accent: ThemeColor;
+	/** The edge of whatever floats over the page, drawn from accent */
+	edge: ThemeColor;
+	success: ThemeColor;
+	info: ThemeColor;
 	warning: ThemeColor;
+	danger: ThemeColor;
+	/** Secondary text: meta lines, counts, hints, section labels */
+	muted: ThemeColor;
+	/** A hairline between things on the page */
+	border: ThemeColor;
 	superWhite: ThemeColor;
 	vantablack: ThemeColor;
 	dark(c: ThemeColor): ThemeColor;
@@ -48,6 +62,20 @@ export interface ThemeColors {
 export interface Theme {
 	colors: ThemeColors;
 	fonts: { kodeMono: string; code: string; fontAwesome: string; fontAwesomeSolid: string; fontAwesomeBrands: string };
+	/** Screen insets a phone keeps for itself, as env() lengths, 0px elsewhere */
+	safeArea: { top: string; right: string; bottom: string; left: string };
+	space: { xs: string; sm: string; md: string; lg: string; xl: string };
+	radius: { sm: string; md: string; lg: string; pill: string };
+	media: { phone: string; wide: string; touch: string };
+	/** The type scale, in em of the surrounding text */
+	fontSize: { xs: string; sm: string; md: string; lg: string; xl: string; xxl: string };
+	/** Shadows: sm under a popover, menu or toast, lg under a dialog or sheet */
+	elevation: { sm: string; lg: string };
+	duration: { fast: string; base: string; slow: string };
+	/** The focus ring's declarations, for under :focus-visible; a negative offset draws it inside */
+	focusRing(offset?: string): string;
+	/** A Button's base look */
+	button: string;
 	input: string;
 	page: string;
 	/** Styles for bare elements; Page's themeElements: false turns them off */

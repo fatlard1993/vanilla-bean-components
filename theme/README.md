@@ -285,9 +285,8 @@ colors.black; // Near-black derived from gray (gray darkened 35%) - backgrounds,
 colors.superWhite; // #ffffff - pure white constant, independent of gray
 colors.vantablack; // #000000 - pure black constant, independent of gray
 
-// Semantic accent - the "focused/selected/active" color (focus outlines,
-// ::selection, hover highlights, checked controls, scrollbar thumbs).
-// Follows colors.yellow unless assigned its own color:
+// The "focused/selected/checked/pressed" role (the focus ring, ::selection, a chosen tab or chip, checked controls,
+// latched buttons, scrollbar thumbs). Follows colors.yellow unless assigned its own color, as every role can be:
 colors.selected;
 theme.colors.selected = new TinyColor('#3d7aed'); // decouple from yellow
 
@@ -424,6 +423,9 @@ Built-in color palettes for code syntax highlighting:
 | `theme.space` | `xs` 3px, `sm` 6px, `md` 12px, `lg` 18px, `xl` 24px |
 | `theme.radius` | `sm` 4px (fields), `md` 6px (buttons, cards), `lg` 8px, `pill` 999px (chips) |
 | `theme.media` | `phone` `(max-width: 767px)`, `wide` `(min-width: 768px)`, `touch` `(pointer: coarse)`, for `@media` |
+| `theme.fontSize` | `xs` 0.75em (counts, details, section labels), `sm` 0.875em (chips, tags, small headers), `md` 1em, `lg` 1.125em (a bar's heading, h3), `xl` 1.25em (h2), `xxl` 1.5em (h1) |
+| `theme.duration` | `fast` 0.15s (hover, press), `base` 0.3s (opening), `slow` 0.6s (what eases in behind) |
+| `theme.elevation` | `sm` under a popover, menu or toast; `lg` under a dialog or sheet (box-shadow values) |
 
 ```js
 const Panel = styled.Component`
@@ -436,7 +438,42 @@ const Panel = styled.Component`
 `;
 ```
 
-Colors also have names for their jobs: `colors.surface`, `colors.border` (a hairline), `colors.muted` (secondary text), `colors.overlay`, and `colors.success`, `colors.warning`, `colors.danger`, `colors.info`. Reach for the job's name before the hue's, so a status reads the same in every app.
+Sizes, times and shadows come in steps too, and the page stills every transition and animation, once and for everything, when the system asks for reduced motion.
+
+## Roles
+
+Colors also have names for their jobs. Reach for the job's name before the hue's, so a status reads the same in every app:
+
+| Role | Drawn from | For |
+| --- | --- | --- |
+| `selected` | yellow | Focused, selected, checked and pressed: the focus ring, a chosen tab or chip, a checked box, a latched button |
+| `surface` | gray, darker | Anything that floats over the page: a dialog, popover, menu, sheet, toast or top bar |
+| `raised` | white at 0.05 | The lift of a card, or a group of fields, off whatever it sits on |
+| `overlay` | black at 0.6 | The backdrop behind a dialog or context menu |
+| `accent` | teal | The library's own accent |
+| `edge` | accent, light, at 0.6 | The edge of whatever floats over the page |
+| `success`, `info`, `warning`, `danger` | green, blue, yellow, red | Status: Notify, Dialog's variants, quoted notes, a field's errors |
+| `muted` | gray, light | Secondary text: meta lines, counts, hints, section labels |
+| `border` | white at 0.12 | A hairline between things on the page |
+
+Each follows its hues until it's given a color of its own, and assigning `undefined` hands it back. Assign before the page loads, when the components' styles are first drawn:
+
+```js
+theme.colors.danger = new TinyColor('#e5484d');
+theme.colors.selected = new TinyColor('#3d7aed'); // focus rings and selections go blue
+```
+
+## Focus
+
+Everything that takes keyboard focus shows one ring: a 2px line in the `selected` role, 2px outside the control, on `:focus-visible` only. The page gives it to any focused element at no specificity, and `theme.focusRing(offset)` hands out the same declarations for your own controls; a negative offset draws it inside something that clips:
+
+```js
+const Swatch = styled.Component`
+	&:focus-visible {
+		${({ focusRing }) => focusRing()}
+	}
+`;
+```
 
 ## Safe Areas
 
@@ -463,6 +500,7 @@ const BottomNav = styled.Component`
 Complete styling for standard UI elements:
 
 ```js
+theme.button; // A Button's base look
 theme.input; // Form input styling with validation states
 theme.page; // Always-on page base and the library components' looks
 theme.elements; // Bare-element styles; Page's themeElements turns them off
@@ -476,12 +514,12 @@ const ValidatedInput = styled.Input`
 	${({ input }) => input}
 
 	&.error {
-		border-color: ${({ colors }) => colors.red};
-		background: ${({ colors }) => colors.lightest(colors.red)};
+		border-color: ${({ colors }) => colors.danger};
+		background: ${({ colors }) => colors.alpha(colors.danger, 0.2)};
 	}
 
 	&.success {
-		border-color: ${({ colors }) => colors.green};
+		border-color: ${({ colors }) => colors.success};
 	}
 `;
 ```
@@ -514,8 +552,13 @@ interface Theme {
 	space: { xs: string; sm: string; md: string; lg: string; xl: string };
 	radius: { sm: string; md: string; lg: string; pill: string };
 	media: { phone: string; wide: string; touch: string };
+	fontSize: { xs: string; sm: string; md: string; lg: string; xl: string; xxl: string };
+	duration: { fast: string; base: string; slow: string };
+	elevation: { sm: string; lg: string };
+	focusRing(offset?: string): string;
 
 	// Component base styles (CSS strings)
+	button: string;
 	input: string;
 	page: string;
 	elements: string;
@@ -540,9 +583,22 @@ interface ColorSystem {
 	// Utility colors
 	white: TinyColor;
 	black: TinyColor;
-	selected: TinyColor;
 	superWhite: TinyColor;
 	vantablack: TinyColor;
+
+	// Roles, each settable
+	selected: TinyColor;
+	surface: TinyColor;
+	raised: TinyColor;
+	overlay: TinyColor;
+	accent: TinyColor;
+	edge: TinyColor;
+	success: TinyColor;
+	info: TinyColor;
+	warning: TinyColor;
+	danger: TinyColor;
+	muted: TinyColor;
+	border: TinyColor;
 
 	// Lightness modifiers
 	whiteish(color: TinyColor): TinyColor;

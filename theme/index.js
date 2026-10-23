@@ -1,3 +1,4 @@
+import _button from './button';
 import colors from './colors';
 import focusRing from './focus';
 import fonts from './fonts';
@@ -22,6 +23,9 @@ const theme = {
 	 * @returns {string} CSS
 	 */
 	focusRing: offset => focusRing(theme, offset),
+	get button() {
+		return _button(this);
+	},
 	get input() {
 		return _input(this);
 	},
