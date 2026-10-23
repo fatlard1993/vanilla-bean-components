@@ -547,3 +547,68 @@ describe('Calendar', () => {
 		});
 	});
 });
+
+describe('Calendar', () => {
+	let calendar;
+
+	afterEach(() => {
+		calendar?.destroy?.();
+		calendar = null;
+		document.body.replaceChildren();
+	});
+
+	// The view buttons, blocks and events are found by class: they have no role or name of their own to find them by
+	// eslint-disable-next-line testing-library/no-node-access
+	const find = selector => calendar.elem.querySelector(selector);
+
+	describe('toolbar view buttons', () => {
+		test('the active view button is pressed on render', () => {
+			calendar = new Calendar({ appendTo: document.body });
+
+			expect(find('.set-month')).toHaveClass('pressed');
+			expect(find('.set-day')).not.toHaveClass('pressed');
+		});
+
+		test('pressed state follows setView', () => {
+			calendar = new Calendar({ appendTo: document.body });
+
+			calendar.setView('day');
+
+			expect(find('.set-day')).toHaveClass('pressed');
+			expect(find('.set-month')).not.toHaveClass('pressed');
+
+			calendar.setView('week');
+
+			expect(find('.set-week')).toHaveClass('pressed');
+			expect(find('.set-day')).not.toHaveClass('pressed');
+		});
+
+		test('a direct view option write renders the view and moves pressed state', () => {
+			calendar = new Calendar({ appendTo: document.body });
+
+			calendar.options.view = 'day';
+
+			expect(find('.time-block')).toBeTruthy();
+			expect(find('.set-day')).toHaveClass('pressed');
+		});
+
+		test('a direct events option write renders the events', () => {
+			calendar = new Calendar({ appendTo: document.body });
+
+			calendar.options.events = [{ at: Date.now(), label: 'reactive event' }];
+
+			expect(find('.event')).toBeTruthy();
+			expect(calendar.options.events[0].label).toBe('reactive event');
+		});
+
+		test('pressed state survives a full re-render', () => {
+			calendar = new Calendar({ appendTo: document.body });
+
+			calendar.setView('week');
+			calendar.next();
+
+			expect(find('.set-week')).toHaveClass('pressed');
+			expect(find('.set-month')).not.toHaveClass('pressed');
+		});
+	});
+});
