@@ -41,7 +41,7 @@ class EmptyState extends styled(
 		}
 
 		&.loading > .icon {
-			color: ${colors.light(colors.blue)};
+			color: ${colors.light(colors.info)};
 			opacity: 1;
 		}
 

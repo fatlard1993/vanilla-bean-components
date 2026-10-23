@@ -110,29 +110,19 @@ class Dialog extends styled(
 			backdrop-filter: blur(2px);
 		}
 
-		&.variant-info {
-			border-color: ${colors.alpha(colors.blue, 0.6)};
-			& .header { color: ${colors.lighter(colors.blue)}; border-color: ${colors.alpha(colors.blue, 0.2)}; }
-			& .footer button { background-color: ${colors.blue}; }
-		}
-
-		&.variant-success {
-			border-color: ${colors.alpha(colors.green, 0.6)};
-			& .header { color: ${colors.lighter(colors.green)}; border-color: ${colors.alpha(colors.green, 0.2)}; }
-			& .footer button { background-color: ${colors.green}; }
-		}
-
-		&.variant-warning {
-			border-color: ${colors.alpha(colors.yellow, 0.6)};
-			& .header { color: ${colors.lighter(colors.yellow)}; border-color: ${colors.alpha(colors.yellow, 0.2)}; }
-			& .footer button { background-color: ${colors.yellow}; }
-		}
+		${Object.entries({ info: colors.info, success: colors.success, warning: colors.warning, error: colors.danger })
+			.map(
+				([variant, color]) => `
+		&.variant-${variant} {
+			border-color: ${colors.alpha(color, 0.6)};
+			& .header { color: ${colors.lighter(color)}; border-color: ${colors.alpha(color, 0.2)}; }
+			& .footer button { background-color: ${color}; color: ${colors.mostReadable(color, [colors.white, colors.black])}; }
+		}`,
+			)
+			.join('\n')}
 
 		&.variant-error {
-			border-color: ${colors.alpha(colors.red, 0.6)};
-			box-shadow: 0 0 32px ${colors.alpha(colors.red, 0.14)}, 0 8px 40px ${colors.alpha(colors.vantablack, 0.7)};
-			& .header { color: ${colors.lighter(colors.red)}; border-color: ${colors.alpha(colors.red, 0.2)}; }
-			& .footer button { background-color: ${colors.red}; }
+			box-shadow: 0 0 32px ${colors.alpha(colors.danger, 0.14)}, 0 8px 40px ${colors.alpha(colors.vantablack, 0.7)};
 		}
 
 		@keyframes dialogFadeIn {

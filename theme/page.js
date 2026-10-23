@@ -322,22 +322,22 @@ export const elements = theme => `
     padding: 1px ${space.md};
 
 		&.NOTE {
-			background-color: ${colors.alpha(colors.blue, 0.09)};
-			border-color: ${colors.alpha(colors.blue, 0.3)};
+			background-color: ${colors.alpha(colors.info, 0.09)};
+			border-color: ${colors.alpha(colors.info, 0.3)};
 
 			p:first-child {
 				font-weight: bold;
-				color: ${colors.lighter(colors.blue)};
+				color: ${colors.lighter(colors.info)};
 			}
 		}
 
 		&.TIP {
-			background-color: ${colors.alpha(colors.green, 0.09)};
-			border-color: ${colors.alpha(colors.green, 0.3)};
+			background-color: ${colors.alpha(colors.success, 0.09)};
+			border-color: ${colors.alpha(colors.success, 0.3)};
 
 			p:first-child {
 				font-weight: bold;
-				color: ${colors.lighter(colors.green)};
+				color: ${colors.lighter(colors.success)};
 			}
 		}
 
@@ -352,22 +352,22 @@ export const elements = theme => `
 		}
 
 		&.WARNING {
-			background-color: ${colors.alpha(colors.yellow, 0.09)};
-			border-color: ${colors.alpha(colors.yellow, 0.3)};
+			background-color: ${colors.alpha(colors.warning, 0.09)};
+			border-color: ${colors.alpha(colors.warning, 0.3)};
 
 			p:first-child {
 				font-weight: bold;
-				color: ${colors.lighter(colors.yellow)};
+				color: ${colors.lighter(colors.warning)};
 			}
 		}
 
 		&.CAUTION {
-			background-color: ${colors.alpha(colors.red, 0.09)};
-			border-color: ${colors.alpha(colors.red, 0.3)};
+			background-color: ${colors.alpha(colors.danger, 0.09)};
+			border-color: ${colors.alpha(colors.danger, 0.3)};
 
 			p:first-child {
 				font-weight: bold;
-				color: ${colors.lighter(colors.red)};
+				color: ${colors.lighter(colors.danger)};
 			}
 		}
 	}

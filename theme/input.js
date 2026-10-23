@@ -79,7 +79,7 @@ export default ({ colors }) => `
 	}
 
 	&:not(.syntax-highlighting).validation-errors {
-		border-color: ${colors.light(colors.red)};
-		background-color: ${colors.alpha(colors.red, 0.2)};
+		border-color: ${colors.light(colors.danger)};
+		background-color: ${colors.alpha(colors.danger, 0.2)};
 	}
 `;

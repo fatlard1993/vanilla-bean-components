@@ -35,32 +35,19 @@ const StyledPopover = styled(
 			padding: 0 ${space.sm} 0 0;
 		}
 
-		&.info {
-			background-color: ${colors.blackish(colors.blue)};
-			border-color: ${colors.light(colors.blue)};
+		${Object.entries({ info: colors.info, success: colors.success, warning: colors.warning, error: colors.danger })
+			.map(
+				([type, color]) => `
+		&.${type} {
+			background-color: ${colors.blackish(color)};
+			border-color: ${colors.light(color)};
 
 			&:before {
-				color: ${colors.light(colors.blue)};
+				color: ${colors.light(color)};
 			}
-		}
-
-		&.success {
-			background-color: ${colors.blackish(colors.green)};
-			border-color: ${colors.light(colors.green)};
-
-			&:before {
-				color: ${colors.light(colors.green)};
-			}
-		}
-
-		&.warning {
-			background-color: ${colors.blackish(colors.yellow)};
-			border-color: ${colors.light(colors.yellow)};
-
-			&:before {
-				color: ${colors.light(colors.yellow)};
-			}
-		}
+		}`,
+			)
+			.join('\n')}
 
 		& > .notify-actions {
 			display: flex;
@@ -80,15 +67,6 @@ const StyledPopover = styled(
 			inset: auto ${STACK_EDGE}px auto auto;
 			margin: 0;
 			transition: bottom 0.2s ease-out;
-		}
-
-		&.error {
-			background-color: ${colors.blackish(colors.red)};
-			border-color: ${colors.light(colors.red)};
-
-			&:before {
-				color: ${colors.light(colors.red)};
-			}
 		}
 	`,
 );
