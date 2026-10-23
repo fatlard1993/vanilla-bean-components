@@ -167,50 +167,133 @@ function extractMethods(content) {
 		),
 	];
 
-	return matches.map(match => {
-		const [, jsdoc, isStatic, name] = match;
+	return matches.map(([, jsdoc, isStatic, name]) => ({ name, static: Boolean(isStatic), ...parseJSDocBlock(jsdoc) }));
+}
 
-		// The description is everything before the first tag, however many lines it runs to
-		const description = jsdoc
-			.split(/^\s*\*\s*@/m)[0]
-			.split('\n')
-			.map(line => line.replace(/^\s*\*\s?/, ''))
-			.join(' ')
-			.replace(/\s+/g, ' ')
-			.trim();
+/**
+ * Reads one JSDoc block: its description, its top-level parameters (`options.x` sub-properties are left out), and its
+ * return type.
+ * @param {string} jsdoc - The block's text, between its opening and closing markers
+ * @returns {object} `{ description, parameters, returns, type }`, type being a whole `@type` tag's
+ */
+export function parseJSDocBlock(jsdoc) {
+	// The description is everything before the first tag, however many lines it runs to
+	const description = jsdoc
+		.split(/^\s*\*\s*@/m)[0]
+		.split('\n')
+		.map(line => line.replace(/^\s*\*\s?/, ''))
+		.join(' ')
+		.replace(/\s+/g, ' ')
+		.trim();
 
-		// Extract parameters
-		const paramMatches = [
-			...jsdoc.matchAll(
-				/^\s*\*\s*@param\s+{([^}]+)}\s+(\[?(\w+)(?:=([^\]]+))?\]?)\s*-\s*(.+?)(?=\s*^\s*\*\s*@|\s*^\s*\*\s*$|\s*$(?![\s\S]))/gms,
-			),
-		];
+	// Extract parameters
+	const paramMatches = [
+		...jsdoc.matchAll(
+			/^\s*\*\s*@param\s+{((?:[^{}]|\{[^{}]*\})+)}\s+(\[?(\w+)(?:=([^\]]+))?\]?)\s*-\s*(.+?)(?=\s*^\s*\*\s*@|\s*^\s*\*\s*$|\s*$(?![\s\S]))/gms,
+		),
+	];
 
-		const parameters = paramMatches.map(paramMatch => {
-			const [, type, fullParam, name, defaultValue, desc] = paramMatch;
-			const optional = fullParam.startsWith('[') && fullParam.endsWith(']');
-
-			return {
-				name,
-				type: type.trim(),
-				description: desc.trim().replace(/\s+/g, ' '),
-				optional,
-				default: defaultValue || null,
-			};
-		});
-
-		// Extract return information - type only; description is not used in type generation.
-		const returnMatch = jsdoc.match(/^\s*\*\s*@returns?\s+\{([^}]+)\}/m);
-		const returnInfo = returnMatch ? { type: returnMatch[1].trim() } : null;
+	const parameters = paramMatches.map(paramMatch => {
+		const [, type, fullParam, name, defaultValue, desc] = paramMatch;
+		const optional = fullParam.startsWith('[') && fullParam.endsWith(']');
 
 		return {
 			name,
-			static: Boolean(isStatic),
-			description,
-			parameters,
-			returns: returnInfo,
+			type: type.trim(),
+			description: desc.trim().replace(/\s+/g, ' '),
+			optional,
+			default: defaultValue || null,
 		};
 	});
+
+	// Extract return information - type only; description is not used in type generation.
+	const returnMatch = jsdoc.match(/^\s*\*\s*@returns?\s+\{((?:[^{}]|\{[^{}]*\})+)\}/m);
+
+	// A one-line `@type {...} description` block, as for an arrow function typed whole
+	const typeMatch = jsdoc.match(/@type\s+\{((?:[^{}]|\{[^{}]*\})+)\}\s*([^@]*)/);
+
+	return {
+		description: description || (typeMatch?.[2].replace(/\s*\*\s*/g, ' ').trim() ?? ''),
+		parameters,
+		returns: returnMatch ? { type: returnMatch[1].trim() } : null,
+		type: typeMatch?.[1].trim() ?? null,
+	};
+}
+
+/**
+ * Splits a parameter list's source into its parameters: each one's name (`options` for a destructured one), and
+ * whether it has a default or is a rest parameter.
+ * @param {string} source - The text between a function's parentheses
+ * @returns {Array<object>} `{ name, optional, rest }` for each parameter
+ */
+function sourceParameters(source) {
+	const parameters = [];
+	let depth = 0;
+	let current = '';
+
+	for (const character of `${source},`) {
+		if ('([{'.includes(character)) depth++;
+		if (')]}'.includes(character)) depth--;
+
+		if (character === ',' && depth === 0) {
+			const text = current.trim();
+			const rest = text.startsWith('...');
+			const name = text.replace(/^\.\.\./, '').match(/^\w+/)?.[0] ?? 'options';
+
+			if (text) parameters.push({ name, optional: text.includes('='), rest });
+			current = '';
+		} else current += character;
+	}
+
+	return parameters;
+}
+
+/**
+ * Finds a module's exported declaration by name, and the JSDoc block just before it.
+ * @param {string} content - File content to parse
+ * @param {string} name - The exported name
+ * @returns {object|null} `{ kind, extends, documented, async, description, parameters, returns, type, sourceParameters }`, kind
+ *   being 'function', 'class' or 'const'; null when the file doesn't declare it
+ */
+export function extractExport(content, name) {
+	const match = content.match(
+		new RegExp(
+			String.raw`(?:\/\*\*((?:(?!\/\*\*)(?!\*\/)[\s\S])*)\*\/\s*)?export\s+(?:(?:async\s+)?function\s*\*?\s*${name}\s*\(([^)]*)\)|const\s+${name}\s*=\s*(?:async\s*)?(?:\(((?:[^()]|\([^()]*\))*)\)\s*=>|(\w+)\s*=>|(function)\b|(styled)\()?|class\s+${name}\b(?:\s+extends\s+(\w+))?)`,
+		),
+	);
+
+	if (!match) return null;
+
+	const [
+		declaration,
+		jsdoc,
+		functionParameters,
+		arrowParameters,
+		arrowParameter,
+		functionExpression,
+		styledClass,
+		base,
+	] = match;
+	const declared = declaration.slice(declaration.lastIndexOf('export'));
+	let kind = 'const';
+
+	if (
+		/^export\s+(async\s+)?function/.test(declared) ||
+		arrowParameters !== undefined ||
+		arrowParameter ||
+		functionExpression
+	)
+		kind = 'function';
+	else if (/^export\s+class/.test(declared) || styledClass) kind = 'class';
+
+	return {
+		kind,
+		extends: base ?? null,
+		documented: Boolean(jsdoc?.trim()),
+		async: /\basync\b/.test(declared),
+		...parseJSDocBlock(jsdoc ?? ''),
+		sourceParameters: sourceParameters(functionParameters ?? arrowParameters ?? arrowParameter ?? ''),
+	};
 }
 
 /**
@@ -239,7 +322,7 @@ function extractProperties(content) {
 					.trim()
 			: '';
 
-		const returnMatch = jsdoc.match(/^\s*\*\s*@returns?\s+\{([^}]+)\}/m);
+		const returnMatch = jsdoc.match(/^\s*\*\s*@returns?\s+\{((?:[^{}]|\{[^{}]*\})+)\}/m);
 		const type = returnMatch ? returnMatch[1].trim() : 'unknown';
 
 		properties.push({

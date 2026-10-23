@@ -23,6 +23,7 @@
 	},
 	"files": [
 		"/app/*.js",
+		"/app/*.d.ts",
 		"!/app/*.test.js",
 		"/githooks/*",
 		"/templates/*",

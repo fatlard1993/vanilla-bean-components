@@ -19,11 +19,13 @@ fi
 echo "$changedFiles" | grep -q '^app/' && { bun test app || exit 1; }
 echo "$changedFiles" | grep -q 'Component/' && { bun test Component || exit 1; }
 
-if echo "$changedFiles" | grep -q 'components/'; then
-	bun test components || exit 1
-	# The pushed commits carry the types their components generate
+echo "$changedFiles" | grep -q 'components/' && { bun test components || exit 1; }
+
+# The pushed commits carry the types their sources generate
+if echo "$changedFiles" | grep -qE '^(components|utils|styled|app|Component|Elem|devTools)/'; then
 	bun run build:types || exit 1
-	git diff --quiet -- index.d.ts || { echo 'index.d.ts is behind the components: commit what build:types wrote'; exit 1; }
+	git diff --quiet -- index.d.ts app/index.d.ts app/reloadOnBuild.d.ts ||
+		{ echo 'The .d.ts files are behind their sources: commit what build:types wrote'; exit 1; }
 fi
 
 echo "$changedFiles" | grep -q 'Elem/' && { bun test Elem || exit 1; }
