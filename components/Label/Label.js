@@ -20,7 +20,8 @@ const StyledLabel = styled(
 			transition: all 0.5s;
 		}
 
-		& label {
+		/* Its own label, not one inside what it holds (a RadioButton's options are labels too) */
+		& > label {
 			display: block;
 			margin: 0;
 			color: ${colors.white};
