@@ -1,6 +1,7 @@
 export * from './browser';
 export * from './class';
 export * from './color';
+export * from './crud';
 export * from './data';
 export * from './date';
 export * from './element';
