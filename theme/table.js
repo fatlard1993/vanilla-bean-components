@@ -18,15 +18,15 @@ export default ({ colors }) => `
 	}
 
 	tr {
-		color: ${colors.light(colors.gray)};
+		color: ${colors.muted};
 	}
 
 	thead, tbody > tr:not(:last-of-type) {
-		border-bottom: 1px solid ${colors.darker(colors.gray)};
+		border-bottom: 1px solid ${colors.border};
 	}
 
 	tfoot {
-		border-top: 1px solid ${colors.darker(colors.gray)};
+		border-top: 1px solid ${colors.border};
 		color: ${colors.lighter(colors.gray)};
 	}
 
@@ -35,7 +35,7 @@ export default ({ colors }) => `
 	}
 
 	th:not(:first-of-type), td:not(:first-of-type) {
-		border-left: 1px solid ${colors.darker(colors.gray)};
+		border-left: 1px solid ${colors.border};
 	}
 
 	th {

@@ -44,7 +44,7 @@ const StyledLabel = styled(
 		&.variant-overlay:not(:focus-within):has(input:placeholder-shown) {
 			& label {
 				pointer-events: none;
-				color: ${colors.gray};
+				color: ${colors.muted};
 				transform: translate(12px, 20px);
 			}
 

@@ -18,7 +18,7 @@ class SectionLabel extends styled(
 		font-size: 0.75em;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: ${colors.gray};
+		color: ${colors.muted};
 	`,
 ) {
 	static schema = {

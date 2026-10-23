@@ -50,7 +50,7 @@ export default ({ colors }) => `
 	width: 100%;
 	line-height: 1.25;
 	padding: calc(${space.sm} - 1px) calc(${space.md} - 1px);
-	border: 1px solid ${colors.alpha(colors.white, 0.15)};
+	border: 1px solid ${colors.border};
 	border-radius: ${radius.sm};
 	color: ${colors.white};
 	background-color: ${colors.alpha(colors.white, 0.06)};

@@ -73,7 +73,7 @@ class Dialog extends styled(
 		}
 
 		& .footer {
-			border-top: 1px solid ${colors.alpha(colors.white, 0.06)};
+			border-top: 1px solid ${colors.border};
 			display: flex;
 			flex-direction: row;
 			align-items: center;

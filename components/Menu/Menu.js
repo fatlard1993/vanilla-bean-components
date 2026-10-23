@@ -16,7 +16,7 @@ const StyledList = styled(
 		& li {
 			cursor: pointer;
 			padding: ${space.sm};
-			border-bottom: 1px solid ${colors.light(colors.gray)};
+			border-bottom: 1px solid ${colors.border};
 
 			&:last-of-type, &:last-of-type > a {
 				border-bottom: none !important;

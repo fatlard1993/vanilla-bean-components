@@ -9,7 +9,7 @@ const StyledComponent = styled(
 		display: flex;
 		gap: ${space.xs};
 		overflow-x: auto;
-		border-bottom: 1px solid ${colors.alpha(colors.white, 0.12)};
+		border-bottom: 1px solid ${colors.border};
 
 		& > .vbc-button {
 			flex: none;
@@ -17,7 +17,7 @@ const StyledComponent = styled(
 			padding: ${space.sm} ${space.md};
 			border-radius: ${radius.sm} ${radius.sm} 0 0;
 			border-bottom: 2px solid transparent;
-			color: ${colors.light(colors.gray)};
+			color: ${colors.muted};
 		}
 
 		& > .vbc-button:hover {
@@ -35,7 +35,7 @@ const StyledComponent = styled(
 		&.variant-segmented {
 			display: inline-flex;
 			gap: 0;
-			border: 1px solid ${colors.alpha(colors.white, 0.15)};
+			border: 1px solid ${colors.border};
 			border-radius: ${radius.pill};
 			overflow: hidden;
 
@@ -58,7 +58,7 @@ const StyledComponent = styled(
 
 		& .count {
 			margin-left: ${space.sm};
-			color: ${colors.light(colors.gray)};
+			color: ${colors.muted};
 			font-size: 0.8em;
 			font-weight: normal;
 		}

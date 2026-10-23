@@ -28,7 +28,7 @@ class EmptyState extends styled(
 		flex: 1;
 		padding: 40px ${space.lg};
 		text-align: center;
-		color: ${colors.gray};
+		color: ${colors.muted};
 
 		/* A part with nothing to show takes no room, whatever display an app's styling gives it */
 		& > [hidden] {
@@ -48,7 +48,7 @@ class EmptyState extends styled(
 		& > .title {
 			font-size: 1.1em;
 			font-weight: 600;
-			color: ${colors.lighter(colors.gray)};
+			color: ${colors.white};
 		}
 
 		& > .message {

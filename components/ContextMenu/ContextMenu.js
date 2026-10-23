@@ -152,7 +152,7 @@ const StyledPopover = styled(
 
 		& li .detail {
 			margin-top: 2px;
-			color: ${colors.light(colors.gray)};
+			color: ${colors.muted};
 			font-size: 0.8em;
 			white-space: normal;
 		}
@@ -161,7 +161,7 @@ const StyledPopover = styled(
 			padding: ${space.md} ${space.sm} 2px;
 			border-bottom: none;
 			cursor: default;
-			color: ${colors.light(colors.gray)} !important;
+			color: ${colors.muted} !important;
 			font-size: 0.75em;
 			text-transform: uppercase;
 			letter-spacing: 0.05em;

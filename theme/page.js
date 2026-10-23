@@ -119,7 +119,7 @@ export default theme => `
 	/* A small outlined pill: a filter, a choice among a few, a tag that does something */
 	.vbc-button:where(.variant-chip) {
 		padding: calc(${space.xs} - 1px) calc(${space.md} - 1px);
-		border: 1px solid ${colors.alpha(colors.white, 0.15)};
+		border: 1px solid ${colors.border};
 		border-radius: ${radius.pill};
 		background-color: transparent;
 		color: ${colors.muted};

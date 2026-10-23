@@ -22,7 +22,7 @@ class BottomSheet extends styled(
 		display: flex;
 		flex-direction: column;
 		background: ${colors.darker(colors.gray)};
-		border-top: 1px solid ${colors.dark(colors.gray)};
+		border-top: 1px solid ${colors.border};
 		max-height: 85vh;
 		z-index: 1000;
 		transform: translateY(100%);
