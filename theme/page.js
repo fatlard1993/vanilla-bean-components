@@ -6,7 +6,7 @@ import fonts from './fonts';
 import _input, { number, checkbox } from './input';
 import _scrollbar from './scrollbar';
 import _table from './table';
-import { radius, space } from './tokens';
+import { fontSize, radius, space } from './tokens';
 
 export default theme => `
 	html {
@@ -128,7 +128,7 @@ export default theme => `
 		border-radius: ${radius.pill};
 		background-color: transparent;
 		color: ${colors.muted};
-		font-size: 0.85em;
+		font-size: ${fontSize.sm};
 		filter: none;
 
 		&:hover, &:focus-visible {
@@ -158,7 +158,7 @@ export default theme => `
 
 			&:before {
 				margin-right: ${space.xs};
-				font-size: 0.7em;
+				font-size: ${fontSize.xs};
 				opacity: 0.7;
 			}
 		}
@@ -265,7 +265,7 @@ export const elements = theme => `
 	}
 
 	h1 {
-		font-size: 24px;
+		font-size: ${fontSize.xxl};
 
 		&:first-child {
 			margin-top: 0;
@@ -273,15 +273,15 @@ export const elements = theme => `
 	}
 
 	h2 {
-		font-size: 20px;
+		font-size: ${fontSize.xl};
 	}
 
 	h3 {
-		font-size: 17px;
+		font-size: ${fontSize.lg};
 	}
 
 	h4, h5, h6 {
-		font-size: 15px;
+		font-size: ${fontSize.md};
 	}
 
 	a {
@@ -314,7 +314,7 @@ export const elements = theme => `
 		border-bottom: 2px solid ${colors.darker(colors.gray)};
 		background-color: ${colors.dark(colors.gray)};
 		color: ${colors.white};
-		font-size: 0.9em;
+		font-size: ${fontSize.sm};
 	}
 
 	table { ${_table(theme)} }

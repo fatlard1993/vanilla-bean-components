@@ -18,7 +18,7 @@ import { cssLength } from '../../utils';
  */
 class Toolbar extends styled(
 	Component,
-	({ colors, safeArea, space }) => `
+	({ colors, fontSize, safeArea, space }) => `
 		display: flex;
 		flex-direction: row;
 		align-items: center;
@@ -28,7 +28,7 @@ class Toolbar extends styled(
 		& > .heading {
 			flex: 1 1 auto;
 			min-width: 0;
-			font-size: 1.1em;
+			font-size: ${fontSize.lg};
 			font-weight: 600;
 			overflow: hidden;
 			text-overflow: ellipsis;

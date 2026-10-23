@@ -4,7 +4,7 @@ import fonts from './fonts';
 import _input from './input';
 import _page, { elements as _elements } from './page';
 import safeArea from './safeArea';
-import { elevation, media, radius, space } from './tokens';
+import { elevation, fontSize, media, radius, space } from './tokens';
 
 const theme = {
 	colors,
@@ -12,6 +12,7 @@ const theme = {
 	safeArea,
 	space,
 	radius,
+	fontSize,
 	media,
 	elevation,
 	/**

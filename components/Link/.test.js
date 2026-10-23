@@ -67,7 +67,7 @@ describe('Link', () => {
 
 		expect(link.options.tooltip).toBeDefined();
 		expect(link.options.tooltip.icon).toBe('link');
-		expect(link.options.tooltip.style.fontSize).toBe('12px');
+		expect(link.options.tooltip.style.fontSize).toBe('0.75em');
 	});
 
 	test('tooltip false leaves a nav link without one, and takes away one it had', async () => {

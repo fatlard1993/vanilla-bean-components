@@ -19,7 +19,7 @@ import { Icon } from '../Icon';
  */
 class EmptyState extends styled(
 	Component,
-	({ colors, space }) => `
+	({ colors, fontSize, space }) => `
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -46,7 +46,7 @@ class EmptyState extends styled(
 		}
 
 		& > .title {
-			font-size: 1.1em;
+			font-size: ${fontSize.lg};
 			font-weight: 600;
 			color: ${colors.white};
 		}

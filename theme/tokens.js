@@ -16,3 +16,16 @@ export const elevation = Object.freeze({
 	sm: '0 4px 16px rgb(0 0 0 / 0.5)',
 	lg: '0 8px 40px rgb(0 0 0 / 0.7)',
 });
+
+/**
+ * The type scale, relative to the text around it: xs for counts, details and section labels, sm for chips, tags and
+ * small headers, md the body, lg a bar's heading or an h3, xl an h2, xxl an h1
+ */
+export const fontSize = Object.freeze({
+	xs: '0.75em',
+	sm: '0.875em',
+	md: '1em',
+	lg: '1.125em',
+	xl: '1.25em',
+	xxl: '1.5em',
+});

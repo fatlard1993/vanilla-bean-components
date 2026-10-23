@@ -5,7 +5,7 @@ import { Button } from '../Button';
 
 const StyledComponent = styled(
 	Component,
-	({ colors, focusRing, radius, space }) => `
+	({ colors, focusRing, fontSize, radius, space }) => `
 		display: flex;
 		gap: ${space.xs};
 		overflow-x: auto;
@@ -51,7 +51,7 @@ const StyledComponent = styled(
 				padding: 0 ${space.md};
 				border: none;
 				border-radius: 0;
-				font-size: 0.85em;
+				font-size: ${fontSize.sm};
 				line-height: 30px;
 			}
 
@@ -64,7 +64,7 @@ const StyledComponent = styled(
 		& .count {
 			margin-left: ${space.sm};
 			color: ${colors.muted};
-			font-size: 0.8em;
+			font-size: ${fontSize.xs};
 			font-weight: normal;
 		}
 	`,

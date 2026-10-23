@@ -2,7 +2,7 @@
 import { styled } from '../../styled';
 import { Component } from '../../Component';
 
-import { radius, space } from '../../theme/tokens';
+import { fontSize, radius, space } from '../../theme/tokens';
 import CalendarEvent from './CalendarEvent';
 import Toolbar, { VIEWS } from './Toolbar';
 import { getDaysInMonth, toNth } from './utils';
@@ -17,8 +17,8 @@ const StyledComponent = styled(
 
 		&.month {
 			& tr.title {
-				font-size: 1.3em;
-				height: 1.3em;
+				font-size: ${fontSize.xl};
+				height: ${fontSize.xl};
 				color: ${colors.lightest(colors.gray)};
 				background-color: ${colors.darkest(colors.gray)};
 
@@ -72,7 +72,7 @@ const StyledComponent = styled(
 				}
 
 				& span.time {
-					font-size: 12px;
+					font-size: ${fontSize.xs};
 					margin: 2px;
 					padding: 1px ${space.xs};
 					pointer-events: none;
@@ -133,7 +133,7 @@ const MonthDayCell = styled(
 
 		& span.day-title {
 			display: block;
-			font-size: 1em;
+			font-size: ${fontSize.md};
 			padding: 2px;
 			background-color: ${colors.alpha(colors.black, 0.2)};
 			color: ${colors.lightest(colors.gray)};
@@ -192,7 +192,7 @@ const WeekDayCell = styled(
 			cursor: pointer;
 			padding: ${space.sm};
 			background-color: ${colors.alpha(colors.black, 0.2)};
-			font-size: 1em;
+			font-size: ${fontSize.md};
 			color: ${colors.lightest(colors.gray)};
 		}
 

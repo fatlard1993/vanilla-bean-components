@@ -36,7 +36,7 @@ const defaultOpenDelay = 16;
  */
 class Dialog extends styled(
 	Component,
-	({ colors, elevation, radius, safeArea, space }) => `
+	({ colors, elevation, fontSize, radius, safeArea, space }) => `
 		background-color: ${colors.surface};
 		color: ${colors.white};
 		flex-direction: column;
@@ -59,7 +59,7 @@ class Dialog extends styled(
 
 		& .header {
 			padding: ${space.sm} ${space.md};
-			font-size: 0.9em;
+			font-size: ${fontSize.sm};
 			font-weight: 600;
 			color: ${colors.white};
 			background-color: ${colors.alpha(colors.vantablack, 0.25)};

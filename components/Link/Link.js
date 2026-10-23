@@ -1,7 +1,8 @@
+import { fontSize } from '../../theme/tokens';
 import { TooltipWrapper } from '../TooltipWrapper';
 
 /** The decoration every Link tooltip carries, merged onto whatever the caller passed. */
-const linkTooltip = { icon: 'link', style: { fontSize: '12px' } };
+const linkTooltip = { icon: 'link', style: { fontSize: fontSize.xs } };
 
 /**
  * Link component with tooltip support and display variants.

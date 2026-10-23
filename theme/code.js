@@ -1,4 +1,4 @@
-import { radius, space } from './tokens';
+import { fontSize, radius, space } from './tokens';
 
 // The syntax font and its palettes: at-rules, so they stay at the top level of whatever includes them
 export const codeFonts = ({ colors }) => `
@@ -114,7 +114,7 @@ export const highlightedCode = ({ colors, fonts }) => `
 			right: 4px;
 			width: 26px !important;
 			height: 26px !important;
-			font-size: 13px;
+			font-size: ${fontSize.sm};
 			opacity: 0.5;
 
 			&:hover, &:focus {

@@ -9,7 +9,10 @@ export default class Demo extends DemoView {
 		this.component = new Card(
 			{ accent: theme.colors.green, onPointerPress: () => new Notify({ content: 'Opened North 80' }) },
 			new Component({ textContent: 'North 80' }),
-			new Component({ textContent: '80 ac · owned', style: { color: theme.colors.muted, fontSize: '0.85em' } }),
+			new Component({
+				textContent: '80 ac · owned',
+				style: { color: theme.colors.muted, fontSize: theme.fontSize.sm },
+			}),
 		);
 
 		new Card(

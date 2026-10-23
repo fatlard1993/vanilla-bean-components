@@ -5,13 +5,13 @@ import { Elem } from '../../Elem';
 
 const StyledComponent = styled(
 	Component,
-	({ colors, focusRing, radius, space }) => `
+	({ colors, focusRing, fontSize, radius, space }) => `
 		padding: ${space.xs} ${space.sm};
 		margin: 0;
 		display: inline-flex;
 		align-items: center;
 		gap: ${space.xs};
-		font-size: 0.85em;
+		font-size: ${fontSize.sm};
 		line-height: 1;
 		background-color: ${colors.black};
 		border: 1px solid ${colors.alpha(colors.teal, 0.35)};
@@ -40,7 +40,7 @@ const StyledComponent = styled(
 		&:not(.add-tag) button {
 			width: 14px !important;
 			height: 14px !important;
-			font-size: 8px;
+			font-size: ${fontSize.xs};
 			opacity: 0.4;
 			flex-shrink: 0;
 			background: transparent !important;

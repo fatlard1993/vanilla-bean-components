@@ -89,3 +89,13 @@ describe('the focus ring', () => {
 		expect(theme.input).toContain(ring.trim().split('\n')[0]);
 	});
 });
+
+describe('the type scale', () => {
+	test('headings step through it', () => {
+		const size = selector => theme.elements.match(new RegExp(`^\\t${selector} \\{[^}]*?font-size: ([^;]+);`, 'm'))?.[1];
+
+		expect(size('h1')).toBe(theme.fontSize.xxl);
+		expect(size('h2')).toBe(theme.fontSize.xl);
+		expect(size('h3')).toBe(theme.fontSize.lg);
+	});
+});

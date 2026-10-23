@@ -2,7 +2,7 @@ import { Component } from '../../Component';
 import { styled } from '../../styled';
 import { Button } from '../Button';
 import { Popover } from '../Popover';
-import { radius, space } from '../../theme/tokens';
+import { fontSize, radius, space } from '../../theme/tokens';
 
 export const InputValidationError = styled(
 	Component,
@@ -51,7 +51,7 @@ export const updateValidationErrors = ({ elem, validations, value }) => {
 						marginLeft: space.sm,
 						width: '18px',
 						height: '18px',
-						fontSize: '12px',
+						fontSize: fontSize.xs,
 						padding: 0,
 						backgroundColor: colors.danger,
 					}),

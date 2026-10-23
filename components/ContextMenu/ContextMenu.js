@@ -3,7 +3,7 @@ import { Elem } from '../../Elem';
 import { styled } from '../../styled';
 import { Menu } from '../Menu';
 import { Popover } from '../Popover';
-import { space } from '../../theme/tokens';
+import { fontSize, space } from '../../theme/tokens';
 
 // Between the menu and the button it hangs from, and between the menu and the viewport's edge
 const ANCHOR_GAP = 4;
@@ -153,7 +153,7 @@ const StyledPopover = styled(
 		& li .detail {
 			margin-top: 2px;
 			color: ${colors.muted};
-			font-size: 0.8em;
+			font-size: ${fontSize.xs};
 			white-space: normal;
 		}
 
@@ -162,7 +162,7 @@ const StyledPopover = styled(
 			border-bottom: none;
 			cursor: default;
 			color: ${colors.muted} !important;
-			font-size: 0.75em;
+			font-size: ${fontSize.xs};
 			text-transform: uppercase;
 			letter-spacing: 0.05em;
 		}

@@ -1,14 +1,14 @@
 import { styled } from '../../styled';
 import { Component } from '../../Component';
 import { TooltipWrapper } from '../TooltipWrapper';
-import { radius, space } from '../../theme/tokens';
+import { fontSize, radius, space } from '../../theme/tokens';
 
 const StyledLabel = styled(
 	TooltipWrapper,
 	({ colors, fonts }) => `
 		position: relative;
 		display: inline-block;
-		font-size: 1em;
+		font-size: ${fontSize.md};
 		width: calc(100% - 24px);
 		margin: 0 0 ${space.sm};
 		padding: ${space.sm} ${space.md};
@@ -112,7 +112,7 @@ const StyledLabel = styled(
 
 					content: "";
 					opacity: 0.5;
-					font-size: 14px;
+					font-size: ${fontSize.sm};
 					padding-right: ${space.sm};
 					color: ${colors.white};
 
