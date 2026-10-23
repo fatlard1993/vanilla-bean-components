@@ -1,29 +1,28 @@
+# The library's CI runs what templates/ci.yml, which it ships to apps, runs: the gates of .githooks/pre-push, for
+# pushes that skipped it
 name: CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
 
+# Read-only token: checkout persists it into .git/config, and the next steps run the branch's own scripts
+permissions:
+  contents: read
+
 jobs:
-  ci:
+  test:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 15
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@v4
         with:
-          bun-version: latest
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Lint
-        run: bun run lint
-
-      - name: Test
-        run: bun test
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run lint
+      - run: bun test
+      - run: bun run lld:lint
+      - run: bun run lld
+      - run: bun run build
