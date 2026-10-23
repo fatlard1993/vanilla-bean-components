@@ -116,11 +116,11 @@ export default theme => `
 			background-color: ${colors.alpha(colors.white, 0.08)};
 		}
 
-		&:active, &.pressed {
+		&:active {
 			background-color: ${colors.alpha(colors.white, 0.14)};
 		}
 
-		&.active, &.selected, &[aria-pressed='true'] {
+		&.active, &.selected, &.pressed, &[aria-pressed='true'] {
 			background-color: ${colors.alpha(colors.selected, 0.2)};
 			color: ${colors.light(colors.selected)};
 		}
@@ -146,7 +146,7 @@ export default theme => `
 			border-color: ${colors.alpha(colors.white, 0.3)};
 		}
 
-		&.active, &.selected, &[aria-pressed='true'] {
+		&.active, &.selected, &.pressed, &[aria-pressed='true'] {
 			border-color: ${colors.light(colors.selected)};
 			background-color: ${colors.alpha(colors.selected, 0.25)};
 			color: ${colors.white};
