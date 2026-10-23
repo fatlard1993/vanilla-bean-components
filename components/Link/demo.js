@@ -15,7 +15,7 @@ export default class Demo extends DemoView {
 			style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px', marginTop: '12px' },
 		});
 
-		for (const variant of ['link', 'button', 'raised']) {
+		for (const variant of ['link', 'button', 'flat', 'chip', 'raised']) {
 			new Link({ appendTo: row, href: '#/Link', textContent: variant, variant });
 		}
 	}

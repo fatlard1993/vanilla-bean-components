@@ -53,9 +53,14 @@ describe('theme.page and theme.elements', () => {
 	});
 
 	test('a visited link drawn as a button keeps the button text, not the visited purple', () => {
-		const visited = theme.page.match(/^\ta\.variant-button:visited:not\(\.disabled\) \{([^}]*)\}/m)?.[1];
+		const visited = theme.page.match(/^\ta\.variant-button:visited:not\(\.disabled, [^)]*\) \{([^}]*)\}/m)?.[1];
 
 		expect(visited).toContain(`color: ${theme.colors.white};`);
+	});
+
+	test("a Link drawn flat or as a chip has the Button's look, by a rule that outweighs a:visited", () => {
+		expect(theme.page).toContain('a.variant-button.variant-flat {');
+		expect(theme.page).toContain('a.variant-button.variant-chip {');
 	});
 });
 

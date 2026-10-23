@@ -87,7 +87,7 @@ export default theme => `
 	a.variant-button { ${_button(theme)} }
 
 	/* The bare a:visited is as specific as a.variant-button, so a visited link drawn as a button keeps its text by this */
-	a.variant-button:visited:not(.disabled) {
+	a.variant-button:visited:not(.disabled, .variant-flat, .variant-chip) {
 		color: ${theme.colors.white};
 	}
 
@@ -106,8 +106,8 @@ export default theme => `
 		display: none !important;
 	}
 
-	/* A Button with no fill: for toolbars, menus and icon buttons */
-	.vbc-button:where(.variant-flat) {
+	/* A Button with no fill: for toolbars, menus and icon buttons. A Link drawn so outweighs the page's a:visited */
+	.vbc-button:where(.variant-flat), a.variant-button.variant-flat {
 		background-color: transparent;
 		color: inherit;
 		filter: none;
@@ -132,7 +132,7 @@ export default theme => `
 	}
 
 	/* A small outlined pill: a filter, a choice among a few, a tag that does something */
-	.vbc-button:where(.variant-chip) {
+	.vbc-button:where(.variant-chip), a.variant-button.variant-chip {
 		padding: calc(${space.xs} - 1px) calc(${space.md} - 1px);
 		border: 1px solid ${colors.border};
 		border-radius: ${radius.pill};

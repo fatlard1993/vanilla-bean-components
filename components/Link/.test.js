@@ -59,6 +59,15 @@ describe('Link', () => {
 		expect(link.elem.className).toContain('variant-button');
 	});
 
+	test('flat and chip draw a link as that Button, as raised does', () => {
+		for (const variant of ['flat', 'chip', 'raised']) {
+			const link = new Link({ textContent: variant, variant, appendTo: container });
+
+			expect(link.hasClass('variant-button')).toBe(true);
+			expect(link.hasClass(`variant-${variant}`)).toBe(true);
+		}
+	});
+
 	test('extends TooltipWrapper with default tooltip', () => {
 		const link = new Link({
 			textContent: 'Test Link',
@@ -90,7 +99,7 @@ describe('Link', () => {
 		expect(link.optionEnum('variant')).toContain('link');
 		expect(link.optionEnum('variant')).toContain('button');
 		expect(link.optionEnum('variant')).toContain('raised');
-		expect(link.optionEnum('variant')).toHaveLength(3);
+		expect(link.optionEnum('variant')).toHaveLength(5);
 	});
 
 	test('accepts custom href and target attributes', () => {

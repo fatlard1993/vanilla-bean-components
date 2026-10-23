@@ -11,7 +11,7 @@ const linkTooltip = { icon: 'link', style: { fontSize: fontSize.xs } };
  * and configurable styling variants for different use cases.
  * @param {object} [options={}] - Link configuration options
  * @param {string} [options.tag='a'] - HTML tag, defaults to anchor element
- * @param {string} [options.variant='link'] - Link display variant ('link', 'button', 'raised')
+ * @param {string} [options.variant='link'] - 'link', or a Button's look: 'button', 'flat', 'chip' or 'raised'
  * @param {string} [options.href] - URL to link to
  * @param {string} [options.target] - Link target attribute
  * @param {string} [options.textContent] - Link text content
@@ -24,10 +24,14 @@ class Link extends TooltipWrapper {
 		tag: { default: 'a' },
 		variant: {
 			default: 'link',
-			enum: ['link', 'button', 'raised'],
+			enum: ['link', 'button', 'flat', 'chip', 'raised'],
 			set(value) {
 				this.removeClass(/\bvariant-\S+\b/g);
-				this.addClass(...(value === 'raised' ? ['variant-button', 'variant-raised'] : [`variant-${value}`]));
+				this.addClass(
+					...(['flat', 'chip', 'raised'].includes(value)
+						? ['variant-button', `variant-${value}`]
+						: [`variant-${value}`]),
+				);
 			},
 		},
 		tooltip: {
