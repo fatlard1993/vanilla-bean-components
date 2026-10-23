@@ -1,5 +1,6 @@
 import { styled } from '../../styled';
 import { Icon } from '../Icon';
+import { radius, space } from '../../theme/tokens';
 
 const StyledIcon = styled(
 	Icon,
@@ -7,9 +8,9 @@ const StyledIcon = styled(
 		position: absolute;
 		background-color: ${colors.darkest(colors.gray)};
 		color: ${colors.white};
-		padding: 12px;
+		padding: ${space.md};
 		border: 1px solid ${colors.lightest(colors.gray)};
-		border-radius: 3px;
+		border-radius: ${radius.sm};
 		margin: 0;
 
 		&:popover-open {

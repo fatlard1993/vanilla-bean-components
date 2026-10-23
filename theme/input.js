@@ -1,4 +1,4 @@
-import { radius } from './tokens';
+import { radius, space } from './tokens';
 
 export const number = (_theme, selector = "input:where([type='number'])") => `
 	${selector} {
@@ -15,13 +15,13 @@ export const checkbox = ({ colors }, selector = "input:where([type='checkbox'])"
 		box-shadow: none;
 
 		margin: 0;
-		margin-right: 6px;
+		margin-right: ${space.sm};
 		font: inherit;
 		color: currentColor;
 		width: 1.15em;
 		height: 1.15em;
 		border: 0.15em solid currentColor;
-		border-radius: 3px;
+		border-radius: ${radius.sm};
 		transform: translateY(-0.075em);
 		display: inline-grid;
 		place-content: center;
@@ -49,7 +49,7 @@ export default ({ colors }) => `
 	box-sizing: border-box;
 	width: 100%;
 	line-height: 1.25;
-	padding: 5px 8px;
+	padding: calc(${space.sm} - 1px) calc(${space.md} - 1px);
 	border: 1px solid ${colors.alpha(colors.white, 0.15)};
 	border-radius: ${radius.sm};
 	color: ${colors.white};

@@ -1,3 +1,5 @@
+import { radius } from './tokens';
+
 export default ({ colors }) => `
 	html {
 		scrollbar-color: ${colors.alpha(colors.selected, 0.6)} ${colors.white.setAlpha(0.06)};
@@ -15,7 +17,7 @@ export default ({ colors }) => `
 	::-webkit-scrollbar-thumb {
 		background: ${colors.white.setAlpha(0.06)};
 		-webkit-box-shadow: inset 0 0 2px 1px ${colors.selected};
-		border-radius: 12px;
+		border-radius: ${radius.pill};
 	}
 	::-webkit-scrollbar-thumb:hover {
 		background: ${colors.white.setAlpha(0.09)};

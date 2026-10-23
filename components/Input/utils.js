@@ -2,14 +2,15 @@ import { Component } from '../../Component';
 import { styled } from '../../styled';
 import { Button } from '../Button';
 import { Popover } from '../Popover';
+import { radius, space } from '../../theme/tokens';
 
 export const InputValidationError = styled(
 	Component,
 	({ colors }) => `
 		background-color: ${colors.red};
-		padding: 6px;
-		margin: 3px;
-		border-radius: 3px;
+		padding: ${space.sm};
+		margin: ${space.xs};
+		border-radius: ${radius.sm};
 	`,
 );
 
@@ -47,7 +48,7 @@ export const updateValidationErrors = ({ elem, validations, value }) => {
 					appendTo: inputLabel,
 					icon: 'exclamation',
 					styles: ({ colors }) => ({
-						marginLeft: '6px',
+						marginLeft: space.sm,
 						width: '18px',
 						height: '18px',
 						fontSize: '12px',

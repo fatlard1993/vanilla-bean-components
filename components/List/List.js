@@ -1,11 +1,12 @@
 import { Component } from '../../Component';
 import { styled } from '../../styled';
 import { TooltipWrapper } from '../TooltipWrapper';
+import { space } from '../../theme/tokens';
 
 const StyledComponent = styled(
 	Component,
 	() => `
-		margin: 6px 0;
+		margin: ${space.sm} 0;
 		padding-left: 32px;
 
 		&.no-style {

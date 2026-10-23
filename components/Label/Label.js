@@ -1,6 +1,7 @@
 import { styled } from '../../styled';
 import { Component } from '../../Component';
 import { TooltipWrapper } from '../TooltipWrapper';
+import { radius, space } from '../../theme/tokens';
 
 const StyledLabel = styled(
 	TooltipWrapper,
@@ -9,8 +10,8 @@ const StyledLabel = styled(
 		display: inline-block;
 		font-size: 1em;
 		width: calc(100% - 24px);
-		margin: 0 0 6px;
-		padding: 6px 12px 6px 12px;
+		margin: 0 0 ${space.sm};
+		padding: ${space.sm} ${space.md};
 		background-color: ${colors.white.setAlpha(0.04)};
 		color: ${colors.white};
 		transition: all 0.5s;
@@ -23,7 +24,7 @@ const StyledLabel = styled(
 			display: block;
 			margin: 0;
 			color: ${colors.white};
-			padding-left: 3px;
+			padding-left: ${space.xs};
 		}
 
 		&.variant-overlay {
@@ -59,7 +60,7 @@ const StyledLabel = styled(
 				display: inline-block;
 				vertical-align: top;
 				margin-top: 5px;
-				margin-right: 9px;
+				margin-right: ${space.md};
 				line-height: 2;
 			}
 
@@ -75,14 +76,14 @@ const StyledLabel = styled(
 			}
 
 			& label {
-				margin-left: 9px;
+				margin-left: ${space.md};
 				margin-right: 0;
 			}
 		}
 
 		&.variant-collapsible {
 			border: 2px solid ${colors.lighter(colors.teal).setAlpha(0.5)};
-			border-radius: 3px;
+			border-radius: ${radius.sm};
 
 			&.collapsed {
 				width: 50%;
@@ -111,7 +112,7 @@ const StyledLabel = styled(
 					content: "";
 					opacity: 0.5;
 					font-size: 14px;
-					padding-right: 6px;
+					padding-right: ${space.sm};
 					color: ${colors.white};
 
 					transition: opacity 0.8s, color 1s;
@@ -120,7 +121,7 @@ const StyledLabel = styled(
 		}
 
 		& > *:not(label):not(.tooltip) {
-			margin-top: 6px;
+			margin-top: ${space.sm};
 		}
 	`,
 );

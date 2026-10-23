@@ -1,4 +1,5 @@
 import colors from './colors';
+import { space } from './tokens';
 
 const fontAwesome = `
 	-moz-osx-font-smoothing: grayscale;
@@ -17,7 +18,7 @@ export default {
 		return `
 		font-family: "FontWithASyntaxHighlighter", monospace;
 		font-palette: --vbc-javascript-theme;
-		padding: 3px;
+		padding: ${space.xs};
 		width: fit-content;
 		color: ${colors.light(colors.red)}; /* default color */
 		background-color: ${colors.black};

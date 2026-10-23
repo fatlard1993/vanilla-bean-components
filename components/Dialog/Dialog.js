@@ -68,7 +68,7 @@ class Dialog extends styled(
 
 		& .content {
 			flex: 1;
-			padding: 12px;
+			padding: ${space.md};
 			overflow: hidden auto;
 		}
 
@@ -78,7 +78,7 @@ class Dialog extends styled(
 			flex-direction: row;
 			align-items: center;
 			justify-content: flex-end;
-			padding: 0 6px;
+			padding: 0 ${space.sm};
 			min-height: 40px;
 		}
 

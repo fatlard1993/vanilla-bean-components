@@ -5,6 +5,7 @@ import { Component } from '../../Component';
 import CalendarEvent from './CalendarEvent';
 import Toolbar, { VIEWS } from './Toolbar';
 import { getDaysInMonth, toNth } from './utils';
+import { radius, space } from '../../theme/tokens';
 
 const StyledComponent = styled(
 	Component,
@@ -12,7 +13,7 @@ const StyledComponent = styled(
 		user-select: none;
 		display: flex;
 		flex-direction: column;
-		gap: 6px;
+		gap: ${space.sm};
 
 		&.month {
 			& tr.title {
@@ -73,7 +74,7 @@ const StyledComponent = styled(
 				& span.time {
 					font-size: 12px;
 					margin: 2px;
-					padding: 1px 3px;
+					padding: 1px ${space.xs};
 					pointer-events: none;
 				}
 
@@ -120,7 +121,7 @@ const MonthDayCell = styled(
 		vertical-align: top;
 		background-color: ${colors.darker(colors.gray)};
 		cursor: pointer;
-		padding: 3px;
+		padding: ${space.xs};
 		/* definite height so the inner flex column can fill the cell */
 		height: 1px;
 
@@ -144,8 +145,8 @@ const MonthDayCell = styled(
 			flex: 1;
 			min-height: 0;
 			margin-top: 2px;
-			border-radius: 6px;
-			padding: 3px;
+			border-radius: ${radius.md};
+			padding: ${space.xs};
 		}
 
 		/* Pin the box color - the page theme's global td:hover darkening must not show through */
@@ -189,7 +190,7 @@ const WeekDayCell = styled(
 
 		& div.day-title {
 			cursor: pointer;
-			padding: 6px;
+			padding: ${space.sm};
 			background-color: ${colors.alpha(colors.black, 0.2)};
 			font-size: 1em;
 			color: ${colors.lightest(colors.gray)};

@@ -5,7 +5,7 @@ import fonts from './fonts';
 import _input, { number, checkbox } from './input';
 import _scrollbar from './scrollbar';
 import _table from './table';
-import { radius } from './tokens';
+import { radius, space } from './tokens';
 
 export default theme => `
 	html {
@@ -118,7 +118,7 @@ export default theme => `
 
 	/* A small outlined pill: a filter, a choice among a few, a tag that does something */
 	.vbc-button:where(.variant-chip) {
-		padding: 2px 10px;
+		padding: calc(${space.xs} - 1px) calc(${space.md} - 1px);
 		border: 1px solid ${colors.alpha(colors.white, 0.15)};
 		border-radius: ${radius.pill};
 		background-color: transparent;
@@ -153,7 +153,7 @@ export default theme => `
 			color: ${colors.green};
 
 			&:before {
-				margin-right: 3px;
+				margin-right: ${space.xs};
 				font-size: 0.7em;
 				opacity: 0.7;
 			}
@@ -305,7 +305,7 @@ export const elements = theme => `
 	button { ${_button(theme)} }
 
 	kbd {
-		padding: 1px 6px;
+		padding: 1px ${space.sm};
 		border-radius: ${radius.sm};
 		border-bottom: 2px solid ${colors.darker(colors.gray)};
 		background-color: ${colors.dark(colors.gray)};
@@ -319,7 +319,7 @@ export const elements = theme => `
 		background-color: ${colors.white.setAlpha(0.06)};
     border-left: 6px solid ${colors.white.setAlpha(0.06)};
     margin: 0;
-    padding: 1px 12px;
+    padding: 1px ${space.md};
 
 		&.NOTE {
 			background-color: ${colors.alpha(colors.blue, 0.09)};

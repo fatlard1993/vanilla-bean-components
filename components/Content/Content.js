@@ -1,5 +1,6 @@
 import { styled } from '../../styled';
 import { Component } from '../../Component';
+import { space } from '../../theme/tokens';
 
 const length = value => (typeof value === 'number' ? `${value}px` : value);
 
@@ -19,12 +20,12 @@ class Content extends styled(
 	() => `
 		flex: 1;
 		min-height: 0;
-		margin: 0 0 6px;
+		margin: 0 0 ${space.sm};
 		overflow: auto;
 
 		/* The column is the container's own side padding, so what's in it keeps its margins and stretches to fill */
 		&.column {
-			padding-inline: max(var(--content-gutter, 12px), (100% - var(--content-column, 960px)) / 2);
+			padding-inline: max(var(--content-gutter, ${space.md}), (100% - var(--content-column, 960px)) / 2);
 		}
 	`,
 ) {

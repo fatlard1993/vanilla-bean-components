@@ -6,19 +6,20 @@ import { styled } from '../../styled';
 import { Input } from '../Input';
 import ColorSwatch from './ColorSwatch';
 import { saturation } from './svg';
+import { radius, space } from '../../theme/tokens';
 
 const StyledInput = styled(
 	Input,
 	({ colors }) => `
 		background-color: ${colors.light(colors.gray)};
-		padding: 18px 18px 12px;
-		border-radius: 3px;
-		margin-bottom: 6px;
+		padding: ${space.lg} ${space.lg} ${space.md};
+		border-radius: ${radius.sm};
+		margin-bottom: ${space.sm};
 		text-indent: 0;
 		border: none;
 
 		& input {
-			margin: 18px auto 9px;
+			margin: ${space.lg} auto ${space.md};
 			width: 90%;
 		}
 	`,
@@ -61,7 +62,7 @@ const HueArea = styled(
 		position: relative;
 		width: 150px;
 		height: 30px;
-		margin: 10px auto 0;
+		margin: ${space.md} auto 0;
 		box-shadow: 0px 0px 0px 2px ${colors.darker(colors.gray)};
 		cursor: ew-resize;
 		background: linear-gradient(to right,
@@ -92,7 +93,7 @@ const HueIndicator = styled(
 		top: -3px;
 		bottom: -3px;
 		left: calc(50% - 4px);
-		border-radius: 4px;
+		border-radius: ${radius.sm};
 		border: 1.5px solid white;
 		box-shadow: 0 0 0 1px rgba(0,0,0,0.4);
 		background: transparent;

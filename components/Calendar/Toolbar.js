@@ -2,6 +2,7 @@ import { capitalize } from '../../utils';
 import { styled } from '../../styled';
 import { Component } from '../../Component';
 import { Button } from '../Button';
+import { space } from '../../theme/tokens';
 
 const Title = styled(
 	Component,
@@ -12,7 +13,7 @@ const Title = styled(
 const Left = styled(
 	Component,
 	({ radius }) => `
-		margin-left: 6px;
+		margin-left: ${space.sm};
 		display: flex;
 
 		/* A row of buttons joined into one control */
@@ -32,7 +33,7 @@ const Left = styled(
 const Right = styled(
 	Component,
 	({ radius }) => `
-		margin-right: 6px;
+		margin-right: ${space.sm};
 		display: flex;
 
 		/* A row of buttons joined into one control */

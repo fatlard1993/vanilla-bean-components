@@ -1,3 +1,5 @@
+import { radius, space } from './tokens';
+
 // The syntax font and its palettes: at-rules, so they stay at the top level of whatever includes them
 export const codeFonts = ({ colors }) => `
 	@font-face {
@@ -97,8 +99,8 @@ export const highlightedCode = ({ colors, fonts }) => `
 		position: relative;
 		background-color: ${colors.black};
 		display: inline-block;
-		padding: 12px;
-		border-radius: 3px;
+		padding: ${space.md};
+		border-radius: ${radius.sm};
 		text-decoration: inherit;
 		max-width: 100%;
 

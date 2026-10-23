@@ -24,7 +24,7 @@ class Toolbar extends styled(
 		flex-direction: row;
 		align-items: center;
 		position: relative;
-		margin: 12px;
+		margin: ${space.md};
 
 		& > .heading {
 			flex: 1 1 auto;

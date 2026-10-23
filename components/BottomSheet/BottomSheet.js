@@ -1,6 +1,7 @@
 import { styled } from '../../styled';
 import { Component } from '../../Component';
 import { Elem } from '../../Elem';
+import { radius } from '../../theme/tokens';
 
 /**
  * Mobile-friendly bottom sheet with drag-to-close gesture.
@@ -46,7 +47,7 @@ class BottomSheet extends styled(
 			& .sheet-handle {
 				width: 40px;
 				height: 4px;
-				border-radius: 3px;
+				border-radius: ${radius.pill};
 				background: rgba(255,255,255,0.2);
 				pointer-events: none;
 			}

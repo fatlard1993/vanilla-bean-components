@@ -1,10 +1,10 @@
-import { radius } from './tokens';
+import { radius, space } from './tokens';
 
 export default ({ colors, fonts }) => `
 	display: inline-block;
 	/* 32px tall at the page's size, from the line and the padding; a button with smaller text is smaller */
 	line-height: 1.25;
-	padding: 6px 10px;
+	padding: ${space.sm} ${space.md};
 	margin: 0;
 	box-sizing: border-box;
 	text-decoration: none;
@@ -47,7 +47,7 @@ export default ({ colors, fonts }) => `
 
 		position: relative;
 		pointer-events: none;
-		padding: 0 6px 0 0;
+		padding: 0 ${space.sm} 0 0;
 	}
 
 	/*
@@ -55,7 +55,7 @@ export default ({ colors, fonts }) => `
 	 * width means starting an animation never shifts the label beside it.
 	 */
 	&[class*='icon-animation-']:before {
-		padding: 0 3px;
+		padding: 0 ${space.xs};
 	}
 
 	&:empty, &.icon {

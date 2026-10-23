@@ -1,3 +1,5 @@
+import { space } from './tokens';
+
 export default ({ colors }) => `
 	position: relative;
 	border-collapse: collapse;
@@ -29,7 +31,7 @@ export default ({ colors }) => `
 	}
 
 	th, td {
-		padding: 9px;
+		padding: ${space.sm} ${space.md};
 	}
 
 	th:not(:first-of-type), td:not(:first-of-type) {

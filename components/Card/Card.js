@@ -14,11 +14,11 @@ import { Component } from '../../Component';
  */
 class Card extends styled(
 	Component,
-	({ colors, radius }) => `
+	({ colors, radius, space }) => `
 		display: block;
 		box-sizing: border-box;
 		min-width: 0;
-		padding: 10px 12px;
+		padding: ${space.md};
 		border-radius: ${radius.md};
 		background-color: ${colors.alpha(colors.white, 0.05)};
 		color: inherit;

@@ -3,6 +3,7 @@ import { Elem } from '../../Elem';
 import { styled } from '../../styled';
 import { Menu } from '../Menu';
 import { Popover } from '../Popover';
+import { space } from '../../theme/tokens';
 
 // Between the menu and the button it hangs from, and between the menu and the viewport's edge
 const ANCHOR_GAP = 4;
@@ -142,7 +143,7 @@ const StyledPopover = styled(
 			text-overflow: ellipsis;
 			/* The list's first-line indent as padding, so a row's text starts where it did and its detail line lines up */
 			text-indent: 0;
-			padding-left: 12px;
+			padding-left: ${space.md};
 		}
 
 		& li .label, & li .detail {
@@ -157,7 +158,7 @@ const StyledPopover = styled(
 		}
 
 		& li.heading, & li.heading:hover {
-			padding: 10px 6px 2px;
+			padding: ${space.md} ${space.sm} 2px;
 			border-bottom: none;
 			cursor: default;
 			color: ${colors.light(colors.gray)} !important;

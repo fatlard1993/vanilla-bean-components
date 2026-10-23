@@ -1,5 +1,6 @@
 import { throttle } from '../../utils/data';
 import { Component } from '../../Component';
+import { radius } from '../../theme/tokens';
 
 /**
  * Interactive drawing canvas component with multi-touch support and line rendering.
@@ -62,7 +63,7 @@ export default class Whiteboard extends Component {
 			style: {
 				cursor: 'crosshair',
 				touchAction: 'none',
-				borderRadius: '3px',
+				borderRadius: radius.sm,
 				...options.style,
 			},
 		};

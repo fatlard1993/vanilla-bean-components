@@ -5,8 +5,8 @@ import { Elem } from '../../Elem';
 
 const StyledComponent = styled(
 	Component,
-	({ colors, space }) => `
-		padding: 3px 6px;
+	({ colors, radius, space }) => `
+		padding: ${space.xs} ${space.sm};
 		margin: 0;
 		display: inline-flex;
 		align-items: center;
@@ -15,7 +15,7 @@ const StyledComponent = styled(
 		line-height: 1;
 		background-color: ${colors.black};
 		border: 1px solid ${colors.alpha(colors.teal, 0.35)};
-		border-radius: 3px;
+		border-radius: ${radius.sm};
 		white-space: nowrap;
 		user-select: none;
 		cursor: default;

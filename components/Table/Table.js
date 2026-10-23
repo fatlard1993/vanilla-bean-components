@@ -121,7 +121,7 @@ class Table extends Component {
 						});
 						const styleSub = this.options.subscriber('sortDirection', () => ({
 							display: 'inline',
-							marginLeft: '6px',
+							marginLeft: theme.space.sm,
 							...(this.options.sortProperty !== key
 								? { color: theme.colors.dark(theme.colors.gray) }
 								: { color: theme.colors.white }),

@@ -14,8 +14,8 @@ const StyledComponent = styled(
 		& > .vbc-button {
 			flex: none;
 			margin-bottom: -1px;
-			padding: 6px 12px;
-			border-radius: 3px 3px 0 0;
+			padding: ${space.sm} ${space.md};
+			border-radius: ${radius.sm} ${radius.sm} 0 0;
 			border-bottom: 2px solid transparent;
 			color: ${colors.light(colors.gray)};
 		}
@@ -43,7 +43,7 @@ const StyledComponent = styled(
 			& > .vbc-button {
 				height: 30px;
 				margin: 0;
-				padding: 0 12px;
+				padding: 0 ${space.md};
 				border: none;
 				border-radius: 0;
 				font-size: 0.85em;
@@ -57,7 +57,7 @@ const StyledComponent = styled(
 		}
 
 		& .count {
-			margin-left: 6px;
+			margin-left: ${space.sm};
 			color: ${colors.light(colors.gray)};
 			font-size: 0.8em;
 			font-weight: normal;

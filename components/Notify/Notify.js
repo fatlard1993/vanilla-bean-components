@@ -32,7 +32,7 @@ const StyledPopover = styled(
 
 			position: relative;
 			pointer-events: none;
-			padding: 0 9px 0 0;
+			padding: 0 ${space.sm} 0 0;
 		}
 
 		&.info {
@@ -64,14 +64,14 @@ const StyledPopover = styled(
 
 		& > .notify-actions {
 			display: flex;
-			gap: 6px;
-			margin-left: 12px;
+			gap: ${space.sm};
+			margin-left: ${space.md};
 			align-self: center;
 
 			/* Flat, but still plainly a button on the toast's colour */
 			& .vbc-button {
 				box-shadow: inset 0 0 0 1px ${colors.alpha(colors.white, 0.35)};
-				padding: 2px 10px;
+				padding: calc(${space.xs} - 1px) ${space.md};
 			}
 		}
 

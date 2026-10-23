@@ -1,5 +1,6 @@
 import { styled } from '../../styled';
 import { List } from '../List';
+import { space } from '../../theme/tokens';
 
 // A row marked presentational (a heading over a group) is not an item: not focused, not selected
 const itemsOf = elem =>
@@ -14,7 +15,7 @@ const StyledList = styled(
 
 		& li {
 			cursor: pointer;
-			padding: 6px 6px 9px 6px;
+			padding: ${space.sm};
 			border-bottom: 1px solid ${colors.light(colors.gray)};
 
 			&:last-of-type, &:last-of-type > a {

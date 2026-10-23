@@ -1,11 +1,12 @@
 import { styled } from '../../styled';
 import { Popover } from '../Popover';
+import { space } from '../../theme/tokens';
 
 const StyledPopover = styled(
 	Popover,
 	({ colors }) => `
 		position: absolute;
-		padding: 3px;
+		padding: ${space.xs};
 		z-index: 1;
 		pointer-events: none;
 		max-width: 240px;
@@ -31,7 +32,7 @@ const StyledPopover = styled(
 		}
 
 		&:before {
-			padding: 0 6px 0 3px;
+			padding: 0 ${space.sm} 0 ${space.xs};
 		}
 
 		&:empty:before {
