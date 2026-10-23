@@ -30,4 +30,44 @@ describe('theme colors', () => {
 		expect(colors.alpha('#ff0000', 0.5).toRgbString()).toBe('rgba(255, 0, 0, 0.5)');
 		expect(colors.alpha(colors.red, 0.5).getAlpha()).toBe(0.5);
 	});
+
+	test('every role can be given a color of its own, and given back to its hues', () => {
+		const roles = [
+			'surface',
+			'raised',
+			'overlay',
+			'warning',
+			'success',
+			'danger',
+			'info',
+			'muted',
+			'border',
+			'selected',
+		];
+		const own = colors.alpha('#123456', 1);
+
+		for (const role of roles) {
+			const derived = colors[role].toHslString();
+
+			colors[role] = own;
+			expect(colors[role]).toBe(own);
+
+			colors[role] = undefined;
+			expect(colors[role].toHslString()).toBe(derived);
+		}
+	});
+
+	test('a role follows its hue until it is given its own', () => {
+		expect(colors.danger).toBe(colors.red);
+	});
+
+	test("a role given its own color is drawn in it by the theme's styles", async () => {
+		const { default: theme } = await import('.');
+		const own = colors.alpha('#123456', 1);
+
+		colors.selected = own;
+		expect(theme.page).toContain(String(own));
+		colors.selected = undefined;
+		expect(theme.page).not.toContain(String(own));
+	});
 });

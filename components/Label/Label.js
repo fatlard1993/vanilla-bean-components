@@ -12,7 +12,7 @@ const StyledLabel = styled(
 		width: calc(100% - 24px);
 		margin: 0 0 ${space.sm};
 		padding: ${space.sm} ${space.md};
-		background-color: ${colors.white.setAlpha(0.04)};
+		background-color: ${colors.raised};
 		color: ${colors.white};
 		transition: all 0.5s;
 

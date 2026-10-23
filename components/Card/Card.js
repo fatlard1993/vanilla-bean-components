@@ -20,7 +20,7 @@ class Card extends styled(
 		min-width: 0;
 		padding: ${space.md};
 		border-radius: ${radius.md};
-		background-color: ${colors.alpha(colors.white, 0.05)};
+		background-color: ${colors.raised};
 		color: inherit;
 		text-decoration: none;
 		/* A card made a <button> or <a> stays a card, not the page's button look */

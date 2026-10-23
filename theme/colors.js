@@ -1,7 +1,5 @@
 import { TinyColor, mostReadable } from '@ctrl/tinycolor';
 
-let selectedOverride;
-
 const colors = {
 	mostReadable,
 
@@ -27,41 +25,6 @@ const colors = {
 		return colors.blackish();
 	},
 
-	// Named for their job rather than their hue
-	get surface() {
-		return colors.darker(colors.gray);
-	},
-	get overlay() {
-		return colors.alpha(colors.vantablack, 0.6);
-	},
-	get warning() {
-		return colors.yellow;
-	},
-	get success() {
-		return colors.green;
-	},
-	get danger() {
-		return colors.red;
-	},
-	get info() {
-		return colors.blue;
-	},
-	// Secondary text: meta lines, counts, hints
-	get muted() {
-		return colors.light(colors.gray);
-	},
-	// A hairline between things on the page's dark ground
-	get border() {
-		return colors.alpha(colors.white, 0.12);
-	},
-
-	get selected() {
-		return selectedOverride ?? colors.yellow;
-	},
-	set selected(color) {
-		selectedOverride = color;
-	},
-
 	whiteish: (color = colors.gray) => color.lighten(45),
 	lightest: color => color.lighten(40),
 	lighter: color => color.lighten(27),
@@ -72,5 +35,41 @@ const colors = {
 	blackish: (color = colors.gray) => color.darken(35),
 	alpha: (color, alpha) => new TinyColor(typeof color === 'string' ? color : color.toHslString()).setAlpha(alpha),
 };
+
+/*
+ * Colors named for their job rather than their hue. Each follows the hues it's drawn from until an app assigns it a
+ * color of its own (`theme.colors.danger = new TinyColor('#e5484d')`); assigning undefined hands it back to its hues.
+ * Assign before the components' styles are first drawn (before the page's load) for them to take it up.
+ */
+const roles = {
+	// Anything that floats over the page: a dialog, a popover or menu, a sheet, a toast, a top bar
+	surface: () => colors.darker(colors.gray),
+	// The lift of a card, or a group of fields, off whatever it sits on
+	raised: () => colors.alpha(colors.white, 0.05),
+	// The dimming behind a dialog
+	overlay: () => colors.alpha(colors.vantablack, 0.6),
+	warning: () => colors.yellow,
+	success: () => colors.green,
+	danger: () => colors.red,
+	info: () => colors.blue,
+	// Secondary text: meta lines, counts, hints, labels over a section
+	muted: () => colors.light(colors.gray),
+	// A hairline between things on the page's dark ground
+	border: () => colors.alpha(colors.white, 0.12),
+	// Focused, selected, checked and pressed: a focus ring, a chosen tab, a checked box, a latched button
+	selected: () => colors.yellow,
+};
+
+const overrides = {};
+
+for (const [name, derive] of Object.entries(roles)) {
+	Object.defineProperty(colors, name, {
+		enumerable: true,
+		get: () => overrides[name] ?? derive(),
+		set: color => {
+			overrides[name] = color;
+		},
+	});
+}
 
 export default colors;
