@@ -180,29 +180,6 @@ Whether `element` is anywhere inside `parentElement` in the DOM tree.
 
 Returns all DOM elements whose visible text content matches `text`. Useful for testing and demo navigation.
 
-### `cssLength(value)`
-
-A number as pixels, anything else as given: `cssLength(12)` is `'12px'`, `cssLength('1rem')` is `'1rem'`. For an option that takes either.
-
-## Gesture
-
-### `pointerGesture({ down?, move?, up?, throttle? }?)`
-
-Follows a gesture of one or more pointers, from the first `pointerdown` to the last pointer's release. Hand it each pointerdown with `start(event)`: the first pointer starts the gesture and is its `initiator`, later ones join. Moves and releases (`pointerup`, `pointerleave`, `pointercancel`) are heard on the document, so a pointer that strays off the element keeps going.
-
-```js
-const gesture = pointerGesture({
-	down: event => ({ from: event.clientX }), // each pointer's state
-	move: (event, pointer) => drag(event.clientX - pointer.from),
-	up: (event, pointer) => drop(pointer),
-	throttle: 60, // or a function, read as each gesture starts
-});
-
-canvas.addEventListener('pointerdown', event => gesture.start(event));
-```
-
-`gesture.pointers` holds each pointer's state by `pointerId`, `count` is how many are down, and `active` whether a gesture is under way. `clear()` forgets them all and ends it without an `up`. ColorPicker and Whiteboard are built on it.
-
 ## Browser
 
 ### `copyToClipboard(text)` / `readClipboard()`

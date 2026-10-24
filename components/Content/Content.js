@@ -1,6 +1,6 @@
 import { styled } from '../../styled';
 import { Component } from '../../Component';
-import { cssLength } from '../../utils';
+import { cssLength } from '../../utils/element';
 import { space } from '../../theme/tokens';
 
 /**

@@ -1,6 +1,6 @@
 import { styled } from '../../styled';
 import { Component, classEnum } from '../../Component';
-import { cssLength } from '../../utils';
+import { cssLength } from '../../utils/element';
 
 /**
  * A row of controls: buttons, a search field, filters. It wraps onto more lines when it runs out of room, unless told

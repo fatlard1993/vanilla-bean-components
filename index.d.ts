@@ -1049,9 +1049,6 @@ export declare function convertRange(
 /** Copy a piece of text to the clipboard */
 export declare function copyToClipboard(text: string): Promise<boolean>;
 
-/** A CSS length from a number of pixels or a CSS string, as an option a component takes as either. */
-export declare function cssLength(value: number | string): string;
-
 /** How many days a month has, leap years counted. */
 export declare function daysInMonth(year: number, month: number): number;
 
@@ -1102,9 +1099,6 @@ export declare function orderBy(orders: Record<string, any> | Record<string, any
 
 /** Read a date from a Date, a timestamp or a string. A date-only string (2026-10-18) is that day where the reader is, not midnight UTC, which is the day before anywhere west of Greenwich. */
 export declare function parseDate(value: Date | number | string): Date | null;
-
-/** Follows a gesture of one or more pointers, from the first pointerdown to the last pointer's release. The first pointer starts it and is its `initiator`; later ones join it. Moves and releases are heard on the document, so a pointer that strays off the element keeps the gesture going. */
-export declare function pointerGesture(options?: Record<string, any>): Record<string, any>;
 
 /** @type {(min: number, max: number) => number} Generate a random number from a range (min inclusive, max exclusive) */
 export declare const rand: (min: number, max: number) => number;

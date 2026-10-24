@@ -1,6 +1,7 @@
 import { TinyColor, random as randomColor } from '@ctrl/tinycolor';
 
-import { debounce, convertRange, pointerGesture } from '../../utils';
+import { debounce, convertRange } from '../../utils';
+import { pointerGesture } from '../../utils/gesture';
 import { Component } from '../../Component';
 import { styled } from '../../styled';
 import { Input } from '../Input';
