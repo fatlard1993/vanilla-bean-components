@@ -196,6 +196,8 @@ describe('FormDialog', () => {
 		await press('Delete');
 		await findByText(document.body, 'Really?');
 		await settle(); // the confirm opens a moment after it renders
+
+
 		await pressInConfirm('Cancel');
 		await settle();
 
@@ -212,14 +214,43 @@ describe('FormDialog', () => {
 		expect(dialog.elem.isConnected).toBe(false);
 	});
 
-	test('a button of its own reaches onButtonPress', async () => {
+	test('a button of its own reaches onButtonPress; one marked save saves, whatever its label', async () => {
 		const onButtonPress = mock();
+		const onSave = mock();
 
-		new FormDialog({ inputs: [nameField], data: { name: 'a' }, buttons: ['Save', 'Resolve', 'Cancel'], onButtonPress });
+		new FormDialog({
+			inputs: [nameField],
+			data: { name: 'a' },
+			buttons: [
+				{ textContent: 'Keep', 'data-action': 'save' },
+				'Resolve',
+				{ textContent: 'Cancel', 'data-action': 'cancel' },
+			],
+			onButtonPress,
+			onSave,
+		});
 
 		await press('Resolve');
 
 		expect(onButtonPress.mock.calls[0][0].button).toBe('Resolve');
+
+		await press('Keep');
+		await settle();
+
+		expect(onSave).toHaveBeenCalledTimes(1);
+		expect(onButtonPress).toHaveBeenCalledTimes(1);
+	});
+
+	test("a label is only a label: a button named Save that is not marked save is the app's", async () => {
+		const onButtonPress = mock();
+		const onSave = mock();
+
+		new FormDialog({ inputs: [nameField], data: { name: 'a' }, buttons: ['Save'], onButtonPress, onSave });
+
+		await press('Save');
+
+		expect(onSave).not.toHaveBeenCalled();
+		expect(onButtonPress).toHaveBeenCalledTimes(1);
 	});
 
 	test('Save is disabled while a save is under way', async () => {

@@ -7,7 +7,8 @@ import { conditionalList } from '../../utils';
 import { Dialog } from '../Dialog';
 import { Form } from '../Form';
 
-const labelOf = button => (typeof button === 'object' ? button.textContent : button);
+// A button is known by its data-action (save, delete, cancel), never by its label, which an app renames or translates
+const actionOf = button => (typeof button === 'object' ? button?.['data-action'] : undefined);
 
 // A request that came back failed, rather than threw: a hypertether result marked error, or a fetch Response not ok
 const failedRequest = result =>
@@ -27,6 +28,9 @@ const reasonOf = result => {
  * dialog open with the data as typed, and a failed request's reason or the error's message shows above the buttons
  * until the next try. Delete asks first when confirmDelete is set. Enter in a
  * single-line field saves. Any other button reaches onButtonPress as it would on a Dialog.
+ *
+ * The buttons are known by a `data-action` of `save`, `delete` or `cancel`, not by their labels: a dialog that lists its
+ * own `buttons` marks the ones FormDialog should act on, `{ textContent: 'Save', 'data-action': 'save' }`.
  * @param {object} [options] - FormDialog configuration
  * @param {Array<object>} [options.inputs] - Form field definitions, as Form takes them
  * @param {object} [options.data] - Initial values, as Form takes them
@@ -91,9 +95,9 @@ class FormDialog extends styled(
 			buttons:
 				options.buttons ??
 				conditionalList([
-					{ alwaysItem: options.saveLabel },
-					{ if: !!options.onDelete, thenItem: options.deleteLabel },
-					{ alwaysItem: options.cancelLabel },
+					{ alwaysItem: { textContent: options.saveLabel, 'data-action': 'save' } },
+					{ if: !!options.onDelete, thenItem: { textContent: options.deleteLabel, 'data-action': 'delete' } },
+					{ alwaysItem: { textContent: options.cancelLabel, 'data-action': 'cancel' } },
 				]),
 			onButtonPress: press => press.dialog._press(press, ownButtonPress),
 		};
@@ -128,17 +132,17 @@ class FormDialog extends styled(
 	}
 
 	_press(press, ownButtonPress) {
-		const label = labelOf(press.button);
+		const action = actionOf(press.button);
 
-		if (label === this.options.saveLabel) this.save();
-		else if (label === this.options.deleteLabel && this.options.onDelete) this.delete();
-		else if (label === this.options.cancelLabel) press.closeDialog();
+		if (action === 'save') this.save();
+		else if (action === 'delete' && this.options.onDelete) this.delete();
+		else if (action === 'cancel') press.closeDialog();
 		else ownButtonPress?.(press);
 	}
 
 	_setBusy(busy) {
-		for (const button of this._footer?.elem.querySelectorAll('button') ?? []) {
-			if ([this.options.saveLabel, this.options.deleteLabel].includes(button.textContent)) button.disabled = busy;
+		for (const button of this._footer?.elem.querySelectorAll('[data-action=save], [data-action=delete]') ?? []) {
+			button.disabled = busy;
 		}
 	}
 

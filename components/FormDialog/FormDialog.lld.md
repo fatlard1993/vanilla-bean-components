@@ -25,3 +25,10 @@ A Dialog that holds a Form and ends in Save, Delete or Cancel. The design decisi
 
 - without onDelete the buttons are Save and Cancel; with it, Delete sits between them
   - new Subject({ inputs: [{ key: "name" }], appendTo: document.body }) captures plain then new Subject({ inputs: [{ key: "name" }], onDelete: () => {}, appendTo: document.body }) captures deletable -> Array.from(plain.elem.querySelectorAll(".footer button")).map(b => b.textContent).join() === "Save,Cancel" && Array.from(deletable.elem.querySelectorAll(".footer button")).map(b => b.textContent).join() === "Save,Delete,Cancel"
+
+## A button is known by what it does, not what it says
+
+FormDialog used to recognise Save, Delete and Cancel by comparing labels, so an app that listed its own buttons got their meaning only while the words matched, and a button of its own that happened to be called "Save" was taken over. Its buttons now carry a `data-action`.
+
+- a button marked `data-action: save` saves whatever its label; a label alone means nothing to FormDialog
+  - new Array() captures saved then new Subject({ inputs: [{ key: "name" }], data: { name: "a" }, buttons: [{ textContent: "Keep", "data-action": "save" }, "Save"], onSave: () => saved.push("save"), onButtonPress: ({ button }) => saved.push("own:" + button), appendTo: document.body }) captures d then Array.from(d.elem.querySelectorAll(".footer button")) captures buttons then buttons[1].click() then buttons[0].click() then await new Promise(r => setTimeout(r, 20)) -> saved.join() === "own:Save,save"

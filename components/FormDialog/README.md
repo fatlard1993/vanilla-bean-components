@@ -35,7 +35,7 @@ new FormDialog({
 | `saveLabel`, `deleteLabel`, `cancelLabel` | `string` | `'Save'`, `'Delete'`, `'Cancel'` | Button labels |
 | `size` | `string` | `'fit'` | As Dialog; `'fit'` is as tall as the form |
 
-Everything else is a Dialog option. A subclass sets its own defaults in `static schema`, not `prepareOptions`: schema defaults are merged in before `prepareOptions` runs, so a value set there behind `...options` loses to them. Pass `buttons` for a button of your own; Save, Delete and Cancel keep their meaning by label, and any other reaches `onButtonPress`.
+Everything else is a Dialog option. A subclass sets its own defaults in `static schema`, not `prepareOptions`: schema defaults are merged in before `prepareOptions` runs, so a value set there behind `...options` loses to them. Pass `buttons` for a button of your own. FormDialog knows its own by a `data-action` of `save`, `delete` or `cancel`, not by label, so mark the ones it should act on (`{ textContent: 'Record', 'data-action': 'save' }`); any other reaches `onButtonPress`.
 
 ## Behaviour
 
