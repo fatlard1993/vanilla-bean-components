@@ -95,9 +95,7 @@ export default class Whiteboard extends Component {
 			throttle: () => this.options.drawThrottle ?? Math.max(Math.min(this.options.lineWidth + 3, 24), 6),
 		});
 
-		const boundInteractionInit = this.interactionInit.bind(this);
-		this.elem.addEventListener('pointerdown', boundInteractionInit);
-		this.replaceCleanup('pointerdown', () => this.elem.removeEventListener('pointerdown', boundInteractionInit));
+		this.elem.addEventListener('pointerdown', event => this.interactionInit(event), { signal: this.signal });
 	}
 
 	getPosition({ offsetX, offsetY }) {

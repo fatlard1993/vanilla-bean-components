@@ -229,8 +229,7 @@ export default class Input extends Component {
 				}
 			};
 
-			this.elem.addEventListener('keydown', handleKeydown);
-			this.replaceCleanup('syntaxHighlightingKeydown', () => this.elem.removeEventListener('keydown', handleKeydown));
+			this.elem.addEventListener('keydown', handleKeydown, { signal: this.signal });
 		}
 	}
 

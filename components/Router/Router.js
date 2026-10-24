@@ -94,12 +94,8 @@ class Router extends Component {
 	build() {
 		const reRenderView = () => this.renderView();
 
-		window.addEventListener('popstate', reRenderView);
-		if (this.options.mode !== 'history') window.addEventListener('hashchange', reRenderView);
-		this.replaceCleanup('popstate', () => {
-			window.removeEventListener('popstate', reRenderView);
-			if (this.options.mode !== 'history') window.removeEventListener('hashchange', reRenderView);
-		});
+		window.addEventListener('popstate', reRenderView, { signal: this.signal });
+		if (this.options.mode !== 'history') window.addEventListener('hashchange', reRenderView, { signal: this.signal });
 
 		this.renderView();
 	}

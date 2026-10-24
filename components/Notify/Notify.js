@@ -162,12 +162,8 @@ export default class Notify extends StyledPopover {
 
 		this.on({ targetEvent: 'pointerenter', id: 'notifyHold', callback: hold });
 		this.on({ targetEvent: 'pointerleave', id: 'notifyRelease', callback: release });
-		this.elem.addEventListener('focusin', hold);
-		this.elem.addEventListener('focusout', release);
-		this.addCleanup('notifyFocusHold', () => {
-			this.elem.removeEventListener('focusin', hold);
-			this.elem.removeEventListener('focusout', release);
-		});
+		this.elem.addEventListener('focusin', hold, { signal: this.signal });
+		this.elem.addEventListener('focusout', release, { signal: this.signal });
 
 		this.addCleanup('notifyStack', () => {
 			if (stack.includes(this)) stack.splice(stack.indexOf(this), 1);

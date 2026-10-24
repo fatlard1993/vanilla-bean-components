@@ -209,8 +209,7 @@ class Label extends StyledLabel {
 			this._labelText.elem.setAttribute('aria-expanded', nowCollapsed ? 'false' : 'true');
 		};
 
-		this._labelText.elem.addEventListener('click', handleClick);
-		this.addCleanup('labelClick', () => this._labelText.elem.removeEventListener('click', handleClick));
+		this._labelText.elem.addEventListener('click', handleClick, { signal: this.signal });
 
 		if (this.options.variant === 'collapsible') {
 			this._labelText.elem.setAttribute('aria-expanded', this.options.collapsed ? 'false' : 'true');

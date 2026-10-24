@@ -253,11 +253,7 @@ class BottomSheet extends styled(
 			['pointercancel', reset],
 		];
 
-		for (const [type, listener] of listeners) dragZone.addEventListener(type, listener);
-
-		this.replaceCleanup('dragToClose', () => {
-			for (const [type, listener] of listeners) dragZone.removeEventListener(type, listener);
-		});
+		for (const [type, listener] of listeners) dragZone.addEventListener(type, listener, { signal: this.signal });
 	}
 }
 
