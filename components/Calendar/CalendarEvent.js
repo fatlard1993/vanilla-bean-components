@@ -1,39 +1,31 @@
-import { Component } from '../../Component';
-import { Elem } from '../../Elem';
-import { styled } from '../../styled';
-import { formatDuration, formatTime } from '../../utils';
-
-const StyledEvent = styled(
-	Component,
-	({ colors, focusRing }) => `
-		cursor: pointer;
-		color: ${colors.mostReadable(colors.selected, [colors.white, colors.black])};
-		background-color: ${colors.selected};
-
-		& div {
-			pointer-events: none;
-		}
-
-		&:hover {
-			filter: brightness(1.15);
-		}
-
-		/* Inside the event: its cell clips what reaches past it */
-		&:focus-visible {
-			${focusRing('-2px')}
-		}
-	`,
-);
-
+/**
+ * One event on a Calendar: the record its views draw from, not a view of its own. A Calendar draws it once for each day
+ * it falls on (a recurring event, many times), so it holds what the event is and leaves drawing to the Calendar; it is
+ * not a Component, having no element of its own. A Calendar makes these from the plain objects in its `events`.
+ * @param {object} data - The event
+ * @param {Date|number|string} data.at - When it starts
+ * @param {string} [data.label] - What it is
+ * @param {string} [data.notes] - More about it
+ * @param {string} [data.color] - Its background
+ * @param {number} [data.duration] - How long it lasts, in milliseconds
+ * @param {boolean} [data.recurring] - Whether it repeats: daily on `weekdays` (minus `blacklist` dates), or on the
+ *   `whitelist` dates
+ * @param {boolean} [data.daily] - A recurring event repeating on `weekdays`
+ * @param {object} [data.weekdays] - The weekdays it repeats on, by lowercase English name: { monday: true }
+ * @param {Array} [data.whitelist] - The dates a recurring, non-daily event falls on
+ * @param {Array} [data.blacklist] - The dates a daily event skips
+ * @returns {CalendarEvent} The event
+ */
 export default class CalendarEvent {
 	constructor(data) {
-		if (typeof data !== 'object') throw new TypeError('CalendarEvent requires an object argument');
+		if (typeof data !== 'object' || data === null) throw new TypeError('CalendarEvent requires an object argument');
 
-		this.options = data;
+		// The caller's own object, handed back with a press so whatever else it carries (an id) comes with it
+		this.data = data;
 
 		this.at = new Date(data.at);
 
-		if (Number.isNaN(this.at.getTime())) throw new TypeError('CalendarEvent requires a valid date (options.at)');
+		if (Number.isNaN(this.at.getTime())) throw new TypeError('CalendarEvent requires a valid date (data.at)');
 
 		this.label = data.label;
 		this.notes = data.notes;
@@ -50,44 +42,5 @@ export default class CalendarEvent {
 		this.hour = this.at.getHours();
 		this.minute = this.at.getMinutes();
 		this.fullDate = `${this.month}/${this.day}/${this.year}`;
-	}
-
-	render(type, container, calendar) {
-		const formattedTime = formatTime(this.at);
-		const duration = formatDuration(this.duration);
-		const when = duration ? `${formattedTime}, ${duration}` : formattedTime;
-
-		const handleSelectEvent = target => {
-			calendar.emit('selectEvent', { target, index: this.options.index });
-		};
-
-		this.eventElem = new StyledEvent({
-			className: 'event',
-			pressable: true,
-			'aria-label': `${this.label}, ${when}`,
-			style: { backgroundColor: this.color },
-			append: [
-				new Elem({
-					className: 'time',
-					textContent: when,
-				}),
-				new Elem({ className: 'label', textContent: this.label }),
-			],
-			appendTo: container,
-			onPointerPress: ({ target }) => handleSelectEvent(target),
-		});
-
-		if (type === 'day') {
-			const gapPosition = this.at.getHours() * 2 + this.at.getMinutes() / 30;
-			const gapHeight = `${(this.duration ? Math.ceil(this.duration / 1000 / 60 / 30) : 1) * 3}em`;
-			const gapTop = `${gapPosition * 3}em`;
-
-			this.eventElem.elem.style.height = gapHeight;
-			this.eventElem.elem.style.top = gapTop;
-			this.eventElem.elem.style.left = '0';
-			this.eventElem.elem.style.zIndex = Math.floor(gapPosition);
-		}
-
-		return this.eventElem.elem;
 	}
 }

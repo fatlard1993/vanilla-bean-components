@@ -361,11 +361,23 @@ export interface CalendarOptions extends ComponentOptions {
 	views?: Array<string>;
 	/** Whether to display time in 24-hour format in day view (default: false) */
 	display24h?: boolean;
+	/** Hears `dayPress`, a day pressed in the month or week view; `event.detail` is { date, target, isTitle } (isTitle when its title was pressed) */
+	onDayPress?: (...args: any[]) => any;
+	/** Hears `timePress`, a half hour pressed in the day view; `event.detail` is { date, target } */
+	onTimePress?: (...args: any[]) => any;
+	/** Hears `eventPress`, an event pressed; `event.detail` is { calendarEvent, data, target }, data being the object it was given as */
+	onEventPress?: (...args: any[]) => any;
+	/** Hears `newEvent` when addEvent() adds one; `event.detail` is what was added */
+	onNewEvent?: (...args: any[]) => any;
 	events?: Array<any>;
 }
 
 export declare class Calendar extends Component {
 	constructor(options?: CalendarOptions, ...children: Array<Elem | HTMLElement | string>);
+	/** Draws one event into a day: pressable, by pointer or keyboard, announcing `eventPress` with the event. A press on an event is the event's, not also its day's. */
+	renderEvent(calendarEvent: CalendarEvent, container: Component | HTMLElement): HTMLElement;
+	/** Whether a date is today. */
+	isToday(date: Date): boolean;
 	/** Sets the calendar to display a specific date. */
 	setDate(year: number, month: number, day: number, reRender?: boolean): void;
 	/** Navigates the calendar to today's date and re-renders. */

@@ -1,9 +1,10 @@
 /* eslint-disable spellcheck/spell-checker */
 import { styled } from '../../styled';
 import { Component } from '../../Component';
+import { Elem } from '../../Elem';
 
 import { fontSize, radius, space } from '../../theme/tokens';
-import { capitalize, daysInMonth, formatDate, formatTime } from '../../utils';
+import { capitalize, daysInMonth, formatDate, formatDuration, formatTime } from '../../utils';
 import { Button } from '../Button';
 import { Tabs } from '../Tabs';
 import { Toolbar } from '../Toolbar';
@@ -11,9 +12,39 @@ import CalendarEvent from './CalendarEvent';
 
 const VIEWS = Object.freeze(['day', 'week', 'month']);
 
+// The arrow keys' step through a run of cells laid out `columns` wide; Home and End go to the ends of the row
+const GRID_KEYS = {
+	ArrowLeft: () => -1,
+	ArrowRight: () => 1,
+	ArrowUp: columns => -columns,
+	ArrowDown: columns => columns,
+};
+
+const EventChip = styled(
+	Component,
+	({ colors, focusRing }) => `
+		cursor: pointer;
+		color: ${colors.mostReadable(colors.selected, [colors.white, colors.black])};
+		background-color: ${colors.selected};
+
+		& div {
+			pointer-events: none;
+		}
+
+		&:hover {
+			filter: brightness(1.15);
+		}
+
+		/* Inside the event: its cell clips what reaches past it */
+		&:focus-visible {
+			${focusRing('-2px')}
+		}
+	`,
+);
+
 const StyledComponent = styled(
 	Component,
-	({ colors }) => `
+	({ colors, focusRing }) => `
 		user-select: none;
 		display: flex;
 		flex-direction: column;
@@ -53,11 +84,12 @@ const StyledComponent = styled(
 				color: ${colors.lightest(colors.gray)};
 				background-color: ${colors.darkest(colors.gray)};
 
-				& td {
+				& th {
+					font-weight: normal;
 					text-align: center;
 				}
 
-				& td:hover {
+				& th:hover {
 					background-color: unset;
 					color: unset;
 				}
@@ -90,6 +122,11 @@ const StyledComponent = styled(
 
 			& div.time-block {
 				height: 3em;
+
+				&:focus-visible {
+					${focusRing('-2px')}
+				}
+
 				cursor: pointer;
 				color: ${colors.lighter(colors.gray)};
 				background-color: ${colors.darker(colors.gray)};
@@ -135,7 +172,7 @@ const MonthCalendar = styled(
 		width: 100%;
 		height: 100%;
 
-		td {
+		td, th {
 			max-width: 0;
 			overflow: hidden;
 			text-overflow: ellipsis;
@@ -146,7 +183,11 @@ const MonthCalendar = styled(
 
 const MonthDayCell = styled(
 	Component,
-	({ colors }) => `
+	({ colors, focusRing }) => `
+		&:focus-visible {
+			${focusRing('-2px')}
+		}
+
 		position: relative;
 		border-collapse: collapse;
 		vertical-align: top;
@@ -214,8 +255,13 @@ const MonthDayCell = styled(
 
 const WeekDayCell = styled(
 	Component,
-	({ colors }) => `
+	({ colors, focusRing }) => `
 		cursor: pointer;
+
+		&:focus-visible {
+			${focusRing('-2px')}
+		}
+
 		background-color: ${colors.darker(colors.gray)};
 		min-height: 14.285714285714286%;
 
@@ -267,7 +313,9 @@ const DAY_TITLE = { month: 'long', day: 'numeric', year: 'numeric' };
  * Interactive calendar component supporting month, week, and day views with event management.
  *
  * Provides full calendar functionality with navigation, event display, and user interaction.
- * Supports multiple view modes, event rendering, and date selection with customizable styling.
+ * Supports multiple view modes, event rendering, and date selection with customizable styling. Days, half hours and
+ * events press by keyboard as by pointer: Tab reaches the grid, the arrow keys (and Home and End) move between its
+ * cells, and Enter or Space presses one.
  * @param {object} [options={}] - Calendar configuration options
  * @param {('month'|'week'|'day')} [options.view='month'] - Initial calendar view mode
  * @param {string} [options.height='420px'] - Calendar component height
@@ -278,6 +326,13 @@ const DAY_TITLE = { month: 'long', day: 'numeric', year: 'numeric' };
  * @param {Array<object>} [options.events=[]] - Calendar events array, automatically converted to CalendarEvent instances
  * @param {Array<string>} [options.views] - Available view modes for toolbar
  * @param {boolean} [options.display24h] - Whether to display time in 24-hour format in day view
+ * @param {Function} [options.onDayPress] - Hears `dayPress`, a day pressed in the month or week view; `event.detail` is
+ *   { date, target, isTitle } (isTitle when its title was pressed)
+ * @param {Function} [options.onTimePress] - Hears `timePress`, a half hour pressed in the day view; `event.detail` is
+ *   { date, target }
+ * @param {Function} [options.onEventPress] - Hears `eventPress`, an event pressed; `event.detail` is
+ *   { calendarEvent, data, target }, data being the object it was given as
+ * @param {Function} [options.onNewEvent] - Hears `newEvent` when addEvent() adds one; `event.detail` is what was added
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Calendar} Calendar component instance
  */
@@ -325,7 +380,7 @@ class Calendar extends StyledComponent {
 		display24h: { default: false },
 	};
 
-	static events = ['selectDay', 'selectTime', 'selectEvent', 'newEvent'];
+	static events = ['dayPress', 'timePress', 'eventPress', 'newEvent'];
 
 	static prepareOptions(options) {
 		return {
@@ -366,7 +421,7 @@ class Calendar extends StyledComponent {
 			],
 		});
 
-		this.wrapper = new CalendarWrapper({ appendTo: this });
+		this.wrapper = new CalendarWrapper({ appendTo: this, onKeyDown: event => this._roveKey(event) });
 
 		if (this.options.month == null) {
 			const now = new Date();
@@ -395,31 +450,39 @@ class Calendar extends StyledComponent {
 		const minGap = 30;
 		const gapsPerHour = Math.ceil(60 / minGap);
 
+		const blocks = [];
+
 		for (let x = 0; x < 24; ++x) {
 			for (let y = 0; y < gapsPerHour; ++y) {
-				const minutesBlock = new Component({
-					addClass: 'time-block',
-					appendTo: this.wrapper,
-					onPointerPress: event => {
-						this.emit('selectTime', event);
-					},
-				});
 				const at = new Date(this.options.year, this.options.month, this.options.day, x, y * minGap);
+				const time = formatTime(at, { hour12: !this.options.display24h });
 
-				new Component({
-					tag: 'span',
-					addClass: 'time',
-					textContent: formatTime(at, { hour12: !this.options.display24h }),
-					appendTo: minutesBlock,
-				});
+				blocks.push(
+					new Component({
+						addClass: 'time-block',
+						'aria-label': time,
+						tabIndex: -1,
+						pressable: true,
+						appendTo: this.wrapper,
+						append: new Component({ tag: 'span', addClass: 'time', textContent: time }),
+						onPointerPress: ({ target }) => this.emit('timePress', { target, date: at }),
+					}).elem,
+				);
 			}
 		}
+
+		// The block to start from: the hour now on today, else the morning
+		const hour = this.isToday(new Date(this.options.year, this.options.month, this.options.day))
+			? new Date().getHours()
+			: 8;
+
+		this._rove(blocks, 1, blocks[hour * gapsPerHour]);
 
 		const groups = {};
 		let smallestGap = -1;
 
 		events.forEach(event => {
-			const elem = event.render(this.options.view, eventContainer.elem, this);
+			const elem = this.renderEvent(event, eventContainer);
 			event.elem = elem;
 			event.ratio = 100;
 			elem.style.left = '0';
@@ -477,6 +540,7 @@ class Calendar extends StyledComponent {
 		const lastDay = new Date(firstDay.getTime() + 6 * dayMs);
 
 		let cDay = new Date(firstDay.getTime());
+		const cells = [];
 
 		for (let x = 0; x < 7; ++x) {
 			const y = cDay.getFullYear();
@@ -488,27 +552,32 @@ class Calendar extends StyledComponent {
 			const events = this.eventsAt(cellDate);
 			const isToday = y === now.getFullYear() && m === now.getMonth() && d === now.getDate();
 
+			const title = formatDate(cellDate, { weekday: 'long', month: 'long', day: 'numeric' });
 			const weekdayCell = new WeekDayCell({
 				addClass: isToday ? 'today' : undefined,
-				onPointerPress: ({ target }) => {
-					this.emit('selectDay', { target, date: cellDate });
-				},
+				'aria-label': title,
+				'aria-current': isToday ? 'date' : undefined,
+				tabIndex: -1,
+				pressable: true,
+				onPointerPress: ({ target }) => this.emit('dayPress', { target, date: cellDate }),
 				appendTo: this.wrapper,
 			});
 
 			new Component({
-				textContent: formatDate(cellDate, { weekday: 'long', month: 'long', day: 'numeric' }),
+				textContent: title,
 				addClass: 'day-title',
 				appendTo: weekdayCell,
-				onPointerPress: ({ target }) => {
-					this.emit('selectDay', { target, isTitle: true, date: cellDate });
-				},
+				onPointerPress: event => this._pressTitle(event, cellDate),
 			});
 
-			for (let y = 0; y < events.length; ++y) events[y].render(this.options.view, weekdayCell.elem, this);
+			for (const calendarEvent of events) this.renderEvent(calendarEvent, weekdayCell);
+
+			cells.push(weekdayCell.elem);
 
 			cDay = new Date(t + dayMs);
 		}
+
+		this._rove(cells, 1, cells[day.getDay()]);
 
 		this._title.elem.textContent = new Intl.DateTimeFormat(undefined, DAY_TITLE).formatRange(firstDay, lastDay);
 	}
@@ -521,14 +590,18 @@ class Calendar extends StyledComponent {
 		const now = new Date();
 		const isCurrentMonth = now.getMonth() === this.options.month && now.getFullYear() === this.options.year;
 		const currentDay = now.getDate();
-		const table = new MonthCalendar({ tag: 'table', appendTo: this.wrapper });
+		const monthTitle = formatDate(new Date(this.options.year, this.options.month), { month: 'long', year: 'numeric' });
+		const table = new MonthCalendar({ tag: 'table', role: 'grid', 'aria-label': monthTitle, appendTo: this.wrapper });
 		const titleRow = new Component({ tag: 'tr', addClass: 'title', appendTo: table });
+		const cells = [];
+		let focusCell;
 		let dayX = -new Date(this.options.year, this.options.month).getDay();
 
 		// 4 January 1970 was a Sunday
 		for (let day = 0; day < 7; ++day) {
 			new Component({
-				tag: 'td',
+				tag: 'th',
+				scope: 'col',
 				textContent: formatDate(new Date(1970, 0, 4 + day), { weekday: 'long' }),
 				appendTo: titleRow,
 			});
@@ -540,39 +613,126 @@ class Calendar extends StyledComponent {
 			for (let col = 0; col < 7; ++col) {
 				const date = new Date(this.options.year, this.options.month, ++dayX);
 				const eventContainer = new Component({ addClass: 'event-container' });
+				const isToday = isCurrentMonth && currentDay === dayX;
 				const td = new MonthDayCell({
 					tag: 'td',
-					addClass: isCurrentMonth && currentDay === dayX ? 'today' : undefined,
+					role: 'gridcell',
+					'aria-label': formatDate(date, { weekday: 'long', month: 'long', day: 'numeric' }),
+					'aria-current': isToday ? 'date' : undefined,
+					tabIndex: -1,
+					pressable: true,
+					addClass: isToday ? 'today' : undefined,
 					appendTo: tr,
-					onPointerPress: event => {
-						this.emit('selectDay', { target: event.target, date });
-					},
+					onPointerPress: ({ target }) => this.emit('dayPress', { target, date }),
 					append: new Component(
 						{ addClass: 'cell-body' },
 						new Component({
 							tag: 'span',
 							textContent: date.getDate(),
 							addClass: 'day-title',
-							onPointerPress: event => {
-								this.emit('selectDay', { target: event.target, isTitle: true, date });
-							},
+							onPointerPress: event => this._pressTitle(event, date),
 						}),
 						eventContainer,
 					),
 				});
 
 				if (dayX <= 0 || dayX > numberOfDays) td.addClass('not-in-month');
+				else if (dayX === this.options.day) focusCell = td.elem;
 
-				this.eventsAt(date).forEach(calendarEvent => {
-					if (calendarEvent.render) calendarEvent.render(this.options.view, eventContainer.elem, this);
-				});
+				cells.push(td.elem);
+
+				for (const calendarEvent of this.eventsAt(date)) this.renderEvent(calendarEvent, eventContainer);
 			}
 		}
 
-		this._title.elem.textContent = formatDate(new Date(this.options.year, this.options.month), {
-			month: 'long',
-			year: 'numeric',
+		this._rove(cells, 7, focusCell);
+
+		this._title.elem.textContent = monthTitle;
+	}
+
+	/**
+	 * Draws one event into a day: pressable, by pointer or keyboard, announcing `eventPress` with the event. A press on an
+	 * event is the event's, not also its day's.
+	 * @param {CalendarEvent} calendarEvent - The event
+	 * @param {Component|HTMLElement} container - Where it goes
+	 * @returns {HTMLElement} Its element
+	 */
+	renderEvent(calendarEvent, container) {
+		const duration = formatDuration(calendarEvent.duration);
+		const when = [formatTime(calendarEvent.at, { hour12: !this.options.display24h }), duration]
+			.filter(Boolean)
+			.join(', ');
+
+		const chip = new EventChip({
+			className: 'event',
+			pressable: true,
+			'aria-label': `${calendarEvent.label}, ${when}`,
+			style: { backgroundColor: calendarEvent.color },
+			append: [
+				new Elem({ className: 'time', textContent: when }),
+				new Elem({ className: 'label', textContent: calendarEvent.label }),
+			],
+			appendTo: container,
+			onPointerPress: event => {
+				event.stopPropagation();
+				this.emit('eventPress', { target: chip.elem, calendarEvent, data: calendarEvent.data });
+			},
 		});
+
+		if (this.options.view === 'day') {
+			const gapPosition = calendarEvent.at.getHours() * 2 + calendarEvent.at.getMinutes() / 30;
+
+			Object.assign(chip.elem.style, {
+				height: `${(calendarEvent.duration ? Math.ceil(calendarEvent.duration / 1000 / 60 / 30) : 1) * 3}em`,
+				top: `${gapPosition * 3}em`,
+				left: '0',
+				zIndex: Math.floor(gapPosition),
+			});
+		}
+
+		return chip.elem;
+	}
+
+	/**
+	 * Whether a date is today.
+	 * @param {Date} date - The date
+	 * @returns {boolean} Whether it's today
+	 */
+	isToday(date) {
+		return date.toDateString() === new Date().toDateString();
+	}
+
+	// A press on a day's title is the day's, marked as the title's; once, not again as it reaches the day
+	_pressTitle(event, date) {
+		event.stopPropagation();
+		this.emit('dayPress', { target: event.target, isTitle: true, date });
+	}
+
+	// One tab stop for a run of cells, the arrow keys moving it: Tab reaches the grid, not each of its days
+	_rove(cells, columns, start = cells.find(cell => !cell.classList.contains('not-in-month'))) {
+		this._roving = { cells, columns };
+
+		if (start ?? cells[0]) (start ?? cells[0]).tabIndex = 0;
+	}
+
+	_roveKey(event) {
+		const { cells = [], columns = 1 } = this._roving ?? {};
+		const from = cells.indexOf(event.target);
+		const step = GRID_KEYS[event.key]?.(columns);
+		let to;
+
+		if (from < 0 || event.altKey || event.ctrlKey || event.metaKey) return;
+
+		if (step !== undefined) to = from + step;
+		else if (event.key === 'Home') to = from - (from % columns);
+		else if (event.key === 'End') to = from - (from % columns) + columns - 1;
+
+		if (to === undefined || !cells[to]) return;
+
+		event.preventDefault();
+		cells[from].tabIndex = -1;
+		cells[to].tabIndex = 0;
+		cells[to].focus();
 	}
 
 	adjustDateToView() {

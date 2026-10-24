@@ -7,7 +7,7 @@ Multi-view calendar that renders the same event data differently depending on sc
 ## Switching view re-renders layout without carrying forward view-specific state
 
 - changing `view` produces a fresh render, so no residual state from the previous layout persists into the new one
-  - new Subject({ view: "month", appendTo: document.body }) captures c then c.elem.querySelectorAll("td").length captures monthCells then c.options.view = "week" then await new Promise(r => setTimeout(r, 20)) -> monthCells === 49 && c.elem.querySelectorAll("td").length === 0 && c.elem.classList.contains("week") && !c.elem.classList.contains("month")
+  - new Subject({ view: "month", appendTo: document.body }) captures c then c.elem.querySelectorAll("td, th").length captures monthCells then c.options.view = "week" then await new Promise(r => setTimeout(r, 20)) -> monthCells === 49 && c.elem.querySelectorAll("td, th").length === 0 && c.elem.classList.contains("week") && !c.elem.classList.contains("month")
   - new Subject({ view: "month", events: [{ at: new Date(), label: "Standup" }], appendTo: document.body }) captures c then (c.elem.textContent.match(/Standup/g) ?? []).length captures inMonth then c.options.view = "day" then await new Promise(r => setTimeout(r, 20)) -> inMonth === 1 && (c.elem.textContent.match(/Standup/g) ?? []).length === 1
 
 ## Times read as clock times, and the current day is findable
@@ -65,3 +65,14 @@ The calendar had a private Toolbar that redrew Tabs' segmented look with a `pres
   - new Subject({ view: "month", appendTo: document.body }) captures c then c.elem.querySelector("[role=tablist]") captures list then c.setView("day") -> list.classList.contains("variant-segmented") && list.querySelector("[aria-selected=true]").textContent === "Day"
 - navigating redraws the view, not the toolbar, so a button pressed by keyboard keeps focus
   - new Subject({ view: "month", appendTo: document.body }) captures c then c.elem.querySelector("[aria-label=next]") captures next then next.focus() then next.click() -> document.activeElement === next && next.isConnected
+
+## Every day, half hour and event presses by keyboard as by pointer
+
+The cells answered only the pointer: a keyboard user could not reach a day at all. Each is now pressable (Enter or Space presses it as a click), and a run of cells is one tab stop whose arrow keys move between cells, so Tab reaches the grid rather than forty-two days. What a press announces is named for what was pressed, as everywhere in the library: `dayPress`, `timePress`, `eventPress`.
+
+- the month grid has one tab stop, at the day shown; the arrow keys move it and Enter presses the day it reaches
+  - new Array() captures pressed then new Subject({ year: 2026, month: 9, day: 14, onDayPress: e => pressed.push(e.detail.date.getDate()), appendTo: document.body }) captures c then Array.from(c.elem.querySelectorAll("[role=gridcell]")) captures cells then cells.filter(cell => cell.tabIndex === 0) captures stops then stops[0].dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true })) then document.activeElement.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true })) -> stops.length === 1 && stops[0].textContent.startsWith("14") && pressed.join() === "21"
+- a half hour presses as `timePress` with its time
+  - new Array() captures pressed then new Subject({ view: "day", year: 2026, month: 9, day: 14, onTimePress: e => pressed.push(e.detail.date.getHours() + ":" + e.detail.date.getMinutes()), appendTo: document.body }) captures c then c.elem.querySelector(".time-block[tabindex='0']") captures start then start.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true })) -> pressed.join() === "8:0"
+- an event presses as `eventPress` with the object it was given, and not also as its day
+  - new Array() captures heard then { at: new Date(2026, 9, 14, 12), label: "Dentist", id: "a1" } captures data then new Subject({ year: 2026, month: 9, day: 14, events: [data], onEventPress: e => heard.push(e.detail.data.id), onDayPress: () => heard.push("day"), appendTo: document.body }) captures c then c.elem.querySelector(".event").dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true })) -> heard.join() === "a1"

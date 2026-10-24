@@ -118,6 +118,7 @@ module.exports = {
 		'pressable',
 		'natively',
 		'describedby',
+		'gridcell',
 		'monospace',
 		'osx',
 		'moz',

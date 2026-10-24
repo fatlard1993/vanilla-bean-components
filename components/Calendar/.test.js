@@ -1,4 +1,4 @@
-import { findByRole, findByText, getByRole } from '@testing-library/dom';
+import { findByRole, findByText, getAllByRole, getByRole, getByText } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 
 import { Calendar } from '.';
@@ -12,6 +12,7 @@ const thisMonth = now.getMonth();
 
 // The toolbar titles, in the reader's locale as the Calendar writes them
 const DAY_TITLE = { month: 'long', day: 'numeric', year: 'numeric' };
+const DAY_CELL = { weekday: 'long', month: 'long', day: 'numeric' };
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 const monthString = (month = thisMonth, year = thisYear) =>
@@ -613,6 +614,96 @@ describe('Calendar', () => {
 
 			expect(tab('Week')).toHaveAttribute('aria-selected', 'true');
 			expect(getByRole(calendar.elem, 'button', { name: 'next' })).toHaveFocus();
+		});
+	});
+
+	describe('pressing by keyboard', () => {
+		const at = new Date(2026, 9, 14, 12);
+
+		test('Tab reaches the month grid once, at the day shown; arrows move; Enter presses the day', async () => {
+			const onDayPress = mock();
+
+			calendar = new Calendar({ year: 2026, month: 9, day: 14, onDayPress, appendTo: document.body });
+
+			const grid = getByRole(calendar.elem, 'grid');
+			const tabStops = getAllByRole(grid, 'gridcell').filter(cell => cell.tabIndex === 0);
+
+			expect(tabStops).toHaveLength(1);
+			expect(tabStops[0]).toHaveAccessibleName(new Date(2026, 9, 14).toLocaleDateString(undefined, DAY_CELL));
+
+			tabStops[0].focus();
+			await user.keyboard('{ArrowRight}{ArrowDown}');
+
+			const reached = getByRole(grid, 'gridcell', {
+				name: new Date(2026, 9, 22).toLocaleDateString(undefined, DAY_CELL),
+			});
+
+			expect(reached).toHaveFocus();
+			expect(reached.tabIndex).toBe(0);
+			expect(tabStops[0].tabIndex).toBe(-1);
+
+			await user.keyboard('{Enter}');
+
+			expect(onDayPress).toHaveBeenCalledTimes(1);
+			expect(onDayPress.mock.calls[0][0].detail.date).toEqual(new Date(2026, 9, 22));
+		});
+
+		test('a day view half hour presses by Space, announcing timePress with its time', async () => {
+			const onTimePress = mock();
+
+			calendar = new Calendar({ view: 'day', year: 2026, month: 9, day: 14, onTimePress, appendTo: document.body });
+
+			const eight = getAllByRole(calendar.wrapper.elem, 'button').find(block => block.tabIndex === 0);
+
+			eight.focus();
+			await user.keyboard('{ArrowDown} ');
+
+			expect(onTimePress).toHaveBeenCalledTimes(1);
+			expect(onTimePress.mock.calls[0][0].detail.date).toEqual(new Date(2026, 9, 14, 8, 30));
+		});
+
+		test('an event presses as the event, not also its day, and hands back the object it was given', async () => {
+			const onDayPress = mock();
+			const onEventPress = mock();
+			const data = { at, label: 'Dentist', id: 'visit-1' };
+
+			calendar = new Calendar({
+				year: 2026,
+				month: 9,
+				day: 14,
+				events: [data],
+				onDayPress,
+				onEventPress,
+				appendTo: document.body,
+			});
+
+			const event = getByRole(calendar.elem, 'button', { name: /^Dentist/ });
+
+			event.focus();
+			await user.keyboard('{Enter}');
+			await user.click(event);
+
+			expect(onEventPress).toHaveBeenCalledTimes(2);
+			expect(onEventPress.mock.calls[0][0].detail.data).toBe(data);
+			expect(onEventPress.mock.calls[0][0].detail.calendarEvent.label).toBe('Dentist');
+			expect(onDayPress).not.toHaveBeenCalled();
+		});
+
+		test('a week day is one tab stop of seven, its title pressing once', async () => {
+			const onDayPress = mock();
+
+			calendar = new Calendar({ view: 'week', year: 2026, month: 9, day: 14, onDayPress, appendTo: document.body });
+
+			const days = getAllByRole(calendar.wrapper.elem, 'button');
+
+			expect(days).toHaveLength(7);
+
+			expect(days.filter(day => day.tabIndex === 0)).toHaveLength(1);
+
+			await user.click(getByText(calendar.elem, new Date(2026, 9, 14).toLocaleDateString(undefined, DAY_CELL)));
+
+			expect(onDayPress).toHaveBeenCalledTimes(1);
+			expect(onDayPress.mock.calls[0][0].detail.isTitle).toBe(true);
 		});
 	});
 });

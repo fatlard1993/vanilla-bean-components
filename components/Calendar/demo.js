@@ -6,6 +6,9 @@ export default class Demo extends DemoView {
 	build() {
 		this.component = new Calendar({
 			view: 'month',
+			onDayPress: ({ detail: { date } }) => console.log('dayPress', date.toDateString()),
+			onTimePress: ({ detail: { date } }) => console.log('timePress', date.toLocaleTimeString()),
+			onEventPress: ({ detail: { calendarEvent } }) => console.log('eventPress', calendarEvent.label),
 		});
 
 		this.component.addEvent({
