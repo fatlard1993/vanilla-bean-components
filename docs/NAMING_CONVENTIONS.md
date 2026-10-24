@@ -90,6 +90,8 @@ Property and method naming prioritizes clarity and follows established web platf
 - **An overlay**: `open(options?)`, `close()`, `isOpen`, `autoOpen`, and a declared `close` event (`onClose`) however it closed
 - **A status**: `intent`, one of `'info'`, `'success'`, `'warning'`, `'danger'`, the color roles of the same names
 - **A look**: `variant`, only how something is drawn, declared with `classEnum('variant', [...])`
+- **A check**: `validate: value => message`, what's wrong in words or nothing, the same for an Input, a Form field, a TagList and a store field
+- **A keyboard press**: `pressable`, Enter and Space pressing as the same click `onPointerPress` hears
 
 These conventions align with native DOM APIs and modern JavaScript patterns, making the library feel familiar to web developers.
 
