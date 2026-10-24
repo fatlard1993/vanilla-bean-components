@@ -35,8 +35,6 @@ export declare const fieldTypes: {
 /** How the server process ends. Ctrl+C exits 130 and being asked to stop (a service manager, `kill`) exits 0, both after `flush`. An uncaught error or unhandled rejection is logged, then exits 99 or 1 after `flush`, unless `survive`. */
 export declare function handleExit(options?: Record<string, any>): void;
 
-export declare const HOT_RELOAD_PATH: string;
-
 /** Development hot reload: rebuild the client when a file it was built from changes, then reload every page that loaded `@vanilla-bean/components/app/reloadOnBuild`. */
 export declare const hotReload: {
 	websocket: Record<string, any>;
@@ -59,10 +57,7 @@ export declare function normalizeFields(fields: Array<string> | Record<string, a
 /** Open a lowdb JSON file, filling in any top-level collection it lacks. A symlinked path is followed, so the write replaces the target rather than the link, and a file that won't parse fails naming the file. lowdb writes through a temporary file and a rename, one write at a time, so nothing more is needed for safe writes. */
 export declare function openDatabase(options?: Record<string, any>): Promise<Record<string, any>>;
 
-/** Match a path against a pattern. Everything but a `:name` segment is literal, regex characters included, and each named value comes back decoded. */
-export declare function pathMatch(pattern: string, path: string): Record<string, any> | null;
-
-/** Match a request against a method and a path pattern with `:named` segments (pathMatch). */
+/** Match a request against a method and a path pattern with `:named` segments, as the client Router matches its routes. */
 export declare function requestMatch(method: string, pattern: string, request: Request): Record<string, any> | false;
 
 /** Whether a request may act here. A write or a socket upgrade sent by another site's page, or through a DNS name rebound to this machine, carries an Origin that isn't this host. WebSockets get no CORS protection at all, so this is the check that keeps a page the browser happens to visit from attaching to one. Reads, and requests from outside a browser (no Origin), pass. */
@@ -83,17 +78,6 @@ export declare function service(
 	options?: Record<string, any>,
 	io?: Record<string, any>,
 ): Promise<number>;
-
-export declare const SERVICE_COMMANDS: ReadonlyArray<string>;
-
-/** What a background service for an app is on this machine: a systemd user unit on Linux, a launchd agent on macOS. Bun runs the entry from the app's directory, by absolute path since neither manager uses $PATH, and the service restarts when it exits. */
-export declare function serviceDefinition(options?: Record<string, any>): {
-	manager: string;
-	id: string;
-	file: string;
-	contents: string;
-	log?: string;
-};
 
 /** A request body checked against normalized fields: only known fields come back, parsed. Throws a ValidationError naming the field for anything of the wrong shape, a required field missing or empty, or a value its `validate` finds wrong (with that message). */
 export declare function validateFields(

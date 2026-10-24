@@ -83,7 +83,7 @@ requestMatch('GET', '/games/:id', request); // → { id: '12', ...searchParams }
 
 It matches the whole path, so `/games/:id` doesn't match `/games/12/join`. Pattern characters are literal, and segments are decoded.
 
-The matching is `pathMatch(pattern, path)`, which the client's `Router` uses too, so a route on either side of the wire means the same thing: `{ id: '12' }` for a match, `null` otherwise.
+The client's `Router` matches its routes the same way, so a route on either side of the wire means the same thing.
 
 ## Records in a JSON file
 
@@ -203,7 +203,7 @@ if (!sameOrigin(request)) return new Response('Cross-origin request refused', { 
 
 The commands are `enable` (write the definition and start it; run it again after changing the flags), `disable` (stop and remove it), `start`, `stop`, `reload` (a restart, to pick up a new build), `status` and `logs`. The name and description come from package.json (without its scope); `--name`, `--description`, `--entry` and `--port` override them, and anything after `--` is passed to the server. On Linux, `loginctl enable-linger` keeps it running without a login session.
 
-The same is a function, `service(command, options)`, and `serviceDefinition(options)` returns the unit or plist without installing it.
+The same is a function, `service(command, options)`.
 
 On macOS the agent is labelled `com.vanilla-bean.<name>`. An app moving from its own script disables the old agent first.
 
