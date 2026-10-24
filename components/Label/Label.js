@@ -64,6 +64,13 @@ const StyledLabel = styled(
 			& input:not([type=checkbox]), & textarea, & select {
 				flex: 1;
 			}
+
+			/* A field's error takes its own row, under the text and the control rather than beside them */
+			flex-wrap: wrap;
+
+			& > .vbc-field-error {
+				flex-basis: 100%;
+			}
 		}
 
 		/* Drawn after its control even when the control was appended after the text was placed */
