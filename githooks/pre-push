@@ -3,7 +3,9 @@
 #   sh node_modules/@vanilla-bean/components/githooks/pre-push "$@" || exit 1
 
 # Read first: the checks below inherit stdin
-pushed=$(sh "$(dirname "$0")/pushed-files" "$1")
+refs=$(cat)
+printf '%s\n' "$refs" | sh "$(dirname "$0")/settled" "$1" || exit 1
+pushed=$(printf '%s\n' "$refs" | sh "$(dirname "$0")/pushed-files" "$1")
 
 # Nothing new leaves (a deletion, a branch at commits the remote has): nothing to check
 [ -n "$pushed" ] || exit 0

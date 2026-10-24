@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+# git log over what a push sends, from the refs git hands a pre-push hook on stdin, with the arguments after the remote:
+#   sh node_modules/@vanilla-bean/components/githooks/pushed-log "$1" --format=%s
+# Against what the remote has, or, for a new branch or a remote commit not here, everything not on the remote yet. A
+# deleted ref sends nothing.
+
+remote="$1"
+shift
+zero=0000000000000000000000000000000000000000
+
+while read -r _localRef localSha _remoteRef remoteSha; do
+	[ -n "$localSha" ] && [ "$localSha" != "$zero" ] || continue
+	if [ "$remoteSha" != "$zero" ] && git cat-file -e "$remoteSha^{commit}" 2>/dev/null; then
+		git log "$@" "$remoteSha..$localSha"
+	else
+		git log "$@" "$localSha" --not --remotes="$remote"
+	fi
+done

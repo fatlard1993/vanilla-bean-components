@@ -209,7 +209,7 @@ On macOS the agent is labelled `com.vanilla-bean.<name>`. An app moving from its
 
 ## Checks before a push, and in CI
 
-The library ships the pre-push an app needs: lint, then the tests (when there are any), then `lldtdd lint` when the pushed commits change `.lld.md` documents. The checks run once, on what is about to leave the machine, rather than on every commit made along the way. An app runs it from a one-line hook of its own, through `sh` so it needn't be executable where the package manager put it, passing on the remote and the refs git hands a pre-push:
+The library ships the pre-push an app needs: no `amend!`, `fixup!` or `squash!` commit leaving unfolded (`githooks/settled`), then lint, then the tests (when there are any), then `lldtdd lint` when the pushed commits change `.lld.md` documents. The checks run once, on what is about to leave the machine, rather than on every commit made along the way. An app runs it from a one-line hook of its own, through `sh` so it needn't be executable where the package manager put it, passing on the remote and the refs git hands a pre-push:
 
 ```sh
 #!/usr/bin/env sh

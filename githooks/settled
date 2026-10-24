@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+# Fails when a push would send a commit made to fold into another (amend!, fixup!, squash!), which leaves as a commit
+# of its own unless a rebase --autosquash folds it first. From the refs git hands a pre-push hook on stdin:
+#   printf '%s\n' "$refs" | sh node_modules/@vanilla-bean/components/githooks/settled "$1" || exit 1
+
+unsettled=$(sh "$(dirname "$0")/pushed-log" "$1" --format='%h %s' | grep -E '^[0-9a-f]+ (amend|fixup|squash)! ')
+
+[ -z "$unsettled" ] && exit 0
+echo 'Not settled: fold these in first (GIT_SEQUENCE_EDITOR=true git rebase -i --autosquash @{upstream})'
+echo "$unsettled"
+exit 1

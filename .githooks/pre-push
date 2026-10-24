@@ -1,7 +1,9 @@
 #!/usr/bin/env sh
 
 # Read first: the checks below inherit stdin
-changedFiles=$(sh githooks/pushed-files "$1")
+refs=$(cat)
+printf '%s\n' "$refs" | sh githooks/settled "$1" || exit 1
+changedFiles=$(printf '%s\n' "$refs" | sh githooks/pushed-files "$1")
 
 [ -n "$changedFiles" ] || exit 0
 
