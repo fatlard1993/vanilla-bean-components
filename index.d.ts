@@ -209,20 +209,39 @@ export interface ComponentOptions extends ElemOptions {
 	[key: string]: any;
 }
 
+export interface SchemaDescriptor {
+	/** The value the option starts at; a getter evaluates fresh per instance */
+	default?: any;
+	/** Runs on render and each change; call next() to continue down the chain */
+	set?: (this: Component, value: any, next: (value?: any) => void) => void;
+	/** The values it takes; anything else (but null and undefined) throws */
+	enum?: ReadonlyArray<any> | null;
+	/** Store-only: never routed to the element */
+	data?: boolean;
+	/** Routed to elem.setAttribute */
+	attribute?: boolean;
+	/** Processed before the other options */
+	priority?: boolean;
+}
+
 export declare class Component extends Elem {
 	constructor(options?: ComponentOptions, ...children: Array<Elem | HTMLElement | string>);
 	readonly options: ComponentOptions & Record<string, any>;
 	readonly rendered: boolean;
 	/**
-	 * Optional static dispatch map. Handlers are collected across the full constructor chain
-	 * (deepest subclass first) and executed in order. Call `next(value?)` to continue to the
-	 * next handler in the chain; when the chain is exhausted, `next` falls through to standard
-	 * routing. Handlers that do not call `next` fully own the key.
+	 * The options a component takes, one descriptor per key, collected up the class chain. `set` functions chain
+	 * deepest class first; call `next(value?)` to continue to the parent's, then standard routing, or leave it uncalled
+	 * to own the key. Scalars (`default`, `enum`, `data`, `attribute`, `priority`) come from the nearest class that
+	 * declares them. `classEnum()` builds the descriptor for an option drawn as one class of a set.
 	 *
 	 * Use shorthand methods so `this` is the component instance:
-	 * `static handlers = { key(value, next) { ...; next(value); } }`
+	 * `static schema = { size: { default: 'small', set(value, next) { ...; next(value); } } }`
 	 */
-	static handlers?: Record<string, (this: Component, value: any, next: (value?: any) => void) => void>;
+	static schema?: Record<string, SchemaDescriptor>;
+	/** Custom event names usable with on()/emit() and as on* options (`onKeyDown` hears `keyDown`); unioned up the chain */
+	static events?: Array<string>;
+	/** A pure transform of the merged (schema defaults + user) options, run leaf-first before they are processed */
+	static prepareOptions?: (options: Record<string, any>, children: Array<any>) => Record<string, any>;
 	readonly uniqueId: string;
 	readonly parent: Component | undefined;
 	readonly children: Array<Component>;
@@ -231,7 +250,12 @@ export declare class Component extends Elem {
 	empty(): this;
 	destroy(): void;
 	styles(value: string | ((theme: Theme) => string) | Record<string, string | number>): void;
+	/** Aborts when the component is disconnected, destroyed or rendered again */
+	readonly signal: AbortSignal;
+	/** The values an option takes, from the nearest schema that declares them */
+	optionEnum(key: string): Array<any> | undefined;
 	onPointerPress(callback: (event: PointerEvent) => void): void;
+	onLongPress(callback: (event: PointerEvent) => void): void;
 	onHover(callback: (event: PointerEvent) => void): void;
 	addCleanup(id: string, fn: () => void): void;
 	replaceCleanup(id: string, fn: () => void): void;
