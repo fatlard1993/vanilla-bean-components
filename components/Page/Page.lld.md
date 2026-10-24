@@ -18,10 +18,15 @@ nothing to rewrite, so the ordinary link is used.
 - an entry with a `scope` is fetched and its rules are emitted inline under that selector; a plain URL becomes a stylesheet link
   - new Subject({ styleSheets: ["/lld-plain.css"], appendTo: document.body }) captures p -> document.querySelectorAll('link[rel="stylesheet"][href="/lld-plain.css"]').length === 1
 
-## Page sets a full-height flex baseline at construction
+## Page sets a full-height flex baseline, under the caller's style
 
-- height: 100% and flex display are applied as inline styles at construction
+Page follows the Component contract like any other: no constructor of its own. The layout is a computed default (prepareOptions), the stylesheets load when it's built, and it renders once the window has loaded unless the caller says otherwise. It used to override whatever `autoRender` it was given.
+
+- height: 100% and flex display are applied as inline styles, and the caller's style is laid over them
   - does a Page element have height: 100% applied at construction?
+  - new Subject({ style: { height: "50vh" }, appendTo: document.body }) captures p -> p.elem.style.display === "flex" && p.elem.style.height === "50vh"
+- a caller's `autoRender` is kept: `false` waits for render(), which loads the stylesheets then
+  - new Subject({ autoRender: false, styleSheets: ["/lld-late.css"] }) captures p then document.querySelectorAll('link[href="/lld-late.css"]').length captures before then p.render() -> p.rendered === true && before === 0 && document.querySelectorAll('link[href="/lld-late.css"]').length === 1
 
 ## A stylesheet list tolerates gaps
 

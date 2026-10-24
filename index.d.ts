@@ -752,8 +752,9 @@ export declare class Notify extends Popover {
 }
 
 export interface PageOptions extends ComponentOptions {
-	/** default: true */
+	/** false leaves bare elements (headings, links, form fields) to the app (default: true) */
 	themeElements?: boolean;
+	styleSheets?: Array<any>;
 }
 
 export declare class Page extends Component {
