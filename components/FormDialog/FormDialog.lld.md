@@ -32,3 +32,5 @@ FormDialog used to recognise Save, Delete and Cancel by comparing labels, so an 
 
 - a button marked `data-action: save` saves whatever its label; a label alone means nothing to FormDialog
   - new Array() captures saved then new Subject({ inputs: [{ key: "name" }], data: { name: "a" }, buttons: [{ textContent: "Keep", "data-action": "save" }, "Save"], onSave: () => saved.push("save"), onButtonPress: ({ button }) => saved.push("own:" + button), appendTo: document.body }) captures d then Array.from(d.elem.querySelectorAll(".footer button")) captures buttons then buttons[1].click() then buttons[0].click() then await new Promise(r => setTimeout(r, 20)) -> saved.join() === "own:Save,save"
+- the delete confirmation is in the `danger` intent
+  - new Subject({ inputs: [{ key: "name" }], onDelete: () => {}, confirmDelete: "Really?", appendTo: document.body }) captures d then d.delete() then await new Promise(r => setTimeout(r, 20)) -> Array.from(document.querySelectorAll("dialog")).at(-1).classList.contains("intent-danger")

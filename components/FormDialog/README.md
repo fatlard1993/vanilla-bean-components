@@ -43,7 +43,7 @@ Everything else is a Dialog option. A subclass sets its own defaults in `static 
 - A failed request shows why above the buttons in the danger color (hypertether's `failureReason`: the server's `{ error }`, `{ message }` or text, else the status), and a throw shows its message; the next Save or Delete clears it. Returning `false` shows nothing, for an app that said why itself.
 - While a save or delete is under way, Save and Delete are disabled, so a double press can't send it twice.
 - **Enter** in a single-line field saves; in a textarea it is a new line, and a field that uses Enter itself (a TagList, an autocomplete) claims it with `preventDefault` so it doesn't save.
-- **Delete** with `confirmDelete` asks over the form; no leaves the form open as it was.
+- **Delete** with `confirmDelete` asks over the form, in the `danger` intent; no leaves the form open as it was.
 
 ## Methods
 

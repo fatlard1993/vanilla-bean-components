@@ -197,6 +197,8 @@ describe('FormDialog', () => {
 		await findByText(document.body, 'Really?');
 		await settle(); // the confirm opens a moment after it renders
 
+		// Deleting is what the question is about: the danger role, not a warning
+		expect(getAllByRole(document.body, 'dialog', { hidden: true }).at(-1)).toHaveClass('intent-danger');
 
 		await pressInConfirm('Cancel');
 		await settle();

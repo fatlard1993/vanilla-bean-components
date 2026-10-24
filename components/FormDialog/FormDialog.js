@@ -201,7 +201,7 @@ class FormDialog extends styled(
 
 		if (confirmDelete) {
 			const confirmed = await Dialog.confirm({
-				intent: 'warning',
+				intent: 'danger',
 				header: 'Delete?',
 				confirmLabel: this.options.deleteLabel,
 				...(typeof confirmDelete === 'object' ? confirmDelete : { body: confirmDelete === true ? '' : confirmDelete }),
