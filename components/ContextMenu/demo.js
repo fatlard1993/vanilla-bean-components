@@ -16,7 +16,7 @@ export default class Demo extends DemoView {
 			],
 		});
 
-		const openAt = event => this.component.show({ x: event.clientX, y: event.clientY });
+		const openAt = event => this.component.open({ x: event.clientX, y: event.clientY });
 
 		new Component({
 			appendTo: this.demoWrapper,
@@ -43,7 +43,7 @@ export default class Demo extends DemoView {
 			appendTo: this.demoWrapper,
 			textContent: 'Branch ▾',
 			style: { marginTop: '12px' },
-			onPointerPress: () => branches.show({ anchor: branchButton }),
+			onPointerPress: () => branches.open({ anchor: branchButton }),
 		});
 	}
 }

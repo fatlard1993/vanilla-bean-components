@@ -423,10 +423,10 @@ export interface ContextMenuOptions extends PopoverOptions {
 
 export declare class ContextMenu extends Popover {
 	constructor(options?: ContextMenuOptions, ...children: Array<Elem | HTMLElement | string>);
-	/** Opens the menu at a point, or under an element; showing it again from the same element closes it. */
-	show(options?: Record<string, any>): void;
+	/** Opens the menu at a point, or under an element; opening it again from the same element closes it. */
+	open(options?: Record<string, any>): void;
 	/** Closes the menu and hands focus back to where it was. */
-	hide(): void;
+	close(): void;
 }
 
 export interface DialogOptions extends ComponentOptions {
@@ -434,8 +434,8 @@ export interface DialogOptions extends ComponentOptions {
 	size?: 'small' | 'standard' | 'large' | 'fit';
 	/** What the dialog is about, drawn in that status role */
 	intent?: 'info' | 'success' | 'warning' | 'danger';
-	/** Auto-open delay in ms, or false to disable (default: 16) */
-	openOnRender?: number | boolean;
+	/** Open a moment after rendering; a number is that moment in milliseconds, false waits for open() (default: true) */
+	autoOpen?: number | boolean;
 	/** Whether to open as modal dialog (default: true) */
 	modal?: boolean;
 	/** Header text content */
@@ -450,6 +450,8 @@ export interface DialogOptions extends ComponentOptions {
 	onButtonPress?: (...args: any[]) => any;
 	/** Custom close function */
 	closeDialog?: (...args: any[]) => any;
+	/** Hears `close`, however it closed: close(), Escape, a button */
+	onClose?: (...args: any[]) => any;
 	/** Destroy the dialog once it has closed and faded out; false keeps it to open again (default: true) */
 	removeOnClose?: boolean;
 }
@@ -458,10 +460,12 @@ export declare class Dialog extends Component {
 	constructor(options?: DialogOptions, ...children: Array<Elem | HTMLElement | string>);
 	/** Content container - primary injection point for subclass and consumer content. */
 	readonly body: Component;
+	/** Whether the dialog is open. */
+	readonly isOpen: boolean;
 	/** Ask a yes-or-no question. The confirming button comes second: the dialog focuses its first button, so a reflexive Enter keeps things as they are. Any other way out (Escape, the backdrop) is a no. */
 	static confirm(options: Record<string, any>): Promise<boolean>;
 	/** Opens the dialog, either as modal or non-modal */
-	open(modal: boolean): void;
+	open(options?: Record<string, any>): void;
 	/** Closes the dialog with optional return value */
 	close(returnValue: string): void;
 }
@@ -721,8 +725,10 @@ export declare class Page extends Component {
 export interface PopoverOptions extends IconOptions {
 	/** Popover state ('auto', 'manual') (default: "manual") */
 	state?: 'auto' | 'manual';
-	/** Whether to automatically open on render (default: true) */
-	autoOpen?: boolean;
+	/** Open a moment after it's added to the page; a number is that moment in milliseconds, false waits for open() (default: true) */
+	autoOpen?: boolean | number;
+	/** Hears `close`, however it closed: close(), a light dismiss, a press outside */
+	onClose?: (...args: any[]) => any;
 	/** X position for the popover */
 	x?: number;
 	/** Y position for the popover */
@@ -741,12 +747,12 @@ export interface PopoverOptions extends IconOptions {
 
 export declare class Popover extends Icon {
 	constructor(options?: PopoverOptions, ...children: Array<Elem | HTMLElement | string>);
-	/** Checks if the popover is currently open. */
+	/** Whether the popover is open. */
 	readonly isOpen: boolean;
-	/** Shows the popover with optional position update. */
-	show(options?: Record<string, any>): void;
-	/** Hides the popover. */
-	hide(): void;
+	/** Opens the popover, placed at a point when one is given. */
+	open(options?: Record<string, any>): void;
+	/** Closes the popover, announcing `close` if it was open. */
+	close(): void;
 }
 
 export interface RadioButtonOptions extends ComponentOptions {
@@ -884,8 +890,8 @@ export declare class Toolbar extends Component {
 export interface TooltipOptions extends PopoverOptions {
 	/** Tooltip position relative to parent (default: "topRight") */
 	position?: 'center' | 'top' | 'bottom' | 'left' | 'right' | 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
-	/** Whether tooltip opens automatically (default: false) */
-	autoOpen?: boolean;
+	/** Open a moment after it's added to the page, as a Popover does (default: false) */
+	autoOpen?: boolean | number;
 	/** Icon to display in tooltip */
 	icon?: string;
 }

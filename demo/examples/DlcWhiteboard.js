@@ -374,7 +374,7 @@ class DlcWhiteboard extends (styled.Component`
 				backgroundColor,
 				color: theme.colors.mostReadable(backgroundColor, [theme.colors.white, theme.colors.black]),
 			})),
-			onPointerPress: event => colorPicker.show({ x: event.clientX, y: event.clientY, maxHeight: 378, maxWidth: 318 }),
+			onPointerPress: event => colorPicker.open({ x: event.clientX, y: event.clientY, maxHeight: 378, maxWidth: 318 }),
 			appendTo: sidebar,
 		});
 

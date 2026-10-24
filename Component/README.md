@@ -194,7 +194,7 @@ component.onPointerPress(event => {
 A pointer held still on the element for half a second. Moving more than a few pixels, scrolling, or letting go first cancels it. The click that ends a long press isn't a press, so one element can take both, and a touch's own long-press menu counts as this long press rather than a second one. The handler gets the `pointerdown` event, so `clientX` and `clientY` are where it was held: the place to open a [ContextMenu](../components/ContextMenu/README.md) on a touch screen.
 
 ```js
-card.onLongPress(event => menu.show({ x: event.clientX, y: event.clientY }));
+card.onLongPress(event => menu.open({ x: event.clientX, y: event.clientY }));
 ```
 
 ## Styling

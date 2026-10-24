@@ -27,7 +27,9 @@ const StyledIcon = styled(
  * Supports manual and automatic dismiss behavior with customizable positioning and sizing.
  * @param {object} [options={}] - Popover configuration options
  * @param {string} [options.state='manual'] - Popover state ('auto', 'manual')
- * @param {boolean} [options.autoOpen=true] - Whether to automatically open on render
+ * @param {boolean|number} [options.autoOpen=true] - Open a moment after it's added to the page; a number is that
+ *   moment in milliseconds, false waits for open()
+ * @param {Function} [options.onClose] - Hears `close`, however it closed: close(), a light dismiss, a press outside
  * @param {number} [options.x] - X position for the popover
  * @param {number} [options.y] - Y position for the popover
  * @param {number} [options.maxWidth=264] - Maximum width in pixels
@@ -49,7 +51,7 @@ export default class Popover extends StyledIcon {
 			},
 		},
 		autoOpen: { default: true },
-		// Positioning and dismissal config read from this.options by show()/edgeAwarePlacement()
+		// Positioning and dismissal config read from this.options by open()/edgeAwarePlacement()
 		outsideClose: { default: false },
 		viewport: {
 			get default() {
@@ -75,16 +77,30 @@ export default class Popover extends StyledIcon {
 		},
 	};
 
+	static events = ['close'];
+
 	build() {
 		this.on({
 			targetEvent: 'connected',
 			id: 'popoverAutoOpen',
 			callback: () => {
-				if (!this.options.autoOpen) return;
-				const timeoutId = setTimeout(() => this.show(), 200);
+				const { autoOpen } = this.options;
+
+				if (!autoOpen) return;
+				const timeoutId = setTimeout(() => this.open(), typeof autoOpen === 'number' ? autoOpen : 200);
 				this.replaceCleanup('autoOpen', () => clearTimeout(timeoutId));
 			},
 		});
+
+		// Opened or closed by the platform (a popovertarget button, a light dismiss), it still knows, and still announces
+		// closing
+		const onToggle = event => {
+			if (event.newState === 'open') this._open = true;
+			else if (this._open) this._closed();
+		};
+
+		this.elem.addEventListener('toggle', onToggle);
+		this.replaceDestroyCleanup('popoverToggle', () => this.elem.removeEventListener('toggle', onToggle));
 	}
 
 	_placeAtPoint() {
@@ -128,10 +144,10 @@ export default class Popover extends StyledIcon {
 	}
 
 	/**
-	 * Shows the popover with optional position update.
-	 * @param {object} [options] - Position and sizing options
+	 * Opens the popover, placed at a point when one is given.
+	 * @param {object} [options] - Position and sizing: { x, y, maxWidth, maxHeight }
 	 */
-	show(options) {
+	open(options) {
 		clearTimeout(this._outsideHide);
 
 		if (options) this.edgeAwarePlacement(options);
@@ -139,9 +155,10 @@ export default class Popover extends StyledIcon {
 		if (!this.elem.isConnected) return;
 
 		this.elem.showPopover();
+		this._open = true;
 
 		if (this.options.outsideClose) {
-			// Cancel any pending registration from a previous show()
+			// Cancel any pending registration from a previous open()
 			if (this._outsideDismissRaf) cancelAnimationFrame(this._outsideDismissRaf);
 			if (this._outsideDismissListener) {
 				document.removeEventListener('click', this._outsideDismissListener, { capture: true });
@@ -150,7 +167,7 @@ export default class Popover extends StyledIcon {
 			// Hides once the press has been handled, so a toggle that closes us, or a press that shows us somewhere new,
 			// decides first
 			const onOutsidePress = e => {
-				if (!this.elem.contains(e.target)) this._outsideHide = setTimeout(() => this.hide());
+				if (!this.elem.contains(e.target)) this._outsideHide = setTimeout(() => this.close());
 			};
 
 			this._outsideDismissListener = onOutsidePress;
@@ -164,9 +181,9 @@ export default class Popover extends StyledIcon {
 	}
 
 	/**
-	 * Hides the popover.
+	 * Closes the popover, announcing `close` if it was open.
 	 */
-	hide() {
+	close() {
 		clearTimeout(this._outsideHide);
 
 		try {
@@ -174,6 +191,12 @@ export default class Popover extends StyledIcon {
 		} catch {
 			// Popover not shown or not connected
 		}
+
+		if (this._open) this._closed();
+	}
+
+	_closed() {
+		this._open = false;
 
 		if (this._outsideDismissRaf) {
 			cancelAnimationFrame(this._outsideDismissRaf);
@@ -183,18 +206,20 @@ export default class Popover extends StyledIcon {
 			document.removeEventListener('click', this._outsideDismissListener, { capture: true });
 			this._outsideDismissListener = null;
 		}
+
+		this.emit('close');
 	}
 
 	/**
-	 * Checks if the popover is currently open.
-	 * @returns {boolean} True if popover is open
+	 * Whether the popover is open.
+	 * @returns {boolean} True while it's open
 	 */
 	get isOpen() {
-		return this.elem.matches(':popover-open');
+		return Boolean(this._open);
 	}
 
 	destroy() {
-		this.hide();
+		this.close();
 		super.destroy?.();
 	}
 }

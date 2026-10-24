@@ -19,7 +19,7 @@ describe('ContextMenu', () => {
 		});
 
 		opener.elem.focus();
-		menu.show({ x: 20, y: 20 });
+		menu.open({ x: 20, y: 20 });
 		await settle();
 
 		return { menu, opener };
@@ -28,7 +28,7 @@ describe('ContextMenu', () => {
 	test('opens with its items, focus on the first', async () => {
 		const { menu } = await open();
 
-		expect(menu.shown).toBe(true);
+		expect(menu.isOpen).toBe(true);
 		expect(await findByText(container, 'Rename')).toHaveFocus();
 	});
 
@@ -39,7 +39,7 @@ describe('ContextMenu', () => {
 		await userEvent.setup().click(await findByText(container, 'Rename'));
 
 		expect(onRename).toHaveBeenCalledTimes(1);
-		expect(menu.shown).toBe(false);
+		expect(menu.isOpen).toBe(false);
 		expect(opener.elem).toHaveFocus();
 	});
 
@@ -50,7 +50,7 @@ describe('ContextMenu', () => {
 		await userEvent.setup().click(await findByText(container, 'Rename'));
 
 		expect(onRename).toHaveBeenCalledTimes(1);
-		expect(menu.shown).toBe(true);
+		expect(menu.isOpen).toBe(true);
 	});
 
 	test('Escape closes it and hands focus back', async () => {
@@ -58,8 +58,19 @@ describe('ContextMenu', () => {
 
 		await userEvent.setup().keyboard('{Escape}');
 
-		expect(menu.shown).toBe(false);
+		expect(menu.isOpen).toBe(false);
 		expect(opener.elem).toHaveFocus();
+	});
+
+	test('every way it closes announces close', async () => {
+		const onClose = mock();
+		const { menu } = await open({ onClose });
+
+		await userEvent.setup().keyboard('{Escape}');
+		menu.open({ x: 20, y: 20 });
+		await userEvent.setup().click(await findByText(container, 'Delete'));
+
+		expect(onClose).toHaveBeenCalledTimes(2);
 	});
 
 	test('a press outside closes it', async () => {
@@ -68,7 +79,7 @@ describe('ContextMenu', () => {
 		await userEvent.setup().click(opener.elem);
 		await settle();
 
-		expect(menu.shown).toBe(false);
+		expect(menu.isOpen).toBe(false);
 	});
 
 	describe('under a button', () => {
@@ -76,7 +87,7 @@ describe('ContextMenu', () => {
 			const button = new Button({ textContent: 'More', appendTo: container });
 			const menu = new ContextMenu({ items, appendTo: container });
 
-			button.onPointerPress(() => menu.show({ anchor: button }));
+			button.onPointerPress(() => menu.open({ anchor: button }));
 			button.elem.focus();
 			await userEvent.setup().click(button.elem);
 			await settle();
@@ -87,7 +98,7 @@ describe('ContextMenu', () => {
 		test('opens under it, and marks it as having opened a menu', async () => {
 			const { button, menu } = await anchored();
 
-			expect(menu.shown).toBe(true);
+			expect(menu.isOpen).toBe(true);
 			expect(button.elem).toHaveAttribute('aria-haspopup', 'menu');
 			expect(button.elem).toHaveAttribute('aria-expanded', 'true');
 			expect(menu.elem.style.top).toMatch(/px$/);
@@ -99,7 +110,7 @@ describe('ContextMenu', () => {
 			await userEvent.setup().click(button.elem);
 			await settle();
 
-			expect(menu.shown).toBe(false);
+			expect(menu.isOpen).toBe(false);
 			expect(button.elem).toHaveAttribute('aria-expanded', 'false');
 		});
 	});
@@ -125,6 +136,6 @@ describe('ContextMenu', () => {
 
 		await userEvent.setup().keyboard('{ArrowDown}');
 		expect(await findByText(container, mainRow)).toHaveFocus();
-		expect(menu.shown).toBe(true);
+		expect(menu.isOpen).toBe(true);
 	});
 });

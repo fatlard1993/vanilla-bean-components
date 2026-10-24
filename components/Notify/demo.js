@@ -8,7 +8,7 @@ export default class Demo extends DemoView {
 			intent: 'info',
 			textContent: 'textContent',
 			autoOpen: false,
-			onPointerPress: () => this.component.hide(),
+			onPointerPress: () => this.component.close(),
 		});
 
 		new Button({

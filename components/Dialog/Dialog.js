@@ -23,7 +23,8 @@ const defaultOpenDelay = 16;
  * @param {string} [options.tag] - HTML tag, uses native dialog element
  * @param {('small'|'standard'|'large'|'fit')} [options.size] - Dialog size; 'fit' is as tall as its content
  * @param {('info'|'success'|'warning'|'danger')} [options.intent] - What the dialog is about, drawn in that status role
- * @param {number|boolean} [options.openOnRender] - Auto-open delay in ms, or false to disable
+ * @param {number|boolean} [options.autoOpen] - Open a moment after rendering; a number is that moment in milliseconds,
+ *   false waits for open()
  * @param {boolean} [options.modal] - Whether to open as modal dialog
  * @param {string} [options.header] - Header text content
  * @param {string|Component} [options.body] - Body content
@@ -32,6 +33,7 @@ const defaultOpenDelay = 16;
  * @param {Function} [options.onButtonPress] - Hears a press on any of `buttons`, with { button, event, dialog, closeDialog };
  *   a button's own onPointerPress runs first
  * @param {Function} [options.closeDialog] - Custom close function
+ * @param {Function} [options.onClose] - Hears `close`, however it closed: close(), Escape, a button
  * @param {boolean} [options.removeOnClose] - Destroy the dialog once it has closed and faded out; false keeps it to open again
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Dialog} Dialog component instance
@@ -150,12 +152,12 @@ class Dialog extends styled(
 				return document.body;
 			},
 		},
-		openOnRender: {
-			default: defaultOpenDelay,
+		autoOpen: {
+			default: true,
 			set(value) {
 				const delay = typeof value === 'number' ? value : defaultOpenDelay;
 				const openDelay = value ? setTimeout(() => this.open(), delay) : null;
-				this.replaceCleanup('openOnRender', () => openDelay && clearTimeout(openDelay));
+				this.replaceCleanup('autoOpen', () => openDelay && clearTimeout(openDelay));
 			},
 		},
 		// Read directly from this.options.modal in open()
@@ -279,9 +281,10 @@ class Dialog extends styled(
 
 	/**
 	 * Opens the dialog, either as modal or non-modal
-	 * @param {boolean} modal - Whether to open as modal dialog (default: true)
+	 * @param {object} [options] - How to open it
+	 * @param {boolean} [options.modal] - Whether to open as modal dialog; defaults to the modal option
 	 */
-	open(modal = this.options.modal) {
+	open({ modal = this.options.modal } = {}) {
 		this._opener = document.activeElement;
 		try {
 			this.elem[modal ? 'showModal' : 'show']();
@@ -300,6 +303,14 @@ class Dialog extends styled(
 
 			this.render();
 		}
+	}
+
+	/**
+	 * Whether the dialog is open.
+	 * @returns {boolean} True while it's open
+	 */
+	get isOpen() {
+		return Boolean(this.elem.open);
 	}
 
 	/**

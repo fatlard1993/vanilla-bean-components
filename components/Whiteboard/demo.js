@@ -64,7 +64,7 @@ export default class Demo extends DemoView {
 				color: theme.colors.mostReadable(backgroundColor, [theme.colors.white, theme.colors.black]),
 			})),
 			appendTo: this.demoWrapper,
-			onPointerPress: event => colorPicker.show({ x: event.clientX, y: event.clientY, maxHeight: 378, maxWidth: 318 }),
+			onPointerPress: event => colorPicker.open({ x: event.clientX, y: event.clientY, maxHeight: 378, maxWidth: 318 }),
 		});
 
 		new Button({

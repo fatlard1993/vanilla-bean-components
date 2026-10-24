@@ -66,7 +66,7 @@ export default class TooltipWrapper extends StyledIcon {
 			this.on({
 				targetEvent: 'pointerover',
 				callback: ({ clientX, clientY }) => {
-					this.tooltipTimeout = setTimeout(() => this._tooltip?.show({ x: clientX, y: clientY }), 700);
+					this.tooltipTimeout = setTimeout(() => this._tooltip?.open({ x: clientX, y: clientY }), 700);
 				},
 			});
 
@@ -74,7 +74,7 @@ export default class TooltipWrapper extends StyledIcon {
 				targetEvent: 'pointerout',
 				callback: () => {
 					clearTimeout(this.tooltipTimeout);
-					if (!this.elem.contains(document.activeElement)) this._tooltip?.hide();
+					if (!this.elem.contains(document.activeElement)) this._tooltip?.close();
 				},
 			});
 
@@ -84,7 +84,7 @@ export default class TooltipWrapper extends StyledIcon {
 				callback: () => {
 					clearTimeout(this.tooltipTimeout);
 					const { left, bottom } = this.elem.getBoundingClientRect();
-					this._tooltip?.show({ x: left, y: bottom });
+					this._tooltip?.open({ x: left, y: bottom });
 				},
 			});
 
@@ -93,7 +93,7 @@ export default class TooltipWrapper extends StyledIcon {
 				callback: ({ relatedTarget }) => {
 					if (this.elem.contains(relatedTarget)) return;
 					clearTimeout(this.tooltipTimeout);
-					this._tooltip?.hide();
+					this._tooltip?.close();
 				},
 			});
 

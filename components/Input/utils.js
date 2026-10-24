@@ -55,7 +55,7 @@ export const updateValidationErrors = ({ elem, validations, value }) => {
 						padding: 0,
 						backgroundColor: colors.danger,
 					}),
-					onPointerPress: event => errorPopover.show({ x: event.clientX, y: event.clientY }),
+					onPointerPress: event => errorPopover.open({ x: event.clientX, y: event.clientY }),
 				});
 				errorButton.elem.dataset.validationError = '';
 

@@ -10,10 +10,9 @@ export default class Demo extends DemoView {
 		this.component = new Dialog({
 			header: 'header',
 			size: 'small',
-			variant: null,
 			body: 'Loading…',
 			buttons: ['noop', 'dismiss'],
-			openOnRender: false,
+			autoOpen: false,
 			removeOnClose: false,
 			onButtonPress: ({ button, closeDialog }) => {
 				console.log({ button, closeDialog });

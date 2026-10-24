@@ -14,7 +14,7 @@ export default class Demo extends DemoView {
 				event.preventDefault();
 				event.stopPropagation();
 
-				this.component.show({ x: event.clientX, y: event.clientY });
+				this.component.open({ x: event.clientX, y: event.clientY });
 			},
 		});
 	}
@@ -28,8 +28,8 @@ export default class Demo extends DemoView {
 		new Label({
 			appendTo: this.demoWrapper,
 			label: { content: 'Hover this label', style: { pointerEvents: 'none', height: '100px' } },
-			onHover: event => this.component.show({ x: event.clientX + 10, y: event.clientY + 10 }),
-			onPointerLeave: () => this.component.hide(),
+			onHover: event => this.component.open({ x: event.clientX + 10, y: event.clientY + 10 }),
+			onPointerLeave: () => this.component.close(),
 		});
 
 		new Button({
@@ -40,7 +40,7 @@ export default class Demo extends DemoView {
 				console.log(event);
 				this.component.edgeAwarePlacement({ x: event.clientX + 10, y: event.clientY + 10 });
 			},
-			onPointerLeave: () => this.component.hide(),
+			onPointerLeave: () => this.component.close(),
 		});
 
 		new Elem({

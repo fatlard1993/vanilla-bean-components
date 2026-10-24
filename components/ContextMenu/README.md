@@ -18,17 +18,17 @@ card.on({
 	targetEvent: 'contextmenu',
 	callback: event => {
 		event.preventDefault();
-		menu.show({ x: event.clientX, y: event.clientY });
+		menu.open({ x: event.clientX, y: event.clientY });
 	},
 });
 
 // A touch screen has no right-click: a long press opens it at the same point
-card.onLongPress(event => menu.show({ x: event.clientX, y: event.clientY }));
+card.onLongPress(event => menu.open({ x: event.clientX, y: event.clientY }));
 ```
 
 ### Under a button
 
-Given an `anchor`, the menu hangs under it, or over it when there's more room above, moved in from the viewport's edges. Showing it again from the same button closes it, so the button toggles its menu, and the button carries `aria-haspopup` and `aria-expanded`.
+Given an `anchor`, the menu hangs under it, or over it when there's more room above, moved in from the viewport's edges. Opening it again from the same button closes it, so the button toggles its menu, and the button carries `aria-haspopup` and `aria-expanded`.
 
 ```js
 const branchMenu = new ContextMenu({
@@ -39,7 +39,7 @@ const branchMenu = new ContextMenu({
 	],
 });
 
-branchButton.onPointerPress(() => branchMenu.show({ anchor: branchButton }));
+branchButton.onPointerPress(() => branchMenu.open({ anchor: branchButton }));
 ```
 
 ### Headings and details
@@ -62,7 +62,7 @@ Everything else is a Popover option.
 ## Behaviour
 
 - Choosing an item runs its `onPointerPress`, then closes the menu (unless `sticky`).
-- Escape and a press outside close it, and so does showing it again from the same anchor.
+- Escape and a press outside close it, and so does opening it again from the same anchor. Every way it closes announces `close`.
 - It is placed by its measured size, so it flips away from the edges it would cross; nothing depends on how tall a row is.
 - Focus moves to the first item on opening, so the arrow keys work at once, and returns to where it was on closing.
 - It unfolds from the top as it opens and dims the page behind it. Opened at a point, it marks the point with a reticle until it closes; a menu under a button has none.
@@ -70,9 +70,10 @@ Everything else is a Popover option.
 ## Methods
 
 ```js
-menu.show({ x, y }); // open at a point; without one it opens where it last was
-menu.show({ anchor }); // open under an element, or close if it's already open from there
-menu.hide();
+menu.open({ x, y }); // open at a point; without one it opens where it last was
+menu.open({ anchor }); // open under an element, or close if it's already open from there
+menu.close();
+menu.isOpen; // whether it's open
 ```
 
-A subclass can add its own marks at the point (a reticle, a highlight) by overriding `show` and `hide` and calling `super`.
+A subclass can add its own marks at the point (a reticle, a highlight) by overriding `open` and `close` and calling `super`.

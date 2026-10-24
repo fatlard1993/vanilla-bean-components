@@ -100,10 +100,10 @@ const position_enum = Object.freeze([
  * Tooltip popover component with configurable positioning and smooth animations.
  *
  * Extends Popover to provide tooltip-specific styling and positioning options.
- * Supports multiple position presets and animated show/hide transitions.
+ * Supports multiple position presets and animated open/close transitions.
  * @param {object} [options={}] - Tooltip configuration options
  * @param {('center'|'top'|'bottom'|'left'|'right'|'topLeft'|'topRight'|'bottomLeft'|'bottomRight')} [options.position='topRight'] - Tooltip position relative to parent
- * @param {boolean} [options.autoOpen=false] - Whether tooltip opens automatically
+ * @param {boolean|number} [options.autoOpen=false] - Open a moment after it's added to the page, as a Popover does
  * @param {string} [options.textContent] - Tooltip text content
  * @param {string} [options.icon] - Icon to display in tooltip
  * @param {...(Component|HTMLElement|string)} children - Child elements to append

@@ -193,7 +193,7 @@ const menuItem = (item, choose) => {
  * A menu that opens at a point (a right-click, a long press) or under the button that asked for it.
  *
  * Choosing an item runs its onPointerPress and closes the menu, unless sticky. Escape and a press outside close it too,
- * and so does showing it again from the same button, so a button toggles its menu. It is placed by its own measured
+ * and so does opening it again from the same button, so a button toggles its menu. It is placed by its own measured
  * size, so it flips away from the edges it would cross, and focus moves into it on opening and back on closing.
  * @param {object} [options] - ContextMenu configuration
  * @param {Array<object>} [options.items] - Menu items, e.g. { textContent, detail, onPointerPress }, and headings, { heading }
@@ -204,8 +204,8 @@ const menuItem = (item, choose) => {
  * @returns {ContextMenu} ContextMenu component instance
  * @example
  * const menu = new ContextMenu({ items: [{ textContent: 'Rename', onPointerPress: rename }] });
- * card.on({ targetEvent: 'contextmenu', callback: event => { event.preventDefault(); menu.show({ x: event.clientX, y: event.clientY }); } });
- * moreButton.onPointerPress(() => menu.show({ anchor: moreButton }));
+ * card.on({ targetEvent: 'contextmenu', callback: event => { event.preventDefault(); menu.open({ x: event.clientX, y: event.clientY }); } });
+ * moreButton.onPointerPress(() => menu.open({ anchor: moreButton }));
  */
 class ContextMenu extends StyledPopover {
 	static schema = {
@@ -222,7 +222,7 @@ class ContextMenu extends StyledPopover {
 					menuItem(item, (onPointerPress, event) => {
 						onPointerPress?.(event);
 
-						if (!this.options.sticky) this.hide();
+						if (!this.options.sticky) this.close();
 					}),
 				);
 			},
@@ -233,9 +233,9 @@ class ContextMenu extends StyledPopover {
 		super.build();
 
 		this._onKeydown = event => {
-			if (event.key === 'Escape' && this.shown) {
+			if (event.key === 'Escape' && this.isOpen) {
 				event.preventDefault();
-				this.hide();
+				this.close();
 			}
 		};
 
@@ -244,19 +244,19 @@ class ContextMenu extends StyledPopover {
 	}
 
 	/**
-	 * Opens the menu at a point, or under an element; showing it again from the same element closes it.
+	 * Opens the menu at a point, or under an element; opening it again from the same element closes it.
 	 * @param {object} [options] - Where to open
 	 * @param {number} [options.x] - The point's x, in viewport pixels
 	 * @param {number} [options.y] - The point's y, in viewport pixels
 	 * @param {HTMLElement|Elem} [options.anchor] - The element to hang under, or over when there's more room above
 	 */
-	show({ x, y, anchor } = {}) {
+	open({ x, y, anchor } = {}) {
 		if (!this.elem.isConnected) return;
 
 		const anchorElem = anchor?.elem ?? anchor;
 
-		if (anchorElem && this.shown && this._anchor === anchorElem) {
-			this.hide();
+		if (anchorElem && this.isOpen && this._anchor === anchorElem) {
+			this.close();
 			return;
 		}
 
@@ -267,8 +267,7 @@ class ContextMenu extends StyledPopover {
 		this.elem.style.maxWidth = `${this.options.maxWidth}px`;
 		this.elem.style.maxHeight = '';
 
-		super.show();
-		this.shown = true;
+		super.open();
 
 		// Placed by what it measures now it is open, rather than by a guess at its rows
 		this._removeReticle();
@@ -297,14 +296,13 @@ class ContextMenu extends StyledPopover {
 	/**
 	 * Closes the menu and hands focus back to where it was.
 	 */
-	hide() {
-		const wasOpen = this.shown;
+	close() {
+		const wasOpen = this.isOpen;
 
-		this.shown = false;
 		this._removeReticle();
 		this._setAnchor(null);
 		document.removeEventListener('keydown', this._onKeydown);
-		super.hide();
+		super.close();
 
 		if (wasOpen && this._opener?.isConnected) this._opener.focus();
 		this._opener = null;

@@ -6,8 +6,8 @@ Native `<dialog>` element wrapper. The decision to use the native element rather
 
 ## Auto-open delays until the element is in the DOM
 
-- `openOnRender` defaults to a small delay so the dialog is guaranteed to be attached before `showModal()` is called; opening before attachment fails silently
-  - does setting openOnRender: false prevent the dialog from opening on its own?
+- `autoOpen` defaults to a small delay so the dialog is guaranteed to be attached before `showModal()` is called; opening before attachment fails silently
+  - does setting autoOpen: false prevent the dialog from opening on its own?
 
 ## Invalid sizes and intents fail loudly rather than rendering in an unknown state
 
@@ -30,19 +30,19 @@ A dialog's buttons are usually just labels, so a string is enough; a button that
 
 - a dialog with no explicit parent attaches to the document body, since a modal belongs to the page rather than to its opener
   - new Subject({}) captures d -> d.elem.parentElement === document.body
-- a numeric `openOnRender` is the delay in milliseconds; `true` takes the small default instead of waiting
-  - new Subject({ openOnRender: 400 }) captures slow then new Subject({ openOnRender: true }) captures quick then await new Promise(r => setTimeout(r, 120)) then slow.elem.open captures slowEarly then quick.elem.open captures quickEarly then await new Promise(r => setTimeout(r, 400)) -> slowEarly === false && quickEarly === true && slow.elem.open === true
+- a numeric `autoOpen` is the delay in milliseconds; `true` takes the small default instead of waiting
+  - new Subject({ autoOpen: 400 }) captures slow then new Subject({ autoOpen: true }) captures quick then await new Promise(r => setTimeout(r, 120)) then slow.elem.open captures slowEarly then quick.elem.open captures quickEarly then await new Promise(r => setTimeout(r, 400)) -> slowEarly === false && quickEarly === true && slow.elem.open === true
 
 ## A closed dialog leaves the page
 
 Dialogs are made for one question and thrown away, so a closed one is destroyed once its fade-out ends rather than left in the document for every caller to remove. A dialog meant to be shown again says so.
 
 - closing a dialog destroys it after its close animation, however it was closed
-  - new Subject({ openOnRender: false, appendTo: document.body }) captures d then d.open() then d.close() then await new Promise(r => setTimeout(r, 50)) -> d.elem.isConnected === false
+  - new Subject({ autoOpen: false, appendTo: document.body }) captures d then d.open() then d.close() then await new Promise(r => setTimeout(r, 50)) -> d.elem.isConnected === false
 - `removeOnClose: false` keeps a dialog to open again
-  - new Subject({ openOnRender: false, removeOnClose: false, appendTo: document.body }) captures d then d.open() then d.close() then await new Promise(r => setTimeout(r, 50)) then d.open() -> d.elem.isConnected === true && d.elem.open === true
+  - new Subject({ autoOpen: false, removeOnClose: false, appendTo: document.body }) captures d then d.open() then d.close() then await new Promise(r => setTimeout(r, 50)) then d.open() -> d.elem.isConnected === true && d.elem.open === true
 - a dialog opened again before it finished closing stays
-  - new Subject({ openOnRender: false, appendTo: document.body }) captures d then d.open() then d.close() then d.open() then await new Promise(r => setTimeout(r, 50)) -> d.elem.isConnected === true
+  - new Subject({ autoOpen: false, appendTo: document.body }) captures d then d.open() then d.close() then d.open() then await new Promise(r => setTimeout(r, 50)) -> d.elem.isConnected === true
 
 ## A yes-or-no question is one call
 

@@ -27,7 +27,8 @@ const dialog = new Dialog({
 | `buttons` | `Array<string\|object>` | - | Shorthand footer buttons. Each entry is a string label or `{ textContent, intent?, variant?, onPointerPress?, ...buttonOptions }` |
 | `footer` | `Array<Component>` | - | Fully custom footer components. Takes precedence over `buttons` |
 | `onButtonPress` | `Function` | - | Called when any `buttons` entry is pressed, after that button's own `onPointerPress`. Receives `{ button, closeDialog, event, dialog }` |
-| `openOnRender` | `number\|boolean` | `16` | Auto-open delay in ms after render. Set to `false` to disable auto-open |
+| `autoOpen` | `number\|boolean` | `true` | Open a moment (16ms) after render; a number is the delay in ms. Set to `false` to open it with `open()` |
+| `onClose` | `Function` | - | Hears `close`, however the dialog closed |
 | `modal` | `boolean` | `true` | Open as a modal (with backdrop) vs. non-modal |
 | `size` | `string` | `'small'` | Dialog dimensions: `'small'` (420×210px), `'standard'` (640×360px), `'large'` (90vw×90vh), `'fit'` (as tall as its content); any of them shrinks to fit a phone's screen |
 | `intent` | `string` | - | What the dialog is about, drawn in that status role: `'info'`, `'success'`, `'warning'`, `'danger'`; it colors the edge, the header and the footer buttons |
@@ -50,8 +51,11 @@ The press names follow one rule across the library: what is pressed takes `onPoi
 ## Methods
 
 ```js
-dialog.open(modal?: boolean): void
-// Opens the dialog. Defaults to options.modal. Falls back to re-render on first failure.
+dialog.open({ modal }?: { modal?: boolean }): void
+// Opens the dialog, as a modal unless told otherwise. Defaults to options.modal. Falls back to re-render on first failure.
+
+dialog.isOpen: boolean
+// Whether it's open.
 
 dialog.close(returnValue?: string): void
 // Closes the dialog. Passes returnValue to the native dialog close event. Unless removeOnClose is false, the dialog is
@@ -93,7 +97,7 @@ const dialog = new Dialog({
 	intent: 'info',
 	body: 'Loading...',
 	buttons: ['Dismiss'],
-	openOnRender: false,
+	autoOpen: false,
 	onButtonPress: ({ closeDialog }) => closeDialog(),
 });
 

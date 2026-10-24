@@ -113,17 +113,17 @@ export default class DemoMenu extends StyledComponent {
 		window.addEventListener('hashchange', () => {
 			title.elem.textContent = window.location.hash.slice(2);
 
-			this.menuPopover.hide();
+			this.menuPopover.close();
 			this.subMenu.options.items = [];
 		});
 	}
 
 	close() {
-		this.menuPopover.hide();
+		this.menuPopover.close();
 	}
 
 	openMenu() {
-		this.menuPopover.show();
+		this.menuPopover.open();
 
 		this.openSubMenu(window.location.hash.match(/#\/(.+?)\//)?.[1] || 'componentDemos');
 	}

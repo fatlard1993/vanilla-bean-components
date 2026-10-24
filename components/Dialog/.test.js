@@ -9,7 +9,7 @@ describe('Dialog', () => {
 	test('must display a dialog', () => {
 		const header = 'header';
 
-		const dialog = new Dialog({ header, openOnRender: false, appendTo: container });
+		const dialog = new Dialog({ header, autoOpen: false, appendTo: container });
 
 		// Check that dialog element exists directly
 		expect(dialog.elem.tagName).toBe('DIALOG');
@@ -20,7 +20,7 @@ describe('Dialog', () => {
 	test('must support a string header', async () => {
 		const header = 'header';
 
-		new Dialog({ header, openOnRender: false, appendTo: container });
+		new Dialog({ header, autoOpen: false, appendTo: container });
 
 		await findByText(container, header);
 	});
@@ -28,7 +28,7 @@ describe('Dialog', () => {
 	test('must support a string body', async () => {
 		const body = 'body';
 
-		new Dialog({ body, openOnRender: false, appendTo: container });
+		new Dialog({ body, autoOpen: false, appendTo: container });
 
 		await findByText(container, body);
 	});
@@ -36,7 +36,7 @@ describe('Dialog', () => {
 	test('must support an element header', async () => {
 		const header = new Component({ tag: 'p', textContent: 'header' });
 
-		new Dialog({ header, openOnRender: false, appendTo: container });
+		new Dialog({ header, autoOpen: false, appendTo: container });
 
 		await findByText(container, 'header');
 	});
@@ -44,7 +44,7 @@ describe('Dialog', () => {
 	test('must support an element body', async () => {
 		const body = new Component({ tag: 'p', textContent: 'body' });
 
-		new Dialog({ body, openOnRender: false, appendTo: container });
+		new Dialog({ body, autoOpen: false, appendTo: container });
 
 		await findByText(container, 'body');
 	});
@@ -52,13 +52,13 @@ describe('Dialog', () => {
 	test('must support an element footer', async () => {
 		const footer = new Component({ tag: 'p', textContent: 'footer' });
 
-		new Dialog({ footer, openOnRender: false, appendTo: container });
+		new Dialog({ footer, autoOpen: false, appendTo: container });
 
 		await findByText(container, 'footer');
 	});
 
 	test('must support footer buttons', async () => {
-		new Dialog({ buttons: ['button1', 'button2'], openOnRender: false, appendTo: container });
+		new Dialog({ buttons: ['button1', 'button2'], autoOpen: false, appendTo: container });
 
 		await findByText(container, 'button1');
 		await findByText(container, 'button2');
@@ -67,7 +67,7 @@ describe('Dialog', () => {
 	test('sets size classes correctly', () => {
 		const dialog = new Dialog({
 			size: 'large',
-			openOnRender: false,
+			autoOpen: false,
 			appendTo: container,
 		});
 
@@ -81,7 +81,7 @@ describe('Dialog', () => {
 	test('sets intent classes correctly', () => {
 		const dialog = new Dialog({
 			intent: 'danger',
-			openOnRender: false,
+			autoOpen: false,
 			appendTo: container,
 		});
 
@@ -96,18 +96,18 @@ describe('Dialog', () => {
 
 	test('validates size enum', () => {
 		expect(() => {
-			new Dialog({ size: 'invalid', openOnRender: false, appendTo: container });
+			new Dialog({ size: 'invalid', autoOpen: false, appendTo: container });
 		}).toThrow('"invalid" is not a valid size');
 	});
 
 	test('validates intent enum', () => {
 		expect(() => {
-			new Dialog({ intent: 'invalid', openOnRender: false, appendTo: container });
+			new Dialog({ intent: 'invalid', autoOpen: false, appendTo: container });
 		}).toThrow('"invalid" is not a valid intent');
 	});
 
 	test('has correct default options', () => {
-		const dialog = new Dialog({ openOnRender: false, appendTo: container });
+		const dialog = new Dialog({ autoOpen: false, appendTo: container });
 
 		expect(dialog.elem.tagName).toBe('DIALOG');
 		expect(dialog.options.size).toBe('small');
@@ -118,17 +118,29 @@ describe('Dialog', () => {
 	test('opens and closes dialog programmatically', () => {
 		const dialog = new Dialog({
 			header: 'Test',
-			openOnRender: false,
+			autoOpen: false,
 			appendTo: container,
 		});
 
-		expect(dialog.elem.open).toBe(false);
+		expect(dialog.isOpen).toBe(false);
 
 		dialog.open();
-		expect(dialog.elem.open).toBe(true);
+		expect(dialog.isOpen).toBe(true);
 
 		dialog.close();
-		expect(dialog.elem.open).toBe(false);
+		expect(dialog.isOpen).toBe(false);
+	});
+
+	test('onClose hears it close, and open takes modal as an option', () => {
+		const onClose = mock();
+		const dialog = new Dialog({ autoOpen: false, removeOnClose: false, onClose, appendTo: container });
+		const show = spyOn(dialog.elem, 'show');
+
+		dialog.open({ modal: false });
+		dialog.close();
+
+		expect(show).toHaveBeenCalledTimes(1);
+		expect(onClose).toHaveBeenCalledTimes(1);
 	});
 
 	test('supports button objects with options', async () => {
@@ -137,7 +149,7 @@ describe('Dialog', () => {
 				{ textContent: 'Save', disabled: true },
 				{ textContent: 'Cancel', className: 'cancel-btn' },
 			],
-			openOnRender: false,
+			autoOpen: false,
 			appendTo: container,
 		});
 
@@ -152,7 +164,7 @@ describe('Dialog', () => {
 		const dialog = new Dialog({
 			header: 'Initial Header',
 			body: 'Initial Body',
-			openOnRender: false,
+			autoOpen: false,
 			appendTo: container,
 		});
 
@@ -171,7 +183,7 @@ describe('Dialog', () => {
 		new Dialog({
 			buttons: ['Test Button'],
 			onButtonPress,
-			openOnRender: false,
+			autoOpen: false,
 			appendTo: container,
 		});
 
@@ -195,7 +207,7 @@ describe('Dialog', () => {
 		new Dialog({
 			buttons: [own],
 			onButtonPress: ({ button }) => calls.push(['dialog', button]),
-			openOnRender: false,
+			autoOpen: false,
 			appendTo: container,
 		});
 
@@ -208,7 +220,7 @@ describe('Dialog', () => {
 	});
 
 	test('rebuilds footer when buttons option changes', async () => {
-		const dialog = new Dialog({ buttons: ['One'], openOnRender: false, appendTo: container });
+		const dialog = new Dialog({ buttons: ['One'], autoOpen: false, appendTo: container });
 
 		// eslint-disable-next-line testing-library/no-node-access
 		expect(container.querySelectorAll('.footer button').length).toBe(1);
@@ -230,7 +242,7 @@ describe('Dialog', () => {
 		}
 
 		new Dialog({
-			openOnRender: false,
+			autoOpen: false,
 			body: new List({ items: [{}], ListItemComponent: Item }),
 			appendTo: container,
 		});
@@ -251,7 +263,7 @@ describe('Dialog', () => {
 		}
 
 		new Dialog({
-			openOnRender: false,
+			autoOpen: false,
 			body: new List({ items: [{}], ListItemComponent: Item }),
 			appendTo: container,
 		});
@@ -272,7 +284,7 @@ describe('Dialog', () => {
 		}
 
 		const dialog = new Dialog({
-			openOnRender: false,
+			autoOpen: false,
 			body: new List({ items: [{}], ListItemComponent: Item }),
 			appendTo: container,
 		});
@@ -289,7 +301,7 @@ describe('Dialog', () => {
 		const closed = () => new Promise(resolve => setTimeout(resolve, 10));
 
 		test('a closed dialog is removed from the page', async () => {
-			const dialog = new Dialog({ header: 'gone', openOnRender: false, appendTo: container });
+			const dialog = new Dialog({ header: 'gone', autoOpen: false, appendTo: container });
 
 			dialog.open();
 			dialog.close();
@@ -299,7 +311,7 @@ describe('Dialog', () => {
 		});
 
 		test('removeOnClose: false keeps it to open again', async () => {
-			const dialog = new Dialog({ header: 'kept', openOnRender: false, removeOnClose: false, appendTo: container });
+			const dialog = new Dialog({ header: 'kept', autoOpen: false, removeOnClose: false, appendTo: container });
 
 			dialog.open();
 			dialog.close();
@@ -311,7 +323,7 @@ describe('Dialog', () => {
 		});
 
 		test('a dialog opened again before it finished closing stays', async () => {
-			const dialog = new Dialog({ header: 'back', openOnRender: false, appendTo: container });
+			const dialog = new Dialog({ header: 'back', autoOpen: false, appendTo: container });
 
 			dialog.open();
 			dialog.close();

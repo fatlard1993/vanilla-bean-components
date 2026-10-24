@@ -13,6 +13,45 @@ describe('Popover', () => {
 		await findByText(container, textContent);
 	});
 
+	describe('open, close and the close event', () => {
+		test('open and close it; isOpen says which, and close is announced once for each opening', () => {
+			const onClose = mock();
+			const popover = new Popover({ autoOpen: false, onClose, appendTo: container });
+
+			popover.close();
+			popover.open();
+
+			expect(popover.isOpen).toBe(true);
+
+			popover.close();
+			popover.close();
+
+			expect(popover.isOpen).toBe(false);
+			expect(onClose).toHaveBeenCalledTimes(1);
+		});
+
+		test('a close by the platform, a light dismiss, is announced too', () => {
+			const onClose = mock();
+			const popover = new Popover({ autoOpen: false, state: 'auto', onClose, appendTo: container });
+
+			popover.open();
+			popover.elem.dispatchEvent(Object.assign(new Event('toggle'), { newState: 'closed' }));
+
+			expect(popover.isOpen).toBe(false);
+			expect(onClose).toHaveBeenCalledTimes(1);
+		});
+
+		test('a number for autoOpen is its delay', async () => {
+			const popover = new Popover({ autoOpen: 10, appendTo: container });
+
+			expect(popover.isOpen).toBe(false);
+
+			await new Promise(resolve => setTimeout(resolve, 40));
+
+			expect(popover.isOpen).toBe(true);
+		});
+	});
+
 	describe('outsideClose', () => {
 		const settle = () => new Promise(resolve => setTimeout(resolve, 40));
 		const shown = popover => popover.elem.style.display === 'block';
@@ -27,7 +66,7 @@ describe('Popover', () => {
 			const popover = new Popover({ outsideClose: true, autoOpen: false, appendTo: container });
 			const elsewhere = new Component({ tag: 'button', textContent: 'elsewhere', appendTo: container });
 
-			popover.show();
+			popover.open();
 			await settle();
 
 			return { popover, elsewhere };
@@ -57,7 +96,7 @@ describe('Popover', () => {
 			const toggle = new Component({
 				tag: 'button',
 				appendTo: container,
-				onPointerPress: () => (shown(popover) ? popover.hide() : popover.show()),
+				onPointerPress: () => (shown(popover) ? popover.close() : popover.open()),
 			});
 
 			press(toggle);
@@ -71,7 +110,7 @@ describe('Popover', () => {
 			const showElsewhere = new Component({
 				tag: 'button',
 				appendTo: container,
-				onPointerPress: () => popover.show({ x: 20, y: 20 }),
+				onPointerPress: () => popover.open({ x: 20, y: 20 }),
 			});
 
 			press(showElsewhere);

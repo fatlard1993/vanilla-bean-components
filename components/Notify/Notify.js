@@ -247,8 +247,8 @@ export default class Notify extends StyledPopover {
 		);
 	}
 
-	show(options) {
-		super.show(options);
+	open(options) {
+		super.open(options);
 
 		if (!this.hasClass('stacked') || !this.elem.isConnected) return;
 

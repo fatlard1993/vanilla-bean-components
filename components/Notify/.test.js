@@ -22,6 +22,16 @@ describe('Notify', () => {
 		expect(() => new Notify({ intent: 'error', autoOpen: false, appendTo: container })).toThrow();
 	});
 
+	test('dismissing it announces close', () => {
+		const onClose = mock();
+		const notify = new Notify({ content: 'm', onClose, autoOpen: false, appendTo: container });
+
+		notify.open();
+		notify.elem.click();
+
+		expect(onClose).toHaveBeenCalledTimes(1);
+	});
+
 	describe('timeout', () => {
 		test('info and success dismiss themselves; warning and danger wait to be tapped', () => {
 			const timeouts = ['info', 'success', 'warning', 'danger'].map(
@@ -43,7 +53,7 @@ describe('Notify', () => {
 		const toast = textContent => {
 			const notify = new Notify({ textContent, autoOpen: false, appendTo: container });
 
-			notify.show();
+			notify.open();
 
 			return notify;
 		};
@@ -76,7 +86,7 @@ describe('Notify', () => {
 		test('a toast placed at a point is not stacked', () => {
 			const placed = new Notify({ x: 40, y: 40, autoOpen: false, appendTo: container });
 
-			placed.show();
+			placed.open();
 
 			expect(placed.elem).not.toHaveClass('stacked');
 			placed.destroy();

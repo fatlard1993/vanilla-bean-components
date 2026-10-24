@@ -2,20 +2,20 @@
 
 > ./Popover.js
 
-Native popover element with edge-aware placement. The design decision: position is calculated at show time, not at construction; the popover adapts to wherever in the viewport it needs to appear, at the moment it appears.
+Native popover element with edge-aware placement. The design decision: position is calculated at open time, not at construction; the popover adapts to wherever in the viewport it needs to appear, at the moment it appears.
 
-## Placement adapts to viewport edges at the moment of showing
+## Placement adapts to viewport edges at the moment of opening
 
 **browser:** true
 
-- when the popover would overflow an edge, the position flips; this calculation runs on each `show()` call so it stays accurate as the page scrolls or resizes
-  - new Subject({ ...{ maxWidth: 264, maxHeight: 132, state: "manual", outsideClose: false, autoOpen: false, uniqueId: true }, x: 10, y: 10 }) captures near then near.show() then new Subject({ ...{ maxWidth: 264, maxHeight: 132, state: "manual", outsideClose: false, autoOpen: false, uniqueId: true }, x: window.innerWidth - 10, y: 10 }) captures far then far.show() -> near.elem.style.left !== "unset" && far.elem.style.left === "unset" && far.elem.style.right !== "unset"
+- when the popover would overflow an edge, the position flips; this calculation runs on each `open()` call so it stays accurate as the page scrolls or resizes
+  - new Subject({ ...{ maxWidth: 264, maxHeight: 132, state: "manual", outsideClose: false, autoOpen: false, uniqueId: true }, x: 10, y: 10 }) captures near then near.open() then new Subject({ ...{ maxWidth: 264, maxHeight: 132, state: "manual", outsideClose: false, autoOpen: false, uniqueId: true }, x: window.innerWidth - 10, y: 10 }) captures far then far.open() -> near.elem.style.left !== "unset" && far.elem.style.left === "unset" && far.elem.style.right !== "unset"
 - a point off the viewport is pulled onto it, so the popover is never placed out of sight
-  - new Subject({ ...{ maxWidth: 100, maxHeight: 40, state: "manual", outsideClose: false, autoOpen: false, uniqueId: true }, viewport: { getBoundingClientRect: () => ({ left: 0, top: 0, right: 400, bottom: 300 }) }, x: -500, y: -200 }) captures p then p.show() -> p.elem.style.left === "12px" && p.elem.style.top === "12px"
+  - new Subject({ ...{ maxWidth: 100, maxHeight: 40, state: "manual", outsideClose: false, autoOpen: false, uniqueId: true }, viewport: { getBoundingClientRect: () => ({ left: 0, top: 0, right: 400, bottom: 300 }) }, x: -500, y: -200 }) captures p then p.open() -> p.elem.style.left === "12px" && p.elem.style.top === "12px"
 
 ## autoOpen fires after a short delay, not immediately
 
-- `autoOpen: true` queues `show()` after 200ms; failing immediately would break when the popover's anchor isn't yet in the DOM
+- `autoOpen: true` queues `open()` after 200ms; failing immediately would break when the popover's anchor isn't yet in the DOM
   - does a popover with autoOpen not open synchronously on construction?
   - new Subject({ autoOpen: true, state: "manual", uniqueId: true, appendTo: document.body }) captures cancelled then new Subject({ autoOpen: true, state: "manual", uniqueId: true, appendTo: document.body }) captures control then await new Promise(r => setTimeout(r, 40)) then Object.keys(cancelled.cleanup) captures armed then cancelled.processCleanup() then await new Promise(r => setTimeout(r, 320)) -> armed.includes("autoOpen") && cancelled.elem.style.display !== "block" && control.elem.style.display === "block"
 

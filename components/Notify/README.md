@@ -1,6 +1,6 @@
 # Notify
 
-A toast: a short message that says what just happened. Its `intent` (`info`, `success`, `warning`, `danger`, the status roles of the same names) picks its colour, its icon, how loudly a screen reader announces it, and how long it stays. Pressing it anywhere dismisses it.
+A toast: a short message that says what just happened. Its `intent` (`info`, `success`, `warning`, `danger`, the status roles of the same names) picks its colour, its icon, how loudly a screen reader announces it, and how long it stays. Pressing it anywhere dismisses it, and however it leaves it announces `close`, as every overlay does, so `onClose` hears it.
 
 ## Usage
 
