@@ -508,10 +508,12 @@ This creates implementation, demo, tests, and documentation files following proj
 
 [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) covers how Elem, Component, styled and the app kit fit together, and [docs/NAMING_CONVENTIONS.md](./docs/NAMING_CONVENTIONS.md) how files, classes and options are named. The component READMEs cover each component.
 
+Coming from 6.x? [docs/MIGRATING_7.md](./docs/MIGRATING_7.md) lists every rename and removal in 7.0, before and after, and what else changed.
+
 ## License
 
 MIT License - see [LICENSE](./LICENSE) file for details.
 
 ---
 
-**[Browse Components](./components/)** • **[API Documentation](./docs/)** • **[Live Demo](./demo/)** • **[Getting Started Guide](./docs/GETTING_STARTED.md)** • **[Architecture](./docs/ARCHITECTURE.md)** • **[Naming Conventions](./docs/NAMING_CONVENTIONS.md)** • **[Design Philosophy](./docs/ETHOS.md)**
+**[Browse Components](./components/)** • **[API Documentation](./docs/)** • **[Live Demo](./demo/)** • **[Getting Started Guide](./docs/GETTING_STARTED.md)** • **[Architecture](./docs/ARCHITECTURE.md)** • **[Naming Conventions](./docs/NAMING_CONVENTIONS.md)** • **[Migrating to 7](./docs/MIGRATING_7.md)** • **[Design Philosophy](./docs/ETHOS.md)**
