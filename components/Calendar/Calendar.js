@@ -3,7 +3,7 @@ import { styled } from '../../styled';
 import { Component } from '../../Component';
 import { Elem } from '../../Elem';
 
-import { fontSize, radius, space } from '../../theme/tokens';
+import { fontSize, media, radius, space } from '../../theme/tokens';
 import { capitalize, daysInMonth, formatDate, formatDuration, formatTime } from '../../utils';
 import { Button } from '../Button';
 import { Tabs } from '../Tabs';
@@ -177,6 +177,21 @@ const MonthCalendar = styled(
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
+		}
+
+		/* A phone's columns fit "S", not "Sunday" */
+		th .narrow {
+			display: none;
+		}
+
+		@media ${media.phone} {
+			th .long {
+				display: none;
+			}
+
+			th .narrow {
+				display: inline;
+			}
 		}
 	`,
 );
@@ -602,7 +617,15 @@ class Calendar extends StyledComponent {
 			new Component({
 				tag: 'th',
 				scope: 'col',
-				textContent: formatDate(new Date(1970, 0, 4 + day), { weekday: 'long' }),
+				abbr: formatDate(new Date(1970, 0, 4 + day), { weekday: 'long' }),
+				append: ['long', 'narrow'].map(
+					weekday =>
+						new Elem({
+							tag: 'span',
+							addClass: weekday,
+							textContent: formatDate(new Date(1970, 0, 4 + day), { weekday }),
+						}),
+				),
 				appendTo: titleRow,
 			});
 		}
