@@ -30,7 +30,8 @@ describe('Tabs', () => {
 
 		expect(strip.options.selected).toBe('people');
 		expect(onChange).toHaveBeenCalledTimes(1);
-		expect(onChange.mock.calls[0][0]).toBe('people');
+		expect(onChange.mock.calls[0][0].value).toBe('people');
+		expect(onChange.mock.calls[0][0].type).toBe('change');
 	});
 
 	test('the arrow keys, Home and End move along and select, passing over a disabled tab', async () => {

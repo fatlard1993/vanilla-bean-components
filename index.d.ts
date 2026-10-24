@@ -843,7 +843,7 @@ export interface TabsOptions extends ComponentOptions {
 
 export declare class Tabs extends Component {
 	constructor(options?: TabsOptions, ...children: Array<Elem | HTMLElement | string>);
-	/** Selects a tab, showing its panel and calling onChange if it wasn't already selected. */
+	/** Selects a tab, showing its panel and announcing `change`, with the id as `event.value`, if it wasn't already selected. */
 	select(id: string): void;
 	/** Sets the count shown beside a tab's label; zero or nothing clears it. */
 	count(id: string, count?: number): void;

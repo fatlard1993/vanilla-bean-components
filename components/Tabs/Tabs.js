@@ -79,7 +79,7 @@ const StyledComponent = styled(
  * @param {Array<object>} [options.tabs] - The tabs, e.g. { id, label, icon, count, disabled }; reactive
  * @param {string} [options.selected] - The selected tab's id; defaults to the first tab
  * @param {object} [options.panels] - Each tab's panel, by id: an element or a Component, shown only while selected
- * @param {Function} [options.onChange] - Called with (id, tabs) when the selection changes
+ * @param {Function} [options.onChange] - Hears `change` when the selection changes; `event.value` is the selected tab's id
  * @param {('segmented')} [options.variant] - 'segmented' is a pill split into its choices, for switching between a
  *   few views of the same thing
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
@@ -88,7 +88,7 @@ const StyledComponent = styled(
  * new Tabs({
  *   tabs: [{ id: 'chat', label: 'Chat', count: 2 }, { id: 'people', label: 'People' }],
  *   panels: { chat: chatList, people: peopleList },
- *   onChange: id => remember('tab', id),
+ *   onChange: ({ value }) => remember('tab', value),
  * });
  */
 export default class Tabs extends StyledComponent {
@@ -113,8 +113,6 @@ export default class Tabs extends StyledComponent {
 				this._showSelected(this.options.selected);
 			},
 		},
-		// Called by the tabs themselves; data, so the name isn't also wired to the DOM's change event
-		onChange: { data: true },
 	};
 
 	build() {
@@ -195,14 +193,15 @@ export default class Tabs extends StyledComponent {
 	}
 
 	/**
-	 * Selects a tab, showing its panel and calling onChange if it wasn't already selected.
+	 * Selects a tab, showing its panel and announcing `change`, with the id as `event.value`, if it wasn't already
+	 * selected.
 	 * @param {string} id - The tab's id
 	 */
 	select(id) {
 		if (id === this.options.selected || !this._buttons[id] || this._buttons[id].options.disabled) return;
 
 		this.options.selected = id;
-		this.options.onChange?.(id, this);
+		this.emit('change', { value: id });
 	}
 
 	/**

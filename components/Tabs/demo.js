@@ -17,7 +17,7 @@ export default class Demo extends DemoView {
 				{ id: 'people', label: 'People', count: 3 },
 			],
 			panels,
-			onChange: id => id === 'chat' && this.component.count('chat', 0),
+			onChange: ({ value }) => value === 'chat' && this.component.count('chat', 0),
 		});
 
 		this.demoWrapper.append(...Object.values(panels).map(panel => panel.elem));

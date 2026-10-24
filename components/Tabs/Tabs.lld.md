@@ -2,7 +2,7 @@
 
 > ./Tabs.js
 
-A row of tabs, one selected. The design decision is that selection is the component's: pressing, the arrow keys, Home and End all select through one path, so `onChange` fires once per real change and panels, ARIA state and the roving tab stop never disagree.
+A row of tabs, one selected. The design decision is that selection is the component's: pressing, the arrow keys, Home and End all select through one path, so `change` fires once per real change, carrying the id as `event.value` like every other change in the library, and panels, ARIA state and the roving tab stop never disagree.
 
 ## One selected, the first unless another is
 
@@ -12,7 +12,7 @@ A row of tabs, one selected. The design decision is that selection is the compon
 ## Selecting is one path
 
 - selecting a tab calls onChange once; selecting it again doesn't
-  - new Array() captures calls then new Subject({ tabs: [{ id: "a", label: "A" }, { id: "b", label: "B" }], onChange: id => calls.push(id), appendTo: document.body }) captures t then t.select("b") then t.select("b") -> calls.join() === "b"
+  - new Array() captures calls then new Subject({ tabs: [{ id: "a", label: "A" }, { id: "b", label: "B" }], onChange: e => calls.push(e.value), appendTo: document.body }) captures t then t.select("b") then t.select("b") -> calls.join() === "b"
 
 ## A panel shows only while its tab is selected
 
