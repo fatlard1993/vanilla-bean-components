@@ -36,7 +36,7 @@ function jsDocTypeToTS(type) {
 			.replace(/import\([^)]*\)\./g, '')
 			.replace(/\[\.\.\.(\w+)\]/g, '$1[]')
 			.replace(/\*/g, 'any')
-			.replace(/\bFunction\b/g, '(...args: any[]) => any')
+			.replace(/\bFunction\b/g, '((...args: any[]) => any)')
 			.replace(/\bobject\b/g, 'Record<string, any>')
 			.replace(/\bArray\b(?!<)/g, 'Array<any>')
 			.replace(/\|/g, ' | ')
