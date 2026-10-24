@@ -11,7 +11,7 @@ Declarative form from an array of input configurations. The key design decision 
 
 ## hasErrors validates all inputs simultaneously and returns a boolean
 
-- `hasErrors()` runs all validations and returns true if any failed, false if all passed; false means submittable
+- `hasErrors()` checks every field's `validate` and returns true if any found something wrong, false if all passed; false means submittable
   - does hasErrors return false when all inputs are valid?
   - new Subject({ inputs: [{ key: "name", validate: v => (v ? null : "required") }], appendTo: document.body }) captures f -> f.hasErrors() === true
 

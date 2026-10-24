@@ -139,7 +139,7 @@ new Component({
 });
 ```
 
-The recognized native events are `click`, the pointer events, `contextmenu`, `focus`, `focusin` and `focusout`, plus the input events below. An `on*` option for a declared custom event keeps its case (`onSelectDay` hears `selectDay`); any other is lowercased to a native name (`onKeyUp` hears `keyup`). For press interactions prefer `onPointerPress`.
+The recognized native events are `click`, the pointer events, `contextmenu`, `focus`, `focusin` and `focusout`, plus the input events below. An `on*` option for a declared custom event keeps its case (`onDayPress` hears `dayPress`); any other is lowercased to a native name (`onKeyUp` hears `keyup`). For press interactions prefer `onPointerPress`.
 
 ### Enhanced Input Events
 
@@ -334,7 +334,7 @@ Unhandled keys fall through to standard routing automatically - no `super._setOp
 
 Two more statics complete the declaration surface, and together they eliminate the need for component constructors in almost every case:
 
-- `static events = ['select']` - custom event names usable with `on()`/`emit()`, and as `on*` options (`onSelect`). Unioned up the class chain, so a subclass adds to its parent's events instead of replacing them. `on()` with a name that is neither declared nor recognized registers nothing, and warns in development.
+- `static events = ['itemPress']` - custom event names usable with `on()`/`emit()`, and as `on*` options (`onItemPress`). Unioned up the class chain, so a subclass adds to its parent's events instead of replacing them. `on()` with a name that is neither declared nor recognized registers nothing, and warns in development.
 - `static prepareOptions(options, children)` - a pure transform run on the merged (schema defaults + user) options before processing, leaf-first up the class chain. This is the home for computed defaults: Input derives `type` from the value's type here, Code decides its tag from `multiline`, Table normalizes string columns. Because the hook sees merged options, ancestor hooks see subclass schema defaults (Input's hook sees Select's `tag: 'select'`). It follows that a subclass presets an option an ancestor already defaults by redeclaring it in its own `static schema` (`static schema = { variant: { default: 'bar' } }`), not by spreading `{ variant: 'bar', ...options }` in `prepareOptions`: by then the ancestor's default is already in `options` and wins the spread.
 
 A fully declared component needs no constructor at all: `static schema` + `static events` + `prepareOptions` + `build()` cover declaration, wiring, and structure. Constructors remain only for genuine construction-time work (Page's eager stylesheet loading, Label's string-shorthand normalization).
@@ -396,7 +396,7 @@ component.processCleanup();
 build() {
 	window.addEventListener('resize', () => this.fit(), { signal: this.signal });
 	fetch('/api/stats', { signal: this.signal }).then(...);
-	GET('/api/games', { scope: this.signal, onSuccess: ({ body }) => this.show(body) }); // hypertether
+	GET('/api/games', { scope: this.signal, onSuccess: ({ body }) => this.draw(body) }); // hypertether
 }
 ```
 

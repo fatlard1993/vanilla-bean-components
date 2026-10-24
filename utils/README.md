@@ -135,7 +135,7 @@ else if (saved.status === 'error') notify(failureReason(saved));
 A WebSocket that comes back. A dropped connection is retried for as long as it's open, backing off to every 10 seconds, and at once when the page comes back into view or the network comes back. Listeners carry over to each new connection. `onLost` and `onRestored` are called once per outage, for a notice of your own.
 
 ```js
-const socket = connectSocket('/ws', { onLost: () => lost.show(), onRestored: () => lost.hide() });
+const socket = connectSocket('/ws', { onLost: () => (lost.hidden = false), onRestored: () => (lost.hidden = true) });
 
 const stop = socket.onMessage(data => update(data)); // JSON is parsed; anything else comes as it is
 socket.send({ type: 'move', x, y }); // false while disconnected: nothing is queued

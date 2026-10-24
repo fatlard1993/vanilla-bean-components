@@ -6,7 +6,7 @@ const MAX_DELAY = 10_000;
  * and at once when the page comes back into view or the network comes back. Listeners carry over to each new
  * connection.
  * @example
- * const socket = connectSocket('/ws', { onLost: () => banner.show(), onRestored: () => banner.hide() });
+ * const socket = connectSocket('/ws', { onLost: () => (banner.hidden = false), onRestored: () => (banner.hidden = true) });
  * const stop = socket.onMessage(data => console.log(data));
  * socket.send({ type: 'join' });
  * @param {string} [path] - Path on this host, or a full ws(s) URL; a path goes over wss on an https page

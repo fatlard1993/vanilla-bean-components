@@ -20,7 +20,7 @@ const input = new Input({
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `tag` | `string` | `'input'` | HTML tag: `'input'` or `'textarea'` |
-| `type` | `string` | auto-detected | Input type (see `type_enum`). Auto-detected from value: `number` → `'number'`, `boolean` → `'checkbox'`, `string` → `'text'` |
+| `type` | `string` | auto-detected | Input type (the list is `input.optionEnum('type')`). Auto-detected from value: `number` → `'number'`, `boolean` → `'checkbox'`, `string` → `'text'` |
 | `value` | `any` | `''` | Initial value. Setting `options.value` reactively updates the element |
 | `placeholder` | `string` | `''` | Placeholder text |
 | `autocomplete` | `string` | `'off'` | Native autocomplete attribute |

@@ -220,7 +220,7 @@ class Stats extends Component {
 		window.addEventListener('resize', () => this.fit(), { signal: this.signal });
 		fetch('/api/stats', { signal: this.signal })
 			.then(response => response.json())
-			.then(stats => this.show(stats));
+			.then(stats => this.draw(stats));
 	}
 }
 ```

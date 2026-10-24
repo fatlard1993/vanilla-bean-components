@@ -1035,16 +1035,16 @@ describe('Component', () => {
 			comp.destroy();
 		});
 
-		test('a camelCase event keeps its case: onSelectDay hears selectDay', () => {
+		test('a camelCase event keeps its case: onDayPress hears dayPress', () => {
 			class TestComp extends Component {
-				static events = ['selectDay'];
+				static events = ['dayPress'];
 			}
 
-			const onSelectDay = mock();
-			const comp = new TestComp({ onSelectDay });
-			comp.emit('selectDay', 'today');
-			expect(onSelectDay).toHaveBeenCalledTimes(1);
-			expect(onSelectDay.mock.calls[0][0].detail).toBe('today');
+			const onDayPress = mock();
+			const comp = new TestComp({ onDayPress });
+			comp.emit('dayPress', 'today');
+			expect(onDayPress).toHaveBeenCalledTimes(1);
+			expect(onDayPress.mock.calls[0][0].detail).toBe('today');
 			comp.destroy();
 		});
 
