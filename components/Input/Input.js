@@ -4,7 +4,7 @@ import { fileAccepted, retry } from '../../utils';
 import { insertTabCharacter, adjustIndentation } from './utils';
 import { runValidators, showFieldError } from './fieldError';
 
-const type_enum = Object.freeze([
+const INPUT_TYPES = Object.freeze([
 	'button',
 	'checkbox',
 	'color',
@@ -65,7 +65,7 @@ const dataTypeToInputType = { number: 'number', boolean: 'checkbox', string: 'te
 export default class Input extends Component {
 	static schema = {
 		tag: { default: 'input' },
-		type: { enum: type_enum },
+		type: { enum: INPUT_TYPES },
 		// Values the browser offers while typing, through a datalist kept in step with the option
 		suggestions: {
 			set(value) {

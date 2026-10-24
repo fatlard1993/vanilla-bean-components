@@ -10,8 +10,7 @@ The library uses different casing patterns to signal the type and scope of ident
 
 - **PascalCase** :: Classes, components, constructors, and types that represent instantiable entities
 - **camelCase** :: Variables, functions, methods, and properties that represent actions or state
-- **snake_case + `_enum` suffix** :: Frozen enum arrays exposed as instance properties (e.g., `type_enum`, `size_enum`, `variant_enum`)
-- **snake_case** :: Test files and utility files (used sparingly for specific cases)
+- **UPPER_SNAKE_CASE** :: Module-level constants: fixed lists and tunings (e.g., `INPUT_TYPES`, `VIEWS`, `LONG_PRESS_MS`)
 - **kebab-case** :: CSS classes, HTML attributes, URL slugs, and external identifiers
 
 ## Files & Directories
@@ -39,13 +38,13 @@ Variable and function naming emphasizes readability and clearly communicates int
 **Standard Identifiers:**
 
 - **Local variables**: camelCase with descriptive names (e.g., `userName`, `isValid`, `currentValue`)
-- **Function names**: camelCase verbs that describe the action (e.g., `buildClassList`, `hydrateUrl`, `updateValidationErrors`)
+- **Function names**: camelCase verbs that describe the action (e.g., `buildClassList`, `formatDate`, `readStorage`)
 - **Default options**: Always `defaultOptions` as a camelCase object containing component defaults
 
 **Special Naming Patterns:**
 
-- **Enums**: snake_case with `_enum` suffix for frozen arrays exposed as instance properties (e.g., `type_enum`, `size_enum`, `variant_enum`)
-- **Private methods**: Underscore prefix to indicate internal use (e.g., `_setOption`, `_updateAutoHeight`)
+- **Enums**: an option's values are declared in its schema descriptor (`type: { enum: INPUT_TYPES }`, or `classEnum('variant', ['flat', 'chip'])`) and read with `component.optionEnum('type')`; nothing is exposed as an instance property. A list kept beside the class is a frozen UPPER_SNAKE_CASE constant
+- **Private methods**: Underscore prefix to indicate internal use (e.g., `_setOption`, `_showTags`)
 - **Cleanup functions**: Prefixed with `__` for internal lifecycle methods (e.g., `__debouncedUpdateAutoHeight`)
 
 These patterns help distinguish between public APIs, private implementation details, and immutable configuration values.
@@ -139,7 +138,7 @@ Certain file types and contexts have specific naming requirements that override 
 **Test and Development:**
 
 - **Test descriptions**: sentence case with spaces for readability in test output
-- **Enum values**: Context-dependent: lowercase for HTML attributes (matching web standards), snake_case with `_enum` suffix for frozen instance arrays
+- **Enum values**: lowercase, kebab-case where they need more than one word (`'datetime-local'`, `'inline-after'`), as HTML attributes are
 
 **Context-Sensitive Naming:**
 

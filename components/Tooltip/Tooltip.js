@@ -84,7 +84,7 @@ const StyledPopover = styled(
 	`,
 );
 
-const position_enum = Object.freeze([
+const POSITIONS = Object.freeze([
 	'center',
 	'top',
 	'bottom',
@@ -114,9 +114,9 @@ class Tooltip extends StyledPopover {
 		autoOpen: { default: false },
 		position: {
 			default: 'topRight',
-			enum: position_enum,
+			enum: POSITIONS,
 			set(value) {
-				this.removeClass(...position_enum);
+				this.removeClass(...POSITIONS);
 				this.addClass(value);
 			},
 		},
