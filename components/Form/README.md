@@ -29,7 +29,7 @@ const form = new Form({
 | --- | --- | --- | --- |
 | `key` | `string` | required | Key into `options.data` for reading and writing the value |
 | `label` | `string\|object` | auto | Label text. Defaults to a human-readable version of `key` (camelCase converted). Pass an object to forward options to `Label` |
-| `InputComponent` | `Component class` | `Input` | Component class to instantiate. Can be `Select`, `ColorPicker`, or any component that accepts `value` and `onChange` |
+| `InputComponent` | `Component class` | `Input` | Component class to instantiate. Can be `Select`, `ColorPicker`, `TagList`, or any component that takes `value` and announces `onChange` with `event.value` |
 | `onChange` | `Function` | `() => {}` | Called after the data context is updated with the new value |
 | `parse` | `Function(value, input)` | `v => v` | Transforms the raw event value before storing it in `options.data` |
 | `validate` | `Function\|Function[]` | - | `value => message`: what's wrong, or nothing. Shown below the field in the `danger` color and read out with it. A component with its own `validate()` (Input, Select, TagList) is given it and checks as it changes; any other is checked by `hasErrors()`. The same function can check the field on the server, as a `createStore` field's `validate` |

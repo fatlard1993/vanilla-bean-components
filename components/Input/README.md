@@ -55,7 +55,7 @@ validate: [
 
 The field is checked as its value changes and whenever `validate()` is called. What's wrong is written below the field in the `danger` color and read out with it (`aria-describedby`); the field is marked `aria-invalid` and gets the `validation-errors` class. A value that passes clears all three.
 
-It is the same shape every field takes: a [Form](../Form/README.md) field's `validate`, a [TagList](../TagList/README.md)'s, and a server `createStore` field's (see the [app kit](../../app/README.md)), so one function can check a field in the browser and in the store.
+It is the same shape every field takes: a [Form](../Form/README.md) field's `validate`, a TagList's, and a server `createStore` field's (see the [app kit](../../app/README.md)), so one function can check a field in the browser and in the store.
 
 ### Files
 

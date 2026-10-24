@@ -59,14 +59,15 @@ const StyledComponent = styled(
 /**
  * A single tag chip within a TagList.
  *
- * Renders its text alongside a remove button, which destroys the tag. In read-only mode the button
- * is omitted and the chip is display-only.
+ * Renders its text alongside a remove button, which calls onRemove (or, with none, destroys the tag). In read-only
+ * mode the button is omitted and the chip is display-only.
  * @param {object} [options={}] - Tag configuration options
  * @param {string} [options.tag='li'] - HTML tag for the chip element
  * @param {number} [options.tabIndex=0] - Tab order for the chip
  * @param {boolean} [options.readOnly=false] - Omits the remove button and applies the readOnly class
  * @param {string} [options.textContent] - The tag's text; also mirrored onto the element as
- *   `data-value`, which is what TagList reads back when collecting current tags
+ *   `data-value`, which TagList matches against its value
+ * @param {Function} [options.onRemove] - Called when the remove button is pressed; its TagList takes the tag out of its value
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Tag} Tag component instance
  */
@@ -80,6 +81,8 @@ class Tag extends StyledComponent {
 				this.toggleClass('readOnly', !!value);
 			},
 		},
+		// Called by the remove button
+		onRemove: {},
 		textContent: {
 			set(value) {
 				this.elem.setAttribute('data-value', value);
@@ -95,7 +98,7 @@ class Tag extends StyledComponent {
 			new Button({
 				icon: 'close',
 				appendTo: this,
-				onPointerPress: () => this.destroy(),
+				onPointerPress: () => (this.options.onRemove ? this.options.onRemove(this) : this.destroy()),
 			});
 		}
 	}

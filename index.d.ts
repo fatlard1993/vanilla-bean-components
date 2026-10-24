@@ -882,18 +882,22 @@ export declare class Tabs extends Component {
 }
 
 export interface TagListOptions extends ComponentOptions {
+	/** The tags; follows every one added or removed */
+	value?: Array<string>;
 	/** Whether tags can be added/removed (default: false) */
 	readOnly?: boolean;
 	/** (value, tagList) => the tag to add (true keeps it as typed), or false to refuse it */
 	accept?: (...args: any[]) => any;
+	/** `tags => message`: what's wrong with the list, or nothing; or a list of them. Checked as it changes and by validate(), the message shown below it */
+	validate?: ((...args: any[]) => any) | Array<(...args: any[]) => any>;
 	/** Values offered while typing a new tag */
 	suggestions?: Array<string>;
-	/** Initial array of tag text values */
-	tags?: Array<string>;
 }
 
 export declare class TagList extends Component {
 	constructor(options?: TagListOptions, ...children: Array<Elem | HTMLElement | string>);
+	/** Checks the tags against the `validate` option, showing what's wrong below the list (or clearing it), and marking the new-tag field invalid for assistive technology. */
+	validate(): Array<string> | undefined;
 }
 
 export interface ToolbarOptions extends ComponentOptions {
@@ -983,6 +987,8 @@ export interface TagOptions extends ComponentOptions {
 	tabIndex?: number;
 	/** Omits the remove button and applies the readOnly class (default: false) */
 	readOnly?: boolean;
+	/** Called when the remove button is pressed; its TagList takes the tag out of its value */
+	onRemove?: (...args: any[]) => any;
 }
 
 export declare class Tag extends Component {

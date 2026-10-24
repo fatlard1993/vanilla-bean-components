@@ -2,7 +2,7 @@ import { Component } from '../../Component';
 import { styled } from '../../styled';
 import { Button } from '../Button';
 import { Input } from '../Input';
-import { showFieldError } from '../Input/fieldError';
+import { runValidators, showFieldError } from '../Input/fieldError';
 
 import Tag from './Tag';
 
@@ -37,15 +37,20 @@ const TagListInput = styled(
  * Interactive tag list component with add/remove functionality and input support.
  *
  * Displays a collection of tags with optional editing capabilities including
- * inline text input for adding new tags and removal buttons for existing tags.
+ * inline text input for adding new tags and removal buttons for existing tags. Its value is the list of tags, so it
+ * works as a Form field (`InputComponent: TagList`) like any other.
  * @param {object} [options={}] - TagList configuration options
  * @param {string} [options.tag='ul'] - HTML tag for the container element
+ * @param {Array<string>} [options.value] - The tags; follows every one added or removed
+ * @param {Function} [options.onChange] - Hears `change` when a tag is added or removed; `event.value` is the new list
  * @param {boolean} [options.readOnly=false] - Whether tags can be added/removed
  * @param {Function} [options.accept] - (value, tagList) => the tag to add (true keeps it as typed), or false to refuse it
+ * @param {Function|Array<Function>} [options.validate] - `tags => message`: what's wrong with the list, or nothing; or a
+ *   list of them. Checked as it changes and by validate(), the message shown below it
  * @param {Array<string>} [options.suggestions] - Values offered while typing a new tag
- * @param {Array<string>} [options.tags] - Initial array of tag text values
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {TagList} TagList component instance
+ * @example new TagList({ value: ['co-op', 'party'], onChange: ({ value }) => save({ tags: value }) })
  */
 class TagList extends StyledComponent {
 	static schema = {
@@ -56,13 +61,20 @@ class TagList extends StyledComponent {
 				this.toggleClass('readOnly', !!value);
 			},
 		},
-		tags: {
+		value: {
 			get default() {
 				return [];
+			},
+			set(value) {
+				this._showTags(value ?? []);
+
+				if (this.rendered && this.options.validate) this.validate();
 			},
 		},
 		// (value, tagList) => the tag to add (true keeps it as typed), or false to refuse it
 		accept: {},
+		// Read by validate(); data, as validate() is also the method that runs it
+		validate: { data: true },
 		suggestions: {
 			set(value) {
 				if (this.tagInput) this.tagInput.options.suggestions = value;
@@ -85,18 +97,66 @@ class TagList extends StyledComponent {
 			if (accepted !== true) value = String(accepted);
 		}
 
-		const existing = Array.from(this.elem.querySelectorAll('li[data-value]')).map(el => el.dataset.value);
-		if (existing.includes(value)) return;
-
-		this.elem.insertBefore(new Tag({ textContent: value }).elem, this.addTag.elem);
 		this.tagInput.elem.value = '';
 		this.tagInput.elem.focus();
+
+		if (this.options.value.includes(value)) return;
+
+		this._change([...this.options.value, value]);
+	}
+
+	_removeTag(value) {
+		this._change(this.options.value.filter(tag => tag !== value));
+		this.tagInput?.elem.focus();
+	}
+
+	// A change made here, by adding or removing a tag, is announced; a value set from outside is not
+	_change(value) {
+		this.options.value = value;
+		this.emit('change', { value: [...value] });
+	}
+
+	// The tags shown follow the value: kept where they still are, added before the new-tag field, removed when gone
+	_showTags(value) {
+		const shown = new Map(
+			Array.from(this.elem.querySelectorAll(':scope > li[data-value]'), elem => [elem.dataset.value, elem]),
+		);
+
+		for (const [text, elem] of shown) if (!value.includes(text)) elem._component?.destroy() ?? elem.remove();
+
+		for (const text of value) {
+			const elem =
+				shown.get(text) ??
+				new Tag({
+					readOnly: this.options.readOnly,
+					textContent: text,
+					onRemove: () => this._removeTag(text),
+				}).elem;
+
+			if (this.addTag?.elem.parentElement === this.elem) this.elem.insertBefore(elem, this.addTag.elem);
+			else this.elem.append(elem);
+		}
 	}
 
 	// A refused entry is said so, as any field's error is, and left selected, ready to be corrected; typing clears it
 	_refuse(value) {
+		this._refused = true;
 		showFieldError({ owner: this, field: this.tagInput.elem, messages: [`Can't add "${value}"`] });
 		this.tagInput.elem.select();
+	}
+
+	/**
+	 * Checks the tags against the `validate` option, showing what's wrong below the list (or clearing it), and marking the
+	 * new-tag field invalid for assistive technology.
+	 * @returns {Array<string>|undefined} What's wrong, or undefined when nothing is
+	 */
+	validate() {
+		const errors = runValidators(this.options.validate, this.options.value);
+
+		this._refused = false;
+		showFieldError({ owner: this, field: this.tagInput?.elem, messages: errors });
+
+		return errors.length ? errors : undefined;
 	}
 
 	build() {
@@ -114,9 +174,12 @@ class TagList extends StyledComponent {
 				targetEvent: 'input',
 				id: 'clearRefusal',
 				callback: () => {
-					if (this._fieldError) showFieldError({ owner: this, field: this.tagInput.elem });
+					if (this._refused) this.validate();
 				},
 			});
+
+			// The field's own change is a word being typed, not the list changing: it stops here
+			this.tagInput.on({ targetEvent: 'change', id: 'keepChange', callback: event => event.stopPropagation() });
 
 			// Enter belongs to this field: claimed, so a dialog or form around it doesn't also act on it
 			this.tagInput.on({
@@ -139,12 +202,9 @@ class TagList extends StyledComponent {
 			this.replaceCleanup('tagListChildren', () => {
 				this.addTag?.destroy?.();
 			});
-		}
 
-		this.append([
-			...this.options.tags.map(textContent => new Tag({ readOnly: this.options.readOnly, textContent })),
-			...(this.addTag ? [this.addTag] : []),
-		]);
+			this.append(this.addTag);
+		}
 	}
 }
 
