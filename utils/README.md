@@ -251,6 +251,23 @@ formatDate('2026-10-18'); // '10/18/2026' in en-US, in any time zone
 formatDate(entry.at, { month: 'short', day: 'numeric' }); // 'Oct 18'
 ```
 
+### `formatTime(value, { locale?, ...intlOptions })`
+
+A time of day for reading, in the reader's locale: hours and minutes unless the options say otherwise, `hour12: false` for a 24-hour clock.
+
+```js
+formatTime(event.at); // '6:03 PM' in en-US
+formatTime(event.at, { hour12: false }); // '18:03'
+```
+
+### `formatDuration(milliseconds)`
+
+A length of time, briefly: `'1h 30m'`, `'45m'`, `'2h'`; under a minute is `''`.
+
+### `daysInMonth(year, month)`
+
+How many days a month has (`month` counted from 0, as `Date` does), leap years included.
+
 ### `relativeTime(value, now?)`
 
 Briefly how long ago, or ahead: `'just now'`, `'5m ago'`, `'3h ago'`, `'2d ago'`, `'in 10m'`.

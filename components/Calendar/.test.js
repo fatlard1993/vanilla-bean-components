@@ -1,7 +1,7 @@
 import { findByRole, findByText } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 
-import { Calendar, DAYS, MONTHS, toNth } from '.';
+import { Calendar } from '.';
 
 const user = userEvent.setup();
 
@@ -10,33 +10,26 @@ const thisYear = now.getFullYear();
 const thisMonth = now.getMonth();
 // today's date used via now.getDate() inline
 
-// Build the expected toolbar title strings exactly as the Calendar implementation does.
-const monthString = (month = thisMonth, year = thisYear) => `${MONTHS[month]} ${year}`;
+// The toolbar titles, in the reader's locale as the Calendar writes them
+const DAY_TITLE = { month: 'long', day: 'numeric', year: 'numeric' };
+const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-// Compute the week string for a given anchor date (same logic as renderWeek).
+const monthString = (month = thisMonth, year = thisYear) =>
+	new Date(year, month).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+
+// The week holding a date, first day to last
 const weekRangeString = anchorDate => {
-	const dayMs = 1000 * 60 * 60 * 24;
-	const firstDay = new Date(anchorDate.getTime() - anchorDate.getDay() * dayMs);
-	const lastDay = new Date(firstDay.getTime() + 6 * dayMs);
-	const firstSuffix = toNth(firstDay.getDate());
-	const lastSuffix = toNth(lastDay.getDate());
-
-	if (firstDay.getMonth() === lastDay.getMonth()) {
-		return `${MONTHS[firstDay.getMonth()]} ${firstDay.getDate()}${firstSuffix} - ${lastDay.getDate()}${lastSuffix}, ${firstDay.getFullYear()}`;
-	} else if (firstDay.getFullYear() === lastDay.getFullYear()) {
-		return (
-			`${MONTHS[firstDay.getMonth()]} ${firstDay.getDate()}${firstSuffix} - ` +
-			`${MONTHS[lastDay.getMonth()]} ${lastDay.getDate()}${lastSuffix}, ${firstDay.getFullYear()}`
-		);
-	}
-	return (
-		`${MONTHS[firstDay.getMonth()]} ${firstDay.getDate()}${firstSuffix}, ${firstDay.getFullYear()} - ` +
-		`${MONTHS[lastDay.getMonth()]} ${lastDay.getDate()}${lastSuffix}, ${lastDay.getFullYear()}`
+	const firstDay = new Date(
+		anchorDate.getFullYear(),
+		anchorDate.getMonth(),
+		anchorDate.getDate() - anchorDate.getDay(),
 	);
+	const lastDay = new Date(firstDay.getFullYear(), firstDay.getMonth(), firstDay.getDate() + 6);
+
+	return new Intl.DateTimeFormat(undefined, DAY_TITLE).formatRange(firstDay, lastDay);
 };
 
-const dayString = (date = now) =>
-	`${MONTHS[date.getMonth()]} ${date.getDate()}${toNth(date.getDate())}, ${date.getFullYear()}`;
+const dayString = (date = now) => date.toLocaleDateString(undefined, DAY_TITLE);
 
 // A fixed mid-month date that avoids all boundary issues across views.
 // Use the 15th of the current month so previous/next never wrap month/year.

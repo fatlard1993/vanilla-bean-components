@@ -3,9 +3,9 @@ import { styled } from '../../styled';
 import { Component } from '../../Component';
 
 import { fontSize, radius, space } from '../../theme/tokens';
+import { daysInMonth, formatDate, formatTime } from '../../utils';
 import CalendarEvent from './CalendarEvent';
 import Toolbar, { VIEWS } from './Toolbar';
-import { getDaysInMonth, toNth } from './utils';
 
 const StyledComponent = styled(
 	Component,
@@ -227,21 +227,10 @@ const DayNowIndicator = styled(
 	`,
 );
 
-export const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-export const MONTHS = [
-	'January',
-	'February',
-	'March',
-	'April',
-	'May',
-	'June',
-	'July',
-	'August',
-	'September',
-	'October',
-	'November',
-	'December',
-];
+// The keys of a recurring event's `weekdays`, Sunday first as Date.getDay() counts
+const WEEKDAY_KEYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+
+const DAY_TITLE = { month: 'long', day: 'numeric', year: 'numeric' };
 
 /**
  * Interactive calendar component supporting month, week, and day views with event management.
@@ -341,9 +330,10 @@ class Calendar extends StyledComponent {
 		this.removeClass('month', 'week');
 		this.addClass('day');
 
-		this.toolbar.title.elem.textContent = `${MONTHS[this.options.month]} ${this.options.day}${toNth(
-			this.options.day,
-		)}, ${this.options.year}`;
+		this.toolbar.title.elem.textContent = formatDate(
+			new Date(this.options.year, this.options.month, this.options.day),
+			DAY_TITLE,
+		);
 
 		const eventContainer = new Component({ addClass: 'event-container', appendTo: this.wrapper });
 		const events = this.eventsAt(new Date(this.options.year, this.options.month, this.options.day));
@@ -359,21 +349,14 @@ class Calendar extends StyledComponent {
 						this.emit('selectTime', event);
 					},
 				});
-				const timeSpan = new Component({ tag: 'span', addClass: 'time', appendTo: minutesBlock });
+				const at = new Date(this.options.year, this.options.month, this.options.day, x, y * minGap);
 
-				const mins = y * minGap;
-				let h = x;
-				let am_pm = '';
-
-				// minutesBlock.style.height = (this.options.dayViewGapHeight - 1) +'px';
-
-				if (!this.options.display24h) {
-					am_pm = h < 12 ? 'AM' : 'PM';
-					h = h < 12 ? h : h % 12;
-					h = h === 0 ? 12 : h;
-				}
-
-				timeSpan.elem.textContent = `${h}:${mins < 10 ? '0' : ''}${mins} ${am_pm}`;
+				new Component({
+					tag: 'span',
+					addClass: 'time',
+					textContent: formatTime(at, { hour12: !this.options.display24h }),
+					appendTo: minutesBlock,
+				});
 			}
 		}
 
@@ -444,7 +427,6 @@ class Calendar extends StyledComponent {
 			const y = cDay.getFullYear();
 			const m = cDay.getMonth();
 			const d = cDay.getDate();
-			const w = cDay.getDay();
 			const t = cDay.getTime();
 
 			const cellDate = new Date(y, m, d);
@@ -460,7 +442,7 @@ class Calendar extends StyledComponent {
 			});
 
 			new Component({
-				textContent: `${DAYS[w]}, ${MONTHS[m]} ${d}${toNth(d)}`,
+				textContent: formatDate(cellDate, { weekday: 'long', month: 'long', day: 'numeric' }),
 				addClass: 'day-title',
 				appendTo: weekdayCell,
 				onPointerPress: ({ target }) => {
@@ -473,64 +455,29 @@ class Calendar extends StyledComponent {
 			cDay = new Date(t + dayMs);
 		}
 
-		const firstDayAppend = toNth(firstDay.getDate());
-		const lastDayAppend = toNth(lastDay.getDate());
-
-		if (firstDay.getMonth() === lastDay.getMonth()) {
-			this.toolbar.title.elem.textContent =
-				MONTHS[firstDay.getMonth()] +
-				' ' +
-				firstDay.getDate() +
-				firstDayAppend +
-				' - ' +
-				lastDay.getDate() +
-				lastDayAppend +
-				', ' +
-				this.options.year;
-		} else if (firstDay.getFullYear() === lastDay.getFullYear()) {
-			this.toolbar.title.elem.textContent =
-				MONTHS[firstDay.getMonth()] +
-				' ' +
-				firstDay.getDate() +
-				firstDayAppend +
-				' - ' +
-				MONTHS[lastDay.getMonth()] +
-				' ' +
-				lastDay.getDate() +
-				lastDayAppend +
-				', ' +
-				this.options.year;
-		} else {
-			this.toolbar.title.elem.textContent =
-				MONTHS[firstDay.getMonth()] +
-				' ' +
-				firstDay.getDate() +
-				firstDayAppend +
-				', ' +
-				firstDay.getFullYear() +
-				' - ' +
-				MONTHS[lastDay.getMonth()] +
-				' ' +
-				lastDay.getDate() +
-				lastDayAppend +
-				', ' +
-				lastDay.getFullYear();
-		}
+		this.toolbar.title.elem.textContent = new Intl.DateTimeFormat(undefined, DAY_TITLE).formatRange(firstDay, lastDay);
 	}
 
 	renderMonth() {
 		this.removeClass('week', 'day');
 		this.addClass('month');
 
-		const month = getDaysInMonth(this.options.year, this.options.month);
+		const numberOfDays = daysInMonth(this.options.year, this.options.month);
 		const now = new Date();
 		const isCurrentMonth = now.getMonth() === this.options.month && now.getFullYear() === this.options.year;
 		const currentDay = now.getDate();
 		const table = new MonthCalendar({ tag: 'table', appendTo: this.wrapper });
 		const titleRow = new Component({ tag: 'tr', addClass: 'title', appendTo: table });
-		let dayX = -month.firstDay;
+		let dayX = -new Date(this.options.year, this.options.month).getDay();
 
-		for (let day = 0; day < 7; ++day) new Component({ tag: 'td', textContent: DAYS[day], appendTo: titleRow });
+		// 4 January 1970 was a Sunday
+		for (let day = 0; day < 7; ++day) {
+			new Component({
+				tag: 'td',
+				textContent: formatDate(new Date(1970, 0, 4 + day), { weekday: 'long' }),
+				appendTo: titleRow,
+			});
+		}
 
 		for (let row = 0; row < 6; ++row) {
 			const tr = new Component({ tag: 'tr', appendTo: table });
@@ -559,7 +506,7 @@ class Calendar extends StyledComponent {
 					),
 				});
 
-				if (dayX <= 0 || dayX > month.numberOfDays) td.addClass('not-in-month');
+				if (dayX <= 0 || dayX > numberOfDays) td.addClass('not-in-month');
 
 				this.eventsAt(date).forEach(calendarEvent => {
 					if (calendarEvent.render) calendarEvent.render(this.options.view, eventContainer.elem, this);
@@ -567,7 +514,10 @@ class Calendar extends StyledComponent {
 			}
 		}
 
-		this.toolbar.title.elem.textContent = MONTHS[this.options.month] + ' ' + this.options.year;
+		this.toolbar.title.elem.textContent = formatDate(new Date(this.options.year, this.options.month), {
+			month: 'long',
+			year: 'numeric',
+		});
 	}
 
 	adjustDateToView() {
@@ -592,7 +542,7 @@ class Calendar extends StyledComponent {
 			month = 11;
 		}
 
-		this.setDate(year, month, getDaysInMonth(year, month).numberOfDays);
+		this.setDate(year, month, daysInMonth(year, month));
 	}
 
 	/**
@@ -639,7 +589,7 @@ class Calendar extends StyledComponent {
 					month = 11;
 					--year;
 				}
-				day = getDaysInMonth(year, month).numberOfDays;
+				day = daysInMonth(year, month);
 			}
 		} else if (this.options.view === 'month') {
 			--month;
@@ -656,7 +606,7 @@ class Calendar extends StyledComponent {
 					month = 11;
 					--year;
 				}
-				day = getDaysInMonth(year, month).numberOfDays + day;
+				day = daysInMonth(year, month) + day;
 			}
 		}
 
@@ -672,9 +622,9 @@ class Calendar extends StyledComponent {
 
 		if (this.options.view === 'day') {
 			++day;
-			const monthStat = getDaysInMonth(year, month);
+			const monthDays = daysInMonth(year, month);
 
-			if (day > monthStat.numberOfDays) {
+			if (day > monthDays) {
 				day = 1;
 				++month;
 				if (month > 11) {
@@ -690,10 +640,10 @@ class Calendar extends StyledComponent {
 			}
 		} else if (this.options.view === 'week') {
 			day += 7;
-			const monthStat = getDaysInMonth(year, month);
+			const monthDays = daysInMonth(year, month);
 
-			if (day > monthStat.numberOfDays) {
-				day -= monthStat.numberOfDays;
+			if (day > monthDays) {
+				day -= monthDays;
 				++month;
 				if (month > 11) {
 					month = 0;
@@ -786,7 +736,7 @@ class Calendar extends StyledComponent {
 			}
 
 			if (
-				event.weekdays[DAYS[date.getDay()].toLowerCase()] &&
+				event.weekdays[WEEKDAY_KEYS[date.getDay()]] &&
 				(date.getFullYear() > event.year ||
 					(date.getFullYear() === event.year && date.getMonth() + 1 > event.month) ||
 					(date.getFullYear() === event.year && date.getMonth() + 1 === event.month && date.getDate() >= event.day))

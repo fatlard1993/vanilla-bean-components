@@ -1044,7 +1044,8 @@ export declare function copyToClipboard(text: string): Promise<boolean>;
 /** A CSS length from a number of pixels or a CSS string, as an option a component takes as either. */
 export declare function cssLength(value: number | string): string;
 
-export declare const DAYS: ReadonlyArray<string>;
+/** How many days a month has, leap years counted. */
+export declare function daysInMonth(year: number, month: number): number;
 
 /** Creates debounced version of function that delays execution until after delay period of inactivity. */
 export declare function debounce(callback: (...args: any[]) => any, delay?: number): (...args: any[]) => any;
@@ -1064,14 +1065,14 @@ export declare function fitToKeyboard(options?: Record<string, any>): (...args: 
 /** Format a date for reading, in the reader's locale. A date-only string keeps its day; text that isn't a date is returned as it was. */
 export declare function formatDate(value: Date | number | string, options?: Record<string, any>): string;
 
-export declare function formatDuration(duration: any, append?: any, prepend?: any): any;
+/** A length of time, briefly, in hours and minutes: '1h 30m', '45m', '2h'. Less than a minute is ''. */
+export declare function formatDuration(milliseconds: number): string;
 
-export declare function formatTime(date: any, options?: any): any;
+/** Format a time of day for reading, in the reader's locale: hours and minutes unless told otherwise. Text that isn't a date is returned as it was. */
+export declare function formatTime(value: Date | number | string, options?: Record<string, any>): string;
 
 /** Reformat a camelCase or PascalCase string with a custom joiner */
 export declare function fromCamelCase(string: string, joiner?: string): string;
-
-export declare function getDaysInMonth(year: any, month: any): any;
 
 /** Finds elements containing specified text using XPath evaluation. Uses XPath contains() function with optional case-insensitive matching. Returns deepest matching elements to avoid duplicate parent/child results. */
 export declare function getElementsContainingText(text: string, options?: Record<string, any>): Node[];
@@ -1086,8 +1087,6 @@ export declare const isDev: boolean;
 
 /** Check if the current device is a Mac, an iPhone or an iPad: the ones whose shortcuts use ⌘ */
 export declare function isMac(): boolean;
-
-export declare const MONTHS: ReadonlyArray<string>;
 
 /** Observe DOM connection/disconnection of an element via a shared MutationObserver. All registrations share one observer; the observer is torn down when no targets remain. Fires when the target itself or any ancestor is added or removed; a move within the document is not a disconnect. */
 export declare function observeElementConnection(config: Record<string, any>): { disconnect: (...args: any[]) => any };
@@ -1152,12 +1151,8 @@ export declare function themeStyles(styleConfig: StyleConfig): string | Record<s
 /** Creates throttled version of function that limits execution to once per delay period. */
 export declare function throttle(callback: (...args: any[]) => any, delay?: number): (...args: any[]) => any;
 
-export declare function to12hour(hour: any): any;
-
 /** Reformat string to a camelCase */
 export declare function toCamelCase(string: string, splitter?: string): string;
-
-export declare function toNth(number: any): any;
 
 /** Vibrate the device (if supported) */
 export declare function vibrate(durationPattern?: number | number[]): void;

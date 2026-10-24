@@ -46,6 +46,45 @@ export const formatDate = (value, { locale, ...options } = {}) => {
 };
 
 /**
+ * Format a time of day for reading, in the reader's locale: hours and minutes unless told otherwise. Text that isn't a
+ * date is returned as it was.
+ * @param {Date|number|string} value - The time
+ * @param {object} [options] - Intl.DateTimeFormat options, plus locale; `hour12: false` for a 24-hour clock
+ * @param {string} [options.locale] - Defaults to the reader's
+ * @returns {string} The formatted time, or '' for none
+ * @example formatTime(new Date(2026, 9, 18, 18, 3)) // '6:03 PM' in en-US
+ * @example formatTime(Date.now(), { hour12: false }) // '18:03'
+ */
+export const formatTime = (value, { locale, ...options } = {}) => {
+	const date = parseDate(value);
+
+	if (date) return date.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit', ...options });
+
+	return typeof value === 'string' ? value : '';
+};
+
+/**
+ * A length of time, briefly, in hours and minutes: '1h 30m', '45m', '2h'. Less than a minute is ''.
+ * @param {number} milliseconds - How long
+ * @returns {string} The duration, or '' for none
+ */
+export const formatDuration = milliseconds => {
+	const total = Math.floor((milliseconds || 0) / 60_000);
+	const hours = Math.floor(total / 60);
+	const minutes = total % 60;
+
+	return [hours && `${hours}h`, minutes && `${minutes}m`].filter(Boolean).join(' ');
+};
+
+/**
+ * How many days a month has, leap years counted.
+ * @param {number} year - The year
+ * @param {number} month - The month, 0 for January as Date counts them
+ * @returns {number} 28 to 31
+ */
+export const daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
+
+/**
  * How long ago (or how far ahead) a time is, briefly: 'just now', '5m ago', '3h ago', '2d ago', 'in 10m'.
  * @param {Date|number|string} value - The time
  * @param {number} [now] - The time to measure from

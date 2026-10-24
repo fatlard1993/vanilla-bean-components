@@ -1,7 +1,7 @@
 import { Component } from '../../Component';
 import { Elem } from '../../Elem';
 import { styled } from '../../styled';
-import { formatDuration, formatTime } from './utils';
+import { formatDuration, formatTime } from '../../utils';
 
 const StyledEvent = styled(
 	Component,
@@ -54,6 +54,8 @@ export default class CalendarEvent {
 
 	render(type, container, calendar) {
 		const formattedTime = formatTime(this.at);
+		const duration = formatDuration(this.duration);
+		const when = duration ? `${formattedTime}, ${duration}` : formattedTime;
 
 		const handleSelectEvent = target => {
 			calendar.emit('selectEvent', { target, index: this.options.index });
@@ -62,12 +64,12 @@ export default class CalendarEvent {
 		this.eventElem = new StyledEvent({
 			className: 'event',
 			pressable: true,
-			'aria-label': `${this.label}, ${formattedTime}${this.duration ? formatDuration(this.duration, ', ') : ''}`,
+			'aria-label': `${this.label}, ${when}`,
 			style: { backgroundColor: this.color },
 			append: [
 				new Elem({
 					className: 'time',
-					textContent: `${formattedTime}${this.duration ? formatDuration(this.duration, ', ') : ''}`,
+					textContent: when,
 				}),
 				new Elem({ className: 'label', textContent: this.label }),
 			],
@@ -84,10 +86,6 @@ export default class CalendarEvent {
 			this.eventElem.elem.style.top = gapTop;
 			this.eventElem.elem.style.left = '0';
 			this.eventElem.elem.style.zIndex = Math.floor(gapPosition);
-
-			if (this.duration) {
-				this.eventElem.elem.children[0].textContent = formattedTime + formatDuration(this.duration, ', ');
-			}
 		}
 
 		return this.eventElem.elem;

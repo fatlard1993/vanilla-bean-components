@@ -12,10 +12,10 @@ Multi-view calendar that renders the same event data differently depending on sc
 
 ## Times read as clock times, and the current day is findable
 
-A 12-hour clock has no hour zero, so midnight is `12:00 AM`; `display24h` opts into the other convention. Whichever is in use, the cell for today is marked so the view has an anchor the reader can find without reading dates.
+A 12-hour clock has no hour zero, so midnight is `12:00 AM`; `display24h` opts into the other convention. Times and titles are written in the reader's locale, by `formatTime` and `formatDate` from utils, rather than in English spelled out by hand. Whichever is in use, the cell for today is marked so the view has an anchor the reader can find without reading dates.
 
 - in 12-hour mode midnight reads as 12, not 0; `display24h` switches to the 24-hour convention
-  - new Subject({ view: "day", year: 2026, month: 0, day: 15, appendTo: document.body }) captures twelve then Array.from(twelve.elem.querySelectorAll("*")).map(e => e.childNodes.length === 1 ? e.textContent : "").filter(t => /^\d{1,2}:\d{2}\s?(AM|PM)$/.test(t)) captures labels then new Subject({ view: "day", display24h: true, year: 2026, month: 0, day: 15, appendTo: document.body }) captures full then Array.from(full.elem.querySelectorAll("*")).map(e => e.childNodes.length === 1 ? e.textContent : "").filter(t => /^\d{1,2}:\d{2}/.test(t)) captures labels24 -> labels[0] === "12:00 AM" && !labels.some(l => l.startsWith("0:")) && labels24[0].startsWith("0:00")
+  - new Subject({ view: "day", year: 2026, month: 0, day: 15, appendTo: document.body }) captures twelve then Array.from(twelve.elem.querySelectorAll("*")).map(e => e.childNodes.length === 1 ? e.textContent : "").filter(t => /^\d{1,2}:\d{2}\s?(AM|PM)$/.test(t)) captures labels then new Subject({ view: "day", display24h: true, year: 2026, month: 0, day: 15, appendTo: document.body }) captures full then Array.from(full.elem.querySelectorAll("*")).map(e => e.childNodes.length === 1 ? e.textContent : "").filter(t => /^\d{1,2}:\d{2}/.test(t)) captures labels24 -> labels[0].replace(/\s/g, " ") === "12:00 AM" && !labels.some(l => l.startsWith("0:")) && /^0?0:00$/.test(labels24[0])
 - the cell for the current date carries a marker the other cells do not
   - new Subject({ view: "week", appendTo: document.body }) captures c -> c.elem.querySelectorAll(".today").length === 1
 - view and date methods return the calendar so calls can be chained
@@ -42,8 +42,8 @@ Dates arrive from JSON, from attributes, from other components -- as strings as 
 A week that straddles a month boundary belongs to the month it began in, so month-by-month navigation lands on whole weeks instead of splitting one across two screens. The re-anchoring is the exception, not the rule: a week sitting entirely inside its month must be left where it is.
 
 - the week shown is the one containing the target date; only a week whose first day falls in the previous month re-anchors there
-  - new Subject({ view: "month", appendTo: document.body }) captures c then c.setDate(2026, 7, 4) then c.setView("week") -> c.options.month === 7 && c.options.day === 4 && c.elem.textContent.includes("August 2nd - 8th, 2026")
-  - new Subject({ view: "month", appendTo: document.body }) captures c then c.setDate(2026, 7, 1) then c.setView("week") -> c.options.month === 6 && c.options.day === 31 && c.elem.textContent.includes("July 26th - August 1st, 2026")
+  - new Subject({ view: "month", appendTo: document.body }) captures c then c.setDate(2026, 7, 4) then c.setView("week") -> c.options.month === 7 && c.options.day === 4 && c.elem.textContent.includes(new Intl.DateTimeFormat(undefined, { month: "long", day: "numeric", year: "numeric" }).formatRange(new Date(2026, 7, 2), new Date(2026, 7, 8)))
+  - new Subject({ view: "month", appendTo: document.body }) captures c then c.setDate(2026, 7, 1) then c.setView("week") -> c.options.month === 6 && c.options.day === 31 && c.elem.textContent.includes(new Intl.DateTimeFormat(undefined, { month: "long", day: "numeric", year: "numeric" }).formatRange(new Date(2026, 6, 26), new Date(2026, 7, 1)))
 
 ## Date navigation handles year boundaries correctly
 

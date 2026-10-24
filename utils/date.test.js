@@ -1,4 +1,4 @@
-import { formatDate, parseDate, relativeTime } from './date';
+import { daysInMonth, formatDate, formatDuration, formatTime, parseDate, relativeTime } from './date';
 
 describe('date', () => {
 	const zone = process.env.TZ;
@@ -51,5 +51,32 @@ describe('date', () => {
 		expect(relativeTime(now - 2 * 86_400_000, now)).toBe('2d ago');
 		expect(relativeTime(now + 10 * 60_000, now)).toBe('in 10m');
 		expect(relativeTime(null, now)).toBe('');
+	});
+
+	test('formatTime: hours and minutes in the locale, a 24-hour clock on asking', () => {
+		const evening = new Date(2026, 9, 18, 18, 3);
+
+		expect(formatTime(evening, { locale: 'en-US' })).toBe('6:03 PM');
+		expect(formatTime(new Date(2026, 9, 18, 0, 30), { locale: 'en-US' })).toBe('12:30 AM');
+		expect(formatTime(evening, { locale: 'en-US', hour12: false })).toBe('18:03');
+		expect(formatTime(undefined)).toBe('');
+		expect(formatTime('soon')).toBe('soon');
+	});
+
+	test('formatDuration: hours and minutes, briefly', () => {
+		expect(formatDuration(90 * 60_000)).toBe('1h 30m');
+		expect(formatDuration(45 * 60_000)).toBe('45m');
+		expect(formatDuration(2 * 3_600_000)).toBe('2h');
+		expect(formatDuration(20_000)).toBe('');
+		expect(formatDuration(undefined)).toBe('');
+	});
+
+	test('daysInMonth counts leap years', () => {
+		expect(daysInMonth(2026, 0)).toBe(31);
+		expect(daysInMonth(2024, 1)).toBe(29);
+		expect(daysInMonth(2026, 1)).toBe(28);
+		expect(daysInMonth(1900, 1)).toBe(28);
+		expect(daysInMonth(2000, 1)).toBe(29);
+		expect(daysInMonth(2026, 3)).toBe(30);
 	});
 });
