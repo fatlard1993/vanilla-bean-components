@@ -8,6 +8,10 @@ pushed=$(sh "$(dirname "$0")/pushed-files" "$1")
 # Nothing new leaves (a deletion, a branch at commits the remote has): nothing to check
 [ -n "$pushed" ] || exit 0
 
+# Pushed from a worktree, git hands the hook an absolute GIT_DIR. A test that makes a scratch repo would inherit it and
+# write to this one instead (`git init` there sets core.bare on the shared config); the checks find the repo from the folder
+unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_COMMON_DIR GIT_PREFIX
+
 bun --bun eslint --quiet || exit 1
 
 # With no test files, bun test exits nonzero for having nothing to run
