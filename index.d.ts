@@ -190,6 +190,8 @@ export interface ComponentOptions extends ElemOptions {
 	onRendered?: (this: Component) => void;
 	// Pointer
 	onPointerPress?: (event: PointerEvent) => void;
+	/** Presses like a button from the keyboard: a tab stop, the button role, Enter and Space as a click */
+	pressable?: boolean;
 	onHover?: (event: PointerEvent) => void;
 	onPointerOver?: (event: PointerEvent) => void;
 	onPointerEnter?: (event: PointerEvent) => void;
@@ -256,6 +258,8 @@ export declare class Component extends Elem {
 	optionEnum(key: string): Array<any> | undefined;
 	onPointerPress(callback: (event: PointerEvent) => void): void;
 	onLongPress(callback: (event: PointerEvent) => void): void;
+	/** Presses like a button from the keyboard: a tab stop, the button role, Enter and Space as a click; false undoes it */
+	pressable(enabled?: boolean): void;
 	onHover(callback: (event: PointerEvent) => void): void;
 	addCleanup(id: string, fn: () => void): void;
 	replaceCleanup(id: string, fn: () => void): void;

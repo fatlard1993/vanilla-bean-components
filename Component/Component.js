@@ -4,6 +4,7 @@ import { classSafeNanoid, isDev } from '../utils';
 import { Elem } from '../Elem';
 
 import { observeElementConnection } from './observeElementConnection';
+import { pressable as makePressable } from './pressable';
 
 const _internalProperties = new Set([
 	'cleanup',
@@ -874,6 +875,19 @@ class Component extends Elem {
 		callback = callback.bind(this);
 		this.replaceDestroyCleanup('onPointerPress', () => this.elem.removeEventListener('click', callback));
 		this.elem.addEventListener('click', callback);
+	}
+
+	/**
+	 * Presses like a button from the keyboard too: reached by Tab, with the role of a button, and Enter or Space pressing
+	 * it as a click, so `onPointerPress` hears every way of pressing it. A `<button>`, link or summary does this already
+	 * and is left alone. As an option: `new Component({ pressable: true, onPointerPress })`.
+	 * @param {boolean} [enabled] - false takes it away again
+	 */
+	pressable(enabled = true) {
+		// The last one undone first, so what it gave the element isn't taken for the element's own
+		this.replaceDestroyCleanup('pressable', () => {});
+
+		if (enabled !== false) this.replaceDestroyCleanup('pressable', makePressable(this.elem));
 	}
 
 	/**

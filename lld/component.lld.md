@@ -73,3 +73,16 @@ A touch screen has no right-click, so holding a pointer still is how a menu or a
 
 - a pointer held still fires the long press with its point, and the click that ends it doesn't press
   - new Array() captures calls then new Subject({ tag: "button", onLongPress: e => calls.push("long:" + e.clientX), onPointerPress: () => calls.push("press"), appendTo: document.body }) captures b then b.elem.dispatchEvent(new PointerEvent("pointerdown", { button: 0, clientX: 7, clientY: 7 })) then await new Promise(r => setTimeout(r, 560)) then b.elem.dispatchEvent(new PointerEvent("pointerup", { button: 0 })) then b.elem.click() -> calls.join() === "long:7"
+
+## Pressable: a press by keyboard is the same click
+
+Buttons, cards, calendar days and drop zones each used to answer Enter and Space their own way: on keydown or keyup, by `key` or `code`, calling the handler with a key event or not at all. A press is a click, so a keyboard press is made one: whatever hears the element's clicks hears the keyboard too.
+
+- `pressable: true` makes an element a tab stop with the button role, and Enter and Space press it as a click
+  - new Array() captures presses then new Subject({ pressable: true, onPointerPress: e => presses.push(e.type), appendTo: document.body }) captures c then c.elem.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true })) then c.elem.dispatchEvent(new KeyboardEvent("keydown", { key: " ", bubbles: true })) then c.elem.dispatchEvent(new KeyboardEvent("keyup", { key: " ", bubbles: true })) -> presses.join() === "click,click" && c.elem.tabIndex === 0 && c.elem.getAttribute("role") === "button"
+- a key pressed in a field inside it is the field's, not a press
+  - new Array() captures presses then new Subject({ pressable: true, onPointerPress: () => presses.push(1), appendTo: document.body }) captures c then document.createElement("input") captures field then c.elem.append(field) then field.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true })) -> presses.length === 0
+- a role the element already has is kept, and `pressable(false)` takes away what it added
+  - new Subject({ role: "gridcell", pressable: true, appendTo: document.body }) captures c then c.elem.getAttribute("role") captures kept then c.pressable(false) -> kept === "gridcell" && !c.elem.hasAttribute("tabindex") && c.elem.getAttribute("role") === "gridcell"
+- a `<button>` is left as it is: the browser already presses it by keyboard
+  - new Subject({ tag: "button", pressable: true, appendTo: document.body }) captures b -> !b.elem.hasAttribute("role") && !b.elem.hasAttribute("tabindex")

@@ -61,8 +61,7 @@ export default class CalendarEvent {
 
 		this.eventElem = new StyledEvent({
 			className: 'event',
-			role: 'button',
-			tabIndex: 0,
+			pressable: true,
 			'aria-label': `${this.label}, ${formattedTime}${this.duration ? formatDuration(this.duration, ', ') : ''}`,
 			style: { backgroundColor: this.color },
 			append: [
@@ -74,20 +73,6 @@ export default class CalendarEvent {
 			],
 			appendTo: container,
 			onPointerPress: ({ target }) => handleSelectEvent(target),
-		});
-
-		this.eventElem.on({
-			targetEvent: 'keydown',
-			callback: e => {
-				if (e.key === ' ') e.preventDefault();
-			},
-		});
-
-		this.eventElem.on({
-			targetEvent: 'keyup',
-			callback: e => {
-				if (e.key === ' ' || e.key === 'Enter') handleSelectEvent(e.target);
-			},
 		});
 
 		if (type === 'day') {

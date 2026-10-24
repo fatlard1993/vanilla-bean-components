@@ -18,10 +18,12 @@ A native button turns its own Space and Enter into a click, so one click listene
 
 ## Caller-provided onKeyUp is preserved alongside activation logic
 
-A native button activates on Space and Enter by itself, through its own click. A Button given another tag has no such behaviour, so it gets keyboard activation added, and that added handler must not displace one the caller passed.
+A native button activates on Space and Enter by itself, through its own click. A Button given another tag has no such behaviour, so it is made pressable (the button role, a tab stop, Enter and Space as a click), and that added handling must not displace a key handler the caller passed.
 
 - a caller-provided `onKeyUp` runs alongside the added keyboard activation; registering both handlers does not suppress either
-  - new Array() captures calls then new Subject({ tag: "div", onPointerPress: () => calls.push("press"), onKeyUp: () => calls.push("custom") }) captures b then document.body.append(b.elem) then b.elem.dispatchEvent(new KeyboardEvent("keyup", { key: "Enter", code: "Enter", bubbles: true })) -> calls.includes("press") && calls.includes("custom")
+  - new Array() captures calls then new Subject({ tag: "div", onPointerPress: () => calls.push("press"), onKeyUp: () => calls.push("custom") }) captures b then document.body.append(b.elem) then b.elem.dispatchEvent(new KeyboardEvent("keydown", { key: " ", bubbles: true })) then b.elem.dispatchEvent(new KeyboardEvent("keyup", { key: " ", bubbles: true })) -> calls.includes("press") && calls.includes("custom")
+- a Button on another tag is reached by Tab and announced as a button
+  - new Subject({ tag: "div", appendTo: document.body }) captures b -> b.elem.tabIndex === 0 && b.elem.getAttribute("role") === "button"
 
 ## Tooltip is automatic - no setup beyond the tooltip option
 
@@ -33,8 +35,10 @@ A native button activates on Space and Enter by itself, through its own click. A
 
 Keyboard activation is deliberately two keys, not "any key". A button that fired on arrows or Tab would steal navigation from the page around it, which is the failure that makes keyboard users avoid custom controls.
 
-- Space and Enter invoke `onPointerPress`; other keys leave it uninvoked
-  - new Array() captures fired then new Subject({ tag: "div", onPointerPress: e => fired.push(e.code), appendTo: document.body }) captures b then ["Enter", "Space", "KeyA", "Tab", "Escape"].forEach(code => b.elem.dispatchEvent(new KeyboardEvent("keyup", { key: code, code, bubbles: true }))) -> fired.join() === "Enter,Space"
+- Space and Enter invoke `onPointerPress`, as a click; other keys leave it uninvoked
+  - new Array() captures fired then new Subject({ tag: "div", onPointerPress: e => fired.push(e.type), appendTo: document.body }) captures b then ["Enter", " ", "a", "Tab", "Escape"].forEach(key => { b.elem.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true })); b.elem.dispatchEvent(new KeyboardEvent("keyup", { key, bubbles: true })); }) -> fired.join() === "click,click"
+- Enter presses as it goes down, once however long it's held; Space presses as it comes up, so a held Space doesn't scroll the page or repeat
+  - new Array() captures fired then new Subject({ tag: "div", onPointerPress: () => fired.push(1), appendTo: document.body }) captures b then b.elem.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true })) then b.elem.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", repeat: true, bubbles: true })) then b.elem.dispatchEvent(new KeyboardEvent("keydown", { key: " ", bubbles: true })) then fired.length captures afterDown then b.elem.dispatchEvent(new KeyboardEvent("keyup", { key: " ", bubbles: true })) -> afterDown === 1 && fired.length === 2
 
 ## A flat Button drops the raised look
 

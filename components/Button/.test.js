@@ -56,10 +56,27 @@ describe('Button', () => {
 		const onPointerPress = mock(() => {});
 		const button = new Button({ tag: 'div', textContent: 'Press me', onPointerPress, appendTo: container });
 
-		fireEvent.keyUp(button.elem, { code: 'Enter' });
-		fireEvent.keyUp(button.elem, { code: 'Space' });
-		fireEvent.keyUp(button.elem, { code: 'Escape' });
+		for (const key of ['Enter', ' ', 'Escape']) {
+			fireEvent.keyDown(button.elem, { key });
+			fireEvent.keyUp(button.elem, { key });
+		}
 
+		expect(onPointerPress).toHaveBeenCalledTimes(2);
+		expect(button.elem).toHaveAttribute('role', 'button');
+		expect(button.elem.tabIndex).toBe(0);
+	});
+
+	test('a held Enter presses once; Space presses as it comes up', () => {
+		const onPointerPress = mock(() => {});
+		const button = new Button({ tag: 'div', onPointerPress, appendTo: container });
+
+		fireEvent.keyDown(button.elem, { key: 'Enter' });
+		fireEvent.keyDown(button.elem, { key: 'Enter', repeat: true });
+		expect(onPointerPress).toHaveBeenCalledTimes(1);
+
+		fireEvent.keyDown(button.elem, { key: ' ' });
+		expect(onPointerPress).toHaveBeenCalledTimes(1);
+		fireEvent.keyUp(button.elem, { key: ' ' });
 		expect(onPointerPress).toHaveBeenCalledTimes(2);
 	});
 

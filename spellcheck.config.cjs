@@ -115,6 +115,8 @@ module.exports = {
 		'overscroll',
 		'dvh',
 		'xxl',
+		'pressable',
+		'natively',
 		'monospace',
 		'osx',
 		'moz',

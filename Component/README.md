@@ -189,6 +189,18 @@ component.onPointerPress(event => {
 });
 ```
 
+#### Pressable
+
+An element that isn't a button can still be pressed like one: `pressable` makes it a tab stop with the button role, and Enter (as the key goes down, once however long it's held) or Space (as it comes up) presses it as a click, so `onPointerPress` hears the keyboard too. Only a key pressed on the element itself counts, not one typed into a field inside it. A `<button>`, link or `<summary>` already does all this and is left alone.
+
+```js
+new Component({ addClass: 'tile', pressable: true, onPointerPress: open });
+// or
+tile.pressable(); // tile.pressable(false) undoes it
+```
+
+Button (given another tag), Card, Calendar's days, times and events, and a file Input's drop zone all press this way.
+
 #### Long Press
 
 A pointer held still on the element for half a second. Moving more than a few pixels, scrolling, or letting go first cancels it. The click that ends a long press isn't a press, so one element can take both, and a touch's own long-press menu counts as this long press rather than a second one. The handler gets the `pointerdown` event, so `clientX` and `clientY` are where it was held: the place to open a [ContextMenu](../components/ContextMenu/README.md) on a touch screen.
@@ -439,6 +451,7 @@ Custom events (`static events`), attribute routing (`attribute: true`), and proc
 | `onHover`        | `Function` | Hover handler with move tracking             |
 | `onPointerPress` | `Function` | Fires on `click`, from any input             |
 | `onLongPress`    | `Function` | A pointer held still for half a second       |
+| `pressable`      | `boolean`  | Enter and Space press it too, as a click     |
 | ~~`onClick`~~    | -          | Not supported. Use `onPointerPress` instead. |
 | `onChange`       | `Function` | Change event handler (input .value included) |
 | `onConnected`    | `Function` | DOM connection detection                     |

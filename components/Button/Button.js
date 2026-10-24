@@ -6,7 +6,8 @@ import { TooltipWrapper } from '../TooltipWrapper';
  * Interactive button component with keyboard accessibility and tooltip support.
  *
  * Extends TooltipWrapper to provide button-specific behavior on a semantic button element, which activates on
- * Space/Enter by itself; a Button given another tag gets that keyboard activation added.
+ * Space/Enter by itself; a Button given another tag is made pressable (Component#pressable): the button role, a tab
+ * stop, and Enter and Space pressing it as a click.
  * @param {object} [options={}] - Button configuration options
  * @param {string} [options.tag='button'] - HTML tag name, defaults to button for proper semantics
  * @param {Function} [options.onPointerPress] - Handler called when button is activated via click, touch, or keyboard
@@ -46,17 +47,8 @@ export default class Button extends TooltipWrapper {
 		return { ...options, addClass: ['vbc-button', options.addClass] };
 	}
 
+	// A <button> presses by keyboard itself; on any other tag it's given the same
 	build() {
-		if (this.elem instanceof HTMLButtonElement) return;
-
-		this.on({
-			targetEvent: 'keyup',
-			id: 'buttonKeyboardActivate',
-			callback: event => {
-				if (event.code === 'Space' || event.code === 'Enter') {
-					this.options.onPointerPress?.(event);
-				}
-			},
-		});
+		this.pressable();
 	}
 }

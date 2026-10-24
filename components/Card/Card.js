@@ -73,27 +73,8 @@ class Card extends styled(
 			set(value) {
 				this.toggleClass('interactive', !!value);
 
-				// A <button> or <a> is reachable and pressable by keyboard already; anything else is made so
-				if (['BUTTON', 'A'].includes(this.elem.tagName)) return;
-
-				if (value) {
-					this.elem.tabIndex = 0;
-					this.elem.setAttribute('role', 'button');
-					this.on({
-						targetEvent: 'keydown',
-						id: 'cardKeyboardPress',
-						callback: event => {
-							if (event.target !== this.elem || !this.hasClass('interactive')) return;
-							if (event.key !== 'Enter' && event.key !== ' ') return;
-
-							event.preventDefault();
-							this.options.onPointerPress?.(event);
-						},
-					});
-				} else {
-					this.elem.removeAttribute('tabindex');
-					this.elem.removeAttribute('role');
-				}
+				// A <button> or <a> is reachable and pressable by keyboard already; pressable leaves them be
+				this.pressable(!!value);
 			},
 		},
 	};

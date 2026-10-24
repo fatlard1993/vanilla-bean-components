@@ -1,4 +1,5 @@
 import { Component } from '../../Component';
+import { pressable } from '../../Component/pressable';
 import { fileAccepted, retry } from '../../utils';
 import { updateValidationErrors, insertTabCharacter, adjustIndentation } from './utils';
 
@@ -244,7 +245,7 @@ export default class Input extends Component {
 	}
 
 	_wireDropZone(zone) {
-		this.replaceDestroyCleanup('dropZone', null);
+		this.replaceDestroyCleanup('dropZone', () => {});
 
 		if (!zone) return;
 
@@ -272,20 +273,16 @@ export default class Input extends Component {
 			click: event => {
 				if (event.target !== this.elem) this.elem.click();
 			},
-			keydown: event => {
-				if (event.target === zone && (event.key === 'Enter' || event.key === ' ')) {
-					event.preventDefault();
-					this.elem.click();
-				}
-			},
 		};
 
-		// Reachable from the keyboard, where pasting and Enter work
-		if (!zone.hasAttribute('tabindex')) zone.setAttribute('tabindex', '0');
 		for (const [type, listener] of Object.entries(listeners)) zone.addEventListener(type, listener);
+
+		// Reachable from the keyboard, where pasting works, and pressed by Enter or Space like a click
+		const undoPressable = pressable(zone);
 
 		this.replaceDestroyCleanup('dropZone', () => {
 			for (const [type, listener] of Object.entries(listeners)) zone.removeEventListener(type, listener);
+			undoPressable();
 			zone.classList.remove('drag-over');
 		});
 	}

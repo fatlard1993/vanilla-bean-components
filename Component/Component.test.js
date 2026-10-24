@@ -1323,6 +1323,46 @@ describe('Component', () => {
 		});
 	});
 
+	describe('pressable', () => {
+		test('Enter and Space press it as a click, and only on the element itself', () => {
+			const onPointerPress = mock();
+			const tile = new Component({ pressable: true, onPointerPress, appendTo: document.body });
+			const field = document.createElement('input');
+
+			tile.elem.append(field);
+			field.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+			expect(onPointerPress).not.toHaveBeenCalled();
+
+			tile.elem.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+			tile.elem.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+			tile.elem.dispatchEvent(new KeyboardEvent('keyup', { key: ' ', bubbles: true }));
+
+			expect(onPointerPress).toHaveBeenCalledTimes(2);
+			expect(onPointerPress.mock.calls[0][0].type).toBe('click');
+			expect(tile.elem.getAttribute('role')).toBe('button');
+			expect(tile.elem.tabIndex).toBe(0);
+
+			tile.pressable(false);
+			tile.elem.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+			expect(onPointerPress).toHaveBeenCalledTimes(2);
+			expect(tile.elem.hasAttribute('role')).toBe(false);
+			expect(tile.elem.hasAttribute('tabindex')).toBe(false);
+
+			tile.destroy();
+		});
+
+		test('a rendered-again element keeps the role and tab stop', () => {
+			const tile = new Component({ pressable: true, appendTo: document.body });
+
+			tile.render();
+
+			expect(tile.elem.getAttribute('role')).toBe('button');
+			expect(tile.elem.tabIndex).toBe(0);
+
+			tile.destroy();
+		});
+	});
+
 	describe('onLongPress', () => {
 		const held = ms => new Promise(resolve => setTimeout(resolve, ms));
 		const pointer = (elem, type, x = 10, y = 10) =>
