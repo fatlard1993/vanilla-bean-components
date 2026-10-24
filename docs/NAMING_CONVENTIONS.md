@@ -84,6 +84,14 @@ Property and method naming prioritizes clarity and follows established web platf
 - **Boolean properties**: Prefixed with `is` or `has` to clearly indicate true/false values (e.g., `isDirty`, `hasClass`, `isValid`)
 - **Getter methods**: Descriptive verbs without `get` prefix (e.g., `validate()` rather than `getValidation()`)
 
+**The shared vocabulary:** the same idea has one name in every component.
+
+- **A press**: what is pressed takes `onPointerPress`. A container that hears a press on any of its parts names the part (`onButtonPress`, `onItemPress`), and the part's own handler runs first
+- **A change**: `onChange(event)`, the new value as `event.value`
+- **An overlay**: `open(options?)`, `close()`, `isOpen`, `autoOpen`, and a declared `close` event (`onClose`) however it closed
+- **A status**: `intent`, one of `'info'`, `'success'`, `'warning'`, `'danger'`, the color roles of the same names
+- **A look**: `variant`, only how something is drawn, declared with `classEnum('variant', [...])`
+
 These conventions align with native DOM APIs and modern JavaScript patterns, making the library feel familiar to web developers.
 
 ## CSS & Styling
