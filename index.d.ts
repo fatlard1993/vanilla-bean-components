@@ -1014,8 +1014,6 @@ export declare class View extends Component {
 
 export type StyleConfig = Record<string, any>;
 
-export declare function adjustIndentation(options?: any): any;
-
 /** Inject CSS directly into the document head via a style element */
 export declare function appendStyles(css: string, id?: string): HTMLStyleElement | undefined;
 
@@ -1086,8 +1084,6 @@ export declare function fromCamelCase(string: string, joiner?: string): string;
 
 /** Finds elements containing specified text using XPath evaluation. Uses XPath contains() function with optional case-insensitive matching. Returns deepest matching elements to avoid duplicate parent/child results. */
 export declare function getElementsContainingText(text: string, options?: Record<string, any>): Node[];
-
-export declare function insertTabCharacter(input: any): any;
 
 /** Determines if element is a descendant of specified parent element. */
 export declare function isDescendantOf(element: HTMLElement, parentElement: HTMLElement): boolean;
