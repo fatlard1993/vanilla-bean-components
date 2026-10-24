@@ -34,9 +34,9 @@ A name only counts as a pattern when it is anchored at both ends. Without that r
 - an unanchored name matches one key by name; only a name anchored at both ends is treated as a pattern
   - new Subject({ layout: "number", keyDefinitions: { ".": { class: "dot" } }, appendTo: document.body }) captures k then Array.from(k.elem.querySelectorAll("button")) captures keys then keys.filter(b => b.className.includes("dot")) captures dotted -> keys.length > 5 && dotted.length === 1 && dotted[0].textContent === "."
 
-## Subscribing to a key event returns the means to stop
+## Key events are ordinary events
 
-Callers wire key handlers into components that come and go, so a subscription that cannot be undone is a leak. The subscribe helpers hand back an unsubscribe rather than requiring the caller to keep the original function around to pass to a removal call.
+A subscription that cannot be undone is a leak, so key events are declared events rather than a subscription API of the keyboard's own: `onKeyDown` as an option, `on()`, or `addEventListener` with a signal, each ending the way any listener does.
 
-- `onKeyDown`, `onKeyUp` and `onKeyPress` return a function that ends the subscription; after calling it, further presses are not delivered
-  - new Array() captures seen then new Subject({ layout: "simple", appendTo: document.body }) captures k then k.onKeyDown(() => seen.push("down")) captures offDown then k.onKeyUp(() => seen.push("up")) captures offUp then k.onKeyPress(() => seen.push("press")) captures offPress then Array.from(k.elem.querySelectorAll("button")).find(b => b.textContent === "q") captures key then key.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })) then key.dispatchEvent(new PointerEvent("pointerup", { bubbles: true })) then key.click() then seen.slice() captures whileSubscribed then offDown() then offUp() then offPress() then key.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true })) then key.dispatchEvent(new PointerEvent("pointerup", { bubbles: true })) then key.click() -> whileSubscribed.length === 3 && seen.length === 3
+- `on()` hears a key event, and the keyboard has no subscription methods of its own
+  - new Array() captures seen then new Subject({ layout: "simple", appendTo: document.body }) captures k then k.on({ targetEvent: "keyPress", callback: e => seen.push(e.detail.key) }) then Array.from(k.elem.querySelectorAll("button")).find(b => b.textContent === "q") captures key then key.click() -> seen.join() === "q" && k.onKeyPress === undefined

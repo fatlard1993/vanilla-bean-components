@@ -47,15 +47,21 @@ describe('Keyboard', () => {
 		expect(onKeyDown).not.toHaveBeenCalled();
 	});
 
-	test('the onKeyDown method subscribes, and returns the means to stop', () => {
+	test('key events are ordinary events: on() hears them, and a listener added with a signal ends with it', () => {
 		const heard = mock();
+		const later = mock();
 		const keyboard = new Keyboard({ tactileResponse: false, appendTo: container });
-		const stop = keyboard.onKeyDown(heard);
+		const stop = new AbortController();
+
+		keyboard.on({ targetEvent: 'keyDown', callback: heard });
+		keyboard.elem.addEventListener('keyDown', later, { signal: stop.signal });
 
 		pressKey(keyboard, 'q');
-		stop();
+		stop.abort();
 		pressKey(keyboard, 'q');
 
-		expect(heard).toHaveBeenCalledTimes(1);
+		expect(heard).toHaveBeenCalledTimes(2);
+		expect(later).toHaveBeenCalledTimes(1);
+		expect(keyboard.onKeyDown).toBeUndefined();
 	});
 });

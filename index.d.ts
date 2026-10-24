@@ -622,7 +622,7 @@ export interface KeyboardOptions extends ComponentOptions {
 	onKeyDown?: (...args: any[]) => any;
 	/** Hears `keyUp`: a key let go */
 	onKeyUp?: (...args: any[]) => any;
-	/** Hears `keyPress`: a key pressed and let go */
+	/** Hears `keyPress`: a key pressed and let go. The three are declared events, so on() and addEventListener hear them too */
 	onKeyPress?: (...args: any[]) => any;
 }
 
@@ -630,12 +630,6 @@ export declare class Keyboard extends Component {
 	constructor(options?: KeyboardOptions, ...children: Array<Elem | HTMLElement | string>);
 	/** Switches the keyboard to the specified layout and rebuilds the keys. */
 	setLayout(name: string): void;
-	/** Registers a callback for key down events. */
-	onKeyDown(callback: (...args: any[]) => any): (...args: any[]) => any;
-	/** Registers a callback for key up events. */
-	onKeyUp(callback: (...args: any[]) => any): (...args: any[]) => any;
-	/** Registers a callback for key press events. */
-	onKeyPress(callback: (...args: any[]) => any): (...args: any[]) => any;
 }
 
 export interface LabelOptions extends TooltipWrapperOptions {

@@ -22,7 +22,8 @@ const KeyRow = styled(
  * @param {object} [options.layouts] - Layout configuration object mapping layout names to key arrays
  * @param {Function} [options.onKeyDown] - Hears `keyDown`: a key pressed down; `event.detail` holds key, keyDefinition, target and event
  * @param {Function} [options.onKeyUp] - Hears `keyUp`: a key let go
- * @param {Function} [options.onKeyPress] - Hears `keyPress`: a key pressed and let go
+ * @param {Function} [options.onKeyPress] - Hears `keyPress`: a key pressed and let go. The three are declared events,
+ *   so on() and addEventListener hear them too
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Keyboard} Keyboard component instance
  */
@@ -131,39 +132,6 @@ class Keyboard extends Component {
 				});
 			});
 		});
-	}
-
-	/**
-	 * Registers a callback for key down events.
-	 * @param {Function} callback - Event handler function
-	 * @returns {Function} Unsubscribe function
-	 */
-	onKeyDown(callback) {
-		this.addEventListener('keyDown', callback);
-
-		return () => this.removeEventListener('keyDown', callback);
-	}
-
-	/**
-	 * Registers a callback for key up events.
-	 * @param {Function} callback - Event handler function
-	 * @returns {Function} Unsubscribe function
-	 */
-	onKeyUp(callback) {
-		this.addEventListener('keyUp', callback);
-
-		return () => this.removeEventListener('keyUp', callback);
-	}
-
-	/**
-	 * Registers a callback for key press events.
-	 * @param {Function} callback - Event handler function
-	 * @returns {Function} Unsubscribe function
-	 */
-	onKeyPress(callback) {
-		this.addEventListener('keyPress', callback);
-
-		return () => this.removeEventListener('keyPress', callback);
 	}
 }
 
