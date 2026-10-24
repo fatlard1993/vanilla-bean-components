@@ -15,6 +15,10 @@ const useElementStyles = enabled => {
 	else window.addEventListener('load', () => useElementStyles(enabled), { once: true });
 };
 
+// The page's links go ahead of every other style in the head, in their order, so an app's own styles win a tie with
+// them however late the page renders
+let lastLink;
+
 // Each stylesheet once: a link already in the head, or a scoped sheet already added, is left as it is
 const loadStyleSheet = styleSheet => {
 	if (!styleSheet) return;
@@ -33,7 +37,12 @@ const loadStyleSheet = styleSheet => {
 
 	if (document.querySelector(`link[rel="stylesheet"][href="${href}"]`)) return;
 
-	document.head.append(Object.assign(document.createElement('link'), { rel: 'stylesheet', href }));
+	const link = Object.assign(document.createElement('link'), { rel: 'stylesheet', href });
+
+	if (lastLink?.isConnected) lastLink.after(link);
+	else document.head.prepend(link);
+
+	lastLink = link;
 };
 
 /**

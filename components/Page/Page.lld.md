@@ -28,6 +28,13 @@ Page follows the Component contract like any other: no constructor of its own. T
 - a caller's `autoRender` is kept: `false` waits for render(), which loads the stylesheets then
   - new Subject({ autoRender: false, styleSheets: ["/lld-late.css"] }) captures p then document.querySelectorAll('link[href="/lld-late.css"]').length captures before then p.render() -> p.rendered === true && before === 0 && document.querySelectorAll('link[href="/lld-late.css"]').length === 1
 
+## Its stylesheets sit ahead of the app's styles
+
+A page renders after the window loads, by which time an app's bundled styles are already in the head. Appended after them, a stylesheet would win every tie of specificity against the app that overrides it; so the page's links go first in the head, in the order given.
+
+- a stylesheet loaded at render comes before a style already in the head
+  - document.head.append(Object.assign(document.createElement("style"), { id: "lld-app-style" })) captures s then new Subject({ styleSheets: ["/lld-first.css"], appendTo: document.body }) captures p -> Array.from(document.head.querySelectorAll("link[rel=stylesheet], style")).findIndex(n => n.getAttribute("href") === "/lld-first.css") < Array.from(document.head.querySelectorAll("link[rel=stylesheet], style")).findIndex(n => n.id === "lld-app-style")
+
 ## A stylesheet list tolerates gaps
 
 Stylesheet lists are usually built by concatenating conditionals, so holes in them are normal rather than a mistake. A hole is skipped; the entries around it still load.
