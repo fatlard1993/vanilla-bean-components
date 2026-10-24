@@ -1,4 +1,4 @@
-import { cssLength, isDescendantOf } from './element';
+import { cssLength, isDescendantOf, firstFocusable } from './element';
 
 describe('element utilities', () => {
 	beforeEach(() => {
@@ -173,5 +173,17 @@ describe('cssLength', () => {
 		expect(cssLength(0)).toBe('0px');
 		expect(cssLength('1rem')).toBe('1rem');
 		expect(cssLength(undefined)).toBeUndefined();
+	});
+});
+
+describe('firstFocusable', () => {
+	test('the first element that takes focus, passing over disabled ones and ones out of the tab order', () => {
+		const root = document.createElement('div');
+
+		root.innerHTML =
+			'<p>text</p><button disabled>off</button><span tabindex="-1">no</span><input id="first" /><a href="#">link</a>';
+
+		expect(firstFocusable(root).id).toBe('first');
+		expect(firstFocusable(document.createElement('div'))).toBeNull();
 	});
 });

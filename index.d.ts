@@ -283,7 +283,9 @@ export declare class CalendarEvent {
 // Run `bun run build:types` to regenerate from static schema declarations and JSDoc annotations.
 
 export interface BottomSheetOptions extends ComponentOptions {
-	/** Called when the sheet is dismissed */
+	/** Open a moment after rendering; a number is that moment in milliseconds (default: false) */
+	autoOpen?: number | boolean;
+	/** Hears `close`, however the sheet closed */
 	onClose?: (...args: any[]) => any;
 }
 
@@ -291,10 +293,12 @@ export declare class BottomSheet extends Component {
 	constructor(options?: BottomSheetOptions, ...children: Array<Elem | HTMLElement | string>);
 	/** Content area for child components. Append children here for scrollable content. */
 	readonly body: Component;
-	/** Slides the sheet into view and registers navigation listeners to auto-dismiss. */
-	show(): void;
-	/** Slides the sheet out of view. Calls `onClose` only if the sheet was actually open — hiding an already-closed sheet dismisses nothing, so there is nothing to announce. */
-	hide(): void;
+	/** Whether the sheet is open. */
+	readonly isOpen: boolean;
+	/** Slides the sheet into view, moves focus into it, and closes it if the page navigates away. */
+	open(): void;
+	/** Slides the sheet out. Announces `close` only if it was open: closing a closed sheet dismisses nothing. */
+	close(): void;
 }
 
 export interface ButtonOptions extends TooltipWrapperOptions {
@@ -1026,6 +1030,9 @@ export declare function delay(ms: number): Promise<void>;
 
 /** Whether a file is one an accept list allows, as an `<input type="file" accept>` reads it: extensions (.csv), exact types (application/json) and type families (image/*). An empty list allows anything. */
 export declare function fileAccepted(file: File, accept?: string): boolean;
+
+/** The first element inside a root that takes keyboard focus, for an overlay to move focus into as it opens. */
+export declare function firstFocusable(root: HTMLElement): HTMLElement | null;
 
 /** Keep the page to the part a phone's keyboard leaves showing. The keyboard covers the bottom of the page rather than shrinking it (on iOS always, on Android unless the viewport asks), which hides whatever sits at the bottom. The visible height goes to `--visible-height`, and to the document's height unless setHeight is false; while pinch-zoomed the visible part is a magnified piece of the page, so the page is left alone. */
 export declare function fitToKeyboard(options?: Record<string, any>): (...args: any[]) => any;

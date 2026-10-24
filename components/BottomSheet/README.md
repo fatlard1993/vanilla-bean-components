@@ -1,44 +1,54 @@
 # BottomSheet
 
-Mobile bottom sheet with drag-to-close gesture. Mounts to `document.body` by default. Slides up from the bottom of the viewport; a downward drag past the threshold dismisses it.
+A modal panel that slides up from the bottom of the screen, on the native `<dialog>`. Mounts to `document.body` by default. A downward drag on its handle past the threshold closes it.
 
 ## Usage
 
 ```js
-import { BottomSheet } from '@vanilla-bean/components';
+import { BottomSheet, Component } from '@vanilla-bean/components';
 
 const sheet = new BottomSheet({
 	onClose: () => console.log('dismissed'),
 	append: new Component({ tag: 'p', textContent: 'Sheet content here.' }),
 });
 
-sheet.show();
+sheet.open();
 ```
 
 ## Options
 
-| Option     | Type       | Default         | Description                                                       |
-| ---------- | ---------- | --------------- | ----------------------------------------------------------------- |
-| `appendTo` | `Element`  | `document.body` | Where to mount the sheet in the DOM                               |
-| `onClose`  | `Function` | -               | Called when the sheet is dismissed - by drag or explicit `hide()` |
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `appendTo` | `Element` | `document.body` | Where to mount the sheet in the DOM |
+| `autoOpen` | `boolean\|number` | `false` | Open a moment after rendering; a number is the delay in ms |
+| `onClose` | `Function` | - | Hears `close`, however the sheet closed: `close()`, Escape, the dimmed page, a drag, navigating away |
 
 All standard `Component` options are supported.
 
 ## Methods
 
 ```js
-sheet.show();
-// Slides the sheet into view by adding the 'open' class.
+sheet.open();
+// Slides the sheet up as a modal and moves focus to the first focusable thing in it.
 
-sheet.hide();
-// Slides the sheet out and calls options.onClose if set.
+sheet.close();
+// Slides it out and announces close, if it was open. Focus goes back to where it was before opening.
+
+sheet.isOpen;
+// Whether it's open.
 ```
 
-## Drag-to-close behavior
+## Closing
 
-The top 60px of the sheet is the drag handle zone. A downward touch drag in this zone tracks the drag position in real time. Releasing past the threshold (120px or 25% of sheet height, whichever is smaller) dismisses the sheet via `hide()`.
+Every way out ends on the dialog's own `close` event, so `onClose` hears each of them once:
 
-Scroll position is respected: dragging is blocked while the sheet's content is scrolled away from the top, so normal scroll doesn't accidentally dismiss.
+- `close()`
+- Escape, as for any modal dialog
+- a press on the dimmed page above the sheet
+- a drag down on the handle past the threshold (100px or a quarter of the sheet's height, whichever is smaller), with the mouse, a finger or a pen; a shorter drag springs back
+- the page navigating away (`hashchange` or `popstate`)
+
+The sheet stays in the page after closing, to open again; `destroy()` removes it.
 
 ## Example
 
@@ -53,14 +63,14 @@ const sheet = new BottomSheet({
 		new Component({ tag: 'h3', textContent: 'Options' }),
 		new Button({
 			textContent: 'Close',
-			onPointerPress: () => sheet.hide(),
+			onPointerPress: () => sheet.close(),
 		}),
 	],
 });
 
 new Button({
 	textContent: 'Open sheet',
-	onPointerPress: () => sheet.show(),
+	onPointerPress: () => sheet.open(),
 	appendTo: document.body,
 });
 ```

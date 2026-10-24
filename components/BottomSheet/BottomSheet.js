@@ -2,26 +2,34 @@ import { styled } from '../../styled';
 import { Component } from '../../Component';
 import { Elem } from '../../Elem';
 import { duration, elevation, radius } from '../../theme/tokens';
+import { firstFocusable } from '../../utils';
+
+const defaultOpenDelay = 16;
 
 /**
- * Mobile-friendly bottom sheet with drag-to-close gesture.
+ * Mobile-friendly bottom sheet on the native `<dialog>`: a modal panel that slides up from the bottom edge.
  *
- * Mounts to document.body by default. Call show() to slide up, hide() to dismiss.
- * Drag the handle downward past the threshold to dismiss.
+ * Mounts to document.body by default. open() slides it up and moves focus into it; close(), Escape, a press on the
+ * dimmed page, a drag down on its handle past the threshold, or navigating away close it, and focus goes back to
+ * where it was. However it closes, it announces `close`.
  * @param {object} [options={}] - BottomSheet configuration options
- * @param {Function} [options.onClose] - Called when the sheet is dismissed
+ * @param {number|boolean} [options.autoOpen=false] - Open a moment after rendering; a number is that moment in
+ *   milliseconds
+ * @param {Function} [options.onClose] - Hears `close`, however the sheet closed
  * @param {...(Component|HTMLElement|string)} children - Appended to the sheet body
  */
 class BottomSheet extends styled(
 	Component,
 	({ colors, safeArea }) => `
 		position: fixed;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		display: flex;
+		inset: auto 0 0 0;
+		box-sizing: border-box;
+		width: 100%;
+		max-width: none;
+		margin: 0;
 		flex-direction: column;
 		background: ${colors.surface};
+		color: inherit;
 		border: 1px solid ${colors.edge};
 		border-bottom: none;
 		border-radius: ${radius.lg} ${radius.lg} 0 0;
@@ -30,12 +38,40 @@ class BottomSheet extends styled(
 		max-height: 85dvh;
 		/* Its content clears the home indicator and the rounded corners */
 		padding: 0 ${safeArea.right} ${safeArea.bottom} ${safeArea.left};
-		z-index: 1000;
+		overflow: hidden;
 		transform: translateY(100%);
-		transition: transform ${duration.base} ease;
+		transition:
+			transform ${duration.base} ease,
+			display ${duration.base} allow-discrete,
+			overlay ${duration.base} allow-discrete;
 
-		&.open {
+		&[open] {
+			display: flex;
 			transform: translateY(0);
+		}
+
+		@starting-style {
+			&[open] {
+				transform: translateY(100%);
+			}
+		}
+
+		&::backdrop {
+			background-color: ${colors.alpha(colors.black, 0)};
+			transition:
+				background-color ${duration.base},
+				display ${duration.base} allow-discrete,
+				overlay ${duration.base} allow-discrete;
+		}
+
+		&[open]::backdrop {
+			background-color: ${colors.overlay};
+		}
+
+		@starting-style {
+			&[open]::backdrop {
+				background-color: ${colors.alpha(colors.black, 0)};
+			}
 		}
 
 		& .sheet-drag-zone {
@@ -67,20 +103,52 @@ class BottomSheet extends styled(
 	`,
 ) {
 	static schema = {
+		tag: { default: 'dialog' },
 		appendTo: {
 			get default() {
 				return document.body;
 			},
 		},
-		// Read directly as this.options.onClose in hide()
-		onClose: {},
+		// Children, given or appended through the option, land in the body, where they scroll
+		append: {
+			set(value) {
+				this._body.append(value);
+			},
+		},
+		autoOpen: {
+			default: false,
+			set(value) {
+				const delay = typeof value === 'number' ? value : defaultOpenDelay;
+				const openDelay = value ? setTimeout(() => this.open(), delay) : null;
+				this.replaceCleanup('autoOpen', () => openDelay && clearTimeout(openDelay));
+			},
+		},
 	};
+
+	static events = ['close'];
 
 	build() {
 		this._dragZone = new Elem({ tag: 'div', appendTo: this, addClass: 'sheet-drag-zone' });
 		new Elem({ tag: 'div', appendTo: this._dragZone, addClass: 'sheet-handle' });
 
 		this._body = new Component({ appendTo: this, addClass: 'sheet-body' });
+
+		// Every way out (close(), Escape, the backdrop, a drag, navigating away) ends here
+		this.on({ targetEvent: 'close', id: 'sheetClosed', callback: () => this._closed() });
+
+		// A press on the dimmed page lands on the dialog itself, outside its box
+		this.on({
+			targetEvent: 'click',
+			id: 'sheetBackdrop',
+			callback: event => {
+				if (event.target !== this.elem) return;
+
+				const { left, right, top, bottom } = this.elem.getBoundingClientRect();
+				const outside = event.clientX < left || event.clientX > right || event.clientY < top || event.clientY > bottom;
+
+				if (outside) this.close();
+			},
+		});
 
 		this._initDragToClose();
 	}
@@ -94,102 +162,101 @@ class BottomSheet extends styled(
 	}
 
 	/**
-	 * Slides the sheet into view and registers navigation listeners to auto-dismiss.
+	 * Whether the sheet is open.
+	 * @returns {boolean} True while it's open
 	 */
-	show() {
-		this.addClass('open');
-		if (!this._hideOnNavigate) {
-			this._hideOnNavigate = () => this.hide();
-			window.addEventListener('hashchange', this._hideOnNavigate, { once: true });
-			window.addEventListener('popstate', this._hideOnNavigate, { once: true });
-			this.replaceDestroyCleanup('hideOnNavigate', () => {
-				window.removeEventListener('hashchange', this._hideOnNavigate);
-				window.removeEventListener('popstate', this._hideOnNavigate);
-				this._hideOnNavigate = null;
-			});
-		}
+	get isOpen() {
+		return Boolean(this.elem.open);
 	}
 
 	/**
-	 * Slides the sheet out of view. Calls `onClose` only if the sheet was actually open — hiding an
-	 * already-closed sheet dismisses nothing, so there is nothing to announce.
+	 * Slides the sheet into view, moves focus into it, and closes it if the page navigates away.
 	 */
-	hide() {
-		// `onClose` reports a dismissal. Firing it unconditionally meant a sheet that had never been
-		// shown reported being closed, and `hide()` called twice reported it twice — so a caller
-		// hiding defensively, or wiring hide() to more than one dismissal path, got spurious closes.
-		const wasOpen = this.elem.classList.contains('open');
+	open() {
+		if (this.isOpen || !this.elem.isConnected) return;
 
-		this.removeClass('open');
-		if (this._hideOnNavigate) {
-			window.removeEventListener('hashchange', this._hideOnNavigate);
-			window.removeEventListener('popstate', this._hideOnNavigate);
-			this._hideOnNavigate = null;
-			this.replaceDestroyCleanup('hideOnNavigate', () => {});
-		}
-		if (wasOpen) this.options.onClose?.();
+		this._opener = document.activeElement;
+		this.elem.showModal();
+		(firstFocusable(this._body.elem) ?? this.elem).focus();
+
+		this._closeOnNavigate = () => this.close();
+		window.addEventListener('hashchange', this._closeOnNavigate);
+		window.addEventListener('popstate', this._closeOnNavigate);
+		this.replaceDestroyCleanup('closeOnNavigate', () => this._stopNavigateClose());
 	}
 
+	/**
+	 * Slides the sheet out. Announces `close` only if it was open: closing a closed sheet dismisses nothing.
+	 */
+	close() {
+		if (this.isOpen) this.elem.close();
+	}
+
+	_closed() {
+		this._stopNavigateClose();
+
+		if (this._opener?.isConnected) this._opener.focus();
+		this._opener = null;
+	}
+
+	_stopNavigateClose() {
+		if (!this._closeOnNavigate) return;
+
+		window.removeEventListener('hashchange', this._closeOnNavigate);
+		window.removeEventListener('popstate', this._closeOnNavigate);
+		this._closeOnNavigate = null;
+	}
+
+	// One pointer path for mouse, touch and pen: the handle follows it down, and past the threshold the sheet closes
 	_initDragToClose() {
-		const el = this.elem;
+		const sheet = this.elem;
 		const dragZone = this._dragZone.elem;
-		let startY = 0;
+		let startY = null;
 
-		// Mouse drag
-		const onMouseMove = e => {
-			const dy = e.clientY - startY;
+		const reset = () => {
+			startY = null;
+			sheet.style.transition = '';
+			sheet.style.transform = '';
+		};
+
+		const onDown = event => {
+			if (event.button > 0) return;
+
+			startY = event.clientY;
+			dragZone.setPointerCapture?.(event.pointerId);
+		};
+
+		const onMove = event => {
+			if (startY === null) return;
+
+			const dy = event.clientY - startY;
+
 			if (dy <= 0) return;
-			el.style.transition = 'none';
-			el.style.transform = `translateY(${dy}px)`;
+
+			sheet.style.transition = 'none';
+			sheet.style.transform = `translateY(${dy}px)`;
 		};
 
-		const onMouseUp = e => {
-			window.removeEventListener('mousemove', onMouseMove);
-			window.removeEventListener('mouseup', onMouseUp);
-			el.style.transition = '';
-			el.style.transform = '';
-			const dy = e.clientY - startY;
-			if (dy > Math.min(100, el.offsetHeight * 0.25)) this.hide();
+		const onUp = event => {
+			if (startY === null) return;
+
+			const dy = event.clientY - startY;
+
+			reset();
+			if (dy > Math.min(100, sheet.offsetHeight * 0.25)) this.close();
 		};
 
-		const onMouseDown = e => {
-			startY = e.clientY;
-			window.addEventListener('mousemove', onMouseMove);
-			window.addEventListener('mouseup', onMouseUp);
-		};
+		const listeners = [
+			['pointerdown', onDown],
+			['pointermove', onMove],
+			['pointerup', onUp],
+			['pointercancel', reset],
+		];
 
-		// Touch drag
-		const onTouchMove = e => {
-			const dy = e.touches[0].clientY - startY;
-			if (dy <= 0) return;
-			e.preventDefault();
-			el.style.transition = 'none';
-			el.style.transform = `translateY(${dy}px)`;
-		};
-
-		const onTouchEnd = e => {
-			el.style.transition = '';
-			el.style.transform = '';
-			const dy = e.changedTouches[0].clientY - startY;
-			if (dy > Math.min(100, el.offsetHeight * 0.25)) this.hide();
-		};
-
-		const onTouchStart = e => {
-			startY = e.touches[0].clientY;
-		};
-
-		dragZone.addEventListener('mousedown', onMouseDown);
-		dragZone.addEventListener('touchstart', onTouchStart, { passive: true });
-		dragZone.addEventListener('touchmove', onTouchMove, { passive: false });
-		dragZone.addEventListener('touchend', onTouchEnd, { passive: true });
+		for (const [type, listener] of listeners) dragZone.addEventListener(type, listener);
 
 		this.replaceCleanup('dragToClose', () => {
-			dragZone.removeEventListener('mousedown', onMouseDown);
-			dragZone.removeEventListener('touchstart', onTouchStart);
-			dragZone.removeEventListener('touchmove', onTouchMove);
-			dragZone.removeEventListener('touchend', onTouchEnd);
-			window.removeEventListener('mousemove', onMouseMove);
-			window.removeEventListener('mouseup', onMouseUp);
+			for (const [type, listener] of listeners) dragZone.removeEventListener(type, listener);
 		});
 	}
 }

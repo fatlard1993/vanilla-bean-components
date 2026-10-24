@@ -50,3 +50,13 @@ export const getElementsContainingText = (text, options = {}) => {
  * @returns {string} The CSS length (anything not a number passes through)
  */
 export const cssLength = value => (typeof value === 'number' ? `${value}px` : value);
+
+const focusable =
+	'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+/**
+ * The first element inside a root that takes keyboard focus, for an overlay to move focus into as it opens.
+ * @param {HTMLElement} root - Where to look
+ * @returns {HTMLElement|null} The first focusable element, or null when there is none
+ */
+export const firstFocusable = root => root.querySelector(focusable);

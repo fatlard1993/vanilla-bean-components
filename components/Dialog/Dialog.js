@@ -3,7 +3,7 @@ import { duration, intents } from '../../theme/tokens';
 import { Button } from '../Button';
 import { Component, classEnum } from '../../Component';
 import { Elem } from '../../Elem';
-import { isDev } from '../../utils';
+import { firstFocusable, isDev } from '../../utils';
 
 const DialogButton = styled(
 	Button,
@@ -289,10 +289,7 @@ class Dialog extends styled(
 		try {
 			this.elem[modal ? 'showModal' : 'show']();
 			this._openRetried = false;
-			const focusable = this.elem.querySelector(
-				'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-			);
-			(focusable ?? this.elem).focus();
+			(firstFocusable(this.elem) ?? this.elem).focus();
 		} catch (error) {
 			if (this._openRetried) return;
 
