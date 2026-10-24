@@ -83,8 +83,11 @@ class Dialog extends styled(
 			flex-direction: row;
 			align-items: center;
 			justify-content: flex-end;
-			padding: 0 ${space.sm};
+			flex-wrap: wrap;
+			row-gap: ${space.xs};
+			padding: ${space.xs} ${space.sm};
 			min-height: 40px;
+			box-sizing: border-box;
 		}
 
 		/* Whatever its size, it fits a phone's screen, clear of the notch and the home indicator */
