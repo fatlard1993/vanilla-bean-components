@@ -2,6 +2,7 @@ import { Component } from '../../Component';
 import { styled } from '../../styled';
 import { Button } from '../Button';
 import { Input } from '../Input';
+import { showFieldError } from '../Input/fieldError';
 
 import Tag from './Tag';
 
@@ -77,7 +78,7 @@ class TagList extends StyledComponent {
 			const accepted = this.options.accept(value, this);
 
 			if (!accepted) {
-				this._refuse();
+				this._refuse(value);
 				return;
 			}
 
@@ -92,18 +93,10 @@ class TagList extends StyledComponent {
 		this.tagInput.elem.focus();
 	}
 
-	// A refused entry is marked for a moment and left selected, ready to be corrected
-	_refuse() {
-		this.tagInput.addClass('validation-errors');
-		this.tagInput.elem.setAttribute('aria-invalid', 'true');
+	// A refused entry is said so, as any field's error is, and left selected, ready to be corrected; typing clears it
+	_refuse(value) {
+		showFieldError({ owner: this, field: this.tagInput.elem, messages: [`Can't add "${value}"`] });
 		this.tagInput.elem.select();
-
-		clearTimeout(this._refusedTimeout);
-		this._refusedTimeout = setTimeout(() => {
-			this.tagInput.removeClass('validation-errors');
-			this.tagInput.elem.removeAttribute('aria-invalid');
-		}, 600);
-		this.replaceCleanup('refused', () => clearTimeout(this._refusedTimeout));
 	}
 
 	build() {
@@ -114,6 +107,14 @@ class TagList extends StyledComponent {
 				targetEvent: 'keyup',
 				callback: e => {
 					if (e.key === 'Enter') this._addTag(this.tagInput.elem.value);
+				},
+			});
+
+			this.tagInput.on({
+				targetEvent: 'input',
+				id: 'clearRefusal',
+				callback: () => {
+					if (this._fieldError) showFieldError({ owner: this, field: this.tagInput.elem });
 				},
 			});
 

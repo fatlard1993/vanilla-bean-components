@@ -13,7 +13,14 @@ Declarative form from an array of input configurations. The key design decision 
 
 - `hasErrors()` runs all validations and returns true if any failed, false if all passed; false means submittable
   - does hasErrors return false when all inputs are valid?
-  - new Subject({ inputs: [{ key: "name", validations: [[v => !!v, "required"]] }], appendTo: document.body }) captures f -> f.hasErrors() === true
+  - new Subject({ inputs: [{ key: "name", validate: v => (v ? null : "required") }], appendTo: document.body }) captures f -> f.hasErrors() === true
+
+## Every field reports a problem the same way
+
+A field's `validate` is `value => message`, what's wrong in words or nothing; the shape an Input, a TagList and a server store field take. Before, a field-level `validate` only reddened the field and its message went nowhere, while an Input's rules hid theirs behind a button.
+
+- a field's message is shown below it and read out with it, whether the field checks itself (an Input) or the form checks it (any other component)
+  - new Subject({ inputs: [{ key: "name", validate: v => (v ? null : "Name it") }, { key: "pick", InputComponent: Object.getPrototypeOf(Subject), validate: v => (v ? null : "Pick one") }], appendTo: document.body }) captures f then f.hasErrors() captures errors then [f.inputElements.name.elem, f.inputElements.pick.elem].map(el => document.getElementById(el.getAttribute("aria-describedby"))?.textContent).join() captures messages -> errors === true && messages === "Name it,Pick one"
 
 ## Form data is live - changes are visible before any submit action
 

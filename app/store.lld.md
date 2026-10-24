@@ -8,6 +8,8 @@ A collection of records in a JSON file, for an app whose data fits in memory. Th
 
 - a field the store doesn't know is dropped, and one left out lands as its type's empty value
   - new Array() captures start then Subject.createStore({ db: { data: {}, write: async () => {} }, fields: { name: { type: "string" }, tags: { type: "stringArray" } } }) captures store then await store.create({ name: "Chess", extra: 1 }) captures game -> game.extra === undefined && Array.isArray(game.tags) && game.tags.length === 0
+- a field's `validate`, the same `value => message` a Form field takes, refuses a value with its message, naming the field
+  - new Array() captures start then Subject.createStore({ db: { data: {}, write: async () => {} }, fields: { name: { type: "string", validate: v => (v.trim() ? null : "Give it a name") } } }) captures store then await store.create({ name: "  " }).catch(error => error.message) captures refusal then await store.create({ name: "Chess" }) captures made -> refusal === "name: Give it a name" && made.name === "Chess"
 - a required field missing is refused, naming it, rather than stored as a hole
   - new Array() captures start then Subject.createStore({ db: { data: {}, write: async () => {} }, fields: { name: { type: "string", required: true } } }) captures store then await store.create({}).catch(error => error.message) captures refusal -> refusal === "name is required"
 - a value of the wrong shape is refused, naming the field

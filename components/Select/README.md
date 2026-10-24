@@ -24,7 +24,7 @@ Select inherits all options from `Input`. Key additions:
 | `value` | `any` | - | Currently selected value. Matched against option `value` attributes |
 | `onChange` | `Function` | - | Called with an enhanced event containing `.value` (the selected value string) on change |
 
-All other `Input` options (`placeholder`, `validations`, `onInput`, etc.) are available but less commonly used with Select.
+All other `Input` options (`placeholder`, `validate`, `onInput`, etc.) are available but less commonly used with Select.
 
 ### `options` entry shape
 
@@ -50,7 +50,7 @@ select.value          // getter - returns value, label, or textContent of the se
 select.value = newVal // setter - sets elem.value directly
 
 // Inherited from Input:
-select.validate({ validations?, value? }): Array | undefined
+select.validate({ value? }?): Array | undefined
 select.isDirty: boolean
 ```
 

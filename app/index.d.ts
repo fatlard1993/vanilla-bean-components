@@ -53,7 +53,7 @@ export declare const LIBRARY_ASSET_PACKAGES: ReadonlyArray<string>;
 
 export declare const LIBRARY_STYLESHEETS: ReadonlyArray<string>;
 
-/** A fields option in any of its shorthands, made uniform: a list of names (stored as given, '' when missing), a map of name to default value (a function default is called per record), or a map of name to `{ type, required, default }`. */
+/** A fields option in any of its shorthands, made uniform: a list of names (stored as given, '' when missing), a map of name to default value (a function default is called per record), or a map of name to `{ type, required, default, validate }`. `validate` is the client's: `value => message`, what's wrong or nothing, or a list of them, so one function checks a field in a Form and in the store. */
 export declare function normalizeFields(fields: Array<string> | Record<string, any>): Record<string, any>;
 
 /** Open a lowdb JSON file, filling in any top-level collection it lacks. A symlinked path is followed, so the write replaces the target rather than the link, and a file that won't parse fails naming the file. lowdb writes through a temporary file and a rename, one write at a time, so nothing more is needed for safe writes. */
@@ -95,7 +95,7 @@ export declare function serviceDefinition(options?: Record<string, any>): {
 	log?: string;
 };
 
-/** A request body checked against normalized fields: only known fields come back, parsed. Throws a ValidationError naming the field for anything of the wrong shape, or a required field missing or empty. */
+/** A request body checked against normalized fields: only known fields come back, parsed. Throws a ValidationError naming the field for anything of the wrong shape, a required field missing or empty, or a value its `validate` finds wrong (with that message). */
 export declare function validateFields(
 	fields: Record<string, any>,
 	data: Record<string, any>,

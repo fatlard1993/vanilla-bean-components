@@ -136,7 +136,7 @@ describe('Select', () => {
 		const select = new Select({
 			options: ['', 'Valid Option'],
 			value: '',
-			validations: [[/.+/, 'Please select an option']],
+			validate: value => (value ? null : 'Please select an option'),
 			appendTo: container,
 		});
 

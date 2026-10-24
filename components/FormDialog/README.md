@@ -10,7 +10,7 @@ import { FormDialog } from '@vanilla-bean/components';
 new FormDialog({
 	header: `Edit | ${category.name}`,
 	inputs: [
-		{ key: 'name', validations: [[/.+/, 'Required']] },
+		{ key: 'name', validate: value => (value ? null : 'Required') },
 		{ key: 'color', type: 'color' },
 	],
 	data: category,

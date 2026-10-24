@@ -1,7 +1,8 @@
 import { Component } from '../../Component';
 import { pressable } from '../../Component/pressable';
 import { fileAccepted, retry } from '../../utils';
-import { updateValidationErrors, insertTabCharacter, adjustIndentation } from './utils';
+import { insertTabCharacter, adjustIndentation } from './utils';
+import { runValidators, showFieldError } from './fieldError';
 
 const type_enum = Object.freeze([
 	'button',
@@ -56,7 +57,8 @@ const dataTypeToInputType = { number: 'number', boolean: 'checkbox', string: 'te
  * @param {Component|HTMLElement} [options.dropZone] - For type 'file': an area that takes dropped and pasted files, and opens the picker when pressed
  * @param {boolean} [options.syntaxHighlighting] - Enable syntax highlighting for textarea
  * @param {string} [options.language] - Programming language for syntax highlighting
- * @param {Array<Function>} [options.validations] - Array of validation functions
+ * @param {Function|Array<Function>} [options.validate] - `value => message`: what's wrong with the value, or nothing
+ *   when it's fine; or a list of them. Checked as the value changes and by validate(), the message shown below the field
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Input} Input component instance
  */
@@ -151,7 +153,7 @@ export default class Input extends Component {
 				if (this.options.type === 'checkbox') this.elem.checked = value;
 				else this.elem.value = value;
 
-				if (this.rendered && this.options.validations?.length) retry(() => this.validate(), { delay: 500, max: 1 });
+				if (this.rendered && this.options.validate) retry(() => this.validate(), { delay: 500, max: 1 });
 			},
 		},
 		syntaxHighlighting: {
@@ -178,12 +180,8 @@ export default class Input extends Component {
 				this._wireDropZone(value?.elem ?? value);
 			},
 		},
-		// Read by validate() and the value handler
-		validations: {
-			get default() {
-				return [];
-			},
-		},
+		// Read by validate() and the value handler; data, as validate() is also the method that runs it
+		validate: { data: true },
 	};
 
 	static prepareOptions(options) {
@@ -296,23 +294,17 @@ export default class Input extends Component {
 	}
 
 	/**
-	 * Validates the input value against configured validation rules
-	 * @param {object} options - Validation options
-	 * @param {Array} options.validations - Custom validation rules to use
-	 * @param {*} options.value - Custom value
-	 * @returns {Array|undefined} Array of validation errors, or undefined if valid
+	 * Checks the value against the `validate` option, showing what's wrong below the field (or clearing it), and marking
+	 * the field invalid for assistive technology.
+	 * @param {object} [options] - Options
+	 * @param {*} [options.value] - A value to check instead of the field's own
+	 * @returns {Array<string>|undefined} What's wrong, or undefined when nothing is
 	 */
-	validate({ validations, value } = {}) {
-		const errors = updateValidationErrors({
-			elem: this.elem,
-			validations: validations ?? this.options.validations,
-			value: value ?? this.options.value,
-		});
+	validate({ value = this.options.value } = {}) {
+		const errors = runValidators(this.options.validate, value);
 
-		this[errors ? 'addClass' : 'removeClass']('validation-errors');
-		if (errors) this.elem.setAttribute('aria-invalid', 'true');
-		else this.elem.removeAttribute('aria-invalid');
+		showFieldError({ owner: this, messages: errors });
 
-		return errors;
+		return errors.length ? errors : undefined;
 	}
 }

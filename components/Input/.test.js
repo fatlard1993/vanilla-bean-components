@@ -95,16 +95,18 @@ describe('Input', () => {
 	test('validates input with validation rules', () => {
 		const input = new Input({
 			value: '',
-			validations: [
-				[/.+/, 'Required field'],
-				[/^.{3,}$/, 'Minimum 3 characters'],
+			validate: [
+				value => (value ? null : 'Required field'),
+				value => (value.length >= 3 ? null : 'Minimum 3 characters'),
 			],
 			appendTo: container,
 		});
 
 		const errors = input.validate();
-		expect(errors).toHaveLength(2);
+		expect(errors).toEqual(['Required field', 'Minimum 3 characters']);
 		expect(input.elem.className).toContain('validation-errors');
+		expect(input.elem.getAttribute('aria-invalid')).toBe('true');
+		expect(input.elem).toHaveAccessibleDescription(/Required field\s+Minimum 3 characters/);
 
 		input.options.value = 'wow';
 		const noErrors = input.validate();

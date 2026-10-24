@@ -10,7 +10,7 @@ import { Form } from '@vanilla-bean/components';
 const form = new Form({
 	data: { username: '', age: 0 },
 	inputs: [
-		{ key: 'username', validations: [[/.+/, 'Required']] },
+		{ key: 'username', validate: value => (value ? null : 'Required') },
 		{ key: 'age', parse: value => parseInt(value, 10) },
 	],
 });
@@ -32,7 +32,8 @@ const form = new Form({
 | `InputComponent` | `Component class` | `Input` | Component class to instantiate. Can be `Select`, `ColorPicker`, or any component that accepts `value` and `onChange` |
 | `onChange` | `Function` | `() => {}` | Called after the data context is updated with the new value |
 | `parse` | `Function(value, input)` | `v => v` | Transforms the raw event value before storing it in `options.data` |
-| `validations` | `Array` | - | Passed directly to the `InputComponent` (see Input validation format) |
+| `validate` | `Function\|Function[]` | - | `value => message`: what's wrong, or nothing. Shown below the field in the `danger` color and read out with it. A component with its own `validate()` (Input, Select, TagList) is given it and checks as it changes; any other is checked by `hasErrors()`. The same function can check the field on the server, as a `createStore` field's `validate` |
+| `condition` | `Function(data)` | - | Hides the field while it returns false; a hidden field isn't validated |
 | `...inputOptions` | `any` | - | Any additional options forwarded to the `InputComponent` constructor |
 
 ### `data` Oxject lifecycle
@@ -45,8 +46,8 @@ Access live form data at any time via `form.options.data`.
 
 ```js
 form.hasErrors(options?): boolean
-// Runs every visible input's validations and field-level validate functions, after committing whatever is being typed
-// in the focused field. Returns true if any validation errors exist, false if the form is valid.
+// Checks every visible field's validate, after committing whatever is being typed in the focused field, showing each
+// field's messages below it. Returns true if anything is wrong, false if the form is valid.
 
 form.commitPendingEdit(): void
 // Commits the focused field's typed value, as leaving the field would. hasErrors() calls it first.
@@ -72,7 +73,7 @@ const form = new Form(
 	{
 		data: { name: '', role: 'viewer', active: true },
 		inputs: [
-			{ key: 'name', validations: [[/.+/, 'Name is required']] },
+			{ key: 'name', validate: value => (value ? null : 'Name is required') },
 			{ key: 'role', InputComponent: Select, options: ['viewer', 'editor', 'admin'] },
 			{ key: 'active' },
 		],

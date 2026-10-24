@@ -320,16 +320,16 @@ const contactForm = new Form({
 		{
 			key: 'name',
 			label: 'Full Name',
-			validations: [
-				[/.+/, 'Name is required'],
-				[/^.{2,50}$/, 'Name must be 2-50 characters'],
+			validate: [
+				value => (value ? null : 'Name is required'),
+				value => (value.length >= 2 && value.length <= 50 ? null : 'Name must be 2-50 characters'),
 			],
 		},
 		{
 			key: 'email',
 			label: 'Email Address',
 			type: 'email',
-			validations: [[/.+@.+\..+/, 'Valid email required']],
+			validate: value => (/.+@.+\..+/.test(value) ? null : 'Valid email required'),
 		},
 		{
 			key: 'subject',
@@ -341,7 +341,7 @@ const contactForm = new Form({
 			key: 'message',
 			label: 'Message',
 			tag: 'textarea',
-			validations: [[/.{10,}/, 'Message must be at least 10 characters']],
+			validate: value => (value.length >= 10 ? null : 'Message must be at least 10 characters'),
 		},
 	],
 	append: new Button({

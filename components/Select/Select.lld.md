@@ -2,11 +2,11 @@
 
 > ./Select.js
 
-Dropdown select that extends Input. The design decision: Select inherits Input's value lifecycle; `isDirty`, validations, and onChange work the same way for a Select as they do for a text Input. Callers don't learn a separate API.
+Dropdown select that extends Input. The design decision: Select inherits Input's value lifecycle; `isDirty`, `validate`, and onChange work the same way for a Select as they do for a text Input. Callers don't learn a separate API.
 
 ## Select inherits the full Input value contract
 
-- `isDirty`, validations, and onChange all work the same way as Input without any Select-specific API
+- `isDirty`, `validate`, and onChange all work the same way as Input without any Select-specific API
   - does a Select have isDirty?
   - new Array() captures fired then new Subject({ options: ["a", "b"], onChange: () => fired.push(1) }) captures s then s.elem.value = "b" then s.elem.dispatchEvent(new Event("change", { bubbles: true })) -> fired.length === 1
 

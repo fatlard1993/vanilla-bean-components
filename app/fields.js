@@ -69,13 +69,15 @@ export const fieldTypes = {
 export const isSafeKey = key =>
 	typeof key === 'string' && key !== '' && !['__proto__', 'constructor', 'prototype'].includes(key);
 
-const SPEC_KEYS = ['type', 'required', 'default'];
+const SPEC_KEYS = ['type', 'required', 'default', 'validate'];
 
 /**
  * A fields option in any of its shorthands, made uniform: a list of names (stored as given, '' when missing), a map of
- * name to default value (a function default is called per record), or a map of name to `{ type, required, default }`.
+ * name to default value (a function default is called per record), or a map of name to
+ * `{ type, required, default, validate }`. `validate` is the client's: `value => message`, what's wrong or nothing, or a
+ * list of them, so one function checks a field in a Form and in the store.
  * @param {Array<string>|object} fields - The fields option
- * @returns {object} name -> { type, required, default }
+ * @returns {object} name -> { type, required, default, validate }
  */
 export const normalizeFields = fields => {
 	if (Array.isArray(fields)) return Object.fromEntries(fields.map(name => [name, { type: fieldTypes.any }]));
@@ -83,12 +85,20 @@ export const normalizeFields = fields => {
 	return Object.fromEntries(
 		Object.entries(fields ?? {}).map(([name, spec]) => {
 			const isSpec = isPlainObject(spec) && Object.keys(spec).some(key => SPEC_KEYS.includes(key));
-			const { type = 'any', required = false, ...rest } = isSpec ? spec : { default: spec };
+			const { type = 'any', required = false, validate, ...rest } = isSpec ? spec : { default: spec };
 			const resolvedType = typeof type === 'string' ? fieldTypes[type] : type;
 
 			if (!resolvedType?.parse) throw new Error(`Field "${name}" has an unknown type: ${type}`);
 
-			return [name, { type: resolvedType, required, ...('default' in rest && { default: rest.default }) }];
+			return [
+				name,
+				{
+					type: resolvedType,
+					required,
+					...(validate && { validate }),
+					...('default' in rest && { default: rest.default }),
+				},
+			];
 		}),
 	);
 };
@@ -101,7 +111,8 @@ const emptyFor = spec => {
 
 /**
  * A request body checked against normalized fields: only known fields come back, parsed. Throws a ValidationError
- * naming the field for anything of the wrong shape, or a required field missing or empty.
+ * naming the field for anything of the wrong shape, a required field missing or empty, or a value its `validate` finds
+ * wrong (with that message).
  * @param {object} fields - From normalizeFields
  * @param {object} data - The raw body
  * @param {object} [options] - Options
@@ -132,6 +143,14 @@ export const validateFields = (fields, data, { partial = false } = {}) => {
 
 		if (spec.required && (result[name] === '' || result[name] === null))
 			throw new ValidationError(`${name} is required`);
+
+		const [message] = [spec.validate]
+			.flat()
+			.filter(check => typeof check === 'function')
+			.map(check => check(result[name]))
+			.filter(Boolean);
+
+		if (message) throw new ValidationError(`${name}: ${message}`);
 	}
 
 	return result;

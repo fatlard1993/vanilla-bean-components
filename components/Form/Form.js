@@ -3,6 +3,7 @@ import { fromCamelCase, capitalize } from '../../utils';
 import { Component } from '../../Component';
 import { Elem } from '../../Elem';
 import { Input } from '../Input';
+import { runValidators, showFieldError } from '../Input/fieldError';
 import { Label } from '../Label';
 
 /**
@@ -20,7 +21,7 @@ import { Label } from '../Label';
  * onChange: event => {},                // optional - called after data update
  * parse: value => value.trim(),         // optional - transform before storing
  * condition: data => data.type === 'x', // optional - hide field when false
- * validate: value => value ? null : 'Required', // optional - field-level validator
+ * validate: value => (value ? null : 'Required'), // optional - what's wrong, or nothing; or a list of them
  * // ...any other InputComponent options
  * }
  * ```
@@ -36,7 +37,12 @@ import { Label } from '../Label';
  *
  * Groups can be nested. Fields inside groups support `condition` as normal.
  * When all conditional fields in a group are hidden, the group container is also hidden.
- * Conditional and invalid fields are excluded from validation when hidden.
+ * Hidden conditional fields are excluded from validation.
+ *
+ * A field's `validate` is `value => message`: what's wrong with the value, in words, or nothing (null, undefined,
+ * false) when it's fine. The message shows below the field, in the danger color, and is read out with it. A component
+ * with its own validate() (Input, Select, TagList) checks itself as its value changes; any other is checked by
+ * hasErrors(). The same function can check the field on the server, as a createStore field's `validate`.
  *
  * Setting `form.options.inputs = newInputs` rebuilds the form preserving the data store.
  * @param {object} [options={}] - Form configuration options
@@ -132,8 +138,12 @@ export default class Form extends Component {
 				...inputOptions
 			} = inputDef;
 
+			// A component that checks itself is given its validators; any other is checked here, by hasErrors()
+			const checksItself = typeof InputComponent.prototype?.validate === 'function';
+
 			const input = new InputComponent({
 				value: this.options.data.subscriber(key),
+				...(validate && checksItself && { validate }),
 				...(InputComponent !== Component && {
 					onChange: function (event) {
 						form.options.data[key] = this.options.value = parse(event.value, input);
@@ -147,7 +157,7 @@ export default class Form extends Component {
 			form.options.data[key] = input.options.value;
 			form.inputElements[key] = input;
 
-			if (validate) form._fieldValidators[key] = validate;
+			if (validate && !checksItself) form._fieldValidators[key] = validate;
 
 			const isCheckbox = input.options.type === 'checkbox';
 			const wrapper = new Label(
@@ -235,8 +245,7 @@ export default class Form extends Component {
 	}
 
 	/**
-	 * Validates all visible form inputs and returns whether errors were found.
-	 * Runs both VBC Input validations and field-level `validate` functions from the definition.
+	 * Validates all visible form inputs and returns whether errors were found, showing each field's below it.
 	 * Hidden conditional fields are excluded.
 	 * @param {object} [options] - Validation options passed to individual input validators
 	 * @returns {boolean} True if validation errors exist, false if all visible inputs are valid
@@ -255,20 +264,14 @@ export default class Form extends Component {
 		for (const [key, input] of Object.entries(this.inputElements)) {
 			if (hiddenKeys.has(key)) continue;
 
-			if (input?.validate?.(options)) hasErrors = true;
-
 			const fieldValidator = this._fieldValidators?.[key];
+
 			if (fieldValidator) {
-				const error = fieldValidator(this.options.data[key]);
-				if (error) {
-					input?.addClass?.('validation-errors');
-					input?.elem?.setAttribute('aria-invalid', 'true');
-					hasErrors = true;
-				} else {
-					input?.removeClass?.('validation-errors');
-					input?.elem?.removeAttribute('aria-invalid');
-				}
-			}
+				const messages = runValidators(fieldValidator, this.options.data[key]);
+
+				showFieldError({ owner: input, messages });
+				if (messages.length) hasErrors = true;
+			} else if (input?.validate?.(options)) hasErrors = true;
 		}
 
 		return hasErrors;

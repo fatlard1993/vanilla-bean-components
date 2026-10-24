@@ -1,7 +1,8 @@
 import { describe, test, expect, afterEach } from 'bun:test';
-import { findByText } from '@testing-library/dom';
+import { findByText, getByText, queryByText } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 
+import { Component } from '../../Component';
 import { Input } from '../Input';
 import { Form } from '.';
 
@@ -172,7 +173,7 @@ describe('Form', () => {
 		test('judges the field being typed in by what it holds now, not before the edit', async () => {
 			const form = new Form({
 				data: { name: '' },
-				inputs: [{ key: 'name', validations: [[/.+/, 'Required']] }],
+				inputs: [{ key: 'name', validate: value => (value ? null : 'Required') }],
 				appendTo: container,
 			});
 
@@ -217,7 +218,7 @@ describe('Form', () => {
 				inputs: [
 					{
 						key: 'name',
-						validations: [[/.+/, 'Required']],
+						validate: value => (value ? null : 'Required'),
 					},
 				],
 				appendTo: container,
@@ -234,7 +235,7 @@ describe('Form', () => {
 				inputs: [
 					{
 						key: 'name',
-						validations: [[/.+/, 'Required']],
+						validate: value => (value ? null : 'Required'),
 					},
 				],
 				appendTo: container,
@@ -249,8 +250,8 @@ describe('Form', () => {
 			const form = new Form({
 				data: { name: '', email: '' },
 				inputs: [
-					{ key: 'name', validations: [[/.+/, 'Name is required']] },
-					{ key: 'email', validations: [[/.+/, 'Email is required']] },
+					{ key: 'name', validate: value => (value ? null : 'Name is required') },
+					{ key: 'email', validate: value => (value ? null : 'Email is required') },
 				],
 				appendTo: container,
 			});
@@ -266,7 +267,7 @@ describe('Form', () => {
 				inputs: [
 					{
 						key: 'name',
-						validations: [[/.+/, 'Required']],
+						validate: value => (value ? null : 'Required'),
 					},
 				],
 				appendTo: container,
@@ -289,7 +290,7 @@ describe('Form', () => {
 				inputs: [
 					{
 						key: 'name',
-						validations: [[/.+/, 'Required']],
+						validate: value => (value ? null : 'Required'),
 					},
 				],
 				appendTo: container,
@@ -306,7 +307,7 @@ describe('Form', () => {
 				inputs: [
 					{
 						key: 'name',
-						validations: [[/.+/, 'Required']],
+						validate: value => (value ? null : 'Required'),
 					},
 				],
 				appendTo: container,
@@ -452,7 +453,7 @@ describe('Form', () => {
 					{
 						key: 'required',
 						condition: data => data.type === 'advanced',
-						validations: [[/.+/, 'Required']],
+						validate: value => (value ? null : 'Required'),
 					},
 				],
 				appendTo: container,
@@ -470,7 +471,7 @@ describe('Form', () => {
 					{
 						key: 'required',
 						condition: data => data.type === 'advanced',
-						validations: [[/.+/, 'Required']],
+						validate: value => (value ? null : 'Required'),
 					},
 				],
 				appendTo: container,
@@ -506,21 +507,45 @@ describe('Form', () => {
 			expect(form.inputElements.age.elem.getAttribute('aria-invalid')).toBeNull();
 		});
 
-		test('field validate and VBC validations both run', () => {
+		test('a list of validators all run, each message shown below the field and read with it', () => {
 			const form = new Form({
 				data: { name: '' },
 				inputs: [
 					{
 						key: 'name',
-						validations: [[/.+/, 'Cannot be empty']],
-						validate: value => (value.length > 50 ? 'Too long' : null),
+						validate: [value => (value ? null : 'Cannot be empty'), value => (value.length > 50 ? 'Too long' : null)],
 					},
 				],
 				appendTo: container,
 			});
+			const { elem } = form.inputElements.name;
 
-			// Empty fails VBC validation
 			expect(form.hasErrors()).toBe(true);
+			expect(elem).toHaveAccessibleDescription('Cannot be empty');
+			expect(getByText(container, 'Cannot be empty')).toBeVisible();
+
+			form.inputElements.name.options.value = 'x'.repeat(51);
+			form.options.data.name = 'x'.repeat(51);
+			expect(form.hasErrors()).toBe(true);
+			expect(elem).toHaveAccessibleDescription('Too long');
+
+			form.options.data.name = 'Ada';
+			expect(form.hasErrors()).toBe(false);
+			expect(elem).not.toHaveAttribute('aria-describedby');
+			expect(queryByText(container, 'Too long')).toBeNull();
+		});
+
+		test('a component without validate() of its own is checked, and shown, by the form', () => {
+			const form = new Form({
+				data: { mood: '' },
+				inputs: [{ key: 'mood', InputComponent: Component, validate: value => (value ? null : 'Pick one') }],
+				appendTo: container,
+			});
+			const { elem } = form.inputElements.mood;
+
+			expect(form.hasErrors()).toBe(true);
+			expect(elem).toHaveAttribute('aria-invalid', 'true');
+			expect(elem).toHaveAccessibleDescription('Pick one');
 		});
 	});
 

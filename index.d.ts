@@ -530,7 +530,7 @@ export declare class Form extends Component {
 	constructor(options?: FormOptions, ...children: Array<Elem | HTMLElement | string>);
 	/** Commits the value being typed in the focused field, as leaving the field would. A field reports its value on change, which an edit only fires when the field loses focus; a Save pressed by keyboard, or on a device whose buttons take no focus, would otherwise judge the form by what the field held before. */
 	commitPendingEdit(): void;
-	/** Validates all visible form inputs and returns whether errors were found. Runs both VBC Input validations and field-level `validate` functions from the definition. Hidden conditional fields are excluded. */
+	/** Validates all visible form inputs and returns whether errors were found, showing each field's below it. Hidden conditional fields are excluded. */
 	hasErrors(options?: Record<string, any>): boolean;
 }
 
@@ -625,16 +625,16 @@ export interface InputOptions extends ComponentOptions {
 	syntaxHighlighting?: boolean;
 	/** Programming language for syntax highlighting */
 	language?: string;
-	/** Array of validation functions */
-	validations?: Array<(...args: any[]) => any>;
+	/** `value => message`: what's wrong with the value, or nothing when it's fine; or a list of them. Checked as the value changes and by validate(), the message shown below the field */
+	validate?: (...args: any[]) => any | Array<(...args: any[]) => any>;
 }
 
 export declare class Input extends Component {
 	constructor(options?: InputOptions, ...children: Array<Elem | HTMLElement | string>);
 	/** Checks if the input value has changed from its initial value */
 	readonly isDirty: boolean;
-	/** Validates the input value against configured validation rules */
-	validate(options: Record<string, any>): Array<any> | undefined;
+	/** Checks the value against the `validate` option, showing what's wrong below the field (or clearing it), and marking the field invalid for assistive technology. */
+	validate(options?: Record<string, any>): Array<string> | undefined;
 }
 
 export interface KeyboardOptions extends ComponentOptions {
@@ -978,10 +978,6 @@ export declare class ColorSwatch extends Button {
 	constructor(options?: ColorSwatchOptions, ...children: Array<Elem | HTMLElement | string>);
 }
 
-export declare class InputValidationError extends Component {
-	constructor(options?: ComponentOptions, ...children: Array<Elem | HTMLElement | string>);
-}
-
 export interface TagOptions extends ComponentOptions {
 	/** Tab order for the chip (default: 0) */
 	tabIndex?: number;
@@ -1156,8 +1152,6 @@ export declare function to12hour(hour: any): any;
 export declare function toCamelCase(string: string, splitter?: string): string;
 
 export declare function toNth(number: any): any;
-
-export declare function updateValidationErrors(options: any): any;
 
 /** Vibrate the device (if supported) */
 export declare function vibrate(durationPattern?: number | number[]): void;

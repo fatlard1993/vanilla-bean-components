@@ -17,13 +17,12 @@ export default class Demo extends DemoView {
 				this.component.options.value = newValue;
 				console.log('onChange', { newValue });
 			},
-			validations: [
-				[/.+/, 'This input is required'],
-				[/^.{3,5}$/, 'Must be between 3 and 5 characters long'],
-				[
-					value => value !== this.component.initialValue.split('').reverse().join(''),
-					() => `Must not be the inverse of the initial value: ${this.component.initialValue}`,
-				],
+			validate: [
+				value => (value ? null : 'This input is required'),
+				value => (/^.{3,5}$/.test(value) ? null : 'Must be between 3 and 5 characters long'),
+				value =>
+					value === this.component.initialValue.split('').reverse().join('') &&
+					`Must not be the inverse of the initial value: ${this.component.initialValue}`,
 			],
 			value: 'value',
 			placeholder: 'placeholder',

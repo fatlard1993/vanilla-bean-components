@@ -44,7 +44,7 @@ const reasonOf = result => {
  * @example
  * new FormDialog({
  *   header: 'Edit category',
- *   inputs: [{ key: 'name', validations: [[/.+/, 'Required']] }],
+ *   inputs: [{ key: 'name', validate: value => (value ? null : 'Required') }],
  *   data: category,
  *   onSave: data => updateCategory(category.id, data),
  *   onDelete: () => deleteCategory(category.id),

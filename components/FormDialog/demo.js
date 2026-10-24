@@ -11,7 +11,7 @@ export default class Demo extends DemoView {
 			new FormDialog({
 				header: `Edit | ${record.name}`,
 				inputs: [
-					{ key: 'name', validations: [[/.+/, 'Required']] },
+					{ key: 'name', validate: value => (value ? null : 'Required') },
 					{ key: 'color', type: 'color' },
 					{ key: 'notes', tag: 'textarea' },
 				],

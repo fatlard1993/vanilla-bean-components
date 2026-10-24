@@ -117,6 +117,7 @@ module.exports = {
 		'xxl',
 		'pressable',
 		'natively',
+		'describedby',
 		'monospace',
 		'osx',
 		'moz',

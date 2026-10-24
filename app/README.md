@@ -117,7 +117,7 @@ await games.update({ id, update: { players: 4 } }); // the updated record, or fa
 await games.delete({ id }); // the id, or false
 ```
 
-- **Fields are the door.** Only known fields are stored; anything else in a body is dropped. A field's `type` parses what arrives and refuses the wrong shape with a `ValidationError` naming the field. The types are `string` (a number is taken as text), `number` (`''` is unset; a numeric string is taken), `boolean`, `stringArray`, `object`, `any`, or an object of your own with `parse(value)` and `empty()`. A field left out of a create gets its `default` (a function default is called per record) or its type's empty value. `required` refuses a create without the field, or with it empty. Shorthands: a list of names (stored as given, `''` when missing) or a map of name to default value.
+- **Fields are the door.** Only known fields are stored; anything else in a body is dropped. A field's `type` parses what arrives and refuses the wrong shape with a `ValidationError` naming the field. The types are `string` (a number is taken as text), `number` (`''` is unset; a numeric string is taken), `boolean`, `stringArray`, `object`, `any`, or an object of your own with `parse(value)` and `empty()`. A field left out of a create gets its `default` (a function default is called per record) or its type's empty value. `required` refuses a create without the field, or with it empty. `validate` is the same check a Form field takes, `value => message` (what's wrong, or nothing), so one function guards the field in the browser and in the store; its message is the `ValidationError`'s. Shorthands: a list of names (stored as given, `''` when missing) or a map of name to default value.
 - **Ids are the collection's own.** An id never names something every object inherits (`toString`) or reaches the prototype (`__proto__`): `has`, `read`, `update` and `delete` treat those as not there.
 - **Memory never runs ahead of the file.** A create, update or delete whose write fails is undone before the error reaches the caller.
 - **`versioned: true`** numbers each record's versions in `_v`. An update carrying an older `_v` throws a `ConflictError` holding the stored record as `current`, so two people editing one record don't silently overwrite each other. An update that leaves `_v` out isn't checked, so a client that should be guarded must send it. Changes to a store take turns, so a hook that awaits never lets another change slip in between.
@@ -133,11 +133,16 @@ const fields = normalizeFields({ name: { type: 'string', required: true }, playe
 validateFields(fields, { name: 'Chess', players: '2', cheat: true }); // → { name: 'Chess', players: 2 }
 validateFields(fields, { players: 4 }, { partial: true }); // → { players: 4 }
 validateFields(fields, { players: 'many' }); // throws ValidationError('name is required')
+
+// One check, both sides of the wire
+const nameGiven = name => (name.trim() ? null : 'Give it a name');
+normalizeFields({ name: { type: 'string', validate: nameGiven } }); // the store refuses '  ' with 'name: Give it a name'
+new Form({ inputs: [{ key: 'name', validate: nameGiven }] }); // the form shows 'Give it a name' below the field
 ```
 
 - **`fieldTypes`** holds the built-in types by name: `string`, `number`, `boolean`, `stringArray`, `object` and `any`. Each is `{ parse(value), empty() }`: `parse` returns what's stored or throws a `ValidationError`, and `empty` makes the unset value fresh each time, so no two records share a list. A type of your own has the same shape.
-- **`normalizeFields(fields)`** makes any of the shorthands uniform, name to `{ type, required, default? }` with `type` resolved to its object: a list of names (each `any`), a map of name to default value, or a map of name to `{ type?, required?, default? }`. An unknown type name throws.
-- **`validateFields(fields, data, { partial? })`** returns only the known fields, each parsed. A field missing from `data` gets its `default` (a function default called, any other copied) or its type's empty value, and a `required` one throws. With `partial: true`, for an update, a missing field is left out instead. A value of the wrong shape, or a required one left empty, throws a `ValidationError` naming the field; so does a `data` that isn't an object.
+- **`normalizeFields(fields)`** makes any of the shorthands uniform, name to `{ type, required, default?, validate? }` with `type` resolved to its object: a list of names (each `any`), a map of name to default value, or a map of name to `{ type?, required?, default?, validate? }`. An unknown type name throws.
+- **`validateFields(fields, data, { partial? })`** returns only the known fields, each parsed. A field missing from `data` gets its `default` (a function default called, any other copied) or its type's empty value, and a `required` one throws. With `partial: true`, for an update, a missing field is left out instead. A value of the wrong shape, a required one left empty, or one its `validate` finds wrong (with that message) throws a `ValidationError` naming the field; so does a `data` that isn't an object.
 
 ### `crudRoutes(path, store, { list? }?)`
 

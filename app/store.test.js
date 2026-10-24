@@ -58,6 +58,22 @@ describe('createStore', () => {
 		await expect(games.create('not an object')).rejects.toBeInstanceOf(ValidationError);
 	});
 
+	test("a field's validate, the client's value => message, refuses with its message", async () => {
+		const named = name => (name.trim() ? null : 'Give it a name');
+		const few = players => (players === '' || players <= 8 ? null : 'Eight at most');
+		const games = createStore({
+			db: memoryDb(),
+			collection: 'games',
+			fields: { name: { type: 'string', validate: named }, players: { type: 'number', validate: [few] } },
+		});
+
+		await expect(games.create({ name: ' ' })).rejects.toThrow(new ValidationError('name: Give it a name'));
+		await expect(games.create({ name: 'Chess', players: 9 })).rejects.toThrow(
+			new ValidationError('players: Eight at most'),
+		);
+		expect((await games.create({ name: 'Chess', players: '2' })).players).toBe(2);
+	});
+
 	test('ids name only records the collection owns', async () => {
 		const games = createStore({ db: memoryDb(), collection: 'games', fields });
 

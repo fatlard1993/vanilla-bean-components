@@ -8,7 +8,7 @@ const settle = () => new Promise(resolve => setTimeout(resolve, 30));
 const labels = () => getAllByRole(document.body, 'button', { hidden: true }).map(button => button.textContent);
 const press = async label => userEvent.setup().click(await findByText(document.body, label));
 
-const nameField = { key: 'name', validations: [[/.+/, 'Required']] };
+const nameField = { key: 'name', validate: value => (value ? null : 'Required') };
 
 describe('FormDialog', () => {
 	test('holds a form built from inputs and data, with Save and Cancel', async () => {

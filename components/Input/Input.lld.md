@@ -18,9 +18,16 @@ Input element that infers its type from the value it receives rather than requir
 
 ## Validation errors are surfaced as element state, not return values
 
+A validator is `value => message`, what's wrong in words or nothing: the shape a Form field, a TagList and a server store field take too, so one function checks a field everywhere. The message is shown, not hidden behind a button, and is read out with the field.
+
 - when a validation fails, the element enters an error state that CSS can target; passing clears it
-  - new Subject({ value: "", validations: [[v => !!v, "required"]], appendTo: document.body }) captures i then i.validate() -> i.elem.classList.contains("validation-errors")
-  - new Subject({ value: "", validations: [[v => !!v, "required"]], appendTo: document.body }) captures i then i.validate() then i.options.value = "filled" then i.validate() -> i.elem.classList.contains("validation-errors") === false
+  - new Subject({ value: "", validate: v => (v ? null : "required"), appendTo: document.body }) captures i then i.validate() -> i.elem.classList.contains("validation-errors")
+  - new Subject({ value: "", validate: v => (v ? null : "required"), appendTo: document.body }) captures i then i.validate() then i.options.value = "filled" then i.validate() -> i.elem.classList.contains("validation-errors") === false
+
+- what's wrong is written below the field and read out with it; a list of validators shows each message
+  - new Subject({ value: "", validate: [v => (v ? null : "required"), v => v.length < 3 && "too short"], appendTo: document.body }) captures i then i.validate() then document.getElementById(i.elem.getAttribute("aria-describedby")) captures message -> message.textContent === "required\ntoo short" && i.elem.nextElementSibling === message
+- a value that passes takes the message away
+  - new Subject({ value: "", validate: v => (v ? null : "required"), appendTo: document.body }) captures i then i.validate() then i.elem.nextElementSibling captures message then i.validate({ value: "x" }) -> message.isConnected === false && i.elem.getAttribute("aria-describedby") === null
 
 ## Textarea height follows content automatically
 
@@ -37,8 +44,8 @@ Input element that infers its type from the value it receives rather than requir
   - new Subject({ tag: "textarea", height: 3, appendTo: document.body }) captures rows then new Subject({ tag: "textarea", height: "40px", appendTo: document.body }) captures css -> rows.elem.style.height === "4em" && css.elem.style.height === "40px"
 - for `type: 'checkbox'` the value sets the checked state rather than the element's text value
   - new Subject({ type: "checkbox", value: true, appendTo: document.body }) captures on then new Subject({ type: "checkbox", value: false, appendTo: document.body }) captures off -> on.elem.checked === true && off.elem.checked === false
-- an input with no `validations` option has an empty list rather than none, so callers can append without checking
-  - new Subject({ appendTo: document.body }) captures i -> Array.isArray(i.options.validations) && i.options.validations.length === 0
+- an input with no `validate` option is valid: `validate()` finds nothing wrong and marks nothing
+  - new Subject({ value: "", appendTo: document.body }) captures i then i.validate() captures errors -> errors === undefined && i.elem.getAttribute("aria-invalid") === null
 
 ## Syntax highlighting is opt-in, and the element's defaults follow its tag
 
@@ -49,7 +56,7 @@ A `language` on its own says what the content is, not that it should be coloured
 - text-input defaults apply to `input` and `textarea` and not to other tags an Input can take
   - new Subject({ appendTo: document.body }) captures text then new Subject({ tag: "select", appendTo: document.body }) captures select -> text.elem.getAttribute("autocomplete") === "off" && select.elem.getAttribute("autocomplete") === null
 - `validate()` returns the messages it produced and marks the element invalid; a value that passes returns nothing and clears the mark
-  - new Subject({ validations: [[v => v === "ok", "must be ok"]], value: "no", appendTo: document.body }) captures bad then bad.validate() captures errors then new Subject({ validations: [[v => v === "ok", "must be ok"]], value: "ok", appendTo: document.body }) captures good then good.validate() captures none -> errors.join() === "must be ok" && bad.elem.getAttribute("aria-invalid") === "true" && none === undefined && good.elem.getAttribute("aria-invalid") === null
+  - new Subject({ validate: v => (v === "ok" ? null : "must be ok"), value: "no", appendTo: document.body }) captures bad then bad.validate() captures errors then new Subject({ validate: v => (v === "ok" ? null : "must be ok"), value: "ok", appendTo: document.body }) captures good then good.validate() captures none -> errors.join() === "must be ok" && bad.elem.getAttribute("aria-invalid") === "true" && none === undefined && good.elem.getAttribute("aria-invalid") === null
 
 ## A file field hands over files however they came, already filtered
 

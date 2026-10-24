@@ -10,10 +10,10 @@ export default class Demo extends DemoView {
 			{
 				data: { string: 'myString', number: 13, bool: true, color: 'blue', multiChoice: 'one' },
 				inputs: [
-					{ key: 'string', validations: [[/.+/, 'Required']] },
+					{ key: 'string', validate: value => (value ? null : 'Required') },
 					{
 						key: 'number',
-						validations: [[_ => _ === 42, 'Must be the answer to Life, the Universe and Everything']],
+						validate: value => value !== 42 && 'Must be the answer to Life, the Universe and Everything',
 						parse: value => Number.parseInt(value, 10),
 					},
 					{ key: 'bool' },
