@@ -1,4 +1,4 @@
-import { findByRole, findByText } from '@testing-library/dom';
+import { findByRole, findByText, getByRole } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 
 import { Calendar } from '.';
@@ -554,35 +554,46 @@ describe('Calendar', () => {
 	// eslint-disable-next-line testing-library/no-node-access
 	const find = selector => calendar.elem.querySelector(selector);
 
-	describe('toolbar view buttons', () => {
-		test('the active view button is pressed on render', () => {
+	describe('toolbar view tabs', () => {
+		const tab = name => getByRole(calendar.elem, 'tab', { name });
+
+		test('the view is a segmented Tabs, its tab selected on render', () => {
 			calendar = new Calendar({ appendTo: document.body });
 
-			expect(find('.set-month')).toHaveClass('pressed');
-			expect(find('.set-day')).not.toHaveClass('pressed');
+			expect(getByRole(calendar.elem, 'tablist')).toHaveClass('variant-segmented');
+			expect(tab('Month')).toHaveAttribute('aria-selected', 'true');
+			expect(tab('Day')).toHaveAttribute('aria-selected', 'false');
 		});
 
-		test('pressed state follows setView', () => {
+		test('the selected tab follows setView', () => {
 			calendar = new Calendar({ appendTo: document.body });
 
 			calendar.setView('day');
 
-			expect(find('.set-day')).toHaveClass('pressed');
-			expect(find('.set-month')).not.toHaveClass('pressed');
+			expect(tab('Day')).toHaveAttribute('aria-selected', 'true');
+			expect(tab('Month')).toHaveAttribute('aria-selected', 'false');
 
 			calendar.setView('week');
 
-			expect(find('.set-week')).toHaveClass('pressed');
-			expect(find('.set-day')).not.toHaveClass('pressed');
+			expect(tab('Week')).toHaveAttribute('aria-selected', 'true');
 		});
 
-		test('a direct view option write renders the view and moves pressed state', () => {
+		test('pressing a tab changes the view', async () => {
+			calendar = new Calendar({ appendTo: document.body });
+
+			await user.click(tab('Week'));
+
+			expect(calendar.options.view).toBe('week');
+			expect(calendar.elem).toHaveClass('week');
+		});
+
+		test('a direct view option write renders the view and selects its tab', () => {
 			calendar = new Calendar({ appendTo: document.body });
 
 			calendar.options.view = 'day';
 
 			expect(find('.time-block')).toBeTruthy();
-			expect(find('.set-day')).toHaveClass('pressed');
+			expect(tab('Day')).toHaveAttribute('aria-selected', 'true');
 		});
 
 		test('a direct events option write renders the events', () => {
@@ -594,14 +605,14 @@ describe('Calendar', () => {
 			expect(calendar.options.events[0].label).toBe('reactive event');
 		});
 
-		test('pressed state survives a full re-render', () => {
+		test('the selected tab survives navigation, and the pressed button keeps focus', async () => {
 			calendar = new Calendar({ appendTo: document.body });
 
 			calendar.setView('week');
-			calendar.next();
+			await user.click(getByRole(calendar.elem, 'button', { name: 'next' }));
 
-			expect(find('.set-week')).toHaveClass('pressed');
-			expect(find('.set-month')).not.toHaveClass('pressed');
+			expect(tab('Week')).toHaveAttribute('aria-selected', 'true');
+			expect(getByRole(calendar.elem, 'button', { name: 'next' })).toHaveFocus();
 		});
 	});
 });

@@ -56,3 +56,12 @@ Sharing the row is a cost paid per collision, not per day: two events at the sam
 
 - events that collide are offset from each other; an event with no collision is not offset at all
   - new Subject({ view: "day", year: 2026, month: 0, day: 15, events: [{ at: new Date(2026, 0, 15, 10, 0, 0), duration: 60, label: "one" }, { at: new Date(2026, 0, 15, 10, 0, 0), duration: 60, label: "two" }, { at: new Date(2026, 0, 15, 14, 0, 0), duration: 60, label: "three" }], appendTo: document.body }) captures c then Array.from(c.elem.querySelectorAll("div.event")).map(e => e.style.left) captures lefts -> lefts.length === 3 && lefts[0] !== lefts[1] && lefts[2] === "0px"
+
+## The toolbar is the library's, and says what it is
+
+The calendar had a private Toolbar that redrew Tabs' segmented look with a `pressed` class and nothing for assistive technology, under the name of the library's own Toolbar. It is now the library's Toolbar holding Buttons and a segmented Tabs, so the view switch is a tablist with its selected tab announced and arrow keys between views.
+
+- the view switch is a tablist whose selected tab follows the view, however the view changed
+  - new Subject({ view: "month", appendTo: document.body }) captures c then c.elem.querySelector("[role=tablist]") captures list then c.setView("day") -> list.classList.contains("variant-segmented") && list.querySelector("[aria-selected=true]").textContent === "Day"
+- navigating redraws the view, not the toolbar, so a button pressed by keyboard keeps focus
+  - new Subject({ view: "month", appendTo: document.body }) captures c then c.elem.querySelector("[aria-label=next]") captures next then next.focus() then next.click() -> document.activeElement === next && next.isConnected

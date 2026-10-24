@@ -3,9 +3,13 @@ import { styled } from '../../styled';
 import { Component } from '../../Component';
 
 import { fontSize, radius, space } from '../../theme/tokens';
-import { daysInMonth, formatDate, formatTime } from '../../utils';
+import { capitalize, daysInMonth, formatDate, formatTime } from '../../utils';
+import { Button } from '../Button';
+import { Tabs } from '../Tabs';
+import { Toolbar } from '../Toolbar';
 import CalendarEvent from './CalendarEvent';
-import Toolbar, { VIEWS } from './Toolbar';
+
+const VIEWS = Object.freeze(['day', 'week', 'month']);
 
 const StyledComponent = styled(
 	Component,
@@ -14,6 +18,33 @@ const StyledComponent = styled(
 		display: flex;
 		flex-direction: column;
 		gap: ${space.sm};
+
+		& > .calendar-toolbar {
+			margin: 0;
+			justify-content: space-between;
+		}
+
+		& .calendar-title {
+			flex: 1 1 auto;
+			text-align: center;
+		}
+
+		/* Previous, today and next: one control in three parts */
+		& .calendar-nav {
+			display: flex;
+
+			& > .vbc-button {
+				border-radius: 0;
+			}
+
+			& > .vbc-button:first-child {
+				border-radius: ${radius.md} 0 0 ${radius.md};
+			}
+
+			& > .vbc-button:last-child {
+				border-radius: 0 ${radius.md} ${radius.md} 0;
+			}
+		}
 
 		&.month {
 			& tr.title {
@@ -263,8 +294,9 @@ class Calendar extends StyledComponent {
 		view: {
 			default: 'month',
 			enum: ['month', 'week', 'day'],
-			set() {
+			set(value) {
 				if (!this.rendered) return;
+				this._viewTabs.options.selected = value;
 				this.adjustDateToView();
 				this.renderView();
 			},
@@ -303,12 +335,37 @@ class Calendar extends StyledComponent {
 	}
 
 	build() {
-		this.toolbar = new Toolbar({
-			appendTo: this,
-			calendar: this,
-			views: this.options.views,
-			view: this.options.subscriber('view'),
+		this._title = new Component({ addClass: 'calendar-title', attributes: { 'aria-live': 'polite' } });
+
+		this._viewTabs = new Tabs({
+			variant: 'segmented',
+			'aria-label': 'View',
+			tabs: this.options.views.map(view => ({ id: view, label: capitalize(view) })),
+			selected: this.options.view,
+			onChange: ({ value }) => this.setView(value),
 		});
+
+		this.toolbar = new Toolbar({
+			addClass: 'calendar-toolbar',
+			gap: space.sm,
+			appendTo: this,
+			append: [
+				new Component({
+					addClass: 'calendar-nav',
+					append: ['previous', 'today', 'next'].map(
+						action =>
+							new Button({
+								textContent: { next: '>', today: 'Today', previous: '<' }[action],
+								'aria-label': action,
+								onPointerPress: () => this[action](),
+							}),
+					),
+				}),
+				this._title,
+				this._viewTabs,
+			],
+		});
+
 		this.wrapper = new CalendarWrapper({ appendTo: this });
 
 		if (this.options.month == null) {
@@ -322,15 +379,13 @@ class Calendar extends StyledComponent {
 		this.renderView();
 
 		this.wrapper.elem.scrollTop = 0;
-
-		if (this.elem.contains(document.activeElement)) document.activeElement.blur();
 	}
 
 	renderDay() {
 		this.removeClass('month', 'week');
 		this.addClass('day');
 
-		this.toolbar.title.elem.textContent = formatDate(
+		this._title.elem.textContent = formatDate(
 			new Date(this.options.year, this.options.month, this.options.day),
 			DAY_TITLE,
 		);
@@ -455,7 +510,7 @@ class Calendar extends StyledComponent {
 			cDay = new Date(t + dayMs);
 		}
 
-		this.toolbar.title.elem.textContent = new Intl.DateTimeFormat(undefined, DAY_TITLE).formatRange(firstDay, lastDay);
+		this._title.elem.textContent = new Intl.DateTimeFormat(undefined, DAY_TITLE).formatRange(firstDay, lastDay);
 	}
 
 	renderMonth() {
@@ -514,7 +569,7 @@ class Calendar extends StyledComponent {
 			}
 		}
 
-		this.toolbar.title.elem.textContent = formatDate(new Date(this.options.year, this.options.month), {
+		this._title.elem.textContent = formatDate(new Date(this.options.year, this.options.month), {
 			month: 'long',
 			year: 'numeric',
 		});
@@ -558,7 +613,7 @@ class Calendar extends StyledComponent {
 		this.options.day = Number.parseInt(day);
 		this.options.weekday = new Date(year, month, day).getDay();
 
-		if (reRender) this.render();
+		if (reRender) this._redraw();
 	}
 
 	/**
@@ -571,7 +626,7 @@ class Calendar extends StyledComponent {
 
 		this.adjustDateToView();
 
-		this.render();
+		this._redraw();
 	}
 
 	/**
@@ -611,7 +666,7 @@ class Calendar extends StyledComponent {
 		}
 
 		this.setDate(year, month, day);
-		this.render();
+		this._redraw();
 	}
 
 	/**
@@ -653,7 +708,7 @@ class Calendar extends StyledComponent {
 		}
 
 		this.setDate(year, month, day);
-		this.render();
+		this._redraw();
 	}
 
 	/**
@@ -677,6 +732,12 @@ class Calendar extends StyledComponent {
 		if (this.options.view !== view) this.options.view = view;
 
 		return this;
+	}
+
+	// Navigation redraws the view and its title, leaving the toolbar (and the button just pressed, which keeps focus)
+	_redraw() {
+		if (this.rendered) this.renderView();
+		else this.render();
 	}
 
 	/**
@@ -758,7 +819,7 @@ class Calendar extends StyledComponent {
 
 			this.emit('newEvent', eventItem);
 
-			this.render();
+			this._redraw();
 		}
 
 		return this;
