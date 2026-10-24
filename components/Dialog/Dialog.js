@@ -125,7 +125,7 @@ class Dialog extends styled(
 		&.intent-${intent} {
 			border-color: ${colors.alpha(colors[intent], 0.6)};
 			& .header { color: ${colors.lighter(colors[intent])}; border-color: ${colors.alpha(colors[intent], 0.2)}; }
-			& .footer button { background-color: ${colors[intent]}; color: ${colors.mostReadable(colors[intent], [colors.white, colors.black])}; }
+			& .footer button:not([data-action='cancel']) { background-color: ${colors[intent]}; color: ${colors.mostReadable(colors[intent], [colors.white, colors.black])}; }
 		}`,
 			)
 			.join('\n')}
@@ -205,7 +205,7 @@ class Dialog extends styled(
 		return new Promise(resolve => {
 			new this({
 				...options,
-				buttons: [cancelLabel, confirmLabel],
+				buttons: [{ textContent: cancelLabel, 'data-action': 'cancel' }, confirmLabel],
 				onButtonPress: ({ button, closeDialog }) => {
 					resolve(button === confirmLabel);
 					closeDialog();

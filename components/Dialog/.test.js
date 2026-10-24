@@ -1,4 +1,4 @@
-import { findByText, getAllByRole, getByRole } from '@testing-library/dom';
+import { findByRole, findByText, getAllByRole, getByRole } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 
 import { Component, Button, List } from '../..';
@@ -357,6 +357,17 @@ describe('Dialog', () => {
 			const confirmation = Dialog.confirm({ header: 'Delete it?', confirmLabel: 'Delete', cancelLabel: 'Keep it' });
 
 			expect(await answer(confirmation, 'Keep it')).toBe(false);
+		});
+
+		test('marks its cancel button, so an intent leaves it plain', async () => {
+			const confirmation = Dialog.confirm({ header: 'Delete it?', confirmLabel: 'Delete', intent: 'danger' });
+
+			expect(await findByRole(document.body, 'button', { name: 'Cancel', hidden: true })).toHaveAttribute(
+				'data-action',
+				'cancel',
+			);
+			expect(getByRole(document.body, 'button', { name: 'Delete', hidden: true })).not.toHaveAttribute('data-action');
+			expect(await answer(confirmation, 'Cancel')).toBe(false);
 		});
 
 		test('resolves false when closed any other way', async () => {

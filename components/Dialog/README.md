@@ -31,7 +31,7 @@ const dialog = new Dialog({
 | `onClose` | `Function` | - | Hears `close`, however the dialog closed |
 | `modal` | `boolean` | `true` | Open as a modal (with backdrop) vs. non-modal |
 | `size` | `string` | `'small'` | Dialog dimensions: `'small'` (420×210px), `'standard'` (640×360px), `'large'` (90vw×90vh), `'fit'` (as tall as its content); any of them shrinks to fit a phone's screen |
-| `intent` | `string` | - | What the dialog is about, drawn in that status role: `'info'`, `'success'`, `'warning'`, `'danger'`; it colors the edge, the header and the footer buttons |
+| `intent` | `string` | - | What the dialog is about, drawn in that status role: `'info'`, `'success'`, `'warning'`, `'danger'`; it colors the edge, the header and the footer buttons, except one marked `'data-action': 'cancel'` (as `Dialog.confirm` and FormDialog mark theirs) |
 | `closeDialog` | `Function` | - | Override the default close behavior used inside `onButtonPress` |
 | `removeOnClose` | `boolean` | `true` | Destroy the dialog once it has closed and faded out. Set to `false` to keep one dialog and open it again |
 | `appendTo` | `Element` | `document.body` | Where to append the dialog in the DOM |
