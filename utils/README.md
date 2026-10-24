@@ -154,12 +154,10 @@ randInt(1, 6); // integer in [1, 6]
 randFromArray(['a', 'b', 'c']); // random element
 ```
 
-### `shuffleArray(array)` / `chance(percentage?)` / `weightedChance(percentages)`
+### `shuffleArray(array)`
 
 ```js
 shuffleArray(deck); // the same array, reordered
-chance(25); // true a quarter of the time
-weightedChance({ common: 70, rare: 25, legendary: 5 }); // a key, as likely as its percentage; they must sum to 100
 ```
 
 ## Color

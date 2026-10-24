@@ -270,7 +270,7 @@ See [theme](./theme/README.md) for the layers of customization.
 
 Plain helpers ship from the main entry too ([utils](./utils/README.md)). Among them:
 
-- `shuffleArray(array)`, `chance(percentage)` and `weightedChance({ common: 70, rare: 30 })` for randomness
+- `randInt(min, max)`, `randFromArray(array)` and `shuffleArray(array)` for randomness
 - `readStorage(key, fallback)` / `writeStorage(key, value)`: localStorage as JSON that never throws (private windows, blocked site data)
 - `connectSocket(path, { onLost, onRestored })`: a WebSocket that reconnects with backoff and keeps its listeners
 - `debounce(callback, delay)`, whose result has a `cancel()` for a call still waiting

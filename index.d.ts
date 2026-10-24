@@ -1025,9 +1025,6 @@ export declare function buildClassList(...classNames: Array<any>): Array<any>;
 /** Capitalize the string */
 export declare function capitalize(string: string, recursive: boolean, split?: string): string;
 
-/** @type {(percentage?: number) => boolean} True `percentage` percent of the time */
-export declare const chance: (percentage?: number) => boolean;
-
 /** A schema descriptor for an option drawn as one class from a set: `variant: 'flat'` on an element marked `variant-flat`. Setting it takes away the class of the value before and validates the new one against the set; null or undefined leaves no class. */
 export declare function classEnum(
 	prefix: string,
@@ -1169,9 +1166,6 @@ export declare function toCamelCase(string: string, splitter?: string): string;
 
 /** Vibrate the device (if supported) */
 export declare function vibrate(durationPattern?: number | number[]): void;
-
-/** Pick a key, each as likely as its percentage */
-export declare function weightedChance(percentages: Record<string, any>): string;
 
 /** Keep a value in localStorage as JSON, or remove it when `undefined`. Refused storage is ignored: the value lasts until the page goes. */
 export declare function writeStorage(key: string, value: any): void;
