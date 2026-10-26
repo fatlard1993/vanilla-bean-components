@@ -15,7 +15,9 @@ Code display that automatically promotes from inline to block when the content s
 - the `language` option adds a `language-{name}` class; highlighting libraries target this class by convention
   - does the language option add an identifiable class to the code element?
 
-## Copy confirms success visually - clipboard writes can fail silently
+## Copy says how it went - clipboard writes can fail silently
 
 - the copy button shows a notification on success so the user knows the copy worked rather than discovering it failed on paste
   - new Subject({ code: "a\nb", copyButton: true, appendTo: document.body }) captures c then Object.defineProperty(window, "isSecureContext", { value: true, configurable: true }) then Object.defineProperty(navigator, "clipboard", { value: { writeText: () => {} }, configurable: true }) then c.elem.querySelector("button") captures btn then btn.click() then await new Promise(r => setTimeout(r, 40)) -> document.body.textContent.includes("Copied text to clipboard!")
+- a copy the browser refuses says so, and how to copy instead, rather than leaving the reader to find out on paste
+  - new Subject({ code: "a\nb", copyButton: true, appendTo: document.body }) captures c then Object.defineProperty(window, "isSecureContext", { value: true, configurable: true }) then Object.defineProperty(navigator, "clipboard", { value: { writeText: () => { throw new Error("denied") } }, configurable: true }) then c.elem.querySelector("button") captures btn then btn.click() then await new Promise(r => setTimeout(r, 40)) -> document.body.textContent.includes("select the text and copy it")

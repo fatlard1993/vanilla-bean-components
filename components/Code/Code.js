@@ -64,10 +64,17 @@ class Code extends Component {
 					icon: 'copy',
 					tooltip: 'Copy to clipboard',
 					onPointerPress: async () => {
-						if (await copyToClipboard(this.options.code)) {
-							const { right: x, top: y } = this.elem.getBoundingClientRect();
+						const { right: x, top: y } = this.elem.getBoundingClientRect();
 
+						if (await copyToClipboard(this.options.code)) {
 							new Notify({ content: 'Copied text to clipboard!', timeout: 1000, x, y });
+						} else {
+							new Notify({
+								intent: 'warning',
+								content: 'The clipboard is out of reach here; select the text and copy it',
+								x,
+								y,
+							});
 						}
 					},
 				}),
