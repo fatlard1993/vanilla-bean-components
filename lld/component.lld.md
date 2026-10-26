@@ -19,6 +19,11 @@ Component extends Elem with a lifecycle and reactive options. The design goal is
 - `build()` establishes the DOM structure before any option logic runs on it; options that depend on DOM elements being present always find those elements in place
   - new Array() captures order then new (class extends Subject { static schema = { probe: { set() { order.push("option:" + !!this.marker); } } }; build() { this.marker = true; order.push("build"); } })({ probe: 1 }) captures c -> order.join() === "build,option:true"
 
+## `build()` runs inside the base constructor, before subclass fields exist
+
+- with the default `autoRender`, `build()` runs inside Component's constructor, before the subclass's own class fields are assigned; construction does not wait for those fields to be set up before building
+  - new Array() captures seen then new (class extends Subject { field = "ready"; build() { seen.push(String(this.field)); } })({}) captures c -> seen.join() === "undefined" && c.field === "ready"
+
 ## Some options are processed before others
 
 The ordering is driven by a set of priority option names -- framework base keys, plus schema keys flagged `priority: true` -- applied ahead of the rest in `processOptions`.
