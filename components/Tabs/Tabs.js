@@ -9,11 +9,12 @@ const StyledComponent = styled(
 		display: flex;
 		gap: ${space.xs};
 		overflow-x: auto;
-		border-bottom: 1px solid ${colors.border};
+		/* Drawn inside the row, under the tabs: a tab's underline laid over a border reaches past it, and a row that
+		   scrolls one way scrolls the other once anything does */
+		box-shadow: inset 0 -1px ${colors.border};
 
 		& > .vbc-button {
 			flex: none;
-			margin-bottom: -1px;
 			padding: ${space.sm} ${space.md};
 			border-radius: ${radius.sm} ${radius.sm} 0 0;
 			border-bottom: 2px solid transparent;
@@ -42,6 +43,7 @@ const StyledComponent = styled(
 			gap: 0;
 			border: 1px solid ${colors.border};
 			border-radius: ${radius.pill};
+			box-shadow: none;
 			overflow: hidden;
 
 			/* 30px inside the pill's 1px border: as tall as a button beside it */
