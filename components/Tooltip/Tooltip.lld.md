@@ -28,3 +28,10 @@ The `tooltip` class is what the stylesheet and any consumer selector key off, so
 
 - every tooltip carries the `tooltip` class, and caller-supplied classes are added alongside it
   - new Subject({ textContent: "tip", addClass: "mine", appendTo: document.body }) captures t -> t.elem.classList.contains("tooltip") && t.elem.classList.contains("mine")
+
+## A tooltip is as tall as its text
+
+A tooltip lets the pointer through, so nothing can scroll it: the height cap a popover is placed with would hide the end of a long hint behind a scrollbar no one can use. Its placement is still a popover's; only the cap is dropped.
+
+- placed at a point, a tooltip has no maximum height
+  - new Subject({ textContent: "tip", appendTo: document.body }) captures t -> (t.edgeAwarePlacement({ x: 10, y: 10 }), t.elem.style.maxHeight === "none")

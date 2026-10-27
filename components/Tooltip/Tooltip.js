@@ -125,6 +125,12 @@ class Tooltip extends StyledPopover {
 	static prepareOptions(options) {
 		return { ...options, addClass: ['tooltip'].concat(options.addClass) };
 	}
+
+	edgeAwarePlacement(options) {
+		super.edgeAwarePlacement(options);
+
+		this.elem.style.maxHeight = 'none';
+	}
 }
 
 export default Tooltip;
