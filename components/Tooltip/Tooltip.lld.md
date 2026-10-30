@@ -35,3 +35,7 @@ A tooltip lets the pointer through, so nothing can scroll it: the height cap a p
 
 - placed at a point, a tooltip has no maximum height
   - new Subject({ textContent: "tip", appendTo: document.body }) captures t -> (t.edgeAwarePlacement({ x: 10, y: 10 }), t.elem.style.maxHeight === "none")
+
+## A tooltip wraps its text, whatever it sits in
+
+A tooltip is a child of the element it explains, so it inherits that element's text styles; a button keeps its label on one line and centered, and a tooltip that inherited that would run its sentence out sideways behind a scrollbar no one can use. It wraps and aligns as prose does, which is a stylesheet's concern: nothing here runs to check it.

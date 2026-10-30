@@ -20,6 +20,8 @@ const StyledPopover = styled(
 		transform: scaleX(0);
 		transition: opacity ${duration.base}, transform ${duration.fast}, overlay ${duration.base} allow-discrete, display ${duration.base} allow-discrete;
 		text-indent: 0;
+		white-space: normal;
+		text-align: start;
 
 		&:popover-open {
 			opacity: 1;
