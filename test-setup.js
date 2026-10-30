@@ -12,6 +12,9 @@ global.mock = mock;
 global.spyOn = spyOn;
 global.setSystemTime = setSystemTime;
 
+// The library's development warnings are under test, whatever the shell running them sets
+process.env.NODE_ENV = 'development';
+
 GlobalRegistrator.register({ width: 1920, height: 1080 });
 
 global.EventTarget = (await import('happy-dom')).EventTarget;
