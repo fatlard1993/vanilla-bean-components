@@ -1157,7 +1157,7 @@ export declare function throttle(callback: (...args: any[]) => any, delay?: numb
 export declare function toCamelCase(string: string, splitter?: string): string;
 
 /** Vibrate the device (if supported) */
-export declare function vibrate(durationPattern?: number | number[]): void;
+export declare function vibrate(durationPattern?: number | Array<number>): void;
 
 /** Keep a value in localStorage as JSON, or remove it when `undefined`. Refused storage is ignored: the value lasts until the page goes. */
 export declare function writeStorage(key: string, value: any): void;

@@ -75,17 +75,21 @@ export const copyToClipboard = async text => {
 
 /**
  * Get the current text from the clipboard
- * @returns {string} The current clipboard content
+ * @returns {Promise<string|false>} The clipboard's text, or false where it can't be read (an insecure page, permission refused)
  */
 export const readClipboard = async () => {
 	if (!window.isSecureContext || !navigator.clipboard) return false;
 
-	return await window.navigator.clipboard.readText();
+	try {
+		return await window.navigator.clipboard.readText();
+	} catch {
+		return false;
+	}
 };
 
 /**
  * Vibrate the device (if supported)
- * @param {number|[...number]} durationPattern - The duration(s) to vibrate (for an array: odd indexes are vibrate and even are pause)
+ * @param {number|Array<number>} durationPattern - The duration(s) to vibrate (for an array: vibrate, pause, vibrate, ...)
  * @returns {void}
  */
 export const vibrate = (durationPattern = 30) => {
