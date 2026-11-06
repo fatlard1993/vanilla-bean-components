@@ -3,7 +3,7 @@ import { duration, intents } from '../../theme/tokens';
 import { Button } from '../Button';
 import { Component, classEnum } from '../../Component';
 import { Elem } from '../../Elem';
-import { firstFocusable, isDev } from '../../utils';
+import { firstFocusable } from '../../utils';
 
 const DialogButton = styled(
 	Button,
@@ -232,11 +232,12 @@ class Dialog extends styled(
 			},
 		});
 
-		this.options['aria-labelledby'] = this.uniqueId;
+		// Its own id: the dialog's uniqueId names its style tag
+		this.options['aria-labelledby'] = `${this.uniqueId}-header`;
 
 		this._header = new Elem({
 			tag: 'div',
-			id: this.uniqueId,
+			id: `${this.uniqueId}-header`,
 			addClass: ['header'],
 			content: this.options.header,
 			appendTo: this,
@@ -288,21 +289,12 @@ class Dialog extends styled(
 	 * @param {boolean} [options.modal] - Whether to open as modal dialog; defaults to the modal option
 	 */
 	open({ modal = this.options.modal } = {}) {
+		// Open already, a second open() would take the focus inside it for the opener to return to
+		if (this.isOpen || !this.elem.isConnected) return;
+
 		this._opener = document.activeElement;
-		try {
-			this.elem[modal ? 'showModal' : 'show']();
-			this._openRetried = false;
-			(firstFocusable(this.elem) ?? this.elem).focus();
-		} catch (error) {
-			if (this._openRetried) return;
-
-			this._openRetried = true;
-
-			// eslint-disable-next-line no-console
-			if (isDev) console.error(error, 'Retrying...');
-
-			this.render();
-		}
+		this.elem[modal ? 'showModal' : 'show']();
+		(firstFocusable(this.elem) ?? this.elem).focus();
 	}
 
 	/**
@@ -315,7 +307,7 @@ class Dialog extends styled(
 
 	/**
 	 * Closes the dialog with optional return value
-	 * @param {string} returnValue - Value to return when dialog closes
+	 * @param {string} [returnValue] - Value to return when dialog closes
 	 */
 	close(returnValue) {
 		this.elem.close(returnValue);

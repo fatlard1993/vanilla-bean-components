@@ -22,7 +22,7 @@ const dialog = new Dialog({
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `header` | `string` | - | Text rendered in the `<h2>` header |
+| `header` | `string` | - | Text of the header, which labels the dialog |
 | `body` | `string\|Component\|Array` | - | Content for the scrollable body section. Reactive: updating `options.body` replaces content |
 | `buttons` | `Array<string\|object>` | - | Shorthand footer buttons. Each entry is a string label or `{ textContent, intent?, variant?, onPointerPress?, ...buttonOptions }` |
 | `footer` | `Array<Component>` | - | Fully custom footer components. Takes precedence over `buttons` |

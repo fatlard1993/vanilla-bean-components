@@ -381,3 +381,29 @@ describe('Dialog', () => {
 		});
 	});
 });
+
+describe('Dialog header and opening', () => {
+	test('the header keeps its text beside a styles option', () => {
+		const dialog = new Dialog({ header: 'Hello', styles: () => 'color: red;', autoOpen: false, appendTo: container });
+
+		expect(dialog._header.elem.textContent).toBe('Hello');
+		expect(dialog.elem.getAttribute('aria-labelledby')).toBe(dialog._header.elem.id);
+		// eslint-disable-next-line testing-library/no-node-access
+		expect(document.getElementById(dialog.uniqueId)?.tagName).toBe('STYLE');
+		dialog.destroy();
+	});
+
+	test('opening an open dialog changes nothing, so closing returns focus to the opener', () => {
+		const opener = new Button({ textContent: 'open', appendTo: container });
+		const dialog = new Dialog({ autoOpen: false, buttons: ['ok'], appendTo: container });
+
+		opener.elem.focus();
+		dialog.open();
+		dialog.open();
+		dialog.close();
+
+		// eslint-disable-next-line testing-library/no-node-access
+		expect(document.activeElement).toBe(opener.elem);
+		dialog.destroy();
+	});
+});

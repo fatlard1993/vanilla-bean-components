@@ -511,7 +511,7 @@ export declare class Dialog extends Component {
 	/** Opens the dialog, either as modal or non-modal */
 	open(options?: Record<string, any>): void;
 	/** Closes the dialog with optional return value */
-	close(returnValue: string): void;
+	close(returnValue?: string): void;
 }
 
 export interface EmptyStateOptions extends ComponentOptions {
