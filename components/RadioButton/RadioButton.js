@@ -88,14 +88,16 @@ class RadioButton extends Component {
 										// radio kept the browser default of "on", which made `event.target.value` the
 										// same string for all of them and left the `value` setter below unable to match
 										// any input -- assigning a value cleared the selection instead of moving it.
-										attributes: { value: option?.value || option },
+										// `??`, not `||`: 0, '' and false are values too
+										attributes: { value: option?.value ?? option },
 										name: this.uniqueId,
-										checked: this.options.value === (option?.value || option),
+										checked: this.options.value === (option?.value ?? option),
+										// The option's own value, not the element's string of it, so a number stays a number
 										onChange: event => {
-											if (event.target.checked) this.options.value = event.target.value;
+											if (event.target.checked) this.options.value = option?.value ?? option;
 										},
 									}),
-									option?.label || option,
+									option?.label ?? option,
 								],
 							}),
 					),
