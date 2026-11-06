@@ -77,9 +77,9 @@ describe('class utilities', () => {
 			expect(result).toEqual(['valid', 'array', 'items', 'nested-valid', 'final']);
 		});
 
-		test('preserves strings with content and whitespace', () => {
-			const result = buildClassList('  leading', 'trailing  ', '  both  ');
-			expect(result).toEqual(['  leading', 'trailing  ', '  both  ']);
+		test('trims whitespace around a class, and splits a string of several', () => {
+			const result = buildClassList('  leading', 'trailing  ', '  both  ', 'two classes');
+			expect(result).toEqual(['leading', 'trailing', 'both', 'two', 'classes']);
 		});
 
 		test('handles empty input', () => {
@@ -95,7 +95,7 @@ describe('class utilities', () => {
 
 		test('handles edge case whitespace patterns', () => {
 			const result = buildClassList('valid', ' ', '\t', '\n', '  \t  ', 'has content', '   has   content   ');
-			expect(result).toEqual(['valid', 'has content', '   has   content   ']);
+			expect(result).toEqual(['valid', 'has', 'content']);
 		});
 	});
 
@@ -112,7 +112,7 @@ describe('class utilities', () => {
 			expect(finalClasses).toContain('hover');
 			expect(finalClasses).toContain('active');
 			expect(finalClasses).toContain('user-defined');
-			expect(finalClasses).toContain('  spaced  ');
+			expect(finalClasses).toContain('spaced');
 			expect(finalClasses).toContain('enabled');
 			expect(finalClasses).not.toContain('disabled');
 			expect(finalClasses).not.toContain('');

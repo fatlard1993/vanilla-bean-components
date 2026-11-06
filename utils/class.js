@@ -18,6 +18,8 @@ export const buildClassList = (...classNames) => [
 	...new Set(
 		classNames
 			.flat(Number.POSITIVE_INFINITY)
-			.filter(className => typeof className === 'string' && className.length > 0 && !/^\s+$/.test(className)),
+			// A string of several classes is split, as a class attribute is: classList.add('a b') throws
+			.flatMap(className => (typeof className === 'string' ? className.split(/\s+/) : []))
+			.filter(Boolean),
 	),
 ];
