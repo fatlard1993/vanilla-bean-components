@@ -53,10 +53,28 @@ class Select extends Input {
 				const selected = this.options.value;
 				const emptyIsSelectable = () => Array.from(this.elem.options).some(option => option.value === '');
 
-				if (selected !== undefined && (selected !== '' || emptyIsSelectable())) this.elem.value = selected;
+				// As a string: an option's value is one, and a select given a number elsewhere than a browser selects nothing
+				if (selected !== undefined && (selected !== '' || emptyIsSelectable())) this.elem.value = String(selected);
 			},
 		},
 	};
+
+	// A pick lands in options.value, as RadioButton's and TagList's do, so a later options re-render keeps it and
+	// isDirty tells the truth. The option's own value, not the element's string of it, so a number stays a number.
+	build() {
+		this.elem.addEventListener('change', () => (this.options.value = this._pickedValue()), { signal: this.signal });
+	}
+
+	_pickedValue() {
+		const picked = this.elem.value;
+		const given = (this.options.options ?? []).flatMap(option =>
+			typeof option === 'object' && Array.isArray(option.options) ? option.options : [option],
+		);
+		const valueOf = option => (typeof option === 'object' ? option.value : option);
+		const match = given.find(option => String(valueOf(option)) === picked);
+
+		return match === undefined ? picked : valueOf(match);
+	}
 
 	/**
 	 * Gets the currently selected value with enhanced option handling.

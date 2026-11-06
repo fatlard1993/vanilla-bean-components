@@ -149,3 +149,26 @@ describe('Select', () => {
 		expect(noErrors).toBe(undefined); // Returns undefined when no errors like Input
 	});
 });
+
+describe('Select picks', () => {
+	test("a pick lands in options.value as the option's own value, and survives the options being given again", () => {
+		const select = new Select({
+			options: [
+				{ label: 'Low', value: 1 },
+				{ label: 'High', value: 'high' },
+			],
+			value: 'high',
+			appendTo: container,
+		});
+
+		select.elem.value = '1';
+		select.elem.dispatchEvent(new Event('change', { bubbles: true }));
+
+		expect(select.options.value).toBe(1);
+		expect(select.isDirty).toBe(true);
+
+		select.options.options = [...select.options.options];
+
+		expect(select.elem.value).toBe('1');
+	});
+});

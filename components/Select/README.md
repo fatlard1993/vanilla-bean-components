@@ -76,10 +76,8 @@ const select = new Select({
 		{ label: 'High', value: 3 },
 	],
 	value: 2,
-	onChange: ({ value }) => {
-		select.options.value = value;
-		console.log('Priority level:', select.value); // uses getter
-	},
+	// A pick is already in options.value, as the option's own value: 2, not "2"
+	onChange: () => console.log('Priority level:', select.options.value),
 	appendTo: document.body,
 });
 
