@@ -15,13 +15,7 @@ bun run build && bun run dev
 
 `bun run dev` starts the component playground at `http://localhost:9999` with hot reload via `bun --hot`.
 
-To rebuild the bundle on file changes without starting the dev server:
-
-```sh
-bun run build:watch
-```
-
-`build` runs three steps: cleans old build artifacts, regenerates `index.js` via `devTools/updateComponentIndex.js`, then runs the main bundler at `devTools/build.js`.
+`build` cleans the last build, regenerates what is derived from the sources (`components/index.js`, `demo/views.js`, `index.d.ts` and `app/*.d.ts`), formats the tree, then bundles the explorer with `devTools/build.js`. `bun run build:types` regenerates the type declarations alone.
 
 ## Creating Components
 
