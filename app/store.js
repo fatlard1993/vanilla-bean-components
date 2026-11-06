@@ -65,6 +65,10 @@ export const createStore = ({ db, collection, fields, versioned = false, hooks =
 	if (!fields) throw new Error(`createStore${collection ? ` (${collection})` : ''}: fields is required`);
 
 	const spec = normalizeFields(fields);
+
+	// A collection the file doesn't hold yet starts empty, rather than failing every call
+	if (collection && db.data) db.data[collection] ??= {};
+
 	const data = () => (collection ? db.data[collection] : db.data);
 
 	// The write, or putting things back as they were if it fails
