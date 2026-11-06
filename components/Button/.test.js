@@ -80,15 +80,16 @@ describe('Button', () => {
 		expect(onPointerPress).toHaveBeenCalledTimes(2);
 	});
 
-	test('extends TooltipWrapper', () => {
+	test('a tooltip option gives the button a tooltip of its own', () => {
 		const button = new Button({
 			textContent: 'Test',
 			tooltip: 'Button tooltip',
 			appendTo: container,
 		});
 
-		expect(button.options.tooltip).toBe('Button tooltip');
-		expect(button.elem.tagName).toBe('BUTTON');
+		expect(button.elem).toHaveClass('has-tooltip');
+		// eslint-disable-next-line testing-library/no-node-access
+		expect(button.elem.querySelector('.tooltip')).toHaveTextContent('Button tooltip');
 	});
 
 	test('accepts custom options', () => {

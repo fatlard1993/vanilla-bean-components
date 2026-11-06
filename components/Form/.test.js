@@ -122,8 +122,8 @@ describe('Form', () => {
 
 			const input = form.inputElements.name;
 
-			// Simulate what onChange does internally (event with .value)
-			input.options.onChange?.call(input, { value: 'Bob' });
+			input.elem.value = 'Bob';
+			input.elem.dispatchEvent(new Event('change', { bubbles: true }));
 
 			expect(form.options.data.name).toBe('Bob');
 		});
@@ -137,7 +137,8 @@ describe('Form', () => {
 
 			const input = form.inputElements.count;
 
-			input.options.onChange?.call(input, { value: '7' });
+			input.elem.value = '7';
+			input.elem.dispatchEvent(new Event('change', { bubbles: true }));
 
 			expect(form.options.data.count).toBe(7);
 		});

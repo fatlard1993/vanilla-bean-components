@@ -543,15 +543,14 @@ describe('styled system', () => {
 			}).not.toThrow();
 		});
 
-		test('configured function works with already configured components', () => {
+		test('configuring a styled class keeps its style class and adds the configured one', () => {
 			const BaseStyledComponent = styled(Component, () => 'color: red;');
+			const styleClass = mockShimCSS.mock.calls.at(-1)[0].scope.slice(1);
+			const DoubleConfigured = configured(BaseStyledComponent, { addClass: 'double' });
+			const instance = new DoubleConfigured();
 
-			expect(() => {
-				const DoubleConfigured = configured(BaseStyledComponent, { addClass: 'double' });
-				const instance = new DoubleConfigured();
-
-				expect(instance).toBeDefined();
-			}).not.toThrow();
+			expect(instance.elem.classList.contains(styleClass)).toBe(true);
+			expect(instance.elem.classList.contains('double')).toBe(true);
 		});
 
 		test('styled template literal with styled component returns valid class', () => {
@@ -567,30 +566,20 @@ describe('styled system', () => {
 			expect(() => new result()).not.toThrow();
 		});
 
-		test('class extends styled template literal should work correctly', () => {
+		test("a class extending a styled template literal carries both the template's and the base's styles", () => {
 			const BaseStyledComponent = styled(Component, () => 'color: red;');
+			const baseClass = mockShimCSS.mock.calls.at(-1)[0].scope.slice(1);
 
-			expect(() => {
-				// eslint-disable-next-line no-unused-vars
-				class ExtendedComponent extends (styled(BaseStyledComponent)`
-					background: blue;
-					padding: 10px;
-				`) {}
-			}).not.toThrow();
-		});
+			class ExtendedComponent extends (styled(BaseStyledComponent)`
+				background: blue;
+			`) {}
 
-		test('class extends styled template literal can be instantiated', () => {
-			const BaseStyledComponent = styled(Component, () => 'color: red;');
+			const templateCall = mockShimCSS.mock.calls.at(-1)[0];
+			const instance = new ExtendedComponent();
 
-			expect(() => {
-				class ExtendedComponent extends (styled(BaseStyledComponent)`
-					background: blue;
-				`) {}
-
-				const instance = new ExtendedComponent();
-
-				expect(instance).toBeDefined();
-			}).not.toThrow();
+			expect(templateCall.styles()).toContain('background: blue');
+			expect(instance.elem.classList.contains(templateCall.scope.slice(1))).toBe(true);
+			expect(instance.elem.classList.contains(baseClass)).toBe(true);
 		});
 	});
 });

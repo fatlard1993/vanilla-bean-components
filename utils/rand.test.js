@@ -325,174 +325,30 @@ describe('rand utilities', () => {
 		});
 	});
 
-	describe('edge cases and error handling', () => {
-		test('rand handles extreme values', () => {
-			expect(() => rand(Number.MAX_SAFE_INTEGER - 1, Number.MAX_SAFE_INTEGER)).not.toThrow();
-			expect(() => rand(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER + 1)).not.toThrow();
-		});
+	describe('at the edges', () => {
+		test('randInt stays within bounds at the ends of the safe integer range', () => {
+			for (let i = 0; i < 50; i++) {
+				const high = randInt(Number.MAX_SAFE_INTEGER - 100, Number.MAX_SAFE_INTEGER);
+				const low = randInt(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER + 100);
 
-		test('randInt handles extreme values', () => {
-			expect(() => randInt(Number.MAX_SAFE_INTEGER - 100, Number.MAX_SAFE_INTEGER)).not.toThrow();
-			expect(() => randInt(Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER + 100)).not.toThrow();
-		});
-
-		test('randFromArray handles various array types', () => {
-			expect(() => randFromArray(['string'])).not.toThrow();
-			expect(() => randFromArray([0])).not.toThrow();
-			expect(() => randFromArray([false])).not.toThrow();
-			expect(() => randFromArray([null])).not.toThrow();
-			expect(() => randFromArray([undefined])).not.toThrow();
-		});
-
-		test('functions are deterministic with Math.random seed', () => {
-			const results1 = [];
-			const results2 = [];
-
-			for (let i = 0; i < 10; i++) {
-				results1.push(rand(0, 1000));
-				results2.push(rand(0, 1000));
-			}
-
-			expect(results1).not.toEqual(results2);
-		});
-	});
-
-	describe('integration and real-world scenarios', () => {
-		test('can generate random test data', () => {
-			const names = ['Alice', 'Bob', 'Charlie', 'Diana'];
-			const roles = ['admin', 'user', 'guest'];
-
-			const userData = Array.from({ length: 10 }, () => ({
-				name: randFromArray(names),
-				role: randFromArray(roles),
-				age: randInt(18, 65),
-				score: rand(0, 100),
-			}));
-
-			expect(userData).toHaveLength(10);
-			userData.forEach(user => {
-				expect(names).toContain(user.name);
-				expect(roles).toContain(user.role);
-				expect(user.age).toBeGreaterThanOrEqual(18);
-				expect(user.age).toBeLessThanOrEqual(65);
-				expect(user.score).toBeGreaterThanOrEqual(0);
-				expect(user.score).toBeLessThan(100);
-			});
-		});
-
-		test('can generate random colors', () => {
-			const colors = [];
-			for (let i = 0; i < 10; i++) {
-				colors.push({
-					r: randInt(0, 255),
-					g: randInt(0, 255),
-					b: randInt(0, 255),
-					alpha: rand(0, 1),
-				});
-			}
-
-			colors.forEach(color => {
-				expect(color.r).toBeGreaterThanOrEqual(0);
-				expect(color.r).toBeLessThanOrEqual(255);
-				expect(color.g).toBeGreaterThanOrEqual(0);
-				expect(color.g).toBeLessThanOrEqual(255);
-				expect(color.b).toBeGreaterThanOrEqual(0);
-				expect(color.b).toBeLessThanOrEqual(255);
-				expect(color.alpha).toBeGreaterThanOrEqual(0);
-				expect(color.alpha).toBeLessThan(1);
-			});
-		});
-
-		test('can shuffle array elements using randInt', () => {
-			const originalArray = [1, 2, 3, 4, 5];
-			const shuffled = [...originalArray];
-
-			for (let i = shuffled.length - 1; i > 0; i--) {
-				const j = randInt(0, i);
-				[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-			}
-
-			expect(shuffled).toHaveLength(originalArray.length);
-			expect(shuffled.sort()).toEqual(originalArray.sort());
-		});
-
-		test('can generate random coordinates', () => {
-			const coordinates = Array.from({ length: 20 }, () => ({
-				x: rand(-100, 100),
-				y: rand(-100, 100),
-				z: rand(0, 50),
-			}));
-
-			coordinates.forEach(({ x, y, z }) => {
-				expect(x).toBeGreaterThanOrEqual(-100);
-				expect(x).toBeLessThan(100);
-				expect(y).toBeGreaterThanOrEqual(-100);
-				expect(y).toBeLessThan(100);
-				expect(z).toBeGreaterThanOrEqual(0);
-				expect(z).toBeLessThan(50);
-			});
-		});
-
-		test('can generate weighted random choices', () => {
-			const choices = ['common', 'common', 'common', 'rare', 'epic'];
-			const results = [];
-
-			for (let i = 0; i < 100; i++) {
-				results.push(randFromArray(choices));
-			}
-
-			const commonCount = results.filter(r => r === 'common').length;
-			const rareCount = results.filter(r => r === 'rare').length;
-			const epicCount = results.filter(r => r === 'epic').length;
-
-			expect(commonCount).toBeGreaterThan(rareCount);
-			expect(commonCount).toBeGreaterThan(epicCount);
-		});
-	});
-
-	describe('performance and consistency', () => {
-		test('functions execute quickly', () => {
-			const iterations = 10000;
-			const start = Date.now();
-
-			for (let i = 0; i < iterations; i++) {
-				rand();
-				randInt();
-				randFromArray(['a', 'b', 'c']);
-			}
-
-			const elapsed = Date.now() - start;
-			expect(elapsed).toBeLessThan(100);
-		});
-
-		test('functions maintain consistent behavior', () => {
-			for (let run = 0; run < 5; run++) {
-				const intResults = [];
-				const floatResults = [];
-				const arrayResults = [];
-
-				for (let i = 0; i < 20; i++) {
-					intResults.push(randInt(1, 10));
-					floatResults.push(rand(0, 1));
-					arrayResults.push(randFromArray([1, 2, 3]));
-				}
-
-				expect(intResults.every(n => n >= 1 && n <= 10 && Number.isInteger(n))).toBe(true);
-				expect(floatResults.every(n => n >= 0 && n < 1)).toBe(true);
-				expect(arrayResults.every(n => [1, 2, 3].includes(n))).toBe(true);
+				expect(Number.isInteger(high) && high >= Number.MAX_SAFE_INTEGER - 100 && high <= Number.MAX_SAFE_INTEGER).toBe(
+					true,
+				);
+				expect(Number.isInteger(low) && low >= Number.MIN_SAFE_INTEGER && low <= Number.MIN_SAFE_INTEGER + 100).toBe(
+					true,
+				);
 			}
 		});
 
-		test('no memory leaks with large iterations', () => {
-			const largeArray = Array.from({ length: 1000 }, (_, i) => i);
+		test('randInt given its bounds the wrong way round still lands between them, both ends included', () => {
+			const seen = new Set(Array.from({ length: 200 }, () => randInt(5, 1)));
 
-			for (let i = 0; i < 1000; i++) {
-				rand(-1000, 1000);
-				randInt(-1000, 1000);
-				randFromArray(largeArray);
-			}
+			expect([...seen].every(n => n >= 1 && n <= 5)).toBe(true);
+			expect(seen.has(1) && seen.has(5)).toBe(true);
+		});
 
-			expect(true).toBe(true);
+		test('randFromArray gives back the element itself, whatever it is', () => {
+			for (const item of [0, false, null, undefined, '']) expect(randFromArray([item])).toBe(item);
 		});
 	});
 

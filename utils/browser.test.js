@@ -12,21 +12,6 @@ import {
 
 describe('browser utilities', () => {
 	describe('isMac', () => {
-		test('returns boolean value', () => {
-			const result = isMac();
-			expect(typeof result).toBe('boolean');
-		});
-
-		test('is consistent across calls', () => {
-			const result1 = isMac();
-			const result2 = isMac();
-			expect(result1).toBe(result2);
-		});
-
-		test('handles function call without throwing', () => {
-			expect(() => isMac()).not.toThrow();
-		});
-
 		test('a Mac, an iPhone and an iPad use the Mac keys; Windows, Linux and Android do not', () => {
 			const platform = Object.getOwnPropertyDescriptor(window.navigator, 'platform');
 			const on = value => {
@@ -94,79 +79,45 @@ describe('browser utilities', () => {
 			expect(result).toBe(false);
 		});
 
-		test('does not throw in secure context', async () => {
+		test("reads the clipboard's text in a secure context", async () => {
 			global.isSecureContext = true;
-			await expect(readClipboard()).resolves.toBeDefined();
+			spyOn(navigator.clipboard, 'readText').mockResolvedValue('pasted');
+
+			expect(await readClipboard()).toBe('pasted');
 		});
 
-		test('handles function call without throwing', () => {
-			expect(() => readClipboard()).not.toThrow();
+		test('answers false when the clipboard refuses', async () => {
+			global.isSecureContext = true;
+			spyOn(navigator.clipboard, 'readText').mockRejectedValue(new Error('denied'));
+
+			expect(await readClipboard()).toBe(false);
 		});
 	});
 
 	describe('vibrate', () => {
-		test('does not throw with default parameters', () => {
-			expect(() => vibrate()).not.toThrow();
+		afterEach(() => {
+			delete navigator.vibrate;
 		});
 
-		test('does not throw with custom duration', () => {
+		test('hands the device the duration or the pattern, a short burst by default', () => {
+			navigator.vibrate = mock();
+
+			vibrate();
+			vibrate(100);
+			vibrate([100, 50, 100]);
+			tactileResponse();
+
+			expect(navigator.vibrate.mock.calls.map(([pattern]) => pattern)).toEqual([30, 100, [100, 50, 100], 30]);
+		});
+
+		test('does nothing on a device that cannot vibrate', () => {
+			delete navigator.vibrate;
+
 			expect(() => vibrate(100)).not.toThrow();
-			expect(() => vibrate(0)).not.toThrow();
-			expect(() => vibrate(-1)).not.toThrow();
-		});
-
-		test('does not throw with pattern arrays', () => {
-			expect(() => vibrate([100, 50, 100])).not.toThrow();
-			expect(() => vibrate([])).not.toThrow();
-			expect(() => vibrate([0])).not.toThrow();
-		});
-
-		test('handles edge case inputs gracefully', () => {
-			expect(() => vibrate(null)).not.toThrow();
-			expect(() => vibrate(undefined)).not.toThrow();
-			expect(() => vibrate(Number.MAX_SAFE_INTEGER)).not.toThrow();
 		});
 	});
 
-	describe('tactileResponse', () => {
-		test('does not throw when called', () => {
-			expect(() => tactileResponse()).not.toThrow();
-		});
-
-		test('is callable multiple times', () => {
-			expect(() => {
-				tactileResponse();
-				tactileResponse();
-				tactileResponse();
-			}).not.toThrow();
-		});
-	});
-
-	describe('function contracts and behavior', () => {
-		test('all functions exist and are callable', () => {
-			expect(typeof isMac).toBe('function');
-			expect(typeof copyToClipboard).toBe('function');
-			expect(typeof readClipboard).toBe('function');
-			expect(typeof vibrate).toBe('function');
-			expect(typeof tactileResponse).toBe('function');
-		});
-
-		test('functions have expected return types', async () => {
-			expect(typeof isMac()).toBe('boolean');
-			expect(copyToClipboard('test')).toBeInstanceOf(Promise);
-			expect(typeof (await copyToClipboard('test'))).toBe('boolean');
-			expect(readClipboard()).toBeInstanceOf(Promise);
-		});
-
-		test('functions handle null/undefined inputs gracefully', () => {
-			expect(() => copyToClipboard(null)).not.toThrow();
-			expect(() => copyToClipboard(undefined)).not.toThrow();
-			expect(() => vibrate(null)).not.toThrow();
-			expect(() => vibrate(undefined)).not.toThrow();
-		});
-	});
-
-	describe('security context behavior', () => {
+	describe('the copy fallback', () => {
 		let originalIsSecureContext;
 
 		beforeEach(() => {
@@ -175,110 +126,25 @@ describe('browser utilities', () => {
 
 		afterEach(() => {
 			global.isSecureContext = originalIsSecureContext;
+			delete document.execCommand;
 		});
 
-		test('clipboard operations respect secure context', async () => {
+		test('copies through a textarea where there is no clipboard API, and leaves nothing behind', async () => {
 			global.isSecureContext = false;
-			expect(await copyToClipboard('test')).toBe(false);
+			// The command runs with the textarea in the page, holding the text
+			document.execCommand = mock(
+				command => command === 'copy' && document.querySelector('textarea')?.value === 'fallen back',
+			);
 
-			global.isSecureContext = null;
-			expect(await copyToClipboard('test')).toBe(false);
-
-			global.isSecureContext = undefined;
-			expect(await copyToClipboard('test')).toBe(false);
+			expect(await copyToClipboard('fallen back')).toBe(true);
+			expect(document.execCommand).toHaveBeenCalledWith('copy');
+			expect(document.querySelectorAll('textarea')).toHaveLength(0);
 		});
 
-		test('readClipboard respects secure context', async () => {
+		test('leaves nothing behind when it fails either', async () => {
 			global.isSecureContext = false;
-			expect(await readClipboard()).toBe(false);
 
-			global.isSecureContext = null;
-			expect(await readClipboard()).toBe(false);
-
-			global.isSecureContext = undefined;
-			expect(await readClipboard()).toBe(false);
-		});
-	});
-
-	describe('real-world usage scenarios', () => {
-		test('feature detection pattern works', () => {
-			const isMacDevice = isMac();
-			const hasClipboardAPI = typeof navigator?.clipboard?.writeText === 'function';
-			const hasVibrationAPI = typeof navigator?.vibrate === 'function';
-
-			expect(typeof isMacDevice).toBe('boolean');
-			expect(typeof hasClipboardAPI).toBe('boolean');
-			expect(typeof hasVibrationAPI).toBe('boolean');
-		});
-
-		test('safe clipboard workflow', async () => {
-			if (!isSecureContext) {
-				expect(await copyToClipboard('test')).toBe(false);
-				expect(await readClipboard()).toBe(false);
-			} else {
-				await expect(copyToClipboard('test')).resolves.toBeBoolean();
-				await expect(readClipboard()).resolves.toBeDefined();
-			}
-		});
-
-		test('vibration patterns work with various inputs', () => {
-			const patterns = [30, [200, 100, 200], [100, 30, 100, 30, 100], 0];
-
-			patterns.forEach(pattern => {
-				expect(() => vibrate(pattern)).not.toThrow();
-			});
-		});
-
-		test('tactile feedback is consistent', () => {
-			const calls = Array.from({ length: 10 }, () => {
-				expect(() => tactileResponse()).not.toThrow();
-				return true;
-			});
-
-			expect(calls.every(Boolean)).toBe(true);
-		});
-	});
-
-	describe('edge cases and error handling', () => {
-		test('handles missing browser APIs gracefully', () => {
-			expect(() => isMac()).not.toThrow();
-			expect(() => vibrate(100)).not.toThrow();
-			expect(() => tactileResponse()).not.toThrow();
-		});
-
-		test('clipboard operations handle API absence', async () => {
-			const copyResult = await copyToClipboard('test');
-			expect(typeof copyResult).toBe('boolean');
-		});
-
-		test('functions handle extreme inputs', () => {
-			expect(() => copyToClipboard('x'.repeat(10000))).not.toThrow();
-			expect(() => vibrate(999999)).not.toThrow();
-			expect(() => vibrate([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])).not.toThrow();
-		});
-
-		test('maintains function stability across multiple calls', async () => {
-			const isMacResults = Array.from({ length: 5 }, () => isMac());
-			const allSame = isMacResults.every(result => result === isMacResults[0]);
-			expect(allSame).toBe(true);
-
-			const copyResults = await Promise.all(['test1', 'test2', 'test3'].map(text => copyToClipboard(text)));
-			expect(copyResults.every(result => typeof result === 'boolean')).toBe(true);
-		});
-	});
-
-	describe('stability', () => {
-		test('functions are idempotent where expected', () => {
-			const result1 = isMac();
-			const result2 = isMac();
-			const result3 = isMac();
-
-			expect(result1).toBe(result2);
-			expect(result2).toBe(result3);
-		});
-
-		test('the copy fallback leaves nothing behind in the page', async () => {
-			for (let i = 0; i < 20; i++) await copyToClipboard(`test-${i}`);
+			for (let i = 0; i < 20; i++) expect(await copyToClipboard(`test-${i}`)).toBe(false);
 
 			expect(document.querySelectorAll('textarea')).toHaveLength(0);
 		});

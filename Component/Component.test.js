@@ -77,11 +77,6 @@ describe('Component', () => {
 	});
 
 	describe('rendering system', () => {
-		test('has render method', () => {
-			component = new Component();
-			expect(typeof component.render).toBe('function');
-		});
-
 		test('render processes component options', () => {
 			component = new Component({
 				tag: 'p',
@@ -95,11 +90,6 @@ describe('Component', () => {
 
 			expect(() => component.render()).not.toThrow();
 			expect(component.elem).toHaveStyle({ color: 'red', padding: '10px' });
-		});
-
-		test('render method exists and is callable', () => {
-			component = new Component();
-			expect(() => component.render()).not.toThrow();
 		});
 	});
 
@@ -209,41 +199,37 @@ describe('Component', () => {
 		});
 	});
 
-	describe('edge cases and error handling', () => {
-		test('handles null context gracefully', () => {
-			expect(() => {
-				component = new Component({ context: null });
-			}).not.toThrow();
+	describe('undeclared options', () => {
+		test('an undeclared key lands on the element, and development says so', () => {
+			const warn = spyOn(console, 'warn').mockImplementation(() => {});
+
+			component = new Component({ invalidOption: 'test' });
+
+			expect(component.elem.invalidOption).toBe('test');
+			expect(warn).toHaveBeenCalledTimes(1);
+			expect(warn.mock.calls[0][0]).toContain('unknown key "invalidOption"');
 		});
 
-		test('handles undefined styles gracefully', () => {
-			expect(() => {
-				component = new Component({ styles: undefined });
-			}).not.toThrow();
-		});
+		test('an undeclared falsy or empty style option sets nothing and says nothing', () => {
+			const warn = spyOn(console, 'warn').mockImplementation(() => {});
 
-		test('handles empty styles object', () => {
-			expect(() => {
-				component = new Component({ styles: {} });
-			}).not.toThrow();
-		});
+			component = new Component({ styles: undefined, style: {} });
 
-		test('handles invalid options gracefully', () => {
-			expect(() => {
-				component = new Component({ invalidOption: 'test' });
-			}).not.toThrow();
+			expect(component.elem.getAttribute('style')).toBeNull();
+			expect(warn).not.toHaveBeenCalled();
 		});
 	});
 
 	describe('lifecycle management', () => {
-		test('component can be destroyed if destroy method exists', () => {
-			component = new Component();
+		test('destroy() runs the cleanup and takes the element out of the document', () => {
+			const cleanup = mock();
 
-			if (typeof component.destroy === 'function') {
-				expect(() => component.destroy()).not.toThrow();
-			} else {
-				expect(component).toBeDefined();
-			}
+			component = new Component({ appendTo: container });
+			component.addCleanup('probe', cleanup);
+			component.destroy();
+
+			expect(cleanup).toHaveBeenCalledTimes(1);
+			expect(component.elem.isConnected).toBe(false);
 		});
 
 		test('handles multiple render calls', () => {
@@ -945,7 +931,12 @@ describe('Component', () => {
 			}
 
 			const comp = new OptionalEnumComp({ variant: undefined });
+
+			expect(comp.options.variant).toBeUndefined();
+
 			comp.options.variant = null;
+
+			expect(comp.options.variant).toBeNull();
 			comp.destroy();
 		});
 
