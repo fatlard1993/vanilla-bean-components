@@ -23,4 +23,13 @@ export const reloadOnBuild = ({ reload = () => window.location.reload() } = {}) 
 	return socket;
 };
 
-if (process.env.NODE_ENV === 'development') reloadOnBuild();
+// Read plainly, so a bundler's define replaces it; a page with no bundler has no process, and no hot reload
+let development = false;
+
+try {
+	development = process.env.NODE_ENV === 'development';
+} catch {
+	// no process in this runtime and no define for it
+}
+
+if (development) reloadOnBuild();
