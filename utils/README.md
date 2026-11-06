@@ -10,11 +10,11 @@ import { debounce, orderBy, toCamelCase } from '@vanilla-bean/components';
 
 ### `capitalize(string, recursive?, split?)`
 
-Capitalizes the first letter of each word. Set `recursive` to also capitalize after digits. `split` defaults to a space.
+Capitalizes the first word, or with `recursive` every word, split on `split` (a space by default).
 
 ```js
-capitalize('hello world'); // → 'Hello World'
-capitalize('step1thing', true); // → 'Step1Thing'
+capitalize('hello world'); // → 'Hello world'
+capitalize('hello world', true); // → 'Hello World'
 ```
 
 ### `toCamelCase(string, splitter?)` / `fromCamelCase(string, joiner?)`
@@ -28,7 +28,7 @@ fromCamelCase('componentOptions'); // → 'component options'
 
 ### `removeExcessIndentation(string)`
 
-Strips the minimum common leading whitespace from every line. Useful for cleaning up indented template literals before rendering.
+Strips the common leading tabs from every line. Useful for cleaning up indented template literals before rendering.
 
 ## Data
 
@@ -65,10 +65,10 @@ await delay(500); // pause for 500ms
 
 ### `retry(callback, options?)`
 
-Retries an async function on failure. Options: `{ attempts, interval }`.
+Retries an async function on failure. Options: `{ max, delay }`: how many retries after the first try (3), and the milliseconds between them (500), or a function of the attempt index.
 
 ```js
-const data = await retry(() => fetch('/api/data'), { attempts: 3, interval: 1000 });
+const data = await retry(() => fetch('/api/data'), { max: 3, delay: 1000 });
 ```
 
 ### `convertRange(value, sourceRange, targetRange)`
@@ -132,7 +132,7 @@ else if (saved.status === 'error') notify(failureReason(saved));
 
 ### `connectSocket(path?, { onLost?, onRestored? }?)`
 
-A WebSocket that comes back. A dropped connection is retried for as long as it's open, backing off to every 10 seconds, and at once when the page comes back into view or the network comes back. Listeners carry over to each new connection. `onLost` and `onRestored` are called once per outage, for a notice of your own.
+A WebSocket that comes back. A dropped connection is retried for as long as it's open, backing off to every 10 seconds, and at once when the page comes back into view or the network comes back. Listeners carry over to each new connection. `onLost` and `onRestored` are called once per outage, for a notice of your own; `onLost` also when the first connection can't be made.
 
 ```js
 const socket = connectSocket('/ws', { onLost: () => (lost.hidden = false), onRestored: () => (lost.hidden = true) });
@@ -164,7 +164,7 @@ shuffleArray(deck); // the same array, reordered
 
 ### `rgbDelta(rgbA, rgbB)`
 
-Perceptual distance between two RGB arrays `[r, g, b]`. Used internally by ColorPicker to score color accuracy in ShapeMatchGame.
+Perceptual distance between two RGB arrays `[r, g, b]`, as the ShapeMatchGame example scores a drawn color against the one asked for.
 
 ```js
 rgbDelta([255, 0, 0], [200, 0, 0]); // → ~55

@@ -39,7 +39,7 @@ Variable and function naming emphasizes readability and clearly communicates int
 
 - **Local variables**: camelCase with descriptive names (e.g., `userName`, `isValid`, `currentValue`)
 - **Function names**: camelCase verbs that describe the action (e.g., `buildClassList`, `formatDate`, `readStorage`)
-- **Default options**: Always `defaultOptions` as a camelCase object containing component defaults
+- **Defaults**: an option's default is declared in its schema descriptor (`static schema = { gap: { default: 12 } }`), never in a `defaultOptions` field
 
 **Special Naming Patterns:**
 
@@ -135,7 +135,6 @@ Certain file types and contexts have specific naming requirements that override 
 
 - **README files**: Always UPPERCASE (`README.md`) following repository conventions
 - **License files**: UPPERCASE for legal documents (`LICENSE`, `NOTICES.md`)
-- **Configuration metadata**: Descriptive kebab-case (`TODO.md`, `context.txt`)
 
 **Test and Development:**
 

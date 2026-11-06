@@ -71,7 +71,7 @@ The watcher builds inside the server process, so it ends with the server. `bun -
 
 Answers GET and HEAD from `root` (default `client/build`), with `index.html` for a directory. It returns `undefined` when there's no file, so it chains with `??`.
 
-`Page` links the Font Awesome and kode-mono stylesheets, and `theme.code` loads the syntax font, all by package path. `serveStatic` serves those packages, found by module resolution from the library, wherever the package manager put them. A relative href asked for from a deep route (`/games/12/@fortawesome/...`) is matched too. Add packages of your own with `packages: ['leaflet']`. Nothing else in `node_modules` is reachable.
+`Page` links the Font Awesome and kode-mono stylesheets, and the page theme's `@font-face` loads the syntax font, all by package path. `serveStatic` serves those packages, found by module resolution from the library, wherever the package manager put them. A relative href asked for from a deep route (`/games/12/@fortawesome/...`) is matched too. Add packages of your own with `packages: ['leaflet']`. Nothing else in `node_modules` is reachable.
 
 A request never gets out of its root, however it's encoded, and never gets a dotfile or a nested `node_modules`.
 

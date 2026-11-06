@@ -56,7 +56,7 @@ select.isDirty: boolean
 
 ### Relationship to Input
 
-`Select` extends `Input` and overrides `_setOption` only for the `options` key (to rebuild `<option>` children). All other option processing delegates to `Input`, which delegates to `Component`. The `tag` defaults to `'select'` rather than `'input'`. Type auto-detection from value type does not apply.
+`Select` extends `Input`, declaring only `options` (which rebuilds the `<option>` children) and its own defaults in its schema. All other option processing is `Input`'s, and then `Component`'s. The `tag` defaults to `'select'` rather than `'input'`. Type auto-detection from value type does not apply.
 
 ## Events
 

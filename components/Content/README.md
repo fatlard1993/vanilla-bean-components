@@ -8,7 +8,7 @@ new Content({ padding: '0 12px', append: list });
 
 | Option    | Type             | Default | Description                       |
 | --------- | ---------------- | ------- | --------------------------------- |
-| `padding` | `number\|string` | `0`     | Inner padding; a number is pixels |
+| `padding` | `number\|string` | -       | Inner padding; a number is pixels |
 
 ## A reading column
 

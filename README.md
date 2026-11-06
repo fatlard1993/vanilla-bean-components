@@ -69,7 +69,7 @@ import { Button, Dialog, Calendar } from '@vanilla-bean/components';
 
 `bun start` launches the component explorer at `http://localhost:9999` (clone first, see [Development](#development)):
 
-- **Live option editor**: every component, every option, type-appropriate controls, updated in real time
+- **Editable demos**: every component's demo code in an editor; change an option, run it, see it
 - **Auto-generated API docs**: options tables, method signatures, event listings pulled directly from source annotations
 - **14 example applications**: the Showcase page pictured above, async data tables with row actions, localStorage-backed todo, a live HTML/JS/CSS playground with iframe preview, a drawing canvas with a functioning in-game economy
 - **Ancestor chain navigation**: each component shows its full inheritance (EventTarget → Elem → Component → ...) with links to each layer's documentation
@@ -483,7 +483,7 @@ vanilla-bean-components/
 ├── styled/             # Scoped styling system
 ├── theme/              # Design tokens and helpers
 ├── utils/              # Plain helpers: data, dates, storage, sockets, randomness
-├── demo/               # Component explorer - live option editor, API docs, example apps
+├── demo/               # Component explorer - editable demos, API docs, example apps
 └── docs/               # Additional documentation
 ```
 

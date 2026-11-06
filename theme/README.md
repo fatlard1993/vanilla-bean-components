@@ -123,7 +123,7 @@ import { theme } from '@vanilla-bean/components';
 
 // Direct color access
 const primaryColor = theme.colors.blue;
-console.log(primaryColor.toHexString()); // "#4a7ba7"
+console.log(primaryColor.toHexString()); // "#3475b2"
 
 // With styled components
 const StyledButton = styled.Button`
@@ -141,10 +141,12 @@ const StyledButton = styled.Button`
 Apply typography and iconography:
 
 ```js
-// Typography in styled components
-const CodeBlock = styled.Pre`
-	${({ fonts }) => fonts.code}
-	${({ fonts }) => fonts.kodeMono}
+// Typography in styled components (styled.X shortcuts exist for the library's components; a bare tag takes the long form)
+const CodeBlock = styled(
+	Component,
+	({ fonts }) => `
+	${fonts.code}
+	${fonts.kodeMono}
 
   &.language-javascript {
 		font-palette: --vbc-javascript-theme;
@@ -213,18 +215,16 @@ new Component({
 ```js
 const { colors } = theme;
 
-// Primary palette
-colors.blue; // #4a7ba7 - Primary actions, links
-colors.green; // #5cb85c - Success states, positive actions
-colors.red; // #d9534f - Errors, warnings, destructive actions
-colors.orange; // #f0ad4e - Alerts, secondary warnings
-colors.purple; // #5d4e75 - Special features, premium content
-
-// Extended palette
-colors.teal; // #5bc0de - Information, neutral actions
-colors.yellow; // #f0e68c - Cautions, highlights
-colors.pink; // #d63384 - Creative, playful elements
-colors.gray; // #6c757d - Text, borders, backgrounds
+// Every hue sits at the same saturation and lightness (hsl(h, 55%, 45%)), so they read as one set
+colors.blue; // #3475b2 - Primary actions, links
+colors.green; // #94b234 - Success states, positive actions
+colors.red; // #b23436 - Errors, destructive actions
+colors.orange; // #b27134 - Alerts, secondary warnings
+colors.purple; // #5134b2 - Special features
+colors.teal; // #34b290 - The library's own accent: the edge of what floats over the page
+colors.yellow; // #b29034 - Selected, checked and pressed
+colors.pink; // #b23494 - Creative, playful elements
+colors.gray; // #737373 - Text, borders, backgrounds
 ```
 
 ### Lightness Variations
@@ -337,8 +337,10 @@ const UIComponent = styled.Component`
 `;
 
 // Code blocks with syntax highlighting
-const CodeEditor = styled.Pre`
-	${({ fonts }) => fonts.code}
+const CodeEditor = styled(
+	Component,
+	({ fonts }) => `
+	${fonts.code}
 
 	&.language-javascript {
 		font-palette: --vbc-javascript-theme;
@@ -356,7 +358,7 @@ const CodeEditor = styled.Pre`
 
 ### Icon System
 
-Complete Font Awesome 6 integration:
+Complete Font Awesome 7 integration:
 
 ```js
 // Base icon setup

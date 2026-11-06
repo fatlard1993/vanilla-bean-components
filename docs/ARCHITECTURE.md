@@ -113,7 +113,7 @@ class Card extends Component {
 
 **Deep hierarchies must chain manually.** `build()` does not call `super.build()` automatically. If class `C` extends `B` extends `Component`, and both `B` and `C` define `build()`, `C.build()` must explicitly call `super.build()` to preserve the parent's structure.
 
-**`async build()` is not supported.** `render()` does not `await` the return value of `build()`. Asynchronous initialization must be done outside the render lifecycle (e.g., in `onConnected`).
+**`async build()` is not awaited.** `render()` ignores what `build()` returns, so the options are applied, and the render reported done, as soon as `build()` reaches its first `await`; whatever follows lands later, into a component that is already in use. Structure the options depend on belongs before that `await`, and asynchronous initialization outside the render lifecycle (e.g., in `onConnected`).
 
 ### empty() only runs on re-render
 

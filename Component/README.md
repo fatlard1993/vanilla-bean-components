@@ -149,8 +149,8 @@ Input-related events (`keydown`, `keyup`, `change`, `blur`, `input`, `search`) r
 new Component({
 	tag: 'input',
 	type: 'text',
-	onChange: ({ value, event }) => {
-		console.log('New value:', value); // Extracted from input
+	onChange: event => {
+		console.log('New value:', event.value); // Extracted from the input, on the event itself
 		console.log('Original event:', event);
 	},
 });
@@ -345,13 +345,13 @@ A fully declared component needs no constructor at all: `static schema` + `stati
 
 There is deliberately no `derive` descriptor. When one option's value depends on another, pick the pattern that matches when the derivation must hold:
 
-- **Construction-time** - compute in `prepareOptions`. Right when the result feeds construction itself and never changes after (Code decides its `tag` from `multiline`; Notify picks `icon` and `role` from `type`).
+- **Construction-time** - compute in `prepareOptions`. Right when the result feeds construction itself and never changes after (Code decides its `tag` from `multiline`; Notify picks `icon` and `role` from `intent`).
 - **Read-time** - normalize where the value is consumed. Right when the option accepts shorthand and can change reactively; construction and reactive assignment then share one path (Table normalizes string columns inside `_renderTable`).
-- **Change-time** - recompute inside the source key's `set`. Right when a change to one option must immediately update dependent state (Table's `sortDirection` re-sorts `data`).
+- **Change-time** - recompute inside the source key's `set`. Right when a change to one option must immediately update dependent state (TagList's `value` re-checks `validate`).
 
 **`empty()` only runs on re-render.** On the initial render it is skipped. On subsequent `render()` calls it removes all child elements; a component among them that is not back in the element, or elsewhere in the document, by the end of the task is gone for good and is cleaned up, listeners and styles included. One the render puts back (everything in `append`, a child a setter re-appends) was moved, not discarded, and keeps its options and listeners.
 
-**`async build()` is not supported.** `render()` does not await `build()`'s return value. Asynchronous initialization belongs in `onConnected`.
+**`async build()` is not awaited.** `render()` ignores what `build()` returns, so the options are applied as soon as `build()` reaches its first `await`. Structure the options depend on belongs before that `await`; asynchronous initialization belongs in `onConnected`.
 
 **Deep hierarchies must chain `super.build()` manually.** If both a parent class and its subclass define `build()`, the subclass must call `super.build()` explicitly. It is not called automatically.
 

@@ -5,11 +5,11 @@ This guide walks you through setting up @vanilla-bean/components from scratch an
 ## Installation
 
 ```bash
-# Using npm
-npm install @vanilla-bean/components
-
 # Using Bun
-bun add @vanilla-bean/components
+bun add github:fatlard1993/vanilla-bean-components
+
+# Using npm
+npm install github:fatlard1993/vanilla-bean-components
 ```
 
 ## Basic HTML Setup
@@ -31,7 +31,7 @@ Create an `index.html` file:
 
 ## Your First Component
 
-> **Explore alongside this guide**: `bun start` launches the component explorer at `localhost:9999`. Every component has a live option editor, change any option and watch it update. The same component you're reading about, live.
+> **Explore alongside this guide**: `bun start` launches the component explorer at `localhost:9999`. Every component has its demo's code in an editor: change an option, run it, and watch it update. The same component you're reading about, live.
 
 When data changes in VBC, **you** decide what updates, through explicit handlers you write. No reconciliation loop. No dependency graph. No magic.
 
@@ -223,7 +223,7 @@ build() {
 }
 ```
 
-**5. `_setOption` override**: for enum validation that throws, or logic that must intercept before the standard routing chain:
+**5. `_setOption` override**: for logic that must intercept before the standard routing chain (a closed set of values is a schema `enum`, which throws on its own):
 
 ```js
 _setOption(key, value) {
@@ -471,7 +471,7 @@ const StyledCard = styled.Component`
 
 ## Next Steps
 
-1. **Run the component explorer**: `bun start` from the repo root. Every component has a live option editor, showing type, default, and current value for every option, editable in real time. The explorer itself is built with VBC; reading `demo/` shows how the primitives compose at scale.
+1. **Run the component explorer**: `bun start` from the repo root. Every component has its demo's code in an editor to change and run, beside its options, methods and events drawn from the source. The explorer itself is built with VBC; reading `demo/` shows how the primitives compose at scale.
 
 2. **Build your first app component**: Subclass `Component` with `build()` and wire reactive updates via subscribers or `this.options.subscribe()`. Start simple. Reach for `_setOption` only when coordination complexity demands it.
 
