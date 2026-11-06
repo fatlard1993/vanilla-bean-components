@@ -29,8 +29,9 @@ const loadStyleSheet = styleSheet => {
 		if (document.getElementById(id || scope)) return;
 
 		fetch(href)
-			.then(response => response.text())
-			.then(css => appendStyles(`${scope} { ${css} }`, id || scope));
+			.then(response => (response.ok ? response.text() : Promise.reject(new Error(`${href}: ${response.status}`))))
+			.then(css => appendStyles(`${scope} { ${css} }`, id || scope))
+			.catch(error => (globalThis.reportError ?? console.error)(error)); // eslint-disable-line no-console
 
 		return;
 	}
