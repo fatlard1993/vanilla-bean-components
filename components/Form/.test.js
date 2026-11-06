@@ -22,8 +22,9 @@ describe('Form', () => {
 		test('renders nothing extra when inputs array is empty', () => {
 			const form = new Form({ inputs: [], appendTo: container });
 
-			// No label/input pairs should have been created
-			expect(form.inputElements).toBeUndefined();
+			// No label/input pairs should have been created, and the store is there for inputs given later
+			expect(form.inputElements).toEqual({});
+			expect(form.options.data).toBeDefined();
 		});
 
 		test('renders a label for each input config entry', async () => {
@@ -624,5 +625,39 @@ describe('Form', () => {
 			form.options.data.show = true;
 			expect(groupElem.style.display).not.toBe('none');
 		});
+	});
+});
+
+describe('Form inputs given later', () => {
+	test('a form made without inputs takes them later', () => {
+		const form = new Form({ appendTo: container });
+
+		form.options.inputs = [{ key: 'name', value: 'x' }];
+
+		expect(form.inputElements.name).toBeDefined();
+		expect(form.options.data.name).toBe('x');
+	});
+
+	test("new inputs keep the form's own children after the fields", () => {
+		const submit = new Component({ tag: 'button', textContent: 'Save' });
+		const form = new Form({ inputs: [{ key: 'a' }], appendTo: container }, submit);
+
+		form.options.inputs = [{ key: 'b' }];
+
+		// eslint-disable-next-line testing-library/no-node-access
+		expect(form.elem.lastElementChild).toBe(submit.elem);
+		expect(form.inputElements.b).toBeDefined();
+	});
+
+	test('the announcer is live to assistive technology', () => {
+		const form = new Form({
+			inputs: [
+				{ key: 'a', type: 'checkbox', value: false },
+				{ key: 'b', condition: data => data.a },
+			],
+			appendTo: container,
+		});
+
+		expect(form._announcer.elem.getAttribute('aria-live')).toBe('polite');
 	});
 });

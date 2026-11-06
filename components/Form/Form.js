@@ -52,16 +52,18 @@ import { Label } from '../Label';
  */
 export default class Form extends Component {
 	build() {
-		if (!this.options.inputs?.length) return;
-
 		this.setStyle({ overflow: 'hidden auto' });
 
+		// The store exists whether or not there are inputs yet, so inputs given later have somewhere to write
 		const currentData = this.options.data ? { ...this.options.data } : {};
 		this.options.data?.destroy?.();
 		this.options.data = new Oxject(currentData);
 		this.replaceCleanup('formData', () => this.options.data?.destroy?.());
 
 		this._resetState();
+
+		if (!this.options.inputs?.length) return;
+
 		this._processInputs(this.options.inputs, this);
 		this._wireConditions();
 		this._setupAnnouncer();
@@ -80,6 +82,8 @@ export default class Form extends Component {
 				this._processInputs(value, this);
 				this._wireConditions();
 				this._setupAnnouncer();
+				// The form's own children (a submit button) come after the fields again
+				this.append(this.options.append);
 			},
 		},
 		// Data store managed by build()
@@ -180,8 +184,7 @@ export default class Form extends Component {
 	_setupAnnouncer() {
 		if (!this._conditionals.length) return;
 		this._announcer = new Elem({
-			'aria-live': 'polite',
-			'aria-atomic': 'true',
+			attributes: { 'aria-live': 'polite', 'aria-atomic': 'true' },
 			style: {
 				position: 'absolute',
 				width: '1px',
