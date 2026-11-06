@@ -48,6 +48,14 @@ const testEvent = {
 };
 
 describe('Calendar', () => {
+	let calendar;
+
+	afterEach(() => {
+		calendar?.destroy?.();
+		calendar = null;
+		document.body.replaceChildren();
+	});
+
 	describe('view: month', () => {
 		test('displays day-of-week headers', async () => {
 			new Calendar({ appendTo: container });
@@ -540,16 +548,6 @@ describe('Calendar', () => {
 			await findByText(container, testEvent.label);
 		});
 	});
-});
-
-describe('Calendar', () => {
-	let calendar;
-
-	afterEach(() => {
-		calendar?.destroy?.();
-		calendar = null;
-		document.body.replaceChildren();
-	});
 
 	// The view buttons, blocks and events are found by class: they have no role or name of their own to find them by
 	// eslint-disable-next-line testing-library/no-node-access
@@ -706,61 +704,61 @@ describe('Calendar', () => {
 			expect(onDayPress.mock.calls[0][0].detail.isTitle).toBe(true);
 		});
 	});
-});
 
-describe('Calendar events and weeks', () => {
-	test('a recurring event declares only what it needs', () => {
-		const at = new Date(2025, 2, 10, 9);
-		const calendar = new Calendar({
-			appendTo: container,
-			view: 'week',
-			year: 2025,
-			month: 2,
-			day: 12,
-			events: [
-				{ at, label: 'standup', recurring: true, daily: true, weekdays: { monday: true, wednesday: true } },
-				{ at, label: 'review', recurring: true, whitelist: [new Date(2025, 2, 14)] },
-			],
+	describe('events and weeks', () => {
+		test('a recurring event declares only what it needs', () => {
+			const at = new Date(2025, 2, 10, 9);
+			const calendar = new Calendar({
+				appendTo: container,
+				view: 'week',
+				year: 2025,
+				month: 2,
+				day: 12,
+				events: [
+					{ at, label: 'standup', recurring: true, daily: true, weekdays: { monday: true, wednesday: true } },
+					{ at, label: 'review', recurring: true, whitelist: [new Date(2025, 2, 14)] },
+				],
+			});
+
+			expect(calendar.eventsAt(new Date(2025, 2, 12)).map(event => event.label)).toEqual(['standup']);
+			expect(calendar.eventsAt(new Date(2025, 2, 14)).map(event => event.label)).toEqual(['review']);
+			expect(calendar.eventsAt(new Date(2025, 2, 13))).toEqual([]);
 		});
 
-		expect(calendar.eventsAt(new Date(2025, 2, 12)).map(event => event.label)).toEqual(['standup']);
-		expect(calendar.eventsAt(new Date(2025, 2, 14)).map(event => event.label)).toEqual(['review']);
-		expect(calendar.eventsAt(new Date(2025, 2, 13))).toEqual([]);
-	});
+		test('a week is seven consecutive days from Sunday, whatever the clock does', () => {
+			const calendar = new Calendar({ appendTo: container, view: 'week', year: 2025, month: 2, day: 12 });
+			// eslint-disable-next-line testing-library/no-node-access
+			const labels = Array.from(calendar.wrapper.elem.querySelectorAll('[aria-label]'), cell =>
+				cell.getAttribute('aria-label'),
+			);
 
-	test('a week is seven consecutive days from Sunday, whatever the clock does', () => {
-		const calendar = new Calendar({ appendTo: container, view: 'week', year: 2025, month: 2, day: 12 });
-		// eslint-disable-next-line testing-library/no-node-access
-		const labels = Array.from(calendar.wrapper.elem.querySelectorAll('[aria-label]'), cell =>
-			cell.getAttribute('aria-label'),
-		);
+			expect(labels).toEqual([
+				'Sunday, March 9',
+				'Monday, March 10',
+				'Tuesday, March 11',
+				'Wednesday, March 12',
+				'Thursday, March 13',
+				'Friday, March 14',
+				'Saturday, March 15',
+			]);
+		});
 
-		expect(labels).toEqual([
-			'Sunday, March 9',
-			'Monday, March 10',
-			'Tuesday, March 11',
-			'Wednesday, March 12',
-			'Thursday, March 13',
-			'Friday, March 14',
-			'Saturday, March 15',
-		]);
-	});
+		test('goToDay redraws when already in the day view', () => {
+			const calendar = new Calendar({ appendTo: container, view: 'day', year: 2025, month: 2, day: 12 });
 
-	test('goToDay redraws when already in the day view', () => {
-		const calendar = new Calendar({ appendTo: container, view: 'day', year: 2025, month: 2, day: 12 });
+			calendar.goToDay(new Date(2025, 2, 20));
 
-		calendar.goToDay(new Date(2025, 2, 20));
+			expect(calendar._title.elem.textContent).toContain('20');
+		});
 
-		expect(calendar._title.elem.textContent).toContain('20');
-	});
+		test('the line for now is drawn on today only', () => {
+			const past = new Calendar({ appendTo: container, view: 'day', year: 2020, month: 1, day: 3 });
+			const today = new Calendar({ appendTo: container, view: 'day' });
 
-	test('the line for now is drawn on today only', () => {
-		const past = new Calendar({ appendTo: container, view: 'day', year: 2020, month: 1, day: 3 });
-		const today = new Calendar({ appendTo: container, view: 'day' });
-
-		// eslint-disable-next-line testing-library/no-node-access
-		expect(past.elem.querySelector('.event-container > .now')).toBeNull();
-		// eslint-disable-next-line testing-library/no-node-access
-		expect(today.elem.querySelector('.event-container > .now')).not.toBeNull();
+			// eslint-disable-next-line testing-library/no-node-access
+			expect(past.elem.querySelector('.event-container > .now')).toBeNull();
+			// eslint-disable-next-line testing-library/no-node-access
+			expect(today.elem.querySelector('.event-container > .now')).not.toBeNull();
+		});
 	});
 });

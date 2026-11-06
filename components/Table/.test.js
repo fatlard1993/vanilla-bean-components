@@ -1,12 +1,6 @@
 import { Table } from '.';
 
 describe('Table', () => {
-	test('must render', async () => {
-		new Table({ appendTo: container, data: [], columns: [], footer: [] });
-	});
-});
-
-describe('Table', () => {
 	let table;
 
 	afterEach(() => {
@@ -84,67 +78,73 @@ describe('Table', () => {
 			expect(table.elem.querySelector('tfoot td').textContent).toBe('Total');
 		});
 	});
-});
 
-describe('Table sorting and data', () => {
-	const cells = table => Array.from(table.elem.querySelectorAll('tbody td'), td => td.textContent);
-	const settle = () => new Promise(resolve => setTimeout(resolve, 0));
+	describe('sorting and data', () => {
+		test('empty data, columns and footer render an empty table, not an error', () => {
+			table = new Table({ appendTo: container, data: [], columns: [], footer: [] });
 
-	test('pressing a sortable header reorders the rows shown and leaves the data as given', () => {
-		const data = [{ n: 2 }, { n: 1 }, { n: 3 }];
-		const table = new Table({ appendTo: container, columns: [{ key: 'n', content: 'N', sort: true }], data });
-
-		table.elem.querySelector('th').click();
-
-		expect(cells(table)).toEqual(['3', '2', '1']);
-		expect(data.map(({ n }) => n)).toEqual([2, 1, 3]);
-
-		table.elem.querySelector('th').click();
-
-		expect(cells(table)).toEqual(['1', '2', '3']);
-	});
-
-	test('a sortable header is pressed from the keyboard too, as a column header still', () => {
-		const table = new Table({
-			appendTo: container,
-			columns: [{ key: 'n', content: 'N', sort: true }],
-			data: [{ n: 2 }, { n: 1 }],
-		});
-		const th = table.elem.querySelector('th');
-
-		th.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
-
-		expect(cells(table)).toEqual(['2', '1']);
-		expect(th.tabIndex).toBe(0);
-		expect(th.hasAttribute('role')).toBe(false);
-	});
-
-	test('an initial sort applies to the rows', () => {
-		const table = new Table({
-			appendTo: container,
-			columns: ['n'],
-			data: [{ n: 2 }, { n: 1 }],
-			sortProperty: 'n',
-			sortDirection: 'asc',
+			expect(table.elem.querySelectorAll('td, th')).toHaveLength(0);
 		});
 
-		expect(cells(table)).toEqual(['1', '2']);
-	});
+		const cells = table => Array.from(table.elem.querySelectorAll('tbody td'), td => td.textContent);
+		const settle = () => new Promise(resolve => setTimeout(resolve, 0));
 
-	test('no data leaves no rows', () => {
-		const table = new Table({ appendTo: container, columns: ['n'], data: [{ n: 1 }] });
+		test('pressing a sortable header reorders the rows shown and leaves the data as given', () => {
+			const data = [{ n: 2 }, { n: 1 }, { n: 3 }];
+			const table = new Table({ appendTo: container, columns: [{ key: 'n', content: 'N', sort: true }], data });
 
-		table.options.data = null;
+			table.elem.querySelector('th').click();
 
-		expect(cells(table)).toEqual([]);
-	});
+			expect(cells(table)).toEqual(['3', '2', '1']);
+			expect(data.map(({ n }) => n)).toEqual([2, 1, 3]);
 
-	test('rendering again still shows the rows', async () => {
-		const table = new Table({ appendTo: container, columns: ['n'], data: [{ n: 1 }] });
+			table.elem.querySelector('th').click();
 
-		table.render();
-		await settle();
+			expect(cells(table)).toEqual(['1', '2', '3']);
+		});
 
-		expect(cells(table)).toEqual(['1']);
+		test('a sortable header is pressed from the keyboard too, as a column header still', () => {
+			const table = new Table({
+				appendTo: container,
+				columns: [{ key: 'n', content: 'N', sort: true }],
+				data: [{ n: 2 }, { n: 1 }],
+			});
+			const th = table.elem.querySelector('th');
+
+			th.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+
+			expect(cells(table)).toEqual(['2', '1']);
+			expect(th.tabIndex).toBe(0);
+			expect(th.hasAttribute('role')).toBe(false);
+		});
+
+		test('an initial sort applies to the rows', () => {
+			const table = new Table({
+				appendTo: container,
+				columns: ['n'],
+				data: [{ n: 2 }, { n: 1 }],
+				sortProperty: 'n',
+				sortDirection: 'asc',
+			});
+
+			expect(cells(table)).toEqual(['1', '2']);
+		});
+
+		test('no data leaves no rows', () => {
+			const table = new Table({ appendTo: container, columns: ['n'], data: [{ n: 1 }] });
+
+			table.options.data = null;
+
+			expect(cells(table)).toEqual([]);
+		});
+
+		test('rendering again still shows the rows', async () => {
+			const table = new Table({ appendTo: container, columns: ['n'], data: [{ n: 1 }] });
+
+			table.render();
+			await settle();
+
+			expect(cells(table)).toEqual(['1']);
+		});
 	});
 });

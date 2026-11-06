@@ -5,34 +5,6 @@ import { Elem } from '../../Elem';
 import { Menu } from '.';
 
 describe('Menu', () => {
-	test('must render items', async () => {
-		const items = [{ textContent: 'item1' }, { textContent: 'item2' }];
-
-		new Menu({ items, appendTo: container });
-
-		const listItems = await findAllByRole(container, 'menuitem');
-
-		listItems.forEach((item, index) => expect(item.textContent).toBe(items[index].textContent));
-	});
-
-	test('a click on an item, or on something inside one, presses it; a heading row does not', () => {
-		const press = mock();
-		const menu = new Menu({ items: [{ textContent: 'Rename' }], appendTo: container });
-		const [item] = getAllByRole(container, 'menuitem');
-		const inner = new Elem({ tag: 'li', textContent: 'nested', appendTo: new Elem({ tag: 'ul', appendTo: item }) });
-		const heading = new Elem({ tag: 'li', textContent: 'Files', attributes: { role: 'presentation' }, appendTo: menu });
-
-		menu.on({ targetEvent: 'itemPress', callback: press });
-
-		inner.elem.click();
-		heading.elem.click();
-
-		expect(press).toHaveBeenCalledTimes(1);
-		expect(press.mock.calls[0][0].detail.item).toBe(item);
-	});
-});
-
-describe('Menu', () => {
 	let menu;
 	let warnings;
 	const originalWarn = console.warn;
@@ -83,5 +55,31 @@ describe('Menu', () => {
 			expect(received.map(event => event.detail.event.type)).toEqual(['click', 'click']);
 			expect(received[0].detail.item).toBe(li);
 		});
+	});
+
+	test('must render items', async () => {
+		const items = [{ textContent: 'item1' }, { textContent: 'item2' }];
+
+		new Menu({ items, appendTo: container });
+
+		const listItems = await findAllByRole(container, 'menuitem');
+
+		listItems.forEach((item, index) => expect(item.textContent).toBe(items[index].textContent));
+	});
+
+	test('a click on an item, or on something inside one, presses it; a heading row does not', () => {
+		const press = mock();
+		const menu = new Menu({ items: [{ textContent: 'Rename' }], appendTo: container });
+		const [item] = getAllByRole(container, 'menuitem');
+		const inner = new Elem({ tag: 'li', textContent: 'nested', appendTo: new Elem({ tag: 'ul', appendTo: item }) });
+		const heading = new Elem({ tag: 'li', textContent: 'Files', attributes: { role: 'presentation' }, appendTo: menu });
+
+		menu.on({ targetEvent: 'itemPress', callback: press });
+
+		inner.elem.click();
+		heading.elem.click();
+
+		expect(press).toHaveBeenCalledTimes(1);
+		expect(press.mock.calls[0][0].detail.item).toBe(item);
 	});
 });
