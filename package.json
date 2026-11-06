@@ -24,6 +24,7 @@
 	"files": [
 		"/app/*.js",
 		"/app/*.d.ts",
+		"/app/README.md",
 		"!/app/*.test.js",
 		"/githooks/*",
 		"/templates/*",
@@ -149,7 +150,10 @@
 		"globals": "^17.7.0",
 		"lowdb": "^7.0.1",
 		"marked": ">=18",
-		"emoji-js": "^3.9.0"
+		"emoji-js": "^3.9.0",
+		"@testing-library/jest-dom": "^6.9.1",
+		"@happy-dom/global-registrator": "^21.0.4",
+		"happy-dom": "^21.0.4"
 	},
 	"peerDependenciesMeta": {
 		"lowdb": {
@@ -189,6 +193,15 @@
 			"optional": true
 		},
 		"emoji-js": {
+			"optional": true
+		},
+		"@testing-library/jest-dom": {
+			"optional": true
+		},
+		"@happy-dom/global-registrator": {
+			"optional": true
+		},
+		"happy-dom": {
 			"optional": true
 		}
 	},
