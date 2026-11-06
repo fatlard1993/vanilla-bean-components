@@ -64,7 +64,11 @@ export default class Icon extends Component {
 		// of animations aimed at the :before that draws the glyph, so the two are separable.
 		if (iconAnimation) this.addClass(`icon-animation-${iconAnimation}`);
 
-		const interactive = ['button', 'a', 'input', 'select', 'textarea'].includes(this.elem.tagName.toLowerCase());
+		// A control by its tag, or made one: pressable gives a role and a tab stop
+		const interactive =
+			['button', 'a', 'input', 'select', 'textarea'].includes(this.elem.tagName.toLowerCase()) ||
+			this.elem.hasAttribute('tabindex') ||
+			['button', 'link', 'tab', 'menuitem'].includes(this.elem.getAttribute('role'));
 		// The options are consulted as well as the element. This runs while options are still being
 		// applied, so a caller-supplied `aria-label` is not on the element yet -- reading only the
 		// element concluded the icon was unlabelled and hid it, leaving an icon carrying both a label

@@ -128,3 +128,28 @@ describe('Button', () => {
 		expect(() => new Button({ intent: 'error' })).toThrow('"error" is not a valid intent');
 	});
 });
+
+describe('Button on another tag', () => {
+	test('disabled, it says so and presses nothing', () => {
+		const onPointerPress = mock();
+		const button = new Button({ tag: 'div', textContent: 'go', disabled: true, onPointerPress, appendTo: container });
+
+		button.elem.click();
+
+		expect(button.elem.getAttribute('aria-disabled')).toBe('true');
+		expect(onPointerPress).not.toHaveBeenCalled();
+
+		button.options.disabled = false;
+		button.elem.click();
+
+		expect(button.elem.hasAttribute('aria-disabled')).toBe(false);
+		expect(onPointerPress).toHaveBeenCalledTimes(1);
+	});
+
+	test('an icon-only one is a control, not hidden from assistive technology', () => {
+		const button = new Button({ tag: 'div', icon: 'gear', appendTo: container });
+
+		expect(button.elem.getAttribute('role')).toBe('button');
+		expect(button.elem.hasAttribute('aria-hidden')).toBe(false);
+	});
+});

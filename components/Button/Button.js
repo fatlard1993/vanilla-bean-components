@@ -40,6 +40,17 @@ export default class Button extends TooltipWrapper {
 		tag: { default: 'button' },
 		variant: classEnum('variant', ['flat', 'chip', 'raised']),
 		intent: classEnum('intent', intents),
+		// A <button> is disabled by the browser; any other tag is told so for assistive technology, and swallows its clicks
+		disabled: {
+			set(value, next) {
+				if (this.elem.tagName === 'BUTTON') return next(value);
+
+				this.toggleClass('disabled', !!value);
+
+				if (value) this.elem.setAttribute('aria-disabled', 'true');
+				else this.elem.removeAttribute('aria-disabled');
+			},
+		},
 	};
 
 	// The class the theme gives a Button's look to, whatever the page does for bare buttons
@@ -50,5 +61,17 @@ export default class Button extends TooltipWrapper {
 	// A <button> presses by keyboard itself; on any other tag it's given the same
 	build() {
 		this.pressable();
+
+		// Ahead of every other listener on the element, so a disabled non-button presses nothing
+		this.elem.addEventListener(
+			'click',
+			event => {
+				if (this.elem.tagName === 'BUTTON' || this.elem.getAttribute('aria-disabled') !== 'true') return;
+
+				event.preventDefault();
+				event.stopImmediatePropagation();
+			},
+			{ capture: true, signal: this.signal },
+		);
 	}
 }
