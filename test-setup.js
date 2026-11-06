@@ -48,11 +48,16 @@ HTMLDialogElement.prototype.close = function () {
 	if (wasOpen) this.dispatchEvent(new Event('close'));
 };
 
-// happy dom doesn't support canvas yet
+// happy dom doesn't support canvas yet: a context that draws nothing, with every call a stroke makes
 HTMLCanvasElement.prototype.getContext = function () {
 	return {
+		beginPath: () => {},
 		closePath: () => {},
+		moveTo: () => {},
 		lineTo: () => {},
+		stroke: () => {},
+		fill: () => {},
+		fillRect: () => {},
 		clearRect: () => {},
 	};
 };

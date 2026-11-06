@@ -28,6 +28,7 @@ export default class Whiteboard extends Component {
 			set(value) {
 				this.elem.width = Number.parseInt(value);
 				this.elem.style.width = value;
+				this._redrawLines();
 			},
 		},
 		height: {
@@ -35,6 +36,7 @@ export default class Whiteboard extends Component {
 			set(value) {
 				this.elem.height = Number.parseInt(value);
 				this.elem.style.height = value;
+				this._redrawLines();
 			},
 		},
 		background: {
@@ -45,7 +47,7 @@ export default class Whiteboard extends Component {
 		},
 		lines: {
 			set(value) {
-				value.forEach(line => this.drawLine(line));
+				(value ?? []).forEach(line => this.drawLine(line));
 			},
 		},
 		// Drawing config read from this.options during draw interactions
@@ -85,9 +87,10 @@ export default class Whiteboard extends Component {
 				this.drawEvent(event);
 			},
 			up: (event, { line }) => {
-				this.emit('line', { event, color: this.options.color, width: this.options.lineWidth, line });
+				// A tap, with no move between down and up, is a dot where it landed
+				if (line.length === 1) this.drawEvent(event, true);
 
-				if (line.length === 0) this.drawEvent(event, true);
+				this.emit('line', { event, color: this.options.color, width: this.options.lineWidth, line });
 			},
 			// `??`, not `||`: 0 is a legitimate throttle meaning "draw every move event", and `||`
 			// discarded it in favour of the derived rate -- so the one value a caller reaching for
@@ -99,7 +102,7 @@ export default class Whiteboard extends Component {
 	}
 
 	getPosition({ offsetX, offsetY }) {
-		return { x: offsetX.toFixed(3), y: offsetY.toFixed(3) };
+		return { x: Math.round(offsetX * 1000) / 1000, y: Math.round(offsetY * 1000) / 1000 };
 	}
 
 	interactionInit(event) {
@@ -157,6 +160,11 @@ export default class Whiteboard extends Component {
 		line.forEach(({ x, y }) => this.canvas.lineTo(x, y));
 		this.canvas.stroke();
 		if (cap) this.canvas.closePath();
+	}
+
+	// Sizing the canvas blanks it; the lines it was given are drawn again
+	_redrawLines() {
+		if (this.rendered) (this.options.lines ?? []).forEach(line => this.drawLine(line));
 	}
 
 	/**
