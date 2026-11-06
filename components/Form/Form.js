@@ -254,8 +254,6 @@ export default class Form extends Component {
 	 * @returns {boolean} True if validation errors exist, false if all visible inputs are valid
 	 */
 	hasErrors(options) {
-		if (!this.inputElements) return false;
-
 		this.commitPendingEdit();
 
 		const hiddenKeys = new Set(
