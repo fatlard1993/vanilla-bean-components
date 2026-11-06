@@ -1102,17 +1102,17 @@ export declare function orderBy(orders: Record<string, any> | Record<string, any
 /** Read a date from a Date, a timestamp or a string. A date-only string (2026-10-18) is that day where the reader is, not midnight UTC, which is the day before anywhere west of Greenwich. */
 export declare function parseDate(value: Date | number | string): Date | null;
 
-/** @type {(min: number, max: number) => number} Generate a random number from a range (min inclusive, max exclusive) */
-export declare const rand: (min: number, max: number) => number;
+/** @type {(min?: number, max?: number) => number} Generate a random number from a range (min inclusive, max exclusive) */
+export declare const rand: (min?: number, max?: number) => number;
 
-/** @type {(array: Array) => number} Choose a random item from an array */
-export declare const randFromArray: (array: Array<any>) => number;
+/** @type {<T>(array: Array<T>) => T} Choose a random item from an array */
+export declare const randFromArray: <T>(array: Array<T>) => T;
 
-/** @type {(min: number, max: number) => number} Generate a random integer from a range (min & max inclusive) */
-export declare const randInt: (min: number, max: number) => number;
+/** @type {(min?: number, max?: number) => number} Generate a random integer from a range (min & max inclusive), given either way round */
+export declare const randInt: (min?: number, max?: number) => number;
 
 /** Get the current text from the clipboard */
-export declare function readClipboard(): Promise<string>;
+export declare function readClipboard(): Promise<string | false>;
 
 /** Read a file's contents. */
 export declare function readFile(
