@@ -10,7 +10,7 @@ describe('Menu', () => {
 
 		new Menu({ items, appendTo: container });
 
-		const listItems = await findAllByRole(container, 'listitem');
+		const listItems = await findAllByRole(container, 'menuitem');
 
 		listItems.forEach((item, index) => expect(item.textContent).toBe(items[index].textContent));
 	});
@@ -18,7 +18,7 @@ describe('Menu', () => {
 	test('a click on an item, or on something inside one, presses it; a heading row does not', () => {
 		const press = mock();
 		const menu = new Menu({ items: [{ textContent: 'Rename' }], appendTo: container });
-		const [item] = getAllByRole(container, 'listitem');
+		const [item] = getAllByRole(container, 'menuitem');
 		const inner = new Elem({ tag: 'li', textContent: 'nested', appendTo: new Elem({ tag: 'ul', appendTo: item }) });
 		const heading = new Elem({ tag: 'li', textContent: 'Files', attributes: { role: 'presentation' }, appendTo: menu });
 
@@ -56,7 +56,7 @@ describe('Menu', () => {
 
 			expect(warnings.filter(warning => warning.includes('onItemPress'))).toEqual([]);
 
-			const [li] = getAllByRole(menu.elem, 'listitem');
+			const [li] = getAllByRole(menu.elem, 'menuitem');
 			li.click();
 
 			expect(received.length).toBe(1);
@@ -74,7 +74,7 @@ describe('Menu', () => {
 				appendTo: document.body,
 			});
 
-			const [li] = getAllByRole(menu.elem, 'listitem');
+			const [li] = getAllByRole(menu.elem, 'menuitem');
 			li.focus();
 			menu.elem.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
 			menu.elem.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));

@@ -7,6 +7,7 @@ module.exports = {
 	lang: 'en_US',
 	skipWords: [
 		'resized',
+		'menuitem',
 		'pid',
 		'ps',
 		'samp',

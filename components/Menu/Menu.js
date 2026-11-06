@@ -53,7 +53,11 @@ export default class Menu extends StyledList {
 			set(value, next) {
 				next(value);
 				if (!value) return;
-				itemsOf(this.elem).forEach((li, i) => li.setAttribute('tabindex', i === 0 ? '0' : '-1'));
+				// A menu's rows are menu items, not list items, to assistive technology
+				itemsOf(this.elem).forEach((li, i) => {
+					li.setAttribute('tabindex', i === 0 ? '0' : '-1');
+					if (!li.hasAttribute('role')) li.setAttribute('role', 'menuitem');
+				});
 			},
 		},
 	};
