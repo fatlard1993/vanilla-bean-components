@@ -8,6 +8,7 @@ module.exports = {
 	skipWords: [
 		'resized',
 		'menuitem',
+		'filesystem',
 		'pid',
 		'ps',
 		'samp',

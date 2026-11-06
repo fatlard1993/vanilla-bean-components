@@ -60,6 +60,9 @@ export const serveStatic = async (request, { root = 'client/build', packages = [
 		return;
 	}
 
+	// No file has a NUL in its name; asked of the filesystem it throws
+	if (path.includes('\0')) return;
+
 	const built = await fileWithin(root, path);
 
 	if (built) return new Response(built);
