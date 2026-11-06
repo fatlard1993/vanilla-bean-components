@@ -138,14 +138,8 @@ class ColorPicker extends StyledInput {
 
 				this.pickerArea?.elem && (this.pickerArea.elem.style.backgroundColor = `hsl(${this.hue}, 100%, 50%)`);
 
-				const tryPosition = () => {
-					if (this.pickerArea?.elem?.clientWidth > 0) {
-						this._positionIndicators();
-					} else {
-						requestAnimationFrame(tryPosition);
-					}
-				};
-				requestAnimationFrame(tryPosition);
+				// Laid out, the indicators move now; not yet (a closed dialog, a hidden tab), the size observer places them
+				if (this.pickerArea?.elem?.clientWidth > 0) this._positionIndicators();
 			},
 		},
 		onChange: { default: () => {} },
@@ -193,11 +187,9 @@ class ColorPicker extends StyledInput {
 			appendTo: this.pickerArea,
 		});
 
+		// Kept for the picker's life: hidden and shown again, or resized, the indicators find their place
 		const sizeObserver = new ResizeObserver(() => {
-			if (this.pickerArea.elem.clientWidth > 0) {
-				this._positionIndicators();
-				sizeObserver.disconnect();
-			}
+			if (this.pickerArea.elem.clientWidth > 0) this._positionIndicators();
 		});
 		sizeObserver.observe(this.pickerArea.elem);
 		this.addCleanup('sizeObserver', () => sizeObserver.disconnect());
@@ -212,7 +204,12 @@ class ColorPicker extends StyledInput {
 	 * @param {string|object} value - New color value (CSS string, HSL object, or 'random')
 	 */
 	change(value) {
-		this.options.value = this.parseValue(value).hslString;
+		const parsed = this.parseValue(value);
+
+		// Half-typed text is not a color yet: left as typed, until it is
+		if (typeof value !== 'object' && value !== 'random' && !parsed.color.isValid) return;
+
+		this.options.value = parsed.hslString;
 
 		this.elem.dispatchEvent(new CustomEvent('change', { detail: { value: this.options.value } }));
 	}

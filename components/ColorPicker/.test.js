@@ -48,3 +48,17 @@ describe('ColorSwatch', () => {
 		expect(button.style.backgroundColor).not.toBe('');
 	});
 });
+
+describe('ColorPicker typed values', () => {
+	test('half-typed text is not taken for a color', () => {
+		const picker = new ColorPicker({ value: 'hsl(120, 50%, 50%)', appendTo: container });
+
+		picker.change('#f');
+
+		expect(picker.options.value).toBe('hsl(120, 50%, 50%)');
+
+		picker.change('#ff0000');
+
+		expect(picker.options.value).toBe('hsl(0, 100%, 50%)');
+	});
+});
