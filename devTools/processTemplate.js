@@ -19,14 +19,18 @@ const codeCell = str => {
  */
 export function processTemplate(templateContent, componentPath = '.') {
 	// Replace extraction commands that start with known command words
-	return templateContent.replace(/\[\[(extract-[\w-]+|import)\s+([^\]]+)\]\]/g, (match, command, args) => {
-		try {
-			return processCommand(`${command} ${args}`.trim(), componentPath);
-		} catch (error) {
-			console.warn(`Failed to process command "${command} ${args}":`, error.message);
-			return match; // Return original if processing fails
-		}
-	});
+	// An import may be followed by /pattern/flags, the part of the file to import
+	return templateContent.replace(
+		/\[\[(extract-[\w-]+|import)\s+([^\]]+)\]\](\/(?:[^/\n\\]|\\.)+\/[gimsuy]*)?/g,
+		(match, command, args, pattern = '') => {
+			try {
+				return processCommand(`${command} ${args} ${pattern}`.trim(), componentPath);
+			} catch (error) {
+				console.warn(`Failed to process command "${command} ${args}":`, error.message);
+				return match; // Return original if processing fails
+			}
+		},
+	);
 }
 
 /**
@@ -175,7 +179,7 @@ function extractMethodsMarkdown(filePath) {
 
 		// Returns
 		if (method.returns) {
-			markdown += `**Returns:** \`${method.returns.type}\` - ${method.returns.description}\n\n`;
+			markdown += `**Returns:** \`${method.returns.type}\`${method.returns.description ? ` - ${method.returns.description}` : ''}\n\n`;
 		}
 	});
 

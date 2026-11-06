@@ -210,8 +210,8 @@ export function parseJSDocBlock(jsdoc) {
 		};
 	});
 
-	// Extract return information - type only; description is not used in type generation.
-	const returnMatch = jsdoc.match(/^\s*\*\s*@returns?\s+\{((?:[^{}]|\{[^{}]*\})+)\}/m);
+	// The type, for the generated types; the description, for the generated docs
+	const returnMatch = jsdoc.match(/^\s*\*\s*@returns?\s+\{((?:[^{}]|\{[^{}]*\})+)\}\s*-?\s*([^\n]*)/m);
 
 	// A one-line `@type {...} description` block, as for an arrow function typed whole
 	const typeMatch = jsdoc.match(/@type\s+\{((?:[^{}]|\{[^{}]*\})+)\}\s*([^@]*)/);
@@ -219,7 +219,7 @@ export function parseJSDocBlock(jsdoc) {
 	return {
 		description: description || (typeMatch?.[2].replace(/\s*\*\s*/g, ' ').trim() ?? ''),
 		parameters,
-		returns: returnMatch ? { type: returnMatch[1].trim() } : null,
+		returns: returnMatch ? { type: returnMatch[1].trim(), description: returnMatch[2].trim() } : null,
 		type: typeMatch?.[1].trim() ?? null,
 	};
 }
