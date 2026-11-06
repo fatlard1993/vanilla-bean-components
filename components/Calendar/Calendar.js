@@ -400,7 +400,7 @@ class Calendar extends StyledComponent {
 	static prepareOptions(options) {
 		return {
 			...options,
-			events: options.events.map(eventItem => new CalendarEvent(eventItem)),
+			events: (options.events ?? []).map(eventItem => new CalendarEvent(eventItem)),
 		};
 	}
 
@@ -538,32 +538,34 @@ class Calendar extends StyledComponent {
 			});
 		});
 
-		new DayNowIndicator({
-			style: { top: `${(new Date().getHours() * 2 + new Date().getMinutes() / 30) * 3}em` },
-			appendTo: eventContainer,
-		});
+		// The line for now, on the day it is now
+		if (this.isToday(new Date(this.options.year, this.options.month, this.options.day))) {
+			new DayNowIndicator({
+				addClass: 'now',
+				style: { top: `${(new Date().getHours() * 2 + new Date().getMinutes() / 30) * 3}em` },
+				appendTo: eventContainer,
+			});
+		}
 	}
 
 	renderWeek() {
 		this.removeClass('month', 'day');
 		this.addClass('week');
 
-		const dayMs = 1000 * 60 * 60 * 24;
 		const now = new Date();
 		const day = new Date(this.options.year, this.options.month, this.options.day);
-		const firstDay = new Date(day.getTime() - day.getDay() * dayMs);
-		const lastDay = new Date(firstDay.getTime() + 6 * dayMs);
+		// Counted in days, not milliseconds: a day across a clock change is not 24 hours long
+		const firstDay = new Date(day.getFullYear(), day.getMonth(), day.getDate() - day.getDay());
+		const lastDay = new Date(firstDay.getFullYear(), firstDay.getMonth(), firstDay.getDate() + 6);
 
-		let cDay = new Date(firstDay.getTime());
 		const cells = [];
 
 		for (let x = 0; x < 7; ++x) {
-			const y = cDay.getFullYear();
-			const m = cDay.getMonth();
-			const d = cDay.getDate();
-			const t = cDay.getTime();
+			const cellDate = new Date(firstDay.getFullYear(), firstDay.getMonth(), firstDay.getDate() + x);
+			const y = cellDate.getFullYear();
+			const m = cellDate.getMonth();
+			const d = cellDate.getDate();
 
-			const cellDate = new Date(y, m, d);
 			const events = this.eventsAt(cellDate);
 			const isToday = y === now.getFullYear() && m === now.getMonth() && d === now.getDate();
 
@@ -588,8 +590,6 @@ class Calendar extends StyledComponent {
 			for (const calendarEvent of events) this.renderEvent(calendarEvent, weekdayCell);
 
 			cells.push(weekdayCell.elem);
-
-			cDay = new Date(t + dayMs);
 		}
 
 		this._rove(cells, 1, cells[day.getDay()]);
@@ -903,7 +903,9 @@ class Calendar extends StyledComponent {
 
 		this.setDate(date.getFullYear(), date.getMonth(), date.getDate());
 
-		this.setView('day');
+		// Already in the day view, the view's setter has nothing to redraw
+		if (this.options.view === 'day') this._redraw();
+		else this.setView('day');
 	}
 
 	/**

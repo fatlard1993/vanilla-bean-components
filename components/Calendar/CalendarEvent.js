@@ -33,9 +33,9 @@ export default class CalendarEvent {
 		this.duration = data.duration;
 		this.recurring = data.recurring;
 		this.daily = data.daily;
-		this.whitelist = data.whitelist;
-		this.blacklist = data.blacklist;
-		this.weekdays = data.weekdays;
+		this.whitelist = data.whitelist ?? [];
+		this.blacklist = data.blacklist ?? [];
+		this.weekdays = data.weekdays ?? {};
 		this.year = this.at.getFullYear();
 		this.month = this.at.getMonth() + 1;
 		this.day = this.at.getDate();
