@@ -560,18 +560,47 @@ class Component extends Elem {
 	}
 
 	/**
-	 * Removes all child elements after running cleanup on descendant components.
+	 * Every component inside this one's element, nested in plain elements or not, outermost first.
+	 * @returns {Component[]} The descendants
+	 * @private
+	 */
+	_descendants() {
+		return Array.from(this.elem.querySelectorAll('*'), node => node._component).filter(Boolean);
+	}
+
+	/**
+	 * Runs everything this component owes: its cleanup, then what waits for destroy (its element's listeners, its
+	 * styles). For a component that is gone for good, however it went.
+	 * @private
+	 */
+	_discard() {
+		this.processCleanup();
+		if (this._destroyCleanup) this.processCleanup(this._destroyCleanup);
+	}
+
+	/**
+	 * Removes all child elements. A component among them that is not back in the document, or in this element, by the
+	 * end of the current task is gone for good and is cleaned up, listeners and styles included. One that is put back
+	 * by then (a re-render appends `append` again, a Toolbar keeps its heading) was moved, not discarded, and keeps
+	 * its options and listeners, as a move within the document is not a disconnect.
 	 * @returns {this} The component instance
 	 */
 	empty() {
-		const cleanupDescendants = element => {
-			for (const child of Array.from(element.children)) {
-				cleanupDescendants(child);
-				child._component?.processCleanup?.();
-			}
-		};
-		cleanupDescendants(this.elem);
+		const removed = this._descendants();
+
 		this.elem.replaceChildren();
+
+		if (removed.length > 0) {
+			queueMicrotask(() => {
+				// Innermost first, as destroy() goes
+				for (const component of removed.reverse()) {
+					if (component.elem.isConnected || this.elem.contains(component.elem)) continue;
+
+					component._discard();
+				}
+			});
+		}
+
 		return this;
 	}
 
@@ -586,7 +615,7 @@ class Component extends Elem {
 		if (!this._abortController || this._abortController.signal.aborted) {
 			const controller = (this._abortController = new AbortController());
 
-			this.addCleanup('signal', () => controller.abort());
+			this.replaceCleanup('signal', () => controller.abort());
 		}
 
 		return this._abortController.signal;
@@ -661,25 +690,8 @@ class Component extends Elem {
 	 * @param {boolean} [rootCleanup] - Whether to recursively clean up child components
 	 */
 	processCleanup(cleanup = this.cleanup || {}, rootCleanup = false) {
-		if (rootCleanup) {
-			const cleanups = [];
-			const collectCleanups = children => {
-				children.forEach(child => {
-					if (!child) return;
-
-					if (child.cleanup) cleanups.push(child);
-
-					collectCleanups(child.children);
-				});
-			};
-
-			collectCleanups(this.children);
-
-			cleanups.forEach(child => {
-				child.processCleanup();
-				if (child._destroyCleanup) child.processCleanup(child._destroyCleanup);
-			});
-		}
+		// Every component inside, nested in plain elements or not, innermost first
+		if (rootCleanup) for (const component of this._descendants().reverse()) component._discard();
 
 		const fns = Object.values(cleanup);
 		for (const key in cleanup) delete cleanup[key];
@@ -701,10 +713,7 @@ class Component extends Elem {
 	 */
 	destroy() {
 		// Innermost first: a component's own disconnect runs its descendants' cleanup, which takes their listeners away
-		const watching = [
-			...Array.from(this.elem?.querySelectorAll('*') ?? [], node => node._component).reverse(),
-			this,
-		].filter(component => component?.elemObserver);
+		const watching = [...this._descendants().reverse(), this].filter(component => component.elemObserver);
 		const wasConnected = Boolean(this.elem?.isConnected);
 
 		// Their observers are let go first, so the removal below reports nothing and this is the only disconnect

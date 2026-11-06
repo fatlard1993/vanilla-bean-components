@@ -8,6 +8,8 @@ Component extends Elem with a lifecycle and reactive options. The design goal is
 
 - `render()` empties the element completely before calling `build()`; there is no diff, no patch, no partial update. The element fully reflects current options state after every render
   - does calling render() twice leave exactly one copy of the built structure, not two?
+- a child given through `append` is put back by the re-render, so it was moved, not discarded: its options stay alive
+  - new Subject({ textContent: "a" }) captures kid then new Subject({ append: kid, appendTo: document.body }) captures parent then parent.render() then await new Promise(r => setTimeout(r, 0)) then (kid.options.textContent = "b") -> kid.elem.textContent === "b" && parent.elem.contains(kid.elem)
 
 ## Options are a reactive Oxject instance, not a plain object
 

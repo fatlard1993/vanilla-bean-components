@@ -1227,6 +1227,96 @@ describe('Component', () => {
 		});
 	});
 
+	describe('what empty() and a re-render discard', () => {
+		const settle = () => new Promise(resolve => setTimeout(resolve, 0));
+
+		test('a child given through append is put back by the re-render, so it keeps its options and listeners', async () => {
+			const onPointerPress = mock();
+			const kid = new Component({ textContent: 'a', onPointerPress });
+			const parent = new Component({ appendTo: container, append: kid });
+
+			parent.render();
+			await settle();
+			kid.options.textContent = 'b';
+			kid.elem.click();
+
+			expect(parent.elem.contains(kid.elem)).toBe(true);
+			expect(kid.options.isDestroyed).toBe(false);
+			expect(kid.elem.textContent).toBe('b');
+			expect(onPointerPress).toHaveBeenCalledTimes(1);
+		});
+
+		test('a child built fresh each render is gone with the render that built it, styles and listeners too', async () => {
+			let presses = 0;
+			let first;
+
+			class Parent extends Component {
+				build() {
+					first ??= new Component({ appendTo: this, styles: () => 'color: red;', onPointerPress: () => presses++ });
+					// eslint-disable-next-line testing-library/no-node-access
+					if (this.rendered === false && first.elem.parentElement !== this.elem) {
+						new Component({ appendTo: this, styles: () => 'color: red;' });
+					}
+				}
+			}
+
+			const parent = new Parent({ appendTo: container });
+			// eslint-disable-next-line testing-library/no-node-access
+			const styleTags = () => document.head.querySelectorAll('style').length;
+			const before = styleTags();
+
+			parent.render();
+			await settle();
+			first.elem.click();
+
+			expect(first.options.isDestroyed).toBe(true);
+			expect(presses).toBe(0);
+			expect(styleTags()).toBe(before);
+		});
+
+		test('a parent never in the document still cleans up what its re-render replaced', async () => {
+			const cleanup = mock();
+
+			class Parent extends Component {
+				build() {
+					new Component({ appendTo: this }).addCleanup('probe', cleanup);
+				}
+			}
+
+			const parent = new Parent({ autoRender: false });
+
+			parent.render();
+			parent.render();
+			await settle();
+
+			expect(cleanup).toHaveBeenCalledTimes(1);
+		});
+
+		test('empty() leaves alone what is put back before the task ends', async () => {
+			const kept = new Component({ textContent: 'kept' });
+			const parent = new Component({ appendTo: container, append: kept });
+
+			parent.empty();
+			parent.append(kept);
+			await settle();
+			kept.options.textContent = 'still kept';
+
+			expect(kept.elem.textContent).toBe('still kept');
+		});
+
+		test('destroy() reaches a component nested in a plain element', () => {
+			const cleanup = mock();
+			const parent = new Component({ appendTo: container });
+			const wrapper = document.createElement('div');
+
+			parent.elem.append(wrapper);
+			new Component({ appendTo: wrapper }).addCleanup('probe', cleanup);
+			parent.destroy();
+
+			expect(cleanup).toHaveBeenCalledTimes(1);
+		});
+	});
+
 	describe('destroy', () => {
 		const settle = () => new Promise(resolve => setTimeout(resolve, 0));
 

@@ -263,7 +263,7 @@ CSS is scope-wrapped and injected as a scoped <style> tag. No preprocessing.
 ```
 render()
   ├─ if (this.rendered)   ← re-render only: clears children, runs descendant cleanup
-  │     empty()
+  │     empty()           what isn't put back by the end of the task is cleaned up
   │     this.rendered = false
   ├─ build()              ← subclass structural hook, runs before options are applied
   ├─ _processOptions()    ← routes every option through _setOption()
@@ -349,7 +349,7 @@ There is deliberately no `derive` descriptor. When one option's value depends on
 - **Read-time** - normalize where the value is consumed. Right when the option accepts shorthand and can change reactively; construction and reactive assignment then share one path (Table normalizes string columns inside `_renderTable`).
 - **Change-time** - recompute inside the source key's `set`. Right when a change to one option must immediately update dependent state (Table's `sortDirection` re-sorts `data`).
 
-**`empty()` only runs on re-render.** On the initial render it is skipped. On subsequent `render()` calls it removes all child elements and runs cleanup on all descendant components before the DOM is cleared.
+**`empty()` only runs on re-render.** On the initial render it is skipped. On subsequent `render()` calls it removes all child elements; a component among them that is not back in the element, or elsewhere in the document, by the end of the task is gone for good and is cleaned up, listeners and styles included. One the render puts back (everything in `append`, a child a setter re-appends) was moved, not discarded, and keeps its options and listeners.
 
 **`async build()` is not supported.** `render()` does not await `build()`'s return value. Asynchronous initialization belongs in `onConnected`.
 

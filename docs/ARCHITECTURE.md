@@ -117,7 +117,7 @@ class Card extends Component {
 
 ### empty() only runs on re-render
 
-`empty()` is gated by `if (this.rendered)`. On the very first render it is skipped entirely. On subsequent calls to `render()` it removes all child elements and runs `processCleanup` on all descendant components before clearing the DOM.
+`empty()` is gated by `if (this.rendered)`. On the very first render it is skipped entirely. On subsequent calls to `render()` it removes all child elements, and decides what it discarded at the end of the task: a component that is back in the element (everything in `append`, a child a setter re-appends) or elsewhere in the document was moved and keeps its options and listeners; one that is not is cleaned up, listeners and styles included. This is the rule the connection observer already applies to a move within the document, so a re-render never kills what it puts back.
 
 ---
 
@@ -250,7 +250,7 @@ this.styles(value)
                 (or updates existing element if id already present)
 ```
 
-Cleanup removes the `<style>` element by ID when the component is destroyed or the styles option is replaced.
+Cleanup removes the `<style>` element by ID when the component is destroyed, or discarded by a parent's re-render; the styles option replaced rewrites the same element.
 
 ---
 

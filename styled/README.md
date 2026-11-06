@@ -326,4 +326,4 @@ const StyledCustom = styled(MyCustomComponent, () => 'color: blue;');
 
 Class-level styles injected by `styled()` persist for the page lifetime. They are scoped to a unique class and do not interfere with other components, but are not removed when instances disconnect.
 
-Per-instance styles set via the `styles` option on a component instance are cleaned up when that component disconnects from the DOM.
+Per-instance styles set via the `styles` option on a component instance are removed when the component is destroyed, or discarded by a parent's re-render; a disconnect alone leaves them, so a component moved back into the page keeps its look.
