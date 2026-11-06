@@ -69,6 +69,8 @@ export const buildClient = async ({
 		minify: production,
 		sourcemap: production ? 'none' : 'linked',
 		publicPath,
+		// A failed build is a result to report and watch past, not a rejection: Bun throws one by default
+		throw: false,
 		...options,
 		define: {
 			'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development'),

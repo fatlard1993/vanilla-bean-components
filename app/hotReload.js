@@ -12,6 +12,7 @@ const state = (globalThis[Symbol.for('@vanilla-bean/components/app/hotReload')] 
 	buildOptions: undefined,
 	inputs: new Set(),
 	pendingRebuild: undefined,
+	building: Promise.resolve(),
 });
 
 // The asText plugin writes, then removes, a placeholder beside each import while it builds, and reads the file named
@@ -45,6 +46,10 @@ const rebuild = async () => {
 
 	return result;
 };
+
+// One build at a time in the one outdir: a save during a build waits for it. An error leaves the watcher watching.
+const queueRebuild = () =>
+	(state.building = state.building.then(rebuild).catch(error => console.error('Rebuild failed', error)));
 
 /**
  * Development hot reload: rebuild the client when a file it was built from changes, then reload every page that loaded
@@ -89,7 +94,7 @@ export const hotReload = {
 		const root = process.cwd();
 		const scheduleRebuild = () => {
 			clearTimeout(state.pendingRebuild);
-			state.pendingRebuild = setTimeout(rebuild, quietTime);
+			state.pendingRebuild = setTimeout(queueRebuild, quietTime);
 		};
 
 		const current = {};
