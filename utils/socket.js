@@ -11,7 +11,7 @@ const MAX_DELAY = 10_000;
  * socket.send({ type: 'join' });
  * @param {string} [path] - Path on this host, or a full ws(s) URL; a path goes over wss on an https page
  * @param {object} [options] - Options
- * @param {Function} [options.onLost] - Called once when a connection that was open drops
+ * @param {Function} [options.onLost] - Called once per outage: when the connection drops, or can't be made
  * @param {Function} [options.onRestored] - Called once when it's open again
  * @returns {object} `send`, `onMessage`, `addEventListener`, `removeEventListener`, `close`, and `readyState`
  */
@@ -41,8 +41,9 @@ export const connectSocket = (path = '/ws', { onLost, onRestored } = {}) => {
 			}
 		});
 
-		socket.addEventListener('close', () => {
-			if (closed) return;
+		socket.addEventListener('close', event => {
+			// The close of a socket already replaced (reconnectNow while it was closing) is not this connection's
+			if (closed || event.target !== socket) return;
 
 			// Said once per outage, not once per attempt
 			if (!lost) {
