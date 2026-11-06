@@ -1650,3 +1650,13 @@ describe('classEnum', () => {
 		expect(seen[0]).toEqual(['b', true]);
 	});
 });
+
+describe('Component styles option', () => {
+	test('a CSS string is scoped and injected like a theme function', () => {
+		const comp = new Component({ styles: 'color: red;', appendTo: container });
+
+		// eslint-disable-next-line testing-library/no-node-access
+		expect(document.getElementById(comp.uniqueId)?.textContent).toContain('color: red');
+		comp.destroy();
+	});
+});

@@ -843,6 +843,11 @@ class Component extends Elem {
 			this.setStyle(styles);
 			return;
 		}
+		if (typeof styles === 'string') {
+			const css = styles;
+
+			styles = () => css;
+		}
 
 		const themedStyles = themeStyles({ styles, scope: `.${this.uniqueId}` });
 
