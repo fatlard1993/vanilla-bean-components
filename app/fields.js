@@ -141,8 +141,13 @@ export const validateFields = (fields, data, { partial = false } = {}) => {
 			throw new ValidationError(`${name}: ${error.message}`);
 		}
 
-		if (spec.required && (result[name] === '' || result[name] === null))
-			throw new ValidationError(`${name} is required`);
+		const empty =
+			result[name] === '' ||
+			result[name] === null ||
+			(Array.isArray(result[name]) && result[name].length === 0) ||
+			(isPlainObject(result[name]) && Object.keys(result[name]).length === 0);
+
+		if (spec.required && empty) throw new ValidationError(`${name} is required`);
 
 		const [message] = [spec.validate]
 			.flat()
