@@ -2,6 +2,7 @@ import { capitalize, orderBy } from '../../utils';
 import theme from '../../theme';
 import { Elem } from '../../Elem';
 import { Component } from '../../Component';
+import { pressable } from '../../Component/pressable';
 import { Icon } from '../Icon';
 
 const ownsContent = cell => ['content', 'textContent', 'innerHTML', 'append'].some(key => cell?.[key] !== undefined);
@@ -34,15 +35,13 @@ class Table extends Component {
 
 	static schema = {
 		tag: { default: 'table' },
+		// The rows are sorted as they are drawn, leaving the caller's data in its order; with onSort the caller sorts
 		sortDirection: {
 			enum: ['asc', 'desc'],
 			set(value) {
 				if (!this.rendered) return;
 				if (this.options.onSort) this.options.onSort(this.options.sortProperty, value);
-				else
-					this.options.data = this.options.data.sort(
-						orderBy({ property: this.options.sortProperty, direction: value }),
-					);
+				else this._renderTable();
 			},
 		},
 		data: {
@@ -71,6 +70,11 @@ class Table extends Component {
 		onSort: {},
 	};
 
+	build() {
+		// Built afresh by each render: the last render's sections went with it
+		this.thead = this.tbody = this.tfoot = null;
+	}
+
 	_renderTable() {
 		const value = this.options.data;
 		// Columns and footer accept string shorthand - normalized at read time so
@@ -90,8 +94,6 @@ class Table extends Component {
 		this._sortSubscribers?.forEach(sub => sub.destroy?.());
 		this._sortSubscribers = null;
 
-		if (!value) return;
-
 		if (this.thead) this.thead.empty();
 		else this.thead = new Elem({ tag: 'thead', appendTo: this });
 
@@ -100,6 +102,15 @@ class Table extends Component {
 
 		if (this.tfoot) this.tfoot.empty();
 		else this.tfoot = new Elem({ tag: 'tfoot', appendTo: this });
+
+		// No data: an empty table, not the last data's rows
+		if (!value) return;
+
+		const { sortProperty, sortDirection, onSort } = this.options;
+		const rows =
+			sortProperty && sortDirection && !onSort
+				? [...value].sort(orderBy({ property: sortProperty, direction: sortDirection }))
+				: value;
 
 		this._sortSubscribers = [];
 		this.replaceCleanup('sortSubscribers', () => this._sortSubscribers?.forEach(sub => sub.destroy?.()));
@@ -114,6 +125,9 @@ class Table extends Component {
 					const th = new Component({ tag: 'th', ...columnOptions, scope: 'col' });
 
 					if (sort) {
+						// Pressed from the keyboard too, keeping its own role of column header
+						th.replaceDestroyCleanup('pressable', pressable(th.elem, { role: false }));
+
 						const iconSub = this.options.subscriber('sortDirection', () => {
 							if (this.options.sortProperty !== key) return 'sort';
 
@@ -172,7 +186,7 @@ class Table extends Component {
 		);
 
 		this.tbody.append(
-			this.options.data.map(
+			rows.map(
 				rowData =>
 					new Component(
 						{ tag: 'tr' },

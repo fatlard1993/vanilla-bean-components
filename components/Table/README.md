@@ -90,4 +90,4 @@ const table = new Table({
 });
 ```
 
-Clicking a sortable column header toggles direction between `'desc'` and `'asc'`. The `onSort` default mutates `options.data` in place, triggering a reactive tbody rebuild.
+Pressing a sortable column header (by pointer, or Enter and Space from the keyboard) toggles direction between `'desc'` and `'asc'`. Without `onSort` the rows are sorted as they are drawn, and `options.data` keeps the order it was given; with `onSort(property, direction)` the caller sorts and assigns `data` itself.
