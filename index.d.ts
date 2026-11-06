@@ -920,6 +920,8 @@ export interface ToolbarOptions extends ComponentOptions {
 	wrap?: boolean;
 	/** A title at the start, truncated to fit; it stays through empty() */
 	heading?: string;
+	/** The heading's level: 1 for the page's own bar, deeper for a section's (default: 1) */
+	level?: number;
 	/** 'bar' is a page's top bar: flush, on a surface, ruled off from what's below */
 	variant?: 'bar';
 }

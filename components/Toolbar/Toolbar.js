@@ -10,6 +10,7 @@ import { cssLength } from '../../utils/element';
  * @param {number|string} [options.gap=12] - Space between controls (a number is pixels)
  * @param {boolean} [options.wrap=true] - Wrap onto more lines when there isn't room
  * @param {string} [options.heading] - A title at the start, truncated to fit; it stays through empty()
+ * @param {number} [options.level] - The heading's level: 1 for the page's own bar, deeper for a section's
  * @param {('bar')} [options.variant] - 'bar' is a page's top bar: flush, on a surface, ruled off from what's below
  * @param {...(Component|HTMLElement|string)} children - The controls
  * @returns {Toolbar} Toolbar component instance
@@ -74,7 +75,10 @@ class Toolbar extends styled(
 					return;
 				}
 
-				this._heading ??= new Component({ addClass: 'heading', attributes: { role: 'heading', 'aria-level': '1' } });
+				this._heading ??= new Component({
+					addClass: 'heading',
+					attributes: { role: 'heading', 'aria-level': String(this.options.level) },
+				});
 				this._heading.options.textContent = value;
 				// Truncated, the whole of it is still a hover away
 				this._heading.elem.title = value;
@@ -83,6 +87,13 @@ class Toolbar extends styled(
 			},
 		},
 		variant: classEnum('variant', ['bar']),
+		// The heading's level: 1 for the page's own bar, deeper for a section's
+		level: {
+			default: 1,
+			set(value) {
+				this._heading?.elem.setAttribute('aria-level', String(value));
+			},
+		},
 	};
 
 	/**
