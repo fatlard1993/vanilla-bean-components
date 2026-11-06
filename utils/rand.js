@@ -10,7 +10,10 @@ export const randInt = (min = -999, max = 999) => {
 	return Math.min(high, Math.max(low, Math.floor(Math.random() * (high - low + 1) + low)));
 };
 
-/** @type {<T>(array: Array<T>) => T} Choose a random item from an array */
+/**
+ * @template T
+ * @type {<T>(array: Array<T>) => T} Choose a random item from an array
+ */
 export const randFromArray = array => array[randInt(0, array.length - 1)];
 
 /** @type {(array: Array) => Array} Shuffle an array in place (Fisher-Yates), returning it */

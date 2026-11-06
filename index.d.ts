@@ -1106,7 +1106,7 @@ export declare function parseDate(value: Date | number | string): Date | null;
 /** @type {(min?: number, max?: number) => number} Generate a random number from a range (min inclusive, max exclusive) */
 export declare const rand: (min?: number, max?: number) => number;
 
-/** @type {<T>(array: Array<T>) => T} Choose a random item from an array */
+/** Choose a random item from an array */
 export declare const randFromArray: <T>(array: Array<T>) => T;
 
 /** @type {(min?: number, max?: number) => number} Generate a random integer from a range (min & max inclusive), given either way round */
