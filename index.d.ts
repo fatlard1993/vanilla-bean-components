@@ -179,9 +179,6 @@ export declare class Elem extends EventTarget {
 
 export interface ComponentOptions extends ElemOptions {
 	autoRender?: boolean | 'onload' | 'animationFrame';
-	registeredEvents?: Set<string>;
-	knownAttributes?: Set<string>;
-	priorityOptions?: Set<string>;
 	styles?: string | ((theme: Theme) => string) | Record<string, string | number>;
 	uniqueId?: string;
 	// Lifecycle
@@ -286,7 +283,8 @@ export declare function configured<T extends typeof Elem>(Base: T, options: Part
 
 export declare class CalendarEvent {
 	constructor(data: Record<string, any>);
-	options: Record<string, any>;
+	/** The object the event was made from, handed back with a press */
+	data: Record<string, any>;
 	at: Date;
 	label?: string;
 	notes?: string;
@@ -294,16 +292,15 @@ export declare class CalendarEvent {
 	duration?: number;
 	recurring?: boolean;
 	daily?: boolean;
-	whitelist?: Array<string | number | Date>;
-	blacklist?: Array<string | number | Date>;
-	weekdays?: Record<string, boolean>;
+	whitelist: Array<string | number | Date>;
+	blacklist: Array<string | number | Date>;
+	weekdays: Record<string, boolean>;
 	year: number;
 	month: number;
 	day: number;
 	hour: number;
 	minute: number;
 	fullDate: string;
-	render(type: string, container: HTMLElement, calendar: Component): HTMLElement;
 }
 
 // ── GENERATED: Built-in components ────────────────────────────────────────────
