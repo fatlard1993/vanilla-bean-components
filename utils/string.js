@@ -61,5 +61,8 @@ export const removeExcessIndentation = string => {
 			return a[0].length <= b[0].length ? a : b;
 		});
 
+	// Tabs inside the lines but none leading them: nothing to strip
+	if (!minIndentation.length) return string;
+
 	return lines.join('\n').replaceAll(new RegExp(`^${minIndentation[0]}`, 'gm'), '');
 };
