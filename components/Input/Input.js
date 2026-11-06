@@ -100,7 +100,7 @@ export default class Input extends Component {
 				if (this.tag !== 'textarea') return;
 
 				if (value === 'auto') {
-					this.__updateAutoHeight = () => {
+					const update = () => {
 						const lines = (this.elem.value?.match(/\n/g) || '').length + 1;
 
 						if (this.options.syntaxHighlighting) {
@@ -123,29 +123,29 @@ export default class Input extends Component {
 							this.elem.style.height = `${this.elem.scrollHeight + this.elem.offsetHeight - this.elem.clientHeight}px`;
 						}
 					};
+					let timeout;
+					const debounced = () => {
+						clearTimeout(timeout);
+						timeout = setTimeout(update, 16);
+					};
 
-					this.__debouncedUpdateAutoHeight =
-						this.__debouncedUpdateAutoHeight ||
-						(() => {
-							clearTimeout(this.__autoHeightTimeout);
-							this.__autoHeightTimeout = setTimeout(this.__updateAutoHeight, 16);
-						});
-
-					this.__updateAutoHeight();
-
-					this.elem.addEventListener('input', this.__debouncedUpdateAutoHeight);
-					this.elem.addEventListener('focus', this.__updateAutoHeight);
-					this.on({ targetEvent: 'connected', id: 'autoHeightConnected', callback: () => this.__updateAutoHeight?.() });
-
+					// The last auto height's listeners go first; the cleanup holds this one's own, not whatever is current
 					this.replaceCleanup('autoHeight', () => {
-						clearTimeout(this.__autoHeightTimeout);
-						this.elem.removeEventListener?.('input', this.__debouncedUpdateAutoHeight);
-						this.elem.removeEventListener?.('focus', this.__updateAutoHeight);
+						clearTimeout(timeout);
+						this.elem.removeEventListener('input', debounced);
+						this.elem.removeEventListener('focus', update);
+						this.__updateAutoHeight = null;
 					});
+
+					this.__updateAutoHeight = update;
+					update();
+
+					this.elem.addEventListener('input', debounced);
+					this.elem.addEventListener('focus', update);
+					this.on({ targetEvent: 'connected', id: 'autoHeightConnected', callback: () => this.__updateAutoHeight?.() });
 				} else {
-					this.elem.removeEventListener('input', this.__debouncedUpdateAutoHeight);
-					this.elem.removeEventListener('focus', this.__updateAutoHeight);
-					clearTimeout(this.__autoHeightTimeout);
+					// A set height ends the auto height, listeners and all
+					this.replaceCleanup('autoHeight', () => {});
 					this.elem.style.fieldSizing = '';
 
 					this.elem.style.height = typeof value === 'number' ? `${value + 1}em` : value;
@@ -164,6 +164,24 @@ export default class Input extends Component {
 		syntaxHighlighting: {
 			set(value) {
 				this[value ? 'addClass' : 'removeClass']('syntax-highlighting');
+
+				// Tab indents in a highlighted textarea, and stops when the highlighting does
+				this.replaceDestroyCleanup('syntaxTab', () => {});
+
+				if (!value || this.tag !== 'textarea') return;
+
+				const handleKeydown = function (event) {
+					if (event.key == 'Tab') {
+						event.preventDefault();
+
+						this.selectionStart === this.selectionEnd && !event.shiftKey
+							? insertTabCharacter(this)
+							: adjustIndentation({ textarea: this, action: event.shiftKey ? 'remove' : 'add' });
+					}
+				};
+
+				this.elem.addEventListener('keydown', handleKeydown);
+				this.replaceDestroyCleanup('syntaxTab', () => this.elem.removeEventListener('keydown', handleKeydown));
 			},
 		},
 		language: {
@@ -216,20 +234,6 @@ export default class Input extends Component {
 
 			this.elem.addEventListener('change', picked);
 			this.replaceDestroyCleanup('filesPicked', () => this.elem.removeEventListener('change', picked));
-		}
-
-		if (this.tag === 'textarea' && this.options.syntaxHighlighting) {
-			const handleKeydown = function (event) {
-				if (event.key == 'Tab') {
-					event.preventDefault();
-
-					this.selectionStart === this.selectionEnd && !event.shiftKey
-						? insertTabCharacter(this)
-						: adjustIndentation({ textarea: this, action: event.shiftKey ? 'remove' : 'add' });
-				}
-			};
-
-			this.elem.addEventListener('keydown', handleKeydown, { signal: this.signal });
 		}
 	}
 
