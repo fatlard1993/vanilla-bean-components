@@ -162,7 +162,11 @@ class ColorPicker extends StyledInput {
 
 		this.textInput = new Input({
 			type: 'text',
-			value: this.options.subscriber('value', value => this.hslString || value),
+			// As hsl from the first render on: the field is built before the value's setter has parsed it
+			value: this.options.subscriber(
+				'value',
+				value => this.hslString || (value ? this.parseValue(value).hslString : value),
+			),
 			// The picker reports its own change; the field's raw one stops here, or the picker's onChange hears both
 			onChange: event => {
 				event.stopPropagation();
