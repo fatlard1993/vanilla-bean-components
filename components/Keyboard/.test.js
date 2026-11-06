@@ -1,4 +1,4 @@
-import { fireEvent, getByRole } from '@testing-library/dom';
+import { fireEvent, getAllByRole, getByRole } from '@testing-library/dom';
 
 import { Keyboard } from '.';
 
@@ -11,8 +11,11 @@ const pressKey = (keyboard, name) => {
 };
 
 describe('Keyboard', () => {
-	test('must render a Keyboard', async () => {
-		new Keyboard({ appendTo: container });
+	test('renders the default layout as a row of key buttons', () => {
+		const keyboard = new Keyboard({ appendTo: container });
+
+		expect(getAllByRole(keyboard.elem, 'button').length).toBeGreaterThan(20);
+		expect(getByRole(keyboard.elem, 'button', { name: 'q' })).toBeDefined();
 	});
 
 	test('the onKeyDown, onKeyUp and onKeyPress options hear their key events', () => {

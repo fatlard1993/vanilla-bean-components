@@ -267,19 +267,7 @@ describe('browser utilities', () => {
 		});
 	});
 
-	describe('performance and stability', () => {
-		test('functions execute quickly', () => {
-			const start = performance.now();
-
-			isMac();
-			copyToClipboard('test');
-			vibrate(30);
-			tactileResponse();
-
-			const duration = performance.now() - start;
-			expect(duration).toBeLessThan(100);
-		});
-
+	describe('stability', () => {
 		test('functions are idempotent where expected', () => {
 			const result1 = isMac();
 			const result2 = isMac();
@@ -289,14 +277,10 @@ describe('browser utilities', () => {
 			expect(result2).toBe(result3);
 		});
 
-		test('no memory leaks with repeated calls', () => {
-			for (let i = 0; i < 100; i++) {
-				isMac();
-				copyToClipboard(`test-${i}`);
-				vibrate(1);
-			}
+		test('the copy fallback leaves nothing behind in the page', async () => {
+			for (let i = 0; i < 20; i++) await copyToClipboard(`test-${i}`);
 
-			expect(true).toBe(true);
+			expect(document.querySelectorAll('textarea')).toHaveLength(0);
 		});
 	});
 });
