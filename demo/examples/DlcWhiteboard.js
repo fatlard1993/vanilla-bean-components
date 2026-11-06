@@ -12,14 +12,20 @@ import {
 	Notify,
 	conditionalList,
 	randInt,
+	readStorage,
 	theme,
 	styled,
+	writeStorage,
 } from '../..';
 
 import ExampleView from '../DemoView/ExampleView';
 import exampleCode from './DlcWhiteboard.js.asText';
 
 const CANVAS_SIZE = 400;
+
+// What a player keeps between visits: their supplies, their settings, their credits
+const SAVED_KEY = 'dlc_whiteboard_db';
+const SAVED = ['ink', 'color', 'background', 'lineWidth', 'maxLineWidth', 'credits', 'drawThrottle', 'firstInkRunOut'];
 
 const Inkwell = styled.Component`
 	writing-mode: vertical-lr;
@@ -107,7 +113,7 @@ class DlcWhiteboard extends (styled.Component`
 	position: relative;
 `) {
 	constructor(options) {
-		const database = JSON.parse(localStorage.getItem('dlc_whiteboard_db')) || {
+		const database = readStorage(SAVED_KEY) || {
 			ink: 3,
 			color: theme.colors.black.toString(),
 			background: theme.colors.white.toString(),
@@ -142,6 +148,16 @@ class DlcWhiteboard extends (styled.Component`
 
 	build() {
 		this._lowInkNotified = false;
+
+		// Every change to what's saved is written, so the economy survives a reload
+		const save = ({ detail: { key } }) => {
+			if (SAVED.includes(key))
+				writeStorage(SAVED_KEY, Object.fromEntries(SAVED.map(name => [name, this.options[name]])));
+		};
+
+		this.options.addEventListener('set', save);
+		this.addCleanup('save', () => this.options.removeEventListener('set', save));
+
 		this._credits = new Component();
 		this._openStore = new Button({
 			textContent: 'Open DLC Store',
