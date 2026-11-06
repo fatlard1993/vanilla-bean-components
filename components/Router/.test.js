@@ -11,6 +11,11 @@ class TestView extends View {
 }
 
 describe('Router', () => {
+	// The router writes its default path into the hash; the next suite starts with the URL it expects
+	afterEach(() => {
+		window.location.hash = '';
+	});
+
 	test('must render default view', async () => {
 		const views = { ['/Test']: TestView };
 
@@ -63,5 +68,51 @@ describe('Router matching', () => {
 		const router = new Router({ views: { '/tags/:tag': View }, autoRender: false });
 
 		expect(router.parseRouteParameters('/tags/rock%20%26%20roll')).toEqual({ tag: 'rock & roll' });
+	});
+});
+
+describe('Router routes', () => {
+	class NotFound extends View {
+		constructor(options) {
+			super({ textContent: `missing ${options.route}`, ...options });
+		}
+	}
+
+	afterEach(() => {
+		window.location.hash = '';
+	});
+
+	test('with no default to fall back to, an unknown path shows the notFound view', async () => {
+		window.location.hash = '/nope';
+
+		const router = new Router({
+			views: { '/': TestView },
+			defaultPath: null,
+			notFound: NotFound,
+			appendTo: container,
+		});
+
+		await findAllByText(container, 'missing /nope');
+
+		expect(window.location.hash).toBe('#/nope');
+		router.destroy();
+	});
+
+	test('without a notFound view an unknown path goes to the default', async () => {
+		window.location.hash = '/nope';
+
+		const router = new Router({ views: { '/home': TestView }, appendTo: container });
+
+		await findAllByText(container, textContent);
+
+		expect(window.location.hash).toBe('#/home');
+		router.destroy();
+	});
+
+	test('no views writes nothing into the URL', () => {
+		const router = new Router({ views: {}, appendTo: container });
+
+		expect(window.location.hash).toBe('');
+		router.destroy();
 	});
 });

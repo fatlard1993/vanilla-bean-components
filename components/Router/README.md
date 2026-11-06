@@ -1,6 +1,6 @@
 # Router
 
-Hash-based client-side router that maps URL fragments to component classes. Each route pattern maps to a view class; the Router instantiates the matching view and destroys the previous one on navigation.
+Client-side router that maps paths to component classes, from the URL's hash by default or, with `mode: 'history'`, from its pathname. Each route pattern maps to a view class; the Router instantiates the matching view and destroys the previous one on navigation.
 
 ## Usage
 
@@ -36,7 +36,8 @@ new Router({
 		'/': HomeView,
 		'/users/:id': UserView,
 	},
-	defaultPath: '/',
+	// Every miss shows NotFoundView; with a defaultPath instead, a miss goes there
+	defaultPath: null,
 	notFound: NotFoundView,
 	appendTo: page,
 });
@@ -55,7 +56,7 @@ new Router({
 ## Properties
 
 ```js
-router.path; // string - current URL hash, stripped of '#/', '/', and query strings
+router.path; // string - the current path, '/users/42': the hash without its '#' and query string, or the pathname in history mode
 router.path = '/users/42'; // navigate; sets window.location.hash and re-renders
 
 router.route; // string - the matched route pattern for the current path (e.g. '/users/:id')
@@ -107,7 +108,7 @@ class UserView extends View {
 
 - **Same-route navigation is a no-op.** Navigating to the already-active route does not destroy and rebuild the view. View state is preserved.
 - **Empty hash** uses `defaultPath`. The hash is set and a re-render is triggered.
-- **Unmatched routes** fall back to `defaultPath` first, then `notFound` if `defaultPath` also fails.
+- **Unmatched routes** fall back to `defaultPath` first; `notFound` is the last resort, shown (with the path as `route`) only when there is no `defaultPath` view to go to. `defaultPath: null` makes every miss a `notFound`.
 - The Router listens to both `popstate` and `hashchange`, and the browser back/forward buttons work without any extra setup.
 
 ## View base class
@@ -127,7 +128,7 @@ class SettingsView extends View {
 ## Example - full SPA shell
 
 ```js
-import { Router, View, Nav, NavItem, Page } from '@vanilla-bean/components';
+import { Button, Component, Page, Router, Toolbar, View } from '@vanilla-bean/components';
 
 class HomeView extends View {
 	build() {
@@ -141,7 +142,7 @@ class ArticleView extends View {
 	}
 }
 
-// Page is the app shell - Router and Nav live inside it, not inside each view
+// Page is the app shell - Router and the nav bar live inside it, not inside each view
 // Page takes no title; the document's title is the browser's own
 document.title = 'My App';
 
@@ -156,11 +157,12 @@ const router = new Router({
 	appendTo: page,
 });
 
-new Nav({
-	appendTo: page,
+new Toolbar({
+	variant: 'bar',
+	prependTo: page,
 	append: [
-		new NavItem({ textContent: 'Home', onPointerPress: () => (router.path = '/') }),
-		new NavItem({ textContent: 'Latest', onPointerPress: () => (router.path = '/articles/latest') }),
+		new Button({ variant: 'flat', textContent: 'Home', onPointerPress: () => (router.path = '/') }),
+		new Button({ variant: 'flat', textContent: 'Latest', onPointerPress: () => (router.path = '/articles/latest') }),
 	],
 });
 ```

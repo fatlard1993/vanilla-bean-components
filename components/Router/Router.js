@@ -101,12 +101,13 @@ class Router extends Component {
 	}
 
 	renderView(route = this.route || this.options.defaultPath) {
+		// No views and no path: nothing to show, and no "undefined" to write into the URL
+		if (!route) return;
 		// The same route with different parameters (/items/a to /items/b) is a different view
 		if (this.currentRoute === route && this.currentPath === this.path) return;
 
-		this.options.onRenderView?.(route);
-
 		this.view?.destroy?.();
+		this.view = null;
 		this.empty();
 
 		if (!this.path) return (this.path = route);
@@ -114,15 +115,18 @@ class Router extends Component {
 		this.currentRoute = route;
 		this.currentPath = this.path;
 
-		if (this.options.views[route]) {
-			this.view = new this.options.views[route]({ appendTo: this.elem, ...this.parseRouteParameters() });
-		} else if (
-			this.options.defaultPath &&
-			this.options.views[this.options.defaultPath] &&
-			this.path !== this.options.defaultPath
-		) {
-			this.path = this.options.defaultPath;
-		} else if (this.options.notFound) this.view = new this.options.notFound({ appendTo: this.elem, route });
+		const { views, notFound, defaultPath } = this.options;
+
+		if (views[route]) {
+			this.options.onRenderView?.(route);
+			this.view = new views[route]({ appendTo: this.elem, ...this.parseRouteParameters() });
+		} else if (defaultPath && views[defaultPath] && this.path !== defaultPath) {
+			// An unknown path goes to the default; notFound is the last resort, for when there is no default to go to
+			this.path = defaultPath;
+		} else if (notFound) {
+			this.options.onRenderView?.(route);
+			this.view = new notFound({ appendTo: this.elem, route });
+		}
 	}
 }
 
