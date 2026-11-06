@@ -120,3 +120,85 @@ describe('Popover', () => {
 		});
 	});
 });
+
+describe('Popover placement', () => {
+	// happy-dom lays nothing out: the viewport is given
+	beforeEach(() => {
+		document.documentElement.getBoundingClientRect = () => ({ left: 0, top: 0, right: 1920, bottom: 1080 });
+	});
+
+	afterEach(() => {
+		delete document.documentElement.getBoundingClientRect;
+	});
+
+	test('a point places it just below and right of the point, within its size limits', () => {
+		const popover = new Popover({ x: 100, y: 200, autoOpen: false, appendTo: container });
+
+		expect(popover.elem.style.left).toBe('112px');
+		expect(popover.elem.style.top).toBe('212px');
+		expect(popover.elem.style.maxWidth).toBe('264px');
+		expect(popover.elem.style.maxHeight).toBe('132px');
+	});
+
+	test('its size limits are options', () => {
+		const popover = new Popover({ x: 10, y: 10, maxWidth: 400, maxHeight: 300, autoOpen: false, appendTo: container });
+
+		expect(popover.elem.style.maxWidth).toBe('400px');
+		expect(popover.elem.style.maxHeight).toBe('300px');
+	});
+
+	test('past the right or bottom edge it is placed from that edge instead', () => {
+		const right = new Popover({ x: 1900, y: 10, autoOpen: false, appendTo: container });
+		const bottom = new Popover({ x: 10, y: 1070, autoOpen: false, appendTo: container });
+
+		expect(right.elem.style.left).toBe('unset');
+		expect(right.elem.style.right).toMatch(/px$/);
+		expect(bottom.elem.style.top).toBe('unset');
+		expect(bottom.elem.style.bottom).toMatch(/px$/);
+	});
+
+	test('a point off the viewport is brought onto it', () => {
+		const popover = new Popover({ x: -500, y: -500, autoOpen: false, appendTo: container });
+
+		expect(popover.elem.style.left).toBe('12px');
+		expect(popover.elem.style.top).toBe('12px');
+	});
+
+	test('moving the point moves the popover', () => {
+		const popover = new Popover({ x: 10, y: 10, autoOpen: false, appendTo: container });
+
+		popover.options.x = 50;
+
+		expect(popover.elem.style.left).toBe('62px');
+	});
+});
+
+describe('Popover state', () => {
+	test('state is the popover attribute: manual unless auto', () => {
+		const manual = new Popover({ autoOpen: false, appendTo: container });
+		const auto = new Popover({ state: 'auto', autoOpen: false, appendTo: container });
+
+		expect(manual.elem.popover).toBe('manual');
+		expect(auto.elem.popover).toBe('auto');
+		expect(() => (manual.options.state = 'sometimes')).toThrow('not a valid state');
+	});
+
+	test('open() before it is in the document opens nothing', () => {
+		const popover = new Popover({ autoOpen: false, appendTo: null });
+
+		popover.open();
+
+		expect(popover.isOpen).toBe(false);
+	});
+
+	test('destroy() closes it, announcing close once, and takes it out of the page', () => {
+		const onClose = mock();
+		const popover = new Popover({ autoOpen: false, onClose, appendTo: container });
+
+		popover.open();
+		popover.destroy();
+
+		expect(onClose).toHaveBeenCalledTimes(1);
+		expect(popover.elem.isConnected).toBe(false);
+	});
+});
