@@ -108,9 +108,10 @@ const StyledPopover = styled(
 export default class Notify extends StyledPopover {
 	static schema = {
 		intent: classEnum('intent', intents, { default: 'success' }),
+		// Counted from opening, not from rendering: a toast made with autoOpen false waits for its open()
 		timeout: {
 			set(value) {
-				this._startTimer(value);
+				if (this.isOpen) this._startTimer(value);
 			},
 		},
 		actions: {
@@ -165,10 +166,17 @@ export default class Notify extends StyledPopover {
 		this.elem.addEventListener('focusin', hold, { signal: this.signal });
 		this.elem.addEventListener('focusout', release, { signal: this.signal });
 
-		this.addCleanup('notifyStack', () => {
+		// Closed, however it closed, it leaves the stack and stops its clock; destroyed, the same
+		const leave = () => {
+			clearTimeout(this._timer);
+			this._deadline = null;
+			this._paused = false;
 			if (stack.includes(this)) stack.splice(stack.indexOf(this), 1);
 			layOutStack();
-		});
+		};
+
+		this.on({ targetEvent: 'close', id: 'notifyLeave', callback: leave });
+		this.addCleanup('notifyStack', leave);
 
 		this.on({
 			targetEvent: 'click',
@@ -180,20 +188,24 @@ export default class Notify extends StyledPopover {
 	}
 
 	_startTimer(ms) {
-		clearTimeout(this.timeout);
+		clearTimeout(this._timer);
 		this._remaining = ms || 0;
 		this._deadline = null;
 		if (!ms) return;
 
 		this._deadline = Date.now() + ms;
-		this.timeout = setTimeout(() => this.destroy(), ms);
-		this.replaceCleanup('timeout', () => clearTimeout(this.timeout));
+
+		// The cleanup holds this timer's own id: the one it replaces runs now, and must not clear the timer just set
+		const timer = setTimeout(() => this.destroy(), ms);
+
+		this._timer = timer;
+		this.replaceCleanup('timeout', () => clearTimeout(timer));
 	}
 
 	_pauseTimer() {
 		if (!this._deadline) return;
 
-		clearTimeout(this.timeout);
+		clearTimeout(this._timer);
 		this._remaining = Math.max(this._deadline - Date.now(), 0);
 		this._deadline = null;
 		this._paused = true;
@@ -208,7 +220,7 @@ export default class Notify extends StyledPopover {
 	}
 
 	_renderActions(actions) {
-		this._actions?.remove();
+		this._actions?.elem.remove();
 		this._actions = null;
 
 		if (!actions?.length) return;
@@ -236,7 +248,13 @@ export default class Notify extends StyledPopover {
 							globalThis.reportError ? globalThis.reportError(error) : console.error(error); // eslint-disable-line no-console
 						} finally {
 							this._acting = false;
-							if (this.elem.isConnected) buttons.forEach(button => (button.options.disabled = false));
+
+							if (this.elem.isConnected) {
+								buttons.forEach(button => (button.options.disabled = false));
+
+								// The toast stays: its clock starts again unless a hand or focus is still on it
+								if (!this.elem.matches(':hover') && !this.elem.contains(document.activeElement)) this._resumeTimer();
+							}
 						}
 					},
 				}),
@@ -246,7 +264,13 @@ export default class Notify extends StyledPopover {
 	open(options) {
 		super.open(options);
 
-		if (!this.hasClass('stacked') || !this.elem.isConnected) return;
+		if (!this.isOpen) return;
+
+		this._startTimer(this.options.timeout);
+		// Opened under a hand, under focus, or mid-action, it waits as it would had they arrived after
+		if (this._acting || this.elem.matches(':hover') || this.elem.contains(document.activeElement)) this._pauseTimer();
+
+		if (!this.hasClass('stacked')) return;
 
 		if (!stack.includes(this)) stack.push(this);
 		layOutStack();

@@ -142,8 +142,69 @@ describe('Notify', () => {
 			expect(retry).not.toBeDisabled();
 		});
 
+		const open = options => {
+			const notify = new Notify({ content: 'm', timeout: 40, autoOpen: false, appendTo: container, ...options });
+
+			notify.open();
+
+			return notify;
+		};
+
+		test('the timeout counts from opening: a toast waiting for open() stays', async () => {
+			const notify = new Notify({ content: 'm', timeout: 20, autoOpen: false, appendTo: container });
+
+			await settle(60);
+
+			expect(notify.elem.isConnected).toBe(true);
+
+			notify.open();
+			await settle(60);
+
+			expect(notify.elem.isConnected).toBe(false);
+		});
+
+		test('closed, it leaves the stack and its clock stops', async () => {
+			const notify = open({ timeout: 20 });
+			const below = open({ timeout: 0 });
+
+			notify.close();
+
+			expect(below.elem.style.bottom).toContain('18px');
+
+			await settle(60);
+
+			expect(notify.elem.isConnected).toBe(true);
+			notify.destroy();
+			below.destroy();
+		});
+
+		test('the actions can be given again', () => {
+			const notify = open({ timeout: 0, actions: [{ textContent: 'Undo' }] });
+
+			notify.options.actions = [{ textContent: 'Redo' }];
+
+			expect(getByRole(container, 'button', { name: 'Redo', hidden: true })).toBeDefined();
+			// eslint-disable-next-line testing-library/no-node-access
+			expect(container.querySelectorAll('.notify-actions')).toHaveLength(1);
+			notify.destroy();
+		});
+
+		test('an action returning false hands the toast back to its clock', async () => {
+			const notify = open({ timeout: 20, actions: [{ textContent: 'Retry', onPointerPress: () => false }] });
+
+			notify.elem.dispatchEvent(new Event('pointerenter'));
+			// A plain click: a pointer press leaves no focus in the toast to hold it
+			// eslint-disable-next-line testing-library/no-node-access
+			getByRole(container, 'button', { name: 'Retry', hidden: true }).click();
+			await settle();
+			notify.elem.dispatchEvent(new Event('pointerleave'));
+			await settle(1600);
+
+			expect(notify.elem.isConnected).toBe(false);
+		});
+
 		test('a pointer over the toast holds its timeout, and it leaves a while after the pointer does', async () => {
-			const notify = new Notify({ content: 'm', timeout: 40, actions: [{ textContent: 'Undo' }], appendTo: container });
+			const notify = open({ actions: [{ textContent: 'Undo' }] });
 
 			notify.elem.dispatchEvent(new Event('pointerenter'));
 			await settle(80);
@@ -154,16 +215,16 @@ describe('Notify', () => {
 			await settle(80);
 
 			expect(notify.elem.isConnected).toBe(true);
-			notify.destroy();
+
+			await settle(1500);
+
+			expect(notify.elem.isConnected).toBe(false);
 		});
 
 		test('an action still running keeps the toast up, though the pointer leaves', async () => {
 			let finish;
-			const notify = new Notify({
-				content: 'm',
-				timeout: 40,
+			const notify = open({
 				actions: [{ textContent: 'Undo', onPointerPress: () => new Promise(resolve => (finish = resolve)) }],
-				appendTo: container,
 			});
 
 			notify.elem.dispatchEvent(new Event('pointerenter'));
@@ -180,7 +241,7 @@ describe('Notify', () => {
 		});
 
 		test('focus inside holds it too', async () => {
-			const notify = new Notify({ content: 'm', timeout: 40, actions: [{ textContent: 'Undo' }], appendTo: container });
+			const notify = open({ actions: [{ textContent: 'Undo' }] });
 
 			getByRole(container, 'button', { name: 'Undo', hidden: true }).focus();
 			await settle(80);

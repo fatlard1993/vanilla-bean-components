@@ -28,8 +28,10 @@ A screen reader interrupts for `alert` and waits for a quiet moment for `status`
 - `danger` and `warning` announce as alerts; every other intent announces politely
   - new Subject({ intent: "danger", content: "m", appendTo: document.body }) captures err then new Subject({ intent: "warning", content: "m", appendTo: document.body }) captures warn then new Subject({ intent: "success", content: "m", appendTo: document.body }) captures ok then new Subject({ intent: "info", content: "m", appendTo: document.body }) captures info -> err.elem.getAttribute("role") === "alert" && warn.elem.getAttribute("role") === "alert" && ok.elem.getAttribute("role") === "status" && info.elem.getAttribute("role") === "status"
 
-- a falsy `timeout` means the notification stays until something dismisses it; a positive one dismisses it after that long
-  - new Subject({ content: "stay", timeout: 0, appendTo: document.body }) captures kept then new Subject({ content: "go", timeout: 30, appendTo: document.body }) captures going then await new Promise(r => setTimeout(r, 90)) -> kept.elem.isConnected === true && going.elem.isConnected === false
+- a falsy `timeout` means the notification stays until something dismisses it; a positive one dismisses it that long after it opens
+  - new Subject({ content: "stay", timeout: 0, autoOpen: false, appendTo: document.body }) captures kept then new Subject({ content: "go", timeout: 30, autoOpen: false, appendTo: document.body }) captures going then kept.open() then going.open() then await new Promise(r => setTimeout(r, 90)) -> kept.elem.isConnected === true && going.elem.isConnected === false
+- the timeout counts from opening, not from rendering: a toast waiting for its open() is still there to open
+  - new Subject({ content: "later", timeout: 20, autoOpen: false, appendTo: document.body }) captures waiting then await new Promise(r => setTimeout(r, 60)) -> waiting.elem.isConnected === true
 
 ## Severity also decides how long it stays
 
@@ -59,4 +61,4 @@ A toast that says something was deleted is the right place to undo it. The actio
 ## A hand on the toast holds it
 
 - a pointer over the toast holds its timeout
-  - new Subject({ content: "m", timeout: 30, appendTo: document.body }) captures n then n.elem.dispatchEvent(new Event("pointerenter")) then await new Promise(r => setTimeout(r, 90)) -> n.elem.isConnected === true
+  - new Subject({ content: "m", timeout: 30, autoOpen: false, appendTo: document.body }) captures n then n.open() then n.elem.dispatchEvent(new Event("pointerenter")) then await new Promise(r => setTimeout(r, 90)) -> n.elem.isConnected === true
