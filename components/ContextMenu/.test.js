@@ -139,3 +139,16 @@ describe('ContextMenu', () => {
 		expect(menu.isOpen).toBe(true);
 	});
 });
+
+describe('ContextMenu rendering again', () => {
+	test('keeps a menu with its items', async () => {
+		const menu = new ContextMenu({ items: [{ textContent: 'Rename' }], appendTo: container });
+
+		menu.render();
+		await settle();
+
+		expect(menu.elem.contains(menu.menu.elem)).toBe(true);
+		// eslint-disable-next-line testing-library/no-node-access
+		expect(menu.elem.querySelectorAll('li')).toHaveLength(1);
+	});
+});

@@ -232,6 +232,9 @@ class ContextMenu extends StyledPopover {
 	build() {
 		super.build();
 
+		// Built with the rest, so a re-render has a menu in the element
+		this.menu = new Menu({ appendTo: this });
+
 		this._onKeydown = event => {
 			if (event.key === 'Escape' && this.isOpen) {
 				event.preventDefault();
