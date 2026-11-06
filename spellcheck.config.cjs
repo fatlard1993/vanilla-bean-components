@@ -10,6 +10,8 @@ module.exports = {
 		'menuitem',
 		'filesystem',
 		'labelled',
+		'unlabelled',
+		'fw',
 		'pid',
 		'ps',
 		'samp',

@@ -46,23 +46,29 @@ export default class Icon extends Component {
 	};
 
 	_refreshIcon() {
-		this.removeClass(/\bfa-\S+\b/g);
-		this.removeClass(/\bicon-animation-\S+\b/g);
+		// Only the classes the last refresh gave: a caller's own fa-fw or fa-lg stays
+		this.removeClass(this._iconClasses ?? []);
 
 		const { icon, animation, iconAnimation, content, textContent } = this.options;
 
-		if (icon || animation) {
-			this.addClass(
-				...(content || textContent ? [] : ['icon']),
-				...['support', animation, icon].filter(Boolean).map(v => `fa-${v}`),
-			);
-		}
+		this._iconClasses =
+			icon || animation
+				? [
+						...(content || textContent ? [] : ['icon']),
+						...['support', animation, icon].filter(Boolean).map(v => `fa-${v}`),
+					]
+				: [];
+
+		this.addClass(this._iconClasses);
 
 		// A FontAwesome animation class animates whatever element carries it. On a bare Icon the
 		// element and the glyph are the same box, so that reads correctly; on a subclass with a
 		// label — Button, Link — it takes the whole control with it. iconAnimation is the same set
 		// of animations aimed at the :before that draws the glyph, so the two are separable.
-		if (iconAnimation) this.addClass(`icon-animation-${iconAnimation}`);
+		if (iconAnimation) {
+			this._iconClasses.push(`icon-animation-${iconAnimation}`);
+			this.addClass(`icon-animation-${iconAnimation}`);
+		}
 
 		// A control by its tag, or made one: pressable gives a role and a tab stop
 		const interactive =

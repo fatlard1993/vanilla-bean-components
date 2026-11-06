@@ -169,3 +169,17 @@ describe('Icon', () => {
 		expect(icon.elem.className.split(' ')).not.toContain('icon');
 	});
 });
+
+describe('Icon classes', () => {
+	test("a new icon takes back only the classes the last one gave, so a caller's own fa- class stays", () => {
+		const icon = new Icon({ icon: 'home', animation: 'spin', addClass: 'fa-fw', appendTo: container });
+
+		icon.options.icon = 'gear';
+		icon.options.animation = null;
+
+		expect(icon.elem.classList.contains('fa-fw')).toBe(true);
+		expect(icon.elem.classList.contains('fa-gear')).toBe(true);
+		expect(icon.elem.classList.contains('fa-home')).toBe(false);
+		expect(icon.elem.classList.contains('fa-spin')).toBe(false);
+	});
+});
