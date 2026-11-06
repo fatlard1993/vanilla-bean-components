@@ -11,7 +11,7 @@ Component that adds a tooltip to whatever it wraps. The Tooltip is created durin
 
 ## Hover shows after a delay - brief mouse-overs do not trigger the tooltip
 
-- pointerover registers a 700ms timer; pointerout cancels it and hides immediately; hovering for longer than 700ms shows the tooltip
+- pointerenter registers a 700ms timer; pointerleave cancels it and hides immediately; hovering for longer than 700ms shows the tooltip. Enter and leave, not over and out: the pointer crossing into a child of the control is still over it
   - does hovering for longer than 700ms show the tooltip?
   - does leaving before 700ms prevent the tooltip from appearing?
 
@@ -31,5 +31,7 @@ Most tooltips are a line of text, so a string is the common case and stays the s
 
 Hover and focus both open the tooltip, so the pointer leaving is only half the story: if the control still has focus, the tooltip is being held open by the keyboard and closing it would take away what a keyboard user is reading.
 
-- `pointerout` hides the tooltip only when focus has also left the control
-  - new Subject({ tooltip: "tip", appendTo: document.body }) captures held then new Subject({ tooltip: "tip", appendTo: document.body }) captures loose then held.elem.querySelector("[popover]") captures heldTip then loose.elem.querySelector("[popover]") captures looseTip then held.elem.dispatchEvent(new PointerEvent("pointerover", { bubbles: true, clientX: 5, clientY: 5 })) then loose.elem.dispatchEvent(new PointerEvent("pointerover", { bubbles: true, clientX: 5, clientY: 5 })) then await new Promise(r => setTimeout(r, 760)) then held.elem.focus() then held.elem.dispatchEvent(new PointerEvent("pointerout", { bubbles: true })) then loose.elem.dispatchEvent(new PointerEvent("pointerout", { bubbles: true })) -> heldTip.style.display === "block" && looseTip.style.display === "none"
+- `pointerleave` hides the tooltip only when focus has also left the control
+  - new Subject({ tooltip: "tip", appendTo: document.body }) captures held then new Subject({ tooltip: "tip", appendTo: document.body }) captures loose then held.elem.querySelector("[popover]") captures heldTip then loose.elem.querySelector("[popover]") captures looseTip then held.elem.dispatchEvent(new PointerEvent("pointerenter", { clientX: 5, clientY: 5 })) then loose.elem.dispatchEvent(new PointerEvent("pointerenter", { clientX: 5, clientY: 5 })) then await new Promise(r => setTimeout(r, 760)) then held.elem.focus() then held.elem.dispatchEvent(new PointerEvent("pointerleave")) then loose.elem.dispatchEvent(new PointerEvent("pointerleave")) -> heldTip.style.display === "block" && looseTip.style.display === "none"
+- the pointer crossing into a child of the control does not hide the tooltip
+  - new Subject({ tooltip: "tip", appendTo: document.body }, document.createElement("span")) captures c then c.elem.querySelector("[popover]") captures tip then c.elem.dispatchEvent(new PointerEvent("pointerenter", { clientX: 5, clientY: 5 })) then await new Promise(r => setTimeout(r, 760)) then c.elem.querySelector("span").dispatchEvent(new PointerEvent("pointerout", { bubbles: true })) -> tip.style.display === "block"

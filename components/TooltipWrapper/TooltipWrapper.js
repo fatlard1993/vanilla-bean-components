@@ -55,6 +55,8 @@ export default class TooltipWrapper extends StyledIcon {
 
 		if (this._tooltip) {
 			this._tooltip.setOptions(tooltipOptions);
+			// A re-render emptied the element; the tooltip is put back before the task ends, so it is moved, not discarded
+			if (!this.elem.contains(this._tooltip.elem)) this.append(this._tooltip);
 		} else {
 			this._tooltip = new Tooltip({
 				appendTo: this.elem,
@@ -63,15 +65,17 @@ export default class TooltipWrapper extends StyledIcon {
 
 			this.addClass('has-tooltip');
 
+			// pointerenter and pointerleave, not over and out: crossing into a child is not leaving the element
 			this.on({
-				targetEvent: 'pointerover',
+				targetEvent: 'pointerenter',
 				callback: ({ clientX, clientY }) => {
+					clearTimeout(this.tooltipTimeout);
 					this.tooltipTimeout = setTimeout(() => this._tooltip?.open({ x: clientX, y: clientY }), 700);
 				},
 			});
 
 			this.on({
-				targetEvent: 'pointerout',
+				targetEvent: 'pointerleave',
 				callback: () => {
 					clearTimeout(this.tooltipTimeout);
 					if (!this.elem.contains(document.activeElement)) this._tooltip?.close();
