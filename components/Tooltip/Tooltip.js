@@ -5,9 +5,7 @@ import { duration, radius, space } from '../../theme/tokens';
 const StyledPopover = styled(
 	Popover,
 	({ colors }) => `
-		position: absolute;
 		padding: ${space.xs};
-		z-index: 1;
 		pointer-events: none;
 		max-width: 240px;
 		margin: auto;

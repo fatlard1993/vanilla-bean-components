@@ -5,7 +5,9 @@ import { elevation, radius, space } from '../../theme/tokens';
 const StyledIcon = styled(
 	Icon,
 	({ colors }) => `
-		position: absolute;
+		/* Placed by viewport coordinates (a pointer's clientX and clientY), so fixed: in the top layer, absolute would
+		   place it from the document's origin and a scrolled page would carry it off */
+		position: fixed;
 		background-color: ${colors.surface};
 		color: ${colors.white};
 		padding: ${space.md};
@@ -150,7 +152,8 @@ export default class Popover extends StyledIcon {
 	open(options) {
 		clearTimeout(this._outsideHide);
 
-		if (options) this.edgeAwarePlacement(options);
+		// Placed only by a whole point: half of one would place it at NaN
+		if (options?.x !== undefined && options?.y !== undefined) this.edgeAwarePlacement(options);
 
 		if (!this.elem.isConnected) return;
 
