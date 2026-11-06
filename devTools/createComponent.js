@@ -28,13 +28,9 @@ fs.mkdirSync(componentFolder);
 const demoOptions = Object.entries(options)
 	.map(
 		([key, value]) =>
-			`${key}: ${
-				typeof value === 'object'
-					? JSON.stringify(value)
-							.replaceAll(/"(\w+)":/g, ` $1: `)
-							.replaceAll('"', `'`)
-					: value
-			},`,
+			`${key}: ${JSON.stringify(value)
+				.replaceAll(/"(\w+)":/g, ` $1: `)
+				.replaceAll('"', `'`)},`,
 	)
 	.join('\n');
 
@@ -61,39 +57,20 @@ export default class Demo extends DemoView {
 }
 `;
 
+// Prose, as the other READMEs are: the explorer appends the reference sections (options, methods, events) from the
+// JSDoc itself, so a README that extracted them would show each twice
 const readMeFile = `# ${name}
 
-[[extract-description ${name}.js]]
-
-## Usage
+What it is, in a sentence or two: the need it meets, and the shape it takes.
 
 \`\`\`js
-[[import ./demo.js]]/^(\\t*).+component = new.+\\(\\s*{(.|\\n)+?\\1}?\\);/gm
+new ${name}({ appendTo: document.body });
 \`\`\`
 
 ## Options
 
-[[extract-options ${name}.js]]
-
-## Methods
-
-[[extract-methods ${name}.js]]
-
-## Properties
-
-[[extract-properties ${name}.js]]
-
-## Events
-
-[[extract-events ${name}.js]]
-
-## Dependencies
-
-[[extract-imports ${name}.js]]
-
-## Design
-
-![design](../${name}/design.excalidraw.png)
+| Option | Type | Default | Description |
+| ------ | ---- | ------- | ----------- |
 `;
 
 const componentFile = `import { Component } from '../../Component';
