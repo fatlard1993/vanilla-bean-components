@@ -23,7 +23,7 @@ export const classEnum = (
 	enum: values,
 	...(initial !== undefined && { default: initial }),
 	set(value, next) {
-		this.removeClass(new RegExp(`\\b${prefix}-\\S+\\b`, 'g'));
+		this.removeClass(new RegExp(`(^|\\s)${prefix}-\\S+`, 'g'));
 
 		if (value !== undefined && value !== null) this.addClass(...classes(value));
 

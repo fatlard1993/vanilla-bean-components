@@ -2,6 +2,10 @@ import { buildClassList } from '../utils';
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
+// The class, whole, in a class attribute: 'btn' is not in 'btn-primary'
+const classPattern = className =>
+	new RegExp(`(^|\\s)${className.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?=\\s|$)`, 'g');
+
 // An element placed in SVG belongs in its namespace too, except inside foreignObject, which holds HTML again
 const isSvgParent = parent => {
 	const elem = parent?.elem ?? parent;
@@ -135,10 +139,11 @@ class Elem extends EventTarget {
 			// className is not a string on an SVG element; the attribute is, on either kind
 			const classAttribute = this.elem.getAttribute('class') ?? '';
 
-			if (className instanceof RegExp) return className.test(classAttribute);
+			// A fresh copy without the g flag: a global regex remembers where its last test stopped
+			if (className instanceof RegExp)
+				return new RegExp(className.source, className.flags.replace('g', '')).test(classAttribute);
 
-			const escaped = className.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-			return new RegExp(`\\b${escaped}\\b`, 'g').test(classAttribute);
+			return classPattern(className).test(classAttribute);
 		});
 	}
 
@@ -172,10 +177,7 @@ class Elem extends EventTarget {
 					className.source,
 					className.flags.includes('g') ? className.flags : className.flags + 'g',
 				);
-			} else {
-				const escaped = className.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-				classRegex = new RegExp(`\\b${escaped}\\b`, 'g');
-			}
+			} else classRegex = classPattern(className);
 
 			const classAttribute = this.elem.getAttribute('class') ?? '';
 
@@ -201,7 +203,7 @@ class Elem extends EventTarget {
 
 	/**
 	 * Remove all child elements
-	 * @returns {void}
+	 * @returns {Elem} This instance for chaining
 	 */
 	empty() {
 		this.elem.replaceChildren();

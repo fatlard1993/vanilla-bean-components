@@ -157,6 +157,26 @@ describe('Elem', () => {
 			expect(elem.hasClass('btn', 'nonexistent')).toBe(false);
 		});
 
+		test('a class is matched whole: btn is not in btn-primary', () => {
+			elem = new Elem({ className: 'btn-primary other' });
+
+			expect(elem.hasClass('btn')).toBe(false);
+			expect(elem.hasClass('primary')).toBe(false);
+			expect(elem.hasClass('btn-primary')).toBe(true);
+
+			elem.removeClass('btn');
+			elem.removeClass('primary');
+
+			expect(elem.elem.getAttribute('class')).toBe('btn-primary other');
+		});
+
+		test('a global regex answers the same every time', () => {
+			const pattern = /btn/g;
+
+			expect(elem.hasClass(pattern)).toBe(true);
+			expect(elem.hasClass(pattern)).toBe(true);
+		});
+
 		test('supports regex patterns in hasClass', () => {
 			expect(elem.hasClass(/btn-primary/)).toBe(true);
 			expect(elem.hasClass(/\bbtn\b/)).toBe(true);
