@@ -312,6 +312,8 @@ export interface BottomSheetOptions extends ComponentOptions {
 	autoOpen?: number | boolean;
 	/** Hears `close`, however the sheet closed */
 	onClose?: (...args: any[]) => any;
+	/** What the sheet is, for assistive technology; without one, the first heading in its body names it */
+	label?: string;
 }
 
 export declare class BottomSheet extends Component {

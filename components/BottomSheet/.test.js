@@ -208,3 +208,20 @@ describe('BottomSheet', () => {
 		});
 	});
 });
+
+describe('BottomSheet name', () => {
+	test('a label names it, and without one the first heading in its body does', () => {
+		const labelled = new BottomSheet({ label: 'Filters', appendTo: container });
+
+		expect(labelled.elem.getAttribute('aria-label')).toBe('Filters');
+
+		const heading = new Component({ tag: 'h2', textContent: 'Share' });
+		const headed = new BottomSheet({ appendTo: container }, heading);
+
+		headed.open();
+
+		expect(headed.elem.getAttribute('aria-labelledby')).toBe(heading.elem.id);
+		expect(heading.elem.id).not.toBe('');
+		headed.close();
+	});
+});

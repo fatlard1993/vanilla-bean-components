@@ -16,6 +16,8 @@ const defaultOpenDelay = 16;
  * @param {number|boolean} [options.autoOpen=false] - Open a moment after rendering; a number is that moment in
  *   milliseconds
  * @param {Function} [options.onClose] - Hears `close`, however the sheet closed
+ * @param {string} [options.label] - What the sheet is, for assistive technology; without one, the first heading in its
+ *   body names it
  * @param {...(Component|HTMLElement|string)} children - Appended to the sheet body
  */
 class BottomSheet extends styled(
@@ -115,6 +117,12 @@ class BottomSheet extends styled(
 				this._body.append(value);
 			},
 		},
+		label: {
+			set(value) {
+				if (value) this.elem.setAttribute('aria-label', value);
+				else this.elem.removeAttribute('aria-label');
+			},
+		},
 		autoOpen: {
 			default: false,
 			set(value) {
@@ -176,6 +184,7 @@ class BottomSheet extends styled(
 		if (this.isOpen || !this.elem.isConnected) return;
 
 		this._opener = document.activeElement;
+		this._nameFromHeading();
 		this.elem.showModal();
 		(firstFocusable(this._body.elem) ?? this.elem).focus();
 
@@ -183,6 +192,18 @@ class BottomSheet extends styled(
 		window.addEventListener('hashchange', this._closeOnNavigate);
 		window.addEventListener('popstate', this._closeOnNavigate);
 		this.replaceDestroyCleanup('closeOnNavigate', () => this._stopNavigateClose());
+	}
+
+	// Given no label, the sheet is named by the first heading in its body, as a dialog is by its header
+	_nameFromHeading() {
+		if (this.elem.hasAttribute('aria-label')) return;
+
+		const heading = this._body.elem.querySelector('h1, h2, h3, h4, h5, h6, [role="heading"]');
+
+		if (!heading) return;
+
+		heading.id ||= `${this.uniqueId}-heading`;
+		this.elem.setAttribute('aria-labelledby', heading.id);
 	}
 
 	/**

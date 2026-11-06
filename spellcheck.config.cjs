@@ -9,6 +9,7 @@ module.exports = {
 		'resized',
 		'menuitem',
 		'filesystem',
+		'labelled',
 		'pid',
 		'ps',
 		'samp',
