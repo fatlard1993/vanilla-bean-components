@@ -26,3 +26,5 @@ jobs:
       - run: bun run lld:lint
       - run: bun run lld
       - run: bun run build
+      # Checked, not fixed: build formats the checkout and regenerates the types, so a diff is what the push left behind
+      - run: git diff --exit-code

@@ -22,7 +22,10 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bun run lint
-      - run: bun test
+      # bun test exits nonzero with nothing to run, as the pre-push hook knows
+      - run: git ls-files | grep -q '\.test\.js$' && bun test || echo 'no tests'
       - run: bun run lld:lint
       - run: bun run lld
       - run: bun run build
+      # Checked, not fixed: build formats the checkout, so what it changed is what the push left unformatted
+      - run: git diff --exit-code
