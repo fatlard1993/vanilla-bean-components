@@ -176,8 +176,14 @@ export default class Tabs extends StyledComponent {
 		// Settled on the first tab without counting as a change
 		if (id !== undefined && id !== selected) this.options.selected = id;
 
+		// A panel whose tab is gone is hidden with the rest
+		for (const [panelId, panel] of Object.entries(panels)) {
+			if (!(panelId in this._buttons) && panel) (panel.elem ?? panel).hidden = true;
+		}
+
 		for (const [tabId, button] of Object.entries(this._buttons)) {
-			const chosen = tabId === id;
+			// The keys are strings whatever the ids are, so a numeric id still finds its tab
+			const chosen = tabId === String(id);
 			const panel = panels[tabId]?.elem ?? panels[tabId];
 
 			button.elem.setAttribute('aria-selected', String(chosen));

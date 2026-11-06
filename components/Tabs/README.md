@@ -1,35 +1,36 @@
 # Tabs
 
-[[extract-description Tabs.js]]
+A row of tabs, one selected. The arrow keys, Home and End move along it and select as they go, so it is one tab stop in the page's order.
 
-## Usage
+Panels are optional: given one per tab, only the selected tab's shows, and the browser is told which tab controls which panel. Without them, `onChange` says which tab was chosen, for content that's built on demand. A tab can carry a count (unread, items listed), shown beside its label.
 
 ```js
-[[import ./demo.js]]/^(\t*).+component = new.+\(\s*{(.|\n)+?\1}?\);/gm
+new Tabs({
+	tabs: [
+		{ id: 'chat', label: 'Chat', count: 2 },
+		{ id: 'people', label: 'People' },
+	],
+	panels: { chat: chatList, people: peopleList },
+	onChange: ({ value }) => remember('tab', value),
+	appendTo: document.body,
+});
 ```
 
 ## Options
 
-[[extract-options Tabs.js]]
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `tabs` | `Array<object>` | `[]` | The tabs: `{ id, label, icon, count, disabled }`; reactive, a tab removed hides its panel |
+| `selected` | `string` | the first tab | The selected tab's id |
+| `panels` | `object` | - | Each tab's panel by id, an element or a Component, shown only while selected |
+| `variant` | `'segmented'` | - | A pill split into its choices, for switching between a few views of the same thing |
+| `onChange` | `Function` | - | Hears `change` when the selection changes; `event.value` is the selected tab's id |
+
+Selecting the tab that is already selected is not a change. A disabled tab is skipped by the arrow keys and refused by `select()`.
 
 ## Methods
 
-[[extract-methods Tabs.js]]
-
-## Properties
-
-[[extract-properties Tabs.js]]
-
-## Events
-
-[[extract-events Tabs.js]]
-
-## Dependencies
-
-[[extract-imports Tabs.js]]
-
-## Segmented
-
-`variant: 'segmented'` draws the same tabs as a pill split into its choices: for switching between a few views of the same thing (by day / by project, list / chart). It keeps the tabs' keyboard behaviour and roles.
-
-A tab can carry an `icon` (a Font Awesome name) beside its label: `{ id: 'chart', label: 'Chart', icon: 'chart-line' }`.
+```js
+tabs.select(id); // selects a tab, showing its panel and announcing change, if it wasn't already selected
+tabs.count(id, count); // the count beside a tab's label; zero or nothing clears it
+```

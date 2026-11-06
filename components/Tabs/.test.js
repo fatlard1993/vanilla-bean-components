@@ -82,3 +82,42 @@ describe('Tabs', () => {
 		expect(tab('Comments')).toHaveTextContent(/^Comments$/);
 	});
 });
+
+describe('Tabs ids and panels', () => {
+	test('numeric ids select', () => {
+		const panels = { 0: new Elem(), 1: new Elem() };
+		const tabs = new Tabs({
+			tabs: [
+				{ id: 0, label: 'Zero' },
+				{ id: 1, label: 'One' },
+			],
+			panels,
+			selected: 1,
+			appendTo: container,
+		});
+
+		expect(getByRole(container, 'tab', { name: 'One' }).getAttribute('aria-selected')).toBe('true');
+		expect(panels[1].elem.hidden).toBe(false);
+		expect(panels[0].elem.hidden).toBe(true);
+		tabs.destroy();
+	});
+
+	test('a tab taken away takes its panel with it', () => {
+		const panels = { a: new Elem(), b: new Elem() };
+		const tabs = new Tabs({
+			tabs: [
+				{ id: 'a', label: 'A' },
+				{ id: 'b', label: 'B' },
+			],
+			panels,
+			selected: 'a',
+			appendTo: container,
+		});
+
+		tabs.options.tabs = [{ id: 'b', label: 'B' }];
+
+		expect(panels.a.elem.hidden).toBe(true);
+		expect(panels.b.elem.hidden).toBe(false);
+		tabs.destroy();
+	});
+});
