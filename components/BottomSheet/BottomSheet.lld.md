@@ -46,3 +46,13 @@ An overlay that slides over everything belongs to the page, not to whatever comp
 
 - a sheet with no explicit parent attaches to the document body and exposes the region its content belongs in
   - new Subject({}) captures s -> s.elem.parentElement === document.body && !!s.body && s.body.elem.tagName === "DIV"
+
+## A number for autoOpen is its own delay
+
+- a numeric `autoOpen` waits that long, not the small default
+  - new Subject({ autoOpen: 200 }) captures s then await new Promise(r => setTimeout(r, 60)) then s.isOpen captures early then await new Promise(r => setTimeout(r, 220)) -> early === false && s.isOpen === true
+
+## A drag starts on the handle, not anywhere a pointer happens to move
+
+- a pointer moving over the handle without having pressed it moves nothing
+  - new Subject({}) captures s then s.open() then s.elem.querySelector(".sheet-drag-zone").dispatchEvent(new PointerEvent("pointermove", { clientY: 300, bubbles: true })) -> s.elem.style.transform === ""

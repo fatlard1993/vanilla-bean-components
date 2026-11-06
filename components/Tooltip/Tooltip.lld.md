@@ -51,3 +51,8 @@ A tooltip lets the pointer through, so nothing can scroll it: the height cap a p
 ## A tooltip wraps its text, whatever it sits in
 
 A tooltip is a child of the element it explains, so it inherits that element's text styles; a button keeps its label on one line and centered, and a tooltip that inherited that would run its sentence out sideways behind a scrollbar no one can use. It wraps and aligns as prose does, which is a stylesheet's concern: nothing here runs to check it.
+
+## A tooltip with no parent has nothing to be placed against
+
+- placing by position with no parent sets nothing, rather than failing
+  - new Subject({ textContent: "tip", appendTo: null }) captures t then t._placeByPosition() -> t.elem.style.left === ""

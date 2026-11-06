@@ -47,3 +47,13 @@ The canvas element itself stays in the DOM and is immediately reusable for new d
 - `clearCanvas()` has two separate jobs: erase the drawn content, and reset any stroke currently being tracked -- clearing the picture does not by itself imply an in-progress gesture is also reset, so both happen explicitly
   - new Array() captures cleared then new Subject({ appendTo: document.body }) captures w then w.canvas.clearRect = () => cleared.push(1) then w.clearCanvas() -> cleared.length === 1 && w.elem.isConnected
   - new Subject({ appendTo: document.body }) captures w then w.elem.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, pointerId: 1, clientX: 0, clientY: 0 })) then Object.keys(w.pointers).length captures during then w.clearCanvas() -> during === 1 && Object.keys(w.pointers).length === 0
+
+## A second pointer joins the gesture rather than restarting it
+
+- two pointers down are two pointers tracked
+  - new Subject({ appendTo: document.body }) captures w then w.elem.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, pointerId: 1, clientX: 1, clientY: 1 })) then w.elem.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, pointerId: 2, clientX: 5, clientY: 5 })) then Object.keys(w.pointers).length captures tracked then document.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, pointerId: 1 })) then document.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, pointerId: 2 })) -> tracked === 2
+
+## A gesture ends with the board
+
+- destroying the board mid-stroke ends the gesture and forgets its pointers
+  - new Subject({ appendTo: document.body }) captures w then w.elem.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, pointerId: 1, clientX: 1, clientY: 1 })) then w._gesture.active captures during then w.destroy() -> during === true && w._gesture.active === false && Object.keys(w.pointers).length === 0

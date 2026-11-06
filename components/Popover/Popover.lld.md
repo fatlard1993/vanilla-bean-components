@@ -23,3 +23,19 @@ Native popover element with edge-aware placement. The design decision: position 
 
 - `state: 'auto'` delegates dismiss to the platform's native light-dismiss; `state: 'manual'` requires explicit `close()`; the choice belongs to the use site
   - new Subject({ state: "auto", autoOpen: false, uniqueId: true, maxWidth: 264, maxHeight: 132, outsideClose: false }) captures a then new Subject({ state: "manual", autoOpen: false, uniqueId: true, maxWidth: 264, maxHeight: 132, outsideClose: false }) captures m -> a.elem.getAttribute("popover") === "auto" && m.elem.getAttribute("popover") === "manual"
+
+## Where a popover lives, and what opens it
+
+- with no parent given, it is appended to the body
+  - new Subject({ autoOpen: false }) captures p -> p.elem.parentElement === document.body
+- autoOpen false opens nothing, however long it waits
+  - new Subject({ autoOpen: false, appendTo: document.body }) captures p then await new Promise(r => setTimeout(r, 260)) -> p.isOpen === false
+- the platform opening it (a popovertarget button) is known: isOpen follows the toggle
+  - new Subject({ autoOpen: false, appendTo: document.body }) captures p then p.isOpen captures before then p.elem.dispatchEvent(Object.assign(new Event("toggle"), { newState: "open" })) -> before === false && p.isOpen === true
+- half a point places nothing
+  - new Subject({ autoOpen: false, appendTo: document.body }) captures p then p.open({ x: 10 }) -> p.elem.style.left === "" && p.isOpen === true
+
+## A point given to open() places the popover
+
+- open({ x, y }) places it just below and right of the point
+  - new Subject({ autoOpen: false, appendTo: document.body }) captures p then (document.documentElement.getBoundingClientRect = () => ({ left: 0, top: 0, right: 1920, bottom: 1080 })) then p.open({ x: 100, y: 100 }) then delete document.documentElement.getBoundingClientRect -> p.elem.style.left === "112px" && p.elem.style.top === "112px"

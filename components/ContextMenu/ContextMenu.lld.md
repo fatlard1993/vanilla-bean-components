@@ -36,3 +36,13 @@ A right-click or long press opens the menu away from anything that shows where i
 - a menu under a button, or one told reticle: false, marks nothing
   - new Array() captures probe then document.body.appendChild(document.createElement("button")) captures anchor then new Subject({ items: [{ textContent: "a" }], appendTo: document.body }) captures menu then menu.open({ anchor }) -> document.body.lastElementChild === menu.elem
   - new Subject({ reticle: false, items: [{ textContent: "a" }], appendTo: document.body }) captures menu then menu.open({ x: 10, y: 10 }) -> document.body.lastElementChild === menu.elem
+
+## An item's detail is a second line; without one the item is its text
+
+- an item without a detail holds its text alone; one with a detail holds a label and a detail
+  - new Subject({ items: [{ textContent: "Plain" }, { textContent: "Rich", detail: "more" }] }) captures m -> m.menu.elem.children[0].textContent === "Plain" && m.menu.elem.children[0].querySelector(".detail") === null && m.menu.elem.children[1].querySelector(".detail").textContent === "more"
+
+## A menu not in the document does not open
+
+- open() before the menu is in the page opens nothing
+  - new Subject({ items: [{ textContent: "A" }], appendTo: null }) captures m then m.open({ x: 1, y: 1 }) -> m.isOpen === false && m._reticle === undefined && m.elem.style.maxWidth === ""

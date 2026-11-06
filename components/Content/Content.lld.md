@@ -22,3 +22,8 @@ The scrolling part of a view. It scrolls itself rather than the page, so a toolb
 
 - a child with margins of its own still fills the column and sits centered in it
   - new Array() captures probe then document.body.appendChild(Object.assign(document.createElement("div"), { style: "width: 600px; display: flex; flex-direction: column" })) captures wrap then new Subject({ column: 200, appendTo: wrap }, Object.assign(document.createElement("div"), { style: "margin: 4px 0", textContent: "a line" })) captures c then await new Promise(r => setTimeout(r, 700)) then c.elem.firstElementChild.getBoundingClientRect() captures child then wrap.getBoundingClientRect() captures outer -> Math.round(child.width) === 200 && Math.round(child.left - outer.left) === 200
+
+## Padding taken away leaves none inline
+
+- padding set to nothing removes the inline padding
+  - new Subject({ padding: 12, appendTo: document.body }) captures c then (c.options.padding = null) -> c.elem.style.padding === ""

@@ -93,3 +93,13 @@ Buttons, cards, calendar days and drop zones each used to answer Enter and Space
   - new Subject({ role: "gridcell", pressable: true, appendTo: document.body }) captures c then c.elem.getAttribute("role") captures kept then c.pressable(false) -> kept === "gridcell" && !c.elem.hasAttribute("tabindex") && c.elem.getAttribute("role") === "gridcell"
 - a `<button>` is left as it is: the browser already presses it by keyboard
   - new Subject({ tag: "button", pressable: true, appendTo: document.body }) captures b -> !b.elem.hasAttribute("role") && !b.elem.hasAttribute("tabindex")
+
+## The retired-declaration warning fires only for a retired declaration
+
+- a class declaring `static handlers` is warned about, once, after construction; a clean class is not
+  - new Array() captures warned then (globalThis.__lldWarn = console.warn) then (console.warn = (...a) => warned.push(a.join(" "))) then new (class Retired extends Subject { static handlers = {}; })({}) captures r then new (class Clean extends Subject {})({}) captures c then await new Promise(r => queueMicrotask(r)) then (console.warn = globalThis.__lldWarn) -> warned.length === 1 && warned[0].includes("Retired")
+
+## Schema defaults reach the options
+
+- a default declared in the schema is the option's value when none is given
+  - new Array() captures start then new (class Spaced extends Subject { static schema = { gap: { default: 3 } }; })({}) captures c -> c.options.gap === 3

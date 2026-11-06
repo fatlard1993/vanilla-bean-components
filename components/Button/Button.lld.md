@@ -54,3 +54,12 @@ The default button is flat and filled; the bevel that sinks as it's pressed is a
 
 - each variant marks the button for its look, and only one at a time
   - new Subject({ variant: "raised", appendTo: document.body }) captures b then b.options.variant = "chip" -> b.elem.classList.contains("variant-chip") && b.elem.classList.contains("variant-raised") === false
+
+## A Button on another tag is disabled for real
+
+A `<button>` is disabled by the browser; any other tag has to be told, and has to swallow its own clicks.
+
+- a disabled `<button>` carries the disabled property, not an aria-disabled attribute
+  - new Subject({ textContent: "b", disabled: true, appendTo: document.body }) captures b -> b.elem.disabled === true && !b.elem.hasAttribute("aria-disabled")
+- a disabled non-button says so with aria-disabled and presses nothing; enabled again, it presses
+  - new Array() captures presses then new Subject({ tag: "div", textContent: "d", disabled: true, onPointerPress: () => presses.push(1), appendTo: document.body }) captures d then d.elem.click() then presses.length captures whileDisabled then (d.options.disabled = false) then d.elem.click() -> d.elem.getAttribute("aria-disabled") === null && whileDisabled === 0 && presses.length === 1

@@ -30,3 +30,12 @@ A collection of records in a JSON file, for an app whose data fits in memory. Th
 
 - two people editing one record don't silently overwrite each other; the later save learns what changed instead
   - new Array() captures start then Subject.createStore({ db: { data: {}, write: async () => {} }, fields: ["name"], versioned: true }) captures store then await store.create({ name: "Chess" }) captures game then await store.update({ id: game.id, update: { name: "Go", _v: 1 } }) then await store.update({ id: game.id, update: { name: "Checkers", _v: 1 } }).catch(error => error) captures stale -> stale.current.name === "Go"
+
+## A store is made of fields, over a collection it reads and hands back
+
+- a store asks for its fields
+  - new Array() captures start then (() => { try { Subject.createStore({ db: { data: {}, write: async () => {} } }); return null; } catch (error) { return error.message; } })() captures refusal -> refusal.includes("fields is required")
+- the collection is read whole through data, and one record at a time through read
+  - new Array() captures start then Subject.createStore({ db: { data: { games: { a: { id: "a", name: "Go" } } }, write: async () => {} }, collection: "games", fields: ["name"] }) captures store then store.read({ id: "a" }) captures one then store.read({ id: "zzz" }) captures none -> store.data.a.name === "Go" && one.name === "Go" && none === false && store.read().a.name === "Go"
+- opening a database hands back the database, at its path, with the defaults in place
+  - new Array() captures start then await Subject.openDatabase({ path: "/home/chase/.cache/claude-tmp/claude-1000/-home-chase-Projects-vanilla-bean-components/8fbc138c-092c-412b-9283-0a4420eeefaf/scratchpad/lld-store.json", defaults: { games: {} } }) captures db -> db.path.endsWith("lld-store.json") && typeof db.data.games === "object"

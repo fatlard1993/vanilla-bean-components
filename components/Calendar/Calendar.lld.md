@@ -76,3 +76,19 @@ The cells answered only the pointer: a keyboard user could not reach a day at al
   - new Array() captures pressed then new Subject({ view: "day", year: 2026, month: 9, day: 14, onTimePress: e => pressed.push(e.detail.date.getHours() + ":" + e.detail.date.getMinutes()), appendTo: document.body }) captures c then c.elem.querySelector(".time-block[tabindex='0']") captures start then start.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true })) -> pressed.join() === "8:0"
 - an event presses as `eventPress` with the object it was given, and not also as its day
   - new Array() captures heard then { at: new Date(2026, 9, 14, 12), label: "Dentist", id: "a1" } captures data then new Subject({ year: 2026, month: 9, day: 14, events: [data], onEventPress: e => heard.push(e.detail.data.id), onDayPress: () => heard.push("day"), appendTo: document.body }) captures c then c.elem.querySelector(".event").dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true })) -> heard.join() === "a1"
+
+## Today is marked once, and only in the month it is in
+
+- the month view marks today's cell as the current date, and no other
+  - new Subject({ view: "month", appendTo: document.body }) captures c -> c.elem.querySelectorAll("[aria-current='date']").length === 1
+- a month that isn't this one marks no day
+  - new Subject({ view: "month", year: 2020, month: 1, appendTo: document.body }) captures c -> c.elem.querySelectorAll("[aria-current='date']").length === 0
+- isToday answers for the date itself, not the time of day
+  - new Subject({ appendTo: document.body }) captures c -> c.isToday(new Date()) === true && c.isToday(new Date(2000, 0, 1)) === false
+
+## A calendar starts with no events, and a view set before the first render waits for it
+
+- events default to an empty list of their own
+  - new Subject({ appendTo: document.body }) captures c -> Array.isArray(c.options.events) && c.options.events.length === 0
+- a view chosen before rendering is drawn by the first render, with nothing to redraw yet
+  - new Subject({ view: "week", autoRender: false }) captures c then c.render() -> c.elem.classList.contains("week")

@@ -34,3 +34,10 @@ View state is preserved across same-route navigations, so callers do not have to
 
 - in hash mode the path is the fragment, normalised and stripped of any query; in history mode it is the pathname
   - new Array() captures seen then (location.hash = "#/things/42") then new Subject({ views: { "/things/:id": class extends Object {} }, appendTo: document.body }) captures hashed then new Subject({ mode: "history", views: {}, appendTo: document.body }) captures historied -> hashed.path === "/things/42" && historied.path === window.location.pathname
+
+## With nothing to show, the router writes nothing
+
+- no views and no path leaves the URL alone
+  - new Array() captures start then Object.assign(window.location, { hash: "" }) captures cleared then new Subject({ views: {} }) captures r -> window.location.hash === ""
+- an empty path goes to the default
+  - new Subject({ views: { "/home": Object } }) captures r then window.location.hash captures went then (window.location.hash = "") -> went === "#/home"

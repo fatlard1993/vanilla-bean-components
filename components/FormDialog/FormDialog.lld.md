@@ -34,3 +34,20 @@ FormDialog used to recognise Save, Delete and Cancel by comparing labels, so an 
   - new Array() captures saved then new Subject({ inputs: [{ key: "name" }], data: { name: "a" }, buttons: [{ textContent: "Keep", "data-action": "save" }, "Save"], onSave: () => saved.push("save"), onButtonPress: ({ button }) => saved.push("own:" + button), appendTo: document.body }) captures d then Array.from(d.elem.querySelectorAll(".footer button")) captures buttons then buttons[1].click() then buttons[0].click() then await new Promise(r => setTimeout(r, 20)) -> saved.join() === "own:Save,save"
 - the delete confirmation is in the `danger` intent
   - new Subject({ inputs: [{ key: "name" }], onDelete: () => {}, confirmDelete: "Really?", appendTo: document.body }) captures d then d.delete() then await new Promise(r => setTimeout(r, 20)) -> Array.from(document.querySelectorAll("dialog")).at(-1).classList.contains("intent-danger")
+
+## Enter saves from a single-line field, and only from one
+
+- Enter in a text input saves; in a textarea it is a newline
+  - new Array() captures saves then new Subject({ inputs: [{ key: "name" }, { key: "notes", tag: "textarea" }], data: { name: "n", notes: "" }, onSave: () => saves.push(1), appendTo: document.body }) captures d then d.form.elem.querySelector("textarea").dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true })) then saves.length captures fromTextarea then d.form.elem.querySelector("input").dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true })) then await new Promise(r => setTimeout(r, 20)) -> fromTextarea === 0 && saves.length === 1
+
+## Cancel never deletes
+
+- with onDelete given, pressing Cancel closes without deleting
+  - new Array() captures deletes then new Subject({ inputs: [{ key: "name" }], onDelete: () => deletes.push(1), appendTo: document.body }) captures d then Array.from(d.elem.querySelectorAll(".footer button")).find(b => b.textContent === "Cancel").click() then await new Promise(r => setTimeout(r, 20)) -> deletes.length === 0
+
+## A delete that asks first does nothing when the answer is no
+
+- declining the confirmation resolves false and calls no onDelete
+  - new Array() captures deletes then new Subject({ inputs: [{ key: "name" }], onDelete: () => deletes.push(1), confirmDelete: "Really?", appendTo: document.body }) captures d then d.delete() captures pending then await new Promise(r => setTimeout(r, 40)) then Array.from(document.querySelectorAll("dialog")).at(-1)._component.close() then await pending captures answer -> answer === false && deletes.length === 0
+- with no confirmation asked, delete() runs onDelete
+  - new Array() captures deletes then new Subject({ inputs: [{ key: "name" }], onDelete: () => deletes.push(1), appendTo: document.body }) captures d then await d.delete() captures settled -> deletes.length === 1 && settled !== null

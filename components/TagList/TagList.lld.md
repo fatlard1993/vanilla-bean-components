@@ -59,3 +59,10 @@ A Form gives a component with its own `validate()` the field's validators, so a 
 
 - its `validate` checks the list and shows what's wrong below it, marking the new-tag field invalid
   - new Array() captures probe then document.createElement("div") captures host then document.body.append(host) then new Subject({ value: [], validate: tags => (tags.length ? null : "Add a tag"), appendTo: host }) captures t then t.validate() captures errors -> errors.join() === "Add a tag" && t.tagInput.elem.getAttribute("aria-invalid") === "true" && host.textContent.includes("Add a tag")
+
+## The list starts empty, and Enter in its field is its own
+
+- value defaults to an empty list
+  - new Subject({}) captures t -> Array.isArray(t.options.value) && t.options.value.length === 0
+- Enter in the new-tag field is claimed, so a form around it does not submit
+  - new Subject({ appendTo: document.body }) captures t then t.tagInput.elem.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true })) captures left -> left === false

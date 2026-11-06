@@ -56,3 +56,8 @@ A form whose field list changes -- a step added, a section swapped -- must not d
   - new Subject({ inputs: [{ key: "a", label: "A" }], appendTo: document.body }) captures f then f.options.data.a = "kept" then Array.from(f.elem.querySelectorAll("label")).length captures beforeCount then f.options.inputs = [{ key: "a", label: "A" }, { key: "b", label: "B" }] then await new Promise(r => setTimeout(r, 40)) -> beforeCount === 1 && f.elem.querySelectorAll("label").length === 2 && f.options.data.a === "kept"
 - a form with no conditional fields registers no data subscription; one with them does
   - new Subject({ inputs: [{ key: "x", label: "X" }], appendTo: document.body }) captures plain then new Subject({ inputs: [{ key: "x", label: "X" }, { key: "y", label: "Y", condition: d => d.x }], appendTo: document.body }) captures conditional -> !plain.cleanup.conditions && !!conditional.cleanup.conditions
+
+## Inputs set to nothing leave the form as it is
+
+- `inputs = null` after rendering rebuilds nothing
+  - new Subject({ inputs: [{ key: "a" }], appendTo: document.body }) captures f then (f.options.inputs = null) -> f.elem.querySelectorAll("label").length === 1

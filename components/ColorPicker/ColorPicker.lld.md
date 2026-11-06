@@ -42,3 +42,8 @@ Every other swatch can paint itself with the colour it selects. `random` has no 
   - new Subject({ swatches: ["#ff0000", "random"], appendTo: document.body }) captures p then Array.from(p.elem.querySelectorAll("*")) captures parts -> parts.filter(e => e.className.includes("rainbow")).length === 1 && parts.some(e => e.style.backgroundColor !== "" && !e.className.includes("rainbow"))
 - the `random` swatch is left unpainted so the rainbow treatment shows through; a colour swatch paints itself with its own colour
   - new Subject({ swatches: ["#ff0000", "random"], appendTo: document.body }) captures p then Array.from(p.elem.querySelectorAll("*")) captures parts then parts.filter(e => e.className.includes("rainbow")) captures rainbow -> rainbow.length === 1 && rainbow[0].style.backgroundColor === "" && parts.some(e => !e.className.includes("rainbow") && (e.style.backgroundColor === "#ff0000" || e.style.backgroundColor === "rgb(255, 0, 0)"))
+
+## Placing the indicators needs the areas to exist
+
+- placing before the areas are built is nothing, not an error
+  - new Subject({ autoRender: false }) captures p then p._positionIndicators() -> p.pickerArea === undefined

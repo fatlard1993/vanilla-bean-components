@@ -40,3 +40,8 @@ Debug output and parent traversal both need an answer that does not depend on th
   - new Subject({ tag: "div" }) captures e -> String(e) === "[object Elem]"
 - an appended element reports its DOM parent, and the wrapper that owns that parent
   - new Subject({ tag: "section" }) captures parent then new Subject({ tag: "span", appendTo: parent }) captures child -> child.parentElem.tagName === "SECTION" && child.parent === parent
+
+## An element placed in SVG belongs to SVG
+
+- a child appended to an svg element is made in the SVG namespace
+  - new Subject({ tag: "svg", appendTo: document.body }) captures svg then new Subject({ tag: "circle", appendTo: svg }) captures c -> c.elem.namespaceURI === "http://www.w3.org/2000/svg" && svg.elem.namespaceURI === "http://www.w3.org/2000/svg"

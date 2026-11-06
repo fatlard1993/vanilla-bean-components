@@ -42,3 +42,10 @@ An entry that carries its own `options` array is a group rather than a choice, s
   - new Subject({ options: ["alpha", "beta"], value: "beta", appendTo: document.body }) captures s -> s.value === "beta" && s.elem.selectedIndex === 1
   - new Subject({ value: "beta", options: ["alpha", "beta"], appendTo: document.body }) captures valueFirst then new Subject({ options: ["alpha", "beta"], value: "beta", appendTo: document.body }) captures optionsFirst -> valueFirst.elem.selectedIndex === 1 && optionsFirst.elem.selectedIndex === 1
   - new Subject({ options: [{ label: "none", value: "" }, "alpha"], value: "", appendTo: document.body }) captures s -> s.value === "" && s.elem.selectedIndex === 0
+
+## A pick is the option's own value, found inside a group too
+
+- picking an option in an optgroup stores the option's value, a number staying a number
+  - new Subject({ options: [{ label: "G", options: [{ label: "One", value: 1 }] }], appendTo: document.body }) captures s then (s.elem.value = "1") then s.elem.dispatchEvent(new Event("change")) -> s.options.value === 1
+- a pick that matches no option is the element's value
+  - new Subject({ options: ["a", "b"], appendTo: document.body }) captures s then (s.elem.value = "b") then s.elem.dispatchEvent(new Event("change")) -> s.options.value === "b"

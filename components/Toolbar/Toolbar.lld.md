@@ -19,3 +19,8 @@ A page's top bar is a title and the page's tools. The title takes the room the t
   - new Subject({ variant: "bar", appendTo: document.body }) captures t -> t.elem.classList.contains("variant-bar")
 - emptying a header's controls keeps its heading, and a truncated heading still shows whole on hover
   - new Subject({ heading: "A long field name", appendTo: document.body }, document.createElement("button")) captures t then t.empty() -> t.elem.children.length === 1 && t.elem.firstElementChild.title === "A long field name"
+
+## empty() chains
+
+- empty() returns the toolbar
+  - new Subject({}) captures t -> t.empty() === t

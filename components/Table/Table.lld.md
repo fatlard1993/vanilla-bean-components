@@ -33,3 +33,8 @@ Sort state is not only a visual affordance: a reader using a screen reader needs
 
 - option changes made before the first render are recorded without rendering; the first render then reflects them
   - new Array() captures sorted then new Subject({ autoRender: false, columns: [{ key: "a", label: "A", sort: true }], data: [{ a: 1 }], onSort: (p, d) => sorted.push(d) }) captures t then t.options.sortDirection = "asc" then sorted.length captures beforeRender then t.render() then t.options.sortDirection = "desc" -> beforeRender === 0 && sorted.join() === "desc"
+
+## A table carries the class the theme styles
+
+- every table has the vbc-table class, beside any the caller adds
+  - new Subject({ columns: ["n"], data: [], addClass: "mine" }) captures t -> t.elem.classList.contains("vbc-table") && t.elem.classList.contains("mine")

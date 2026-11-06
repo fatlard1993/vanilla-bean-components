@@ -55,3 +55,8 @@ A label is usually a string, and stays that short. When it needs more it carries
 
 - a checkbox passed as a child of an inline-after label is drawn before the label's text
   - new Subject({ variant: "inline-after", label: "Remember me", appendTo: document.body }, Object.assign(document.createElement("input"), { type: "checkbox" })) captures l then await new Promise(r => setTimeout(r, 700)) -> l.elem.querySelector("input").getBoundingClientRect().left < l.elem.querySelector(".label-text").getBoundingClientRect().left
+
+## A collapsible label is a control; a plain one is not
+
+- the collapsible variant's text is a tab stop with the button role; the simple variant's is not
+  - new Subject({ variant: "collapsible", label: "S", appendTo: document.body }) captures c then new Subject({ label: "P", appendTo: document.body }) captures p -> c.elem.querySelector("label").tabIndex === 0 && c.elem.querySelector("label").getAttribute("role") === "button" && !p.elem.querySelector("label").hasAttribute("tabindex")

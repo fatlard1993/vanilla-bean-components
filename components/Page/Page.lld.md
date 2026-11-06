@@ -51,3 +51,7 @@ The page styles headings, links, code, form fields, buttons and tables wherever 
 - a vbc-elements container keeps the element styles inside it while the page leaves them off
   - new Subject({ themeElements: false, autoRender: true, appendTo: document.body }) captures page then String(Array.from(document.querySelectorAll("style")).map(style => style.textContent).join("")).includes(":where(.vbc-elements)") captures scoped -> scoped === true
 
+## A page starts with no stylesheets of its own
+
+- styleSheets defaults to an empty list
+  - new Subject({ autoRender: false }) captures p -> Array.isArray(p.options.styleSheets) && p.options.styleSheets.length === 0

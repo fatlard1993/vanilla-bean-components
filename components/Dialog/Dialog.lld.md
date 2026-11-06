@@ -52,3 +52,8 @@ The confirming button comes second: a dialog focuses its first button, so a refl
   - new Array() captures seen then Subject.default.confirm({ header: "Delete it?", confirmLabel: "Delete" }) captures answer then await new Promise(r => setTimeout(r, 50)) then Array.from(document.querySelectorAll("dialog button")) captures buttons then buttons[1].click() then await answer captures confirmed -> buttons.map(b => b.textContent).join() === "Cancel,Delete" && confirmed === true
 - `confirm` resolves false when the dialog is closed any other way
   - new Array() captures seen then Subject.default.confirm({ header: "Leave?", confirmLabel: "Leave" }) captures answer then await new Promise(r => setTimeout(r, 50)) then document.querySelector("dialog").close() then await answer captures confirmed -> confirmed === false
+
+## isOpen says whether the dialog is open
+
+- closed by default, open after open()
+  - new Subject({ autoOpen: false, appendTo: document.body }) captures d then d.isOpen captures before then d.open() -> before === false && d.isOpen === true

@@ -64,3 +64,18 @@ Picking, dropping and pasting are three routes to one question (which files did 
 
 - a drop zone passes on only the dropped files accept allows, and marks itself while files are dragged over it
   - new Array() captures got then document.createElement("div") captures zone then document.body.append(zone) then new Subject({ type: "file", accept: ".csv", dropZone: zone, onFiles: files => got.push(...files.map(f => f.name)), appendTo: document.body }) then zone.dispatchEvent(Object.assign(new Event("dragover", { cancelable: true }), { dataTransfer: { types: ["Files"], files: [] } })) then zone.classList.contains("drag-over") captures marked then zone.dispatchEvent(Object.assign(new Event("drop", { cancelable: true }), { dataTransfer: { types: ["Files"], files: [new File(["x"], "a.csv"), new File(["x"], "b.png")] } })) -> marked === true && zone.classList.contains("drag-over") === false && got.join() === "a.csv"
+
+## Suggestions are one datalist, kept in step and taken away with the last suggestion
+
+- the list is made once and reused, and removed when the suggestions go
+  - new Subject({ suggestions: ["a"], appendTo: document.body }) captures i then i.elem.getAttribute("list") captures id then (i.options.suggestions = ["b"]) then (i.options.suggestions = ["c"]) then document.querySelectorAll("datalist").length captures lists then (i.options.suggestions = []) -> id !== null && lists === 1 && document.getElementById(id) === null && !i.elem.hasAttribute("list")
+
+## Tab indents only in a highlighted textarea
+
+- Tab is claimed in a highlighted textarea, and left to the browser in a plain one or in an input
+  - new Subject({ tag: "textarea", syntaxHighlighting: true, value: "x", appendTo: document.body }) captures code then new Subject({ tag: "textarea", value: "x", appendTo: document.body }) captures plain then new Subject({ syntaxHighlighting: true, appendTo: document.body }) captures field then code.elem.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", cancelable: true })) captures codeDefault then plain.elem.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", cancelable: true })) captures plainDefault then field.elem.dispatchEvent(new KeyboardEvent("keydown", { key: "Tab", cancelable: true })) captures fieldDefault -> codeDefault === false && plainDefault === true && fieldDefault === true
+
+## Taking files says whether any were taken
+
+- accepted files reach onFiles and answer true; none answer false
+  - new Array() captures got then new Subject({ type: "file", onFiles: files => got.push(...files), appendTo: document.body }) captures i then i._takeFiles([new File(["x"], "a.txt", { type: "text/plain" })]) captures took then i._takeFiles([]) captures tookNone -> took === true && got.length === 1 && tookNone === false

@@ -62,3 +62,19 @@ A toast that says something was deleted is the right place to undo it. The actio
 
 - a pointer over the toast holds its timeout
   - new Subject({ content: "m", timeout: 30, autoOpen: false, appendTo: document.body }) captures n then n.open() then n.elem.dispatchEvent(new Event("pointerenter")) then await new Promise(r => setTimeout(r, 90)) -> n.elem.isConnected === true
+
+## Beside actions, the message is its own element, whichever way it was given
+
+- textContent and content both land in the message element
+  - new Subject({ textContent: "T", actions: [{ textContent: "U" }], autoOpen: false, appendTo: document.body }) captures byText then new Subject({ content: "C", actions: [{ textContent: "U" }], autoOpen: false, appendTo: document.body }) captures byContent -> byText.elem.querySelector(".notify-message").textContent === "T" && byContent.elem.querySelector(".notify-message").textContent === "C"
+
+## A hold is let go only when nothing else is holding
+
+- focus moving between the toast's own buttons keeps it held
+  - new Subject({ timeout: 30, autoOpen: false, actions: [{ textContent: "A" }, { textContent: "B" }], appendTo: document.body }) captures n then n.open() then n.elem.querySelectorAll("button")[0].focus() then n.elem.querySelectorAll("button")[0].dispatchEvent(new FocusEvent("focusout", { bubbles: true, relatedTarget: n.elem.querySelectorAll("button")[1] })) -> n._paused === true
+- focus leaving the toast lets it go
+  - new Subject({ timeout: 30, autoOpen: false, actions: [{ textContent: "A" }], appendTo: document.body }) captures n then n.open() then n.elem.querySelector("button").focus() then n.elem.querySelector("button").dispatchEvent(new FocusEvent("focusout", { bubbles: true, relatedTarget: null })) -> n._paused === false
+- the pointer leaving while focus is inside keeps it held
+  - new Subject({ timeout: 30, autoOpen: false, actions: [{ textContent: "A" }], appendTo: document.body }) captures n then n.open() then n.elem.querySelector("button").focus() then n.elem.dispatchEvent(new Event("pointerleave")) -> n._paused === true
+- a toast with no clock is not paused by a hand over it
+  - new Subject({ timeout: 0, autoOpen: false, appendTo: document.body }) captures n then n.open() then n.elem.dispatchEvent(new Event("pointerenter")) -> n._paused !== true

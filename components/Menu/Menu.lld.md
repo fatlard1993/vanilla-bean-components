@@ -34,3 +34,8 @@ The roving tabindex makes the menu one tab stop; arrow keys are what move inside
 
 - ArrowDown advances and wraps past the last item; ArrowUp retreats and wraps past the first
   - new Subject({ items: [{ textContent: "a" }, { textContent: "b" }, { textContent: "c" }], appendTo: document.body }) captures m then Array.from(m.elem.querySelectorAll("li")) captures lis then lis[0].focus() then new Array() captures seq then seq.push(lis.indexOf(document.activeElement)) then ["ArrowDown", "ArrowDown", "ArrowDown", "ArrowUp"].forEach(key => { m.elem.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true })); seq.push(lis.indexOf(document.activeElement)); }) -> seq.join() === "0,1,2,0,2"
+
+## A row's own role is kept
+
+- a row given a role of its own keeps it; the others are menu items
+  - new Subject({ items: [{ textContent: "check", role: "menuitemcheckbox" }, { textContent: "plain" }], appendTo: document.body }) captures m -> m.elem.children[0].getAttribute("role") === "menuitemcheckbox" && m.elem.children[1].getAttribute("role") === "menuitem"

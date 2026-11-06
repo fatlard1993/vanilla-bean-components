@@ -17,3 +17,8 @@ A view that's fetching shows where its content will be, then becomes the empty s
 
 - loading shows a spinner in place of the icon, and the icon comes back when it's done
   - new Subject({ icon: "seedling", loading: true, appendTo: document.body }) captures e then e._icon.options.icon captures during then e.options.loading = false -> during === "spinner" && e._icon.options.icon === "seedling" && e.elem.classList.contains("loading") === false
+
+## No action is no button
+
+- an action set to nothing takes the button away, rather than drawing an empty one
+  - new Subject({ action: { textContent: "Add" }, appendTo: document.body }) captures e then e.elem.querySelector(".action") captures had then (e.options.action = null) -> had !== null && e.elem.querySelector(".action") === null

@@ -25,3 +25,17 @@ A row of tabs, one selected. The design decision is that selection is the compon
   - new Subject({ variant: "segmented", tabs: [{ id: "day", label: "By day" }, { id: "project", label: "By project" }], appendTo: document.body }) captures t -> t.elem.classList.contains("variant-segmented") && t.elem.getAttribute("role") === "tablist"
 - a tab can carry an icon beside its label
   - new Subject({ tabs: [{ id: "chart", label: "Chart", icon: "chart-line" }], appendTo: document.body }) captures t -> t.elem.querySelector("[data-tab='chart']").classList.contains("fa-chart-line")
+
+## Keys the row doesn't use are left to the page
+
+- a key that is not an arrow, Home or End is not claimed
+  - new Subject({ tabs: [{ id: "a", label: "A" }], appendTo: document.body }) captures t then t.elem.dispatchEvent(new KeyboardEvent("keydown", { key: "x", cancelable: true })) captures left -> left === true
+
+## Tabs start empty, hide the panel of a tab removed, and count their own
+
+- tabs default to an empty list
+  - new Subject({}) captures t -> Array.isArray(t.options.tabs) && t.options.tabs.length === 0
+- a tab removed from the list hides its panel
+  - new Array() captures start then document.body.appendChild(document.createElement("div")) captures pa then document.body.appendChild(document.createElement("div")) captures pb then new Subject({ tabs: [{ id: "a", label: "A" }, { id: "b", label: "B" }], panels: { a: pa, b: pb }, selected: "a", appendTo: document.body }) captures t then (t.options.tabs = [{ id: "b", label: "B" }]) -> pa.hidden === true && pb.hidden === false
+- count() records the count on the tab it names
+  - new Subject({ tabs: [{ id: "a", label: "A" }, { id: "b", label: "B" }], appendTo: document.body }) captures t then t.count("b", 4) -> t.options.tabs[1].count === 4 && t.options.tabs[0].count === undefined
