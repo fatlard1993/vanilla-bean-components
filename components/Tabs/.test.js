@@ -121,3 +121,63 @@ describe('Tabs ids and panels', () => {
 		tabs.destroy();
 	});
 });
+
+describe('Tabs selection rules', () => {
+	const tabs = [
+		{ id: 'a', label: 'A' },
+		{ id: 'b', label: 'B', disabled: true },
+		{ id: 'c', label: 'C' },
+	];
+
+	test('a selection that names no tab settles on the first, without counting as a change', () => {
+		const onChange = mock();
+		const strip = new Tabs({ tabs, selected: 'nope', onChange, appendTo: container });
+
+		expect(strip.options.selected).toBe('a');
+		expect(onChange).not.toHaveBeenCalled();
+	});
+
+	test('select() refuses a disabled tab, an unknown one, and the one already selected', () => {
+		const onChange = mock();
+		const strip = new Tabs({ tabs, onChange, appendTo: container });
+
+		strip.select('b');
+		strip.select('missing');
+		strip.select('a');
+
+		expect(strip.options.selected).toBe('a');
+		expect(onChange).not.toHaveBeenCalled();
+
+		strip.select('c');
+
+		expect(strip.options.selected).toBe('c');
+		expect(onChange).toHaveBeenCalledTimes(1);
+	});
+
+	test('tabs given again keep the selection, and a count for a tab that is gone is nothing', () => {
+		const strip = new Tabs({ tabs, selected: 'c', appendTo: container });
+
+		strip.options.tabs = [...tabs, { id: 'd', label: 'D' }];
+
+		expect(strip.options.selected).toBe('c');
+		expect(getByRole(container, 'tab', { name: 'C' })).toHaveAttribute('aria-selected', 'true');
+		expect(() => strip.count('missing', 3)).not.toThrow();
+		expect(getByRole(container, 'tab', { name: 'D' })).toHaveAttribute('tabindex', '-1');
+	});
+
+	test('the segmented variant marks the row and keeps the tabs', () => {
+		const strip = new Tabs({ tabs, variant: 'segmented', appendTo: container });
+
+		expect(strip.elem).toHaveClass('variant-segmented');
+		expect(getByRole(container, 'tablist')).toBe(strip.elem);
+		expect(() => (strip.options.variant = 'pills')).toThrow('not a valid variant');
+	});
+
+	test('a panel is labelled by its tab, and the tab says which panel it controls', () => {
+		const panel = new Elem({ appendTo: container });
+		new Tabs({ tabs, panels: { a: panel }, appendTo: container });
+
+		expect(panel.elem.getAttribute('aria-labelledby')).toBe(getByRole(container, 'tab', { name: 'A' }).id);
+		expect(getByRole(container, 'tab', { name: 'A' }).getAttribute('aria-controls')).toBe(panel.elem.id);
+	});
+});
