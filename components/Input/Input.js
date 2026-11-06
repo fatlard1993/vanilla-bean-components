@@ -66,6 +66,11 @@ export default class Input extends Component {
 	static schema = {
 		tag: { default: 'input' },
 		type: { enum: INPUT_TYPES },
+		// The text defaults prepareOptions gives an input or textarea, as attributes: a browser without the property
+		// (autocorrect outside Safari and Chrome) still reads the attribute
+		autocomplete: { attribute: true },
+		autocapitalize: { attribute: true },
+		autocorrect: { attribute: true },
 		// Values the browser offers while typing, through a datalist kept in step with the option
 		suggestions: {
 			set(value) {
@@ -166,11 +171,6 @@ export default class Input extends Component {
 				if (!this.options.syntaxHighlighting) return;
 				this.removeClass(/\blanguage-\S+\b/g);
 				this.addClass(`language-${value}`);
-			},
-		},
-		autocorrect: {
-			set(value) {
-				this.elem.autocorrect = value;
 			},
 		},
 		// Called by the field itself, so not wired as a listener

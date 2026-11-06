@@ -136,8 +136,8 @@ describe('Input', () => {
 		expect(input.elem.tagName).toBe('INPUT');
 		expect(input.elem.value).toBe('');
 		expect(input.elem.autocomplete).toBe('off');
-		expect(input.elem.autocapitalize).toBe('off');
-		expect(input.elem.autocorrect).toBe('off');
+		expect(input.elem.getAttribute('autocapitalize')).toBe('off');
+		expect(input.elem.getAttribute('autocorrect')).toBe('off');
 		expect(input.elem.placeholder).toBe('');
 	});
 
