@@ -932,7 +932,7 @@ export declare class Toolbar extends Component {
 }
 
 export interface TooltipOptions extends PopoverOptions {
-	/** Tooltip position relative to parent (default: "topRight") */
+	/** Where it sits against the element it explains (its parent), when opened with no point of its own (default: "topRight") */
 	position?: 'center' | 'top' | 'bottom' | 'left' | 'right' | 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
 	/** Open a moment after it's added to the page, as a Popover does (default: false) */
 	autoOpen?: boolean | number;
@@ -942,6 +942,8 @@ export interface TooltipOptions extends PopoverOptions {
 
 export declare class Tooltip extends Popover {
 	constructor(options?: TooltipOptions, ...children: Array<Elem | HTMLElement | string>);
+	/** Opens the tooltip: at a point when given one, otherwise at its `position` against the element it explains. */
+	open(options?: Record<string, any>): void;
 }
 
 export interface TooltipWrapperOptions extends IconOptions {

@@ -65,12 +65,13 @@ export default class TooltipWrapper extends StyledIcon {
 
 			this.addClass('has-tooltip');
 
-			// pointerenter and pointerleave, not over and out: crossing into a child is not leaving the element
+			// pointerenter and pointerleave, not over and out: crossing into a child is not leaving the element. Opened
+			// with no point, the tooltip sits at its position against this element rather than under the pointer
 			this.on({
 				targetEvent: 'pointerenter',
-				callback: ({ clientX, clientY }) => {
+				callback: () => {
 					clearTimeout(this.tooltipTimeout);
-					this.tooltipTimeout = setTimeout(() => this._tooltip?.open({ x: clientX, y: clientY }), 700);
+					this.tooltipTimeout = setTimeout(() => this._tooltip?.open(), 700);
 				},
 			});
 
@@ -87,8 +88,7 @@ export default class TooltipWrapper extends StyledIcon {
 				targetEvent: 'focusin',
 				callback: () => {
 					clearTimeout(this.tooltipTimeout);
-					const { left, bottom } = this.elem.getBoundingClientRect();
-					this._tooltip?.open({ x: left, y: bottom });
+					this._tooltip?.open();
 				},
 			});
 
