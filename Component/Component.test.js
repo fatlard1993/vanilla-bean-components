@@ -1317,6 +1317,49 @@ describe('Component', () => {
 		});
 	});
 
+	describe('listeners', () => {
+		test('a listener of its own for disconnected leaves the cleanup on disconnect in place', async () => {
+			const cleanup = mock();
+			const comp = new Component({ appendTo: container });
+
+			comp.addCleanup('probe', cleanup);
+			comp.on({ targetEvent: 'disconnected', callback: () => {} });
+			comp.elem.remove();
+			await new Promise(resolve => setTimeout(resolve, 0));
+
+			expect(cleanup).toHaveBeenCalledTimes(1);
+		});
+
+		test('clearing an on* option takes its listener away', () => {
+			const onClick = mock();
+			const onPointerPress = mock();
+			const comp = new Component({ appendTo: container, onClick, onPointerPress });
+
+			comp.options.onClick = null;
+			comp.options.onPointerPress = undefined;
+			comp.elem.click();
+
+			expect(onClick).not.toHaveBeenCalled();
+			expect(onPointerPress).not.toHaveBeenCalled();
+		});
+
+		test('onHover keeps following the pointer over a child', () => {
+			const child = new Component({ tag: 'span' });
+			const comp = new Component({ appendTo: container, append: child });
+			const moves = [];
+
+			comp.onHover(event => moves.push(event.type));
+			comp.elem.dispatchEvent(new PointerEvent('pointerenter'));
+			comp.elem.dispatchEvent(new PointerEvent('pointermove'));
+			child.elem.dispatchEvent(new PointerEvent('pointerout', { bubbles: true }));
+			comp.elem.dispatchEvent(new PointerEvent('pointermove'));
+			comp.elem.dispatchEvent(new PointerEvent('pointerleave'));
+			comp.elem.dispatchEvent(new PointerEvent('pointermove'));
+
+			expect(moves).toEqual(['pointerenter', 'pointermove', 'pointermove']);
+		});
+	});
+
 	describe('destroy', () => {
 		const settle = () => new Promise(resolve => setTimeout(resolve, 0));
 

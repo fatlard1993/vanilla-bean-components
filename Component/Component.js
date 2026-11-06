@@ -173,8 +173,8 @@ const union = (base, additions) => (additions.size > 0 ? new Set([...(base || []
 const _warnedOfRetiredOptions = new WeakSet();
 
 /**
- * Dev warning, once per class, for the 1.x option declarations 2.x ignores: `static handlers` and a `defaultOptions`
- * class field. Class fields are assigned after the constructor chain returns, hence the microtask.
+ * Dev warning, once per class, for the option declarations Component no longer reads: `static handlers` and a
+ * `defaultOptions` class field. Class fields are assigned after the constructor chain returns, hence the microtask.
  * @param {Component} component - A newly constructed component
  */
 const warnOfRetiredOptions = component => {
@@ -194,7 +194,7 @@ const warnOfRetiredOptions = component => {
 
 		// eslint-disable-next-line no-console
 		console.warn(
-			`[Component] ${klass.name} declares ${retired.join(' and ')}, which 2.x ignores: its options get no defaults or handlers from it. Declare them in \`static schema\` (default and set per key).`,
+			`[Component] ${klass.name} declares ${retired.join(' and ')}, which Component no longer reads: its options get no defaults or handlers from it. Declare them in \`static schema\` (default and set per key).`,
 		);
 	});
 };
@@ -479,7 +479,17 @@ class Component extends Elem {
 			return;
 		}
 
-		if (key.startsWith('on') && value) {
+		// Cleared: whatever the last value was listening with is taken away
+		if (key.startsWith('on') && !value) {
+			if (this._destroyCleanup?.[key]) {
+				this._destroyCleanup[key]();
+				delete this._destroyCleanup[key];
+			}
+
+			return;
+		}
+
+		if (key.startsWith('on')) {
 			const eventName = key.slice(2);
 			const declaredEvent = eventName.charAt(0).toLowerCase() + eventName.slice(1);
 			// A declared custom event keeps its case (onKeyDown hears keyDown); anything else is a native event name
@@ -680,7 +690,12 @@ class Component extends Elem {
 	_initCleanup() {
 		if (!this.cleanup) {
 			this.cleanup = {};
-			this.on({ targetEvent: 'disconnected', callback: () => this.processCleanup(this.cleanup, true) });
+			// Under an id of its own: on({ targetEvent: 'disconnected' }) with none replaces the listener of that name
+			this.on({
+				targetEvent: 'disconnected',
+				id: 'disconnected:cleanup',
+				callback: () => this.processCleanup(this.cleanup, true),
+			});
 		}
 	}
 
@@ -846,9 +861,15 @@ class Component extends Elem {
 	/**
 	 * Register pointer hover handler with move tracking during hover.
 	 * Callback bound to component context and called on enter and during move.
-	 * @param {Function} [callback] - Handler called on pointerenter and pointermove
+	 * @param {Function} [callback] - Handler called on pointerenter and pointermove; none takes the last one away
 	 */
-	onHover(callback = () => {}) {
+	onHover(callback) {
+		if (!callback) {
+			this.replaceDestroyCleanup('onHover', () => {});
+
+			return;
+		}
+
 		callback = callback.bind(this);
 
 		const pointerEnter = event => {
@@ -857,6 +878,7 @@ class Component extends Elem {
 			this.elem.addEventListener('pointermove', callback, true);
 		};
 
+		// pointerleave, not pointerout: pointerout also fires on the way into a child, while the pointer is still over this
 		const pointerLeave = () => {
 			this.elem.removeEventListener('pointermove', callback, true);
 		};
@@ -865,22 +887,26 @@ class Component extends Elem {
 			this.elem.removeEventListener('pointerenter', pointerEnter);
 			this.elem.removeEventListener('pointerleave', pointerLeave);
 			this.elem.removeEventListener('pointercancel', pointerLeave);
-			this.elem.removeEventListener('pointerout', pointerLeave);
 			this.elem.removeEventListener('pointermove', callback, true);
 		});
 
 		this.elem.addEventListener('pointerenter', pointerEnter);
 		this.elem.addEventListener('pointerleave', pointerLeave);
 		this.elem.addEventListener('pointercancel', pointerLeave);
-		this.elem.addEventListener('pointerout', pointerLeave);
 	}
 
 	/**
 	 * Register press handler. Fires on click: a mouse, touch or pen press released on this element, or a keyboard or
 	 * assistive technology activation. A touch that turns into a scroll is not a press.
-	 * @param {Function} [callback] - Handler called on click on this element
+	 * @param {Function} [callback] - Handler called on click on this element; none takes the last one away
 	 */
-	onPointerPress(callback = () => {}) {
+	onPointerPress(callback) {
+		if (!callback) {
+			this.replaceDestroyCleanup('onPointerPress', () => {});
+
+			return;
+		}
+
 		callback = callback.bind(this);
 		this.replaceDestroyCleanup('onPointerPress', () => this.elem.removeEventListener('click', callback));
 		this.elem.addEventListener('click', callback);
@@ -903,9 +929,16 @@ class Component extends Elem {
 	 * Register a long-press handler: a pointer held still on this element for half a second. Moving more than a few
 	 * pixels, scrolling, or letting go first cancels it, and the click that ends a long press is swallowed, so the same
 	 * element can take both a press and a long press. Touch's native callout is turned off on the element.
-	 * @param {Function} [callback] - Handler called with the pointerdown event, so its clientX and clientY are the point
+	 * @param {Function} [callback] - Handler called with the pointerdown event, so its clientX and clientY are the point;
+	 *   none takes the last one away
 	 */
-	onLongPress(callback = () => {}) {
+	onLongPress(callback) {
+		if (!callback) {
+			this.replaceDestroyCleanup('onLongPress', () => {});
+
+			return;
+		}
+
 		callback = callback.bind(this);
 
 		let timer = null;
