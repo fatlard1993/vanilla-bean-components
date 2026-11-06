@@ -153,6 +153,8 @@ class Label extends StyledLabel {
 					const shouldBeAfter = value === 'inline-after';
 					const isAfter = this._labelText.elem === this.elem.lastElementChild;
 					if (shouldBeAfter !== isAfter) this[shouldBeAfter ? 'append' : 'prepend'](this._labelText);
+					// Collapsible, the label is a control: reached by Tab, opened and closed by Enter and Space
+					this._labelText.pressable(value === 'collapsible');
 					if (value === 'collapsible') {
 						this._labelText.elem.setAttribute('aria-expanded', this.hasClass('collapsed') ? 'false' : 'true');
 					}
@@ -195,8 +197,9 @@ class Label extends StyledLabel {
 	};
 
 	static prepareOptions(options, children) {
+		// The first child is the field the label is for, when it is an element and not text
 		return {
-			...(children.length > 0 && { for: children[0] }),
+			...(children.length > 0 && typeof children[0] !== 'string' && { for: children[0] }),
 			...options,
 		};
 	}
