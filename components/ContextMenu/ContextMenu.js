@@ -216,8 +216,6 @@ class ContextMenu extends StyledPopover {
 		reticle: { default: true },
 		items: {
 			set(value) {
-				if (!this.menu) this.menu = new Menu({ appendTo: this });
-
 				this.menu.options.items = (value ?? []).map(item =>
 					menuItem(item, (onPointerPress, event) => {
 						onPointerPress?.(event);
