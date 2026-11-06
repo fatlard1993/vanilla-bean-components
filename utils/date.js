@@ -69,7 +69,7 @@ export const formatTime = (value, { locale, ...options } = {}) => {
  * @returns {string} The duration, or '' for none
  */
 export const formatDuration = milliseconds => {
-	const total = Math.floor((milliseconds || 0) / 60_000);
+	const total = Number.isFinite(milliseconds) ? Math.max(0, Math.floor(milliseconds / 60_000)) : 0;
 	const hours = Math.floor(total / 60);
 	const minutes = total % 60;
 
