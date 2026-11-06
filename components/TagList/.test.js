@@ -118,3 +118,36 @@ describe('TagList', () => {
 		expect(tagList.tagInput.elem.getAttribute('list')).toBeTruthy();
 	});
 });
+
+describe('TagList editing', () => {
+	test('readOnly given later takes the field and remove buttons away, and back', () => {
+		const tagList = new TagList({ value: ['a'], appendTo: container });
+
+		tagList.options.readOnly = true;
+
+		// eslint-disable-next-line testing-library/no-node-access
+		expect(tagList.elem.querySelector('input')).toBeNull();
+		// eslint-disable-next-line testing-library/no-node-access
+		expect(tagList.elem.querySelector('button')).toBeNull();
+
+		tagList.options.readOnly = false;
+
+		// eslint-disable-next-line testing-library/no-node-access
+		expect(tagList.elem.querySelector('input')).not.toBeNull();
+	});
+
+	test('the buttons have names', () => {
+		new TagList({ value: ['rock'], appendTo: container });
+
+		expect(getAllByRole(container, 'button', { name: 'Remove rock' })).toHaveLength(1);
+		expect(getAllByRole(container, 'button', { name: 'Add tag' })).toHaveLength(1);
+	});
+
+	test('a tag is added to a list given no value', () => {
+		const tagList = new TagList({ value: null, appendTo: container });
+
+		tagList._addTag('x');
+
+		expect(tagList.options.value).toEqual(['x']);
+	});
+});

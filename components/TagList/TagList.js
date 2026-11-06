@@ -55,10 +55,12 @@ const TagListInput = styled(
 class TagList extends StyledComponent {
 	static schema = {
 		tag: { default: 'ul' },
+		// Changed later, the field and the remove buttons are built again or taken away
 		readOnly: {
 			default: false,
 			set(value) {
 				this.toggleClass('readOnly', !!value);
+				if (this.rendered) this.render();
 			},
 		},
 		value: {
@@ -100,13 +102,13 @@ class TagList extends StyledComponent {
 		this.tagInput.elem.value = '';
 		this.tagInput.elem.focus();
 
-		if (this.options.value.includes(value)) return;
+		if ((this.options.value ?? []).includes(value)) return;
 
-		this._change([...this.options.value, value]);
+		this._change([...(this.options.value ?? []), value]);
 	}
 
 	_removeTag(value) {
-		this._change(this.options.value.filter(tag => tag !== value));
+		this._change((this.options.value ?? []).filter(tag => tag !== value));
 		this.tagInput?.elem.focus();
 	}
 
@@ -195,6 +197,7 @@ class TagList extends StyledComponent {
 				this.tagInput,
 				new Button({
 					icon: 'plus',
+					'aria-label': 'Add tag',
 					onPointerPress: () => this._addTag(this.tagInput.elem.value),
 				}),
 			);

@@ -87,6 +87,7 @@ class Tag extends StyledComponent {
 			set(value) {
 				this.elem.setAttribute('data-value', value);
 				this._textSpan.elem.textContent = value;
+				this._removeButton?.elem.setAttribute('aria-label', `Remove ${value}`);
 			},
 		},
 	};
@@ -95,8 +96,9 @@ class Tag extends StyledComponent {
 		this._textSpan = new Elem({ tag: 'span', appendTo: this });
 
 		if (!this.options.readOnly) {
-			new Button({
+			this._removeButton = new Button({
 				icon: 'close',
+				'aria-label': 'Remove',
 				appendTo: this,
 				onPointerPress: () => (this.options.onRemove ? this.options.onRemove(this) : this.destroy()),
 			});
