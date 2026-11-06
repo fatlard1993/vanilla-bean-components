@@ -97,26 +97,17 @@ export const convertRange = (value, sourceRange, targetRange) =>
  * @returns {*[]} Flattened array of items matching their conditions
  */
 export const conditionalList = conditionalItems =>
-	conditionalItems
-		.filter(
-			item =>
-				item.if ||
-				item.elseItem ||
-				Array.isArray(item.elseItems) ||
-				Array.isArray(item.alwaysItems) ||
-				item.alwaysItem !== undefined,
-		)
-		.flatMap(item => {
-			if (item.alwaysItem !== undefined) return [item.alwaysItem];
-			if (item.if && item.thenItem !== undefined) return [item.thenItem];
-			if (!item.if && item.elseItem !== undefined) return [item.elseItem];
+	conditionalItems.flatMap(item => {
+		// An item given, whatever its value: 0, '' and false are items too
+		const given = (one, many) => {
+			if (one !== undefined) return [one];
 
-			if (Array.isArray(item.alwaysItems)) return item.alwaysItems;
-			if (item.if && Array.isArray(item.thenItems)) return item.thenItems;
-			if (!item.if && Array.isArray(item.elseItems)) return item.elseItems;
+			return Array.isArray(many) ? many : [];
+		};
+		const branch = item.if ? given(item.thenItem, item.thenItems) : given(item.elseItem, item.elseItems);
 
-			return [];
-		});
+		return [...given(item.alwaysItem, item.alwaysItems), ...branch];
+	});
 
 /**
  * Creates multi-level sorting function for Array.sort() with locale-aware comparison.
