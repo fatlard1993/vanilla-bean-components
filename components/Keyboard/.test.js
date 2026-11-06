@@ -68,3 +68,71 @@ describe('Keyboard', () => {
 		expect(keyboard.onKeyDown).toBeUndefined();
 	});
 });
+
+describe('Keyboard layouts and keys', () => {
+	const keys = keyboard => getAllByRole(keyboard.elem, 'button').map(key => key.textContent);
+
+	test('the number layout has digits and no letters, and the layout can change', () => {
+		const keyboard = new Keyboard({ layout: 'number', appendTo: container });
+
+		expect(keys(keyboard)).toEqual(expect.arrayContaining(['1', '2', '3', '0', '.', '-']));
+		expect(keys(keyboard)).not.toContain('q');
+
+		keyboard.options.layout = 'simple';
+
+		expect(keys(keyboard)).toContain('q');
+		expect(keyboard.elem).toHaveClass('layout-simple');
+		expect(keyboard.elem).not.toHaveClass('layout-number');
+	});
+
+	test('a layout that does not exist is not switched to', () => {
+		const keyboard = new Keyboard({ appendTo: container });
+
+		keyboard.setLayout('nope');
+
+		expect(keyboard.elem).toHaveClass('layout-simple');
+		expect(keys(keyboard)).toContain('q');
+	});
+
+	test('a key definition gives a key its text, its width class and the key it sends', () => {
+		const onKeyPress = mock();
+		const keyboard = new Keyboard({ onKeyPress, tactileResponse: false, appendTo: container });
+		// eslint-disable-next-line testing-library/no-node-access
+		const space = keyboard.elem.querySelector('.space');
+
+		expect(space).toHaveClass('u6');
+		expect(getByRole(keyboard.elem, 'button', { name: 'ABC' })).toBeDefined();
+
+		pressKey(keyboard, 'ABC');
+
+		expect(onKeyPress.mock.calls[0][0].detail.key).toBe('simple');
+	});
+
+	test("layouts and key definitions of the app's own are drawn", () => {
+		const keyboard = new Keyboard({
+			layout: 'answer',
+			layouts: { answer: [['y', 'n']] },
+			keyDefinitions: { y: { text: 'Yes' }, n: { text: 'No', class: 'u2' } },
+			appendTo: container,
+		});
+
+		expect(keys(keyboard)).toEqual(['Yes', 'No']);
+		expect(getByRole(keyboard.elem, 'button', { name: 'No' })).toHaveClass('u2');
+	});
+
+	test('a pressed key vibrates the device unless told not to', () => {
+		navigator.vibrate = mock();
+
+		try {
+			pressKey(new Keyboard({ appendTo: container }), 'q');
+
+			expect(navigator.vibrate).toHaveBeenCalledTimes(1);
+
+			pressKey(new Keyboard({ tactileResponse: false, appendTo: container }), 'q');
+
+			expect(navigator.vibrate).toHaveBeenCalledTimes(1);
+		} finally {
+			delete navigator.vibrate;
+		}
+	});
+});
