@@ -32,9 +32,9 @@ export class Stopwatch extends Component {
 	start() {
 		const { interval } = this.options;
 
-		console.log(this._interval);
-
 		if (!this._interval) this._interval = setInterval(() => (this.options.time += interval), interval);
+
+		this.replaceCleanup('interval', () => this.stop());
 	}
 
 	stop() {

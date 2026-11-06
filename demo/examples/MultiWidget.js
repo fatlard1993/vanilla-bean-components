@@ -27,7 +27,7 @@ class MultiWidget extends Component {
 					new { Counter, Calculator, Stopwatch }[value](),
 					new Button({
 						content: '❌',
-						onPointerPress: () => widget.elem.remove(),
+						onPointerPress: () => widget.destroy(),
 						style: { position: 'absolute', top: '6px', right: 0 },
 					}),
 				);

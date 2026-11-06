@@ -97,8 +97,9 @@ export default class Example extends ExampleView {
 							icon: 'ellipsis',
 							style: { marginRight: 0 },
 							onPointerPress: event => {
-								new Popover(
-									{ state: 'auto', x: event.clientX, y: event.clientY },
+								// Gone once dismissed, so a row's menus don't pile up on the page
+								const popover = new Popover(
+									{ state: 'auto', x: event.clientX, y: event.clientY, onClose: () => popover.destroy() },
 									new Menu({
 										items: [`Remind ${rowData.name}`, `Forgive ${rowData.name}`],
 										onItemPress: console.log,

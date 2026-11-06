@@ -42,7 +42,7 @@ class TodoListItem extends (styled.Component`
 								item.label === this.initialLabel ? { ...item, label: this.options.label } : item,
 							);
 
-							popover.elem.remove();
+							popover.destroy();
 						},
 					}),
 				);

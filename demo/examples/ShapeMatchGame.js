@@ -252,6 +252,12 @@ class ShapeMatchGame extends Component {
 			if (this.options.time <= 0) this.options.paused = true;
 		}, 100);
 
+		// Leaving the page mid-game stops the clock and the shape's reveal
+		this.replaceCleanup('shapeTimers', () => {
+			clearInterval(this.timer);
+			clearTimeout(this.shapeTimeout);
+		});
+
 		this._playPause.options.content = 'Pause';
 	}
 

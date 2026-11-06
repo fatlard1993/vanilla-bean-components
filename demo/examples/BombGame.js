@@ -74,6 +74,13 @@ class BombGame extends (styled.Component`
 			if (this.options.time <= 0) this.options.paused = true;
 		}, 100);
 
+		// Leaving the page mid-game stops the clock and the fuse
+		this.replaceCleanup('bombTimers', () => {
+			clearInterval(this.timer);
+			clearTimeout(this.bombDelay);
+			clearTimeout(this._bomb.fuse);
+		});
+
 		this.setBomb();
 		this._playPause.content('Pause');
 	}
