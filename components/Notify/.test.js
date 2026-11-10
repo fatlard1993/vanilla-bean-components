@@ -165,7 +165,7 @@ describe('Notify', () => {
 
 		test('closed, it leaves the stack and its clock stops', async () => {
 			const notify = open({ timeout: 20 });
-			const below = open({ timeout: 0 });
+			const below = open({ content: 'another', timeout: 0 });
 
 			notify.close();
 

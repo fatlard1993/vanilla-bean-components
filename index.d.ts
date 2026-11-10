@@ -748,6 +748,8 @@ export interface NotifyOptions extends PopoverOptions {
 
 export declare class Notify extends Popover {
 	constructor(options?: NotifyOptions, ...children: Array<Elem | HTMLElement | string>);
+	/** Counts the same message said again: the count shows on the toast, and its clock starts over. */
+	repeat(): void;
 }
 
 export interface PageOptions extends ComponentOptions {

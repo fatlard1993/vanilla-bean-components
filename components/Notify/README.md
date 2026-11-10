@@ -17,6 +17,20 @@ Without an `x` and `y` it joins a stack in the bottom-right corner, the newest a
 
 Info and success leave after four seconds. A warning or a danger may need acting on, so it stays until pressed. A `timeout` given, zero included, overrides either. A pointer over the toast, or focus inside it, holds it open; once they leave it stays at least another moment and a half.
 
+Give a warning or a danger a timeout only when the toast isn't the one place the problem is shown:
+
+- the app is already retrying, and will say when it gives up (a reconnect)
+- the failure also shows where it happened (a field's message, an EmptyState)
+- a later success replaces it (a save that went through on the next try)
+
+A toast that is the only record of a failure stays until it's pressed.
+
+## Repeats and a busy stack
+
+The same message said again isn't stacked. A toast with the same intent and the same words as one already in the stack, and no actions, is counted on that one instead (×2, ×3), which pulses and starts its clock over; the new toast is destroyed unshown. A toast with actions is about one thing in particular (undo deleting _this_), so it's never merged. `notify.repeat()` counts one by hand.
+
+The stack shows the newest three. Older ones fold behind a "+N more" button above them, and pressing it shows them all until the stack is down to three again.
+
 ## Actions
 
 `actions` puts buttons on the toast, for the one thing worth doing about the message: undo it, refresh for it, retry it.

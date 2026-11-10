@@ -17,18 +17,79 @@ const STACK_EDGE = parseInt(space.lg);
 const STACK_GAP = parseInt(space.sm);
 // A toast paused by a pointer or focus gets at least this long once they leave, so it doesn't vanish under the hand
 const RESUME_MIN = 1500;
+// The most toasts the stack shows at once; older ones fold behind a button that shows them all
+const MAX_VISIBLE = 3;
 
 // Toasts placed by no point stack in the bottom-right corner, the newest at the bottom. They sit above the phone's
 // home indicator, and above whatever an app keeps along the bottom edge (a tab bar) when it sets --vbc-notify-offset.
 const stack = [];
+let unfolded = false;
+let moreButton;
+
+const stackBottom = bottom => `calc(${bottom}px + var(--vbc-notify-offset, 0px) + env(safe-area-inset-bottom, 0px))`;
+
+// Above the newest toasts, how many older ones are folded away; pressed, it shows them all until the stack is short again
+const showFolded = (count, bottom) => {
+	if (!count) {
+		moreButton?.destroy();
+		moreButton = null;
+		return;
+	}
+
+	if (!moreButton?.elem.isConnected) {
+		moreButton = new Button({
+			variant: 'raised',
+			addClass: 'notify-more',
+			style: {
+				position: 'fixed',
+				inset: 'auto',
+				margin: '0',
+				right: `calc(${STACK_EDGE}px + env(safe-area-inset-right, 0px))`,
+			},
+			appendTo: document.body,
+			onPointerPress: () => {
+				unfolded = true;
+				layOutStack();
+			},
+		});
+		// In the top layer with the toasts, or a modal dialog would cover it while they show
+		moreButton.elem.setAttribute('popover', 'manual');
+		moreButton.elem.showPopover?.();
+	}
+
+	moreButton.options.textContent = `+${count} more`;
+	moreButton.elem.style.bottom = stackBottom(bottom);
+};
 
 const layOutStack = () => {
+	if (stack.length <= MAX_VISIBLE) unfolded = false;
+
+	const folded = unfolded ? [] : stack.slice(0, Math.max(stack.length - MAX_VISIBLE, 0));
 	let bottom = STACK_EDGE;
 
 	for (const notify of [...stack].reverse()) {
-		notify.elem.style.bottom = `calc(${bottom}px + var(--vbc-notify-offset, 0px) + env(safe-area-inset-bottom, 0px))`;
+		notify.elem.style.display = folded.includes(notify) ? 'none' : '';
+
+		if (folded.includes(notify)) continue;
+
+		notify.elem.style.bottom = stackBottom(bottom);
 		bottom += notify.elem.offsetHeight + STACK_GAP;
 	}
+
+	showFolded(folded.length, bottom);
+};
+
+// What makes two toasts the same message: the same words, said the same way. A toast with actions is about one thing
+// (undo deleting this, not that), so it is never the same as another.
+const sameMessage = (a, b) => {
+	const text = notify => {
+		const { content, textContent, actions } = notify.options;
+		const said = content ?? textContent;
+
+		return !actions?.length && typeof said === 'string' ? said : null;
+	};
+
+	return text(a) !== null && text(a) === text(b) && a.options.intent === b.options.intent;
 };
 
 const StyledPopover = styled(
@@ -56,6 +117,23 @@ const StyledPopover = styled(
 		}`,
 			)
 			.join('\n')}
+
+		& > .notify-count {
+			margin-left: auto;
+			padding-left: ${space.md};
+			font-variant-numeric: tabular-nums;
+			color: ${colors.muted};
+		}
+
+		&.repeated {
+			animation: notify-repeat ${duration.base} ease-out;
+		}
+
+		@keyframes notify-repeat {
+			40% {
+				transform: scale(1.04);
+			}
+		}
 
 		& > .notify-actions {
 			display: flex;
@@ -102,6 +180,10 @@ const StyledPopover = styled(
  * @param {number} [options.y] - Y position for the notification
  * @param {Array<object>} [options.actions] - Buttons on the toast, e.g. { textContent: 'Undo', onPointerPress }; its
  * onPointerPress gets (notify, event) and may be async, and the toast closes once it settles unless it returns false
+ *
+ * A stacked toast that says what one already showing says (the same intent and words, and no actions) isn't shown
+ * again: the one showing counts it (×2, ×3) and starts its clock over. The stack shows the newest three; older ones
+ * fold behind a "+N more" button.
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Notify} Notify component instance
  */
@@ -261,7 +343,30 @@ export default class Notify extends StyledPopover {
 		);
 	}
 
+	/**
+	 * Counts the same message said again: the count shows on the toast, and its clock starts over.
+	 */
+	repeat() {
+		this._count = (this._count ?? 1) + 1;
+		this._countBadge ??= new Elem({ tag: 'span', addClass: 'notify-count', appendTo: this.elem });
+		Object.assign(this._countBadge.elem, { textContent: `×${this._count}`, title: `Said ${this._count} times` });
+
+		this.removeClass('repeated');
+		void this.elem.offsetWidth; // a restart of the pulse, which the class alone wouldn't replay
+		this.addClass('repeated');
+
+		if (!this._paused) this._startTimer(this.options.timeout);
+	}
+
 	open(options) {
+		const twin = this.hasClass('stacked') && !this.isOpen && stack.find(notify => sameMessage(notify, this));
+
+		if (twin) {
+			twin.repeat();
+			this.destroy();
+			return;
+		}
+
 		super.open(options);
 
 		if (!this.isOpen) return;

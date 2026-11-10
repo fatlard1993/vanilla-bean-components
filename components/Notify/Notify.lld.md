@@ -78,3 +78,27 @@ A toast that says something was deleted is the right place to undo it. The actio
   - new Subject({ timeout: 30, autoOpen: false, actions: [{ textContent: "A" }], appendTo: document.body }) captures n then n.open() then n.elem.querySelector("button").focus() then n.elem.dispatchEvent(new Event("pointerleave")) -> n._paused === true
 - a toast with no clock is not paused by a hand over it
   - new Subject({ timeout: 0, autoOpen: false, appendTo: document.body }) captures n then n.open() then n.elem.dispatchEvent(new Event("pointerenter")) -> n._paused !== true
+
+## The same message said again is counted, not stacked
+
+An error that repeats (a retry failing, a save pressed twice) would otherwise fill the corner with copies, which is
+why apps were giving their errors short timeouts. A stacked toast saying what one already showing says (the same
+intent, the same words, no actions) is counted on that one instead, and its clock starts over. A toast with actions is
+about one thing in particular, so two of them are never the same.
+
+- a repeat isn't shown; the one showing counts it
+  - new Subject({ intent: "danger", content: "Offline", autoOpen: false, appendTo: document.body }) captures first then first.open() then new Subject({ intent: "danger", content: "Offline", autoOpen: false, appendTo: document.body }) captures again then again.open() then new Subject({ intent: "danger", content: "Offline", autoOpen: false, appendTo: document.body }) captures third then third.open() -> again.elem.isConnected === false && third.elem.isConnected === false && first.elem.querySelector(".notify-count").textContent === "×3"
+- other words, another intent, or actions make it a different toast
+  - new Subject({ intent: "danger", content: "Offline", autoOpen: false, appendTo: document.body }) captures a then a.open() then new Subject({ intent: "warning", content: "Offline", autoOpen: false, appendTo: document.body }) captures b then b.open() then new Subject({ intent: "danger", content: "Deleted", actions: [{ textContent: "Undo" }], autoOpen: false, appendTo: document.body }) captures c then c.open() then new Subject({ intent: "danger", content: "Deleted", actions: [{ textContent: "Undo" }], autoOpen: false, appendTo: document.body }) captures d then d.open() -> b.elem.isConnected && c.elem.isConnected && d.elem.isConnected && a.elem.querySelector(".notify-count") === null
+- a repeat starts the clock over
+  - new Subject({ content: "Saved", timeout: 60, autoOpen: false, appendTo: document.body }) captures first then first.open() then await new Promise(r => setTimeout(r, 40)) then new Subject({ content: "Saved", timeout: 60, autoOpen: false, appendTo: document.body }) captures again then again.open() then await new Promise(r => setTimeout(r, 40)) -> first.elem.isConnected === true
+
+## The stack shows the newest three
+
+Errors stay until they're dismissed, so a burst of different ones would climb the screen. The newest three show; the
+older fold behind a button that says how many, and pressing it shows them all until the stack is short again.
+
+- a fourth toast folds the oldest away behind a count of them, and pressing it shows every one
+  - new Array(1, 2, 3, 4).map(n => new Subject({ intent: "danger", content: `Error ${n}`, autoOpen: false, appendTo: document.body })) captures toasts then toasts.forEach(t => t.open()) then document.querySelector(".notify-more") captures more then toasts[0].elem.style.display captures oldest then more.textContent captures label then more.click() -> oldest === "none" && label === "+1 more" && toasts[0].elem.style.display === "" && toasts[3].elem.style.display === ""
+- the button goes once the stack is short again
+  - new Array(1, 2, 3, 4).map(n => new Subject({ intent: "danger", content: `Error ${n}`, autoOpen: false, appendTo: document.body })) captures toasts then toasts.forEach(t => t.open()) then toasts[3].destroy() -> document.querySelector(".notify-more") === null && toasts[0].elem.style.display === ""
