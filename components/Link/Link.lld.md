@@ -35,7 +35,9 @@ A link's tooltip is what tells a reader it leaves the page, so the icon is part 
 
 ## A link can go without its tooltip
 
-A nav bar's links are where the reader moves around the app, not ways off the page, so announcing each as a link is noise. `tooltip: false` leaves the Link with none, and turning it off later takes the one it had away.
+A nav bar's links are where the reader moves around the app, not ways off the page, so announcing each as a link is noise. `tooltip: false` leaves the Link with none, and turning it off later takes the one it had away. `null` says the same: written as "no tooltip", it used to bring the default back.
 
 - a Link given tooltip false has no tooltip, and one switched to false loses it
   - new Subject({ href: "#a", textContent: "a", tooltip: false, appendTo: document.body }) captures bare then new Subject({ href: "#b", textContent: "b", appendTo: document.body }) captures had then had.options.tooltip = false -> bare.elem.querySelector("[popover]") === null && had.elem.querySelector("[popover]") === null && had.elem.classList.contains("has-tooltip") === false
+- null leaves a Link with no tooltip, as false does
+  - new Subject({ href: "#a", textContent: "a", tooltip: null, appendTo: document.body }) captures bare -> bare.elem.querySelector("[popover]") === null

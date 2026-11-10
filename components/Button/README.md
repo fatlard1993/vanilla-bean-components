@@ -51,19 +51,21 @@ new Button({ textContent: 'Delete', intent: 'danger', onPointerPress: remove });
 
 ## Tooltips
 
-`tooltip` shows its text on hover, after a moment, and at once when the button takes keyboard focus. It hides when the pointer leaves or focus moves on. `tooltip: false` removes it.
+`tooltip` shows its text on hover, after a moment, and at once when the button takes keyboard focus. It hides when the pointer leaves or focus moves on. `tooltip: false` (or `null`) removes it.
+
+The tooltip is also what assistive technology hears: on an icon-only Button with no `title` or `aria-label` it is the Button's name, and on one with a label it describes it. So `{ icon: 'trash', tooltip: 'Delete' }` is a named button.
 
 ## Options
 
-| Option           | Type                    | Default    | Description                                      |
-| ---------------- | ----------------------- | ---------- | ------------------------------------------------ |
-| `textContent`    | `string`                | -          | The label                                        |
-| `onPointerPress` | `Function`              | -          | Runs on a press, from a pointer or the keyboard  |
-| `icon`           | `string`                | -          | A Font Awesome icon name, without `fa-`          |
-| `tooltip`        | `string\|object\|false` | -          | Tooltip text, or Tooltip options                 |
-| `variant`        | `string`                | -          | `'flat'`, `'chip'` or `'raised'`                 |
-| `intent`         | `string`                | -          | `'info'`, `'success'`, `'warning'` or `'danger'` |
-| `pressed`        | `boolean`               | -          | A toggle, on or off; unset, not a toggle         |
-| `size`           | `string`                | -          | `'small'` for a compact button                   |
-| `disabled`       | `boolean`               | -          | Not pressable                                    |
-| `tag`            | `string`                | `'button'` | The element                                      |
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `textContent` | `string` | - | The label |
+| `onPointerPress` | `Function` | - | Runs on a press, from a pointer or the keyboard |
+| `icon` | `string` | - | A Font Awesome icon name, without `fa-` |
+| `tooltip` | `string\|object\|false` | - | Tooltip text, or Tooltip options; names an icon-only button |
+| `variant` | `string` | - | `'flat'`, `'chip'` or `'raised'` |
+| `intent` | `string` | - | `'info'`, `'success'`, `'warning'` or `'danger'` |
+| `pressed` | `boolean` | - | A toggle, on or off; unset, not a toggle |
+| `size` | `string` | - | `'small'` for a compact button |
+| `disabled` | `boolean` | - | Not pressable |
+| `tag` | `string` | `'button'` | The element |

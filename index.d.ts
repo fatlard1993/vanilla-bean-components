@@ -699,8 +699,8 @@ export interface LinkOptions extends TooltipWrapperOptions {
 	href?: string;
 	/** Link target attribute */
 	target?: string;
-	/** Tooltip configuration or text; false for none, as on a nav bar's links */
-	tooltip?: Record<string, any> | string | false;
+	/** Tooltip configuration or text; false or null for none, as on a nav bar's links */
+	tooltip?: Record<string, any> | string | false | null;
 }
 
 export declare class Link extends TooltipWrapper {
@@ -953,8 +953,8 @@ export declare class Tooltip extends Popover {
 }
 
 export interface TooltipWrapperOptions extends IconOptions {
-	/** Tooltip text or configuration object; false for none */
-	tooltip?: string | Record<string, any> | false;
+	/** Tooltip text or configuration object; false or null for none. It names an element that has no name of its own (an icon-only button) and describes one that has */
+	tooltip?: string | Record<string, any> | false | null;
 	/** Icon to display in the component */
 	icon?: string;
 }

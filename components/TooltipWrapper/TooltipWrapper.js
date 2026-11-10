@@ -27,7 +27,8 @@ const StyledIcon = styled(
  * Extends Icon to provide automatic tooltip management with hover triggers,
  * positioning, and lifecycle management. Tooltips appear on hover with configurable delay.
  * @param {object} [options={}] - TooltipWrapper configuration options
- * @param {string|object|false} [options.tooltip] - Tooltip text or configuration object; false for none
+ * @param {string|object|false|null} [options.tooltip] - Tooltip text or configuration object; false or null for none.
+ *   It names an element that has no name of its own (an icon-only button) and describes one that has
  * @param {string} [options.icon] - Icon to display in the component
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {TooltipWrapper} TooltipWrapper component instance
@@ -41,8 +42,45 @@ export default class TooltipWrapper extends StyledIcon {
 		},
 	};
 
+	/**
+	 * Ties the tooltip to the element for assistive technology, which otherwise never hears it: a closed tooltip is
+	 * hidden, and hidden content is no part of a name. Referenced by id it counts, hidden or not. An element with no
+	 * name of its own (an icon-only button) is named by the tooltip; one with a name is described by it.
+	 * @private
+	 */
+	_linkTooltip() {
+		if (!this._tooltip) return;
+
+		const { id } = this._tooltip.elem;
+		const ownText = [...this.elem.childNodes]
+			.filter(node => node !== this._tooltip.elem)
+			.map(node => node.textContent)
+			.join('')
+			.trim();
+		const named =
+			ownText ||
+			this.elem.hasAttribute('aria-label') ||
+			this.elem.title ||
+			(this.elem.hasAttribute('aria-labelledby') && this.elem.getAttribute('aria-labelledby') !== id);
+
+		this._unlinkTooltip();
+		this.elem.setAttribute(named ? 'aria-describedby' : 'aria-labelledby', id);
+	}
+
+	/** @private */
+	_unlinkTooltip() {
+		const id = this._tooltip?.elem.id;
+
+		if (!id) return;
+
+		for (const attribute of ['aria-describedby', 'aria-labelledby']) {
+			if (this.elem.getAttribute(attribute) === id) this.elem.removeAttribute(attribute);
+		}
+	}
+
 	_applyTooltip(value) {
-		if (value === false) {
+		if (value === false || value === null) {
+			this._unlinkTooltip();
 			this._tooltip?.destroy?.();
 			this._tooltip = null;
 			this.removeClass('has-tooltip');
@@ -50,8 +88,11 @@ export default class TooltipWrapper extends StyledIcon {
 			return;
 		}
 
-		if (value == null) return;
+		if (value === undefined) return;
 		const tooltipOptions = typeof value === 'object' ? value : { textContent: value };
+
+		// After the rest of the options: the label or text that decides naming may come after the tooltip
+		queueMicrotask(() => this._linkTooltip());
 
 		if (this._tooltip) {
 			this._tooltip.setOptions(tooltipOptions);
@@ -63,6 +104,7 @@ export default class TooltipWrapper extends StyledIcon {
 				...tooltipOptions,
 			});
 
+			this._tooltip.elem.id = `${this.uniqueId}-tooltip`;
 			this.addClass('has-tooltip');
 
 			// pointerenter and pointerleave, not over and out: crossing into a child is not leaving the element. Opened
@@ -102,6 +144,7 @@ export default class TooltipWrapper extends StyledIcon {
 			});
 
 			this.replaceCleanup('tooltip', () => {
+				this._unlinkTooltip();
 				if (this._tooltip) {
 					this._tooltip.destroy?.();
 					this._tooltip = null;

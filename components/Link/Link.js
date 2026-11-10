@@ -16,7 +16,7 @@ const linkTooltip = { icon: 'link', style: { fontSize: fontSize.xs } };
  * @param {string} [options.href] - URL to link to
  * @param {string} [options.target] - Link target attribute
  * @param {string} [options.textContent] - Link text content
- * @param {object|string|false} [options.tooltip] - Tooltip configuration or text; false for none, as on a nav bar's links
+ * @param {object|string|false|null} [options.tooltip] - Tooltip configuration or text; false or null for none, as on a nav bar's links
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Link} Link component instance
  */
@@ -45,7 +45,7 @@ class Link extends TooltipWrapper {
 			// link icon, not just the object form. `next` continues the schema chain to
 			// TooltipWrapper's own tooltip set(), which expects an object or a string.
 			set(value, next) {
-				if (value === false) return next(false);
+				if (value === false || value === null) return next(false);
 
 				next(typeof value === 'object' ? { ...linkTooltip, ...value } : { ...linkTooltip, textContent: value });
 			},

@@ -35,3 +35,16 @@ Hover and focus both open the tooltip, so the pointer leaving is only half the s
   - new Subject({ tooltip: "tip", appendTo: document.body }) captures held then new Subject({ tooltip: "tip", appendTo: document.body }) captures loose then held.elem.querySelector("[popover]") captures heldTip then loose.elem.querySelector("[popover]") captures looseTip then held.elem.dispatchEvent(new PointerEvent("pointerenter", { clientX: 5, clientY: 5 })) then loose.elem.dispatchEvent(new PointerEvent("pointerenter", { clientX: 5, clientY: 5 })) then await new Promise(r => setTimeout(r, 760)) then held.elem.focus() then held.elem.dispatchEvent(new PointerEvent("pointerleave")) then loose.elem.dispatchEvent(new PointerEvent("pointerleave")) -> heldTip.style.display === "block" && looseTip.style.display === "none"
 - the pointer crossing into a child of the control does not hide the tooltip
   - new Subject({ tooltip: "tip", appendTo: document.body }, document.createElement("span")) captures c then c.elem.querySelector("[popover]") captures tip then c.elem.dispatchEvent(new PointerEvent("pointerenter", { clientX: 5, clientY: 5 })) then await new Promise(r => setTimeout(r, 760)) then c.elem.querySelector("span").dispatchEvent(new PointerEvent("pointerout", { bubbles: true })) -> tip.style.display === "block"
+
+## Assistive technology hears the tooltip
+
+A closed tooltip is hidden, and hidden content is no part of an element's name, so an icon-only button named only by
+its tooltip had no name at all. Referenced by id, hidden content counts: the tooltip names an element that has no name
+of its own, and describes one that has.
+
+- an icon-only element is named by its tooltip; one with text is described by it
+  - new Subject({ tag: "button", icon: "trash", tooltip: "Delete", appendTo: document.body }) captures iconOnly then new Subject({ tag: "button", textContent: "Save", tooltip: "Save changes", appendTo: document.body }) captures labelled then await Promise.resolve() -> iconOnly.elem.getAttribute("aria-labelledby") === iconOnly.elem.querySelector("[popover]").id && labelled.elem.getAttribute("aria-describedby") === labelled.elem.querySelector("[popover]").id && !labelled.elem.hasAttribute("aria-labelledby")
+- an element with an aria-label or title keeps its name, and is described
+  - new Subject({ tag: "button", icon: "trash", title: "Delete", tooltip: "Deletes it for good", appendTo: document.body }) captures b then await Promise.resolve() -> b.elem.getAttribute("aria-describedby") === b.elem.querySelector("[popover]").id && !b.elem.hasAttribute("aria-labelledby")
+- taking the tooltip away takes the reference with it; null takes it away as false does
+  - new Subject({ tag: "button", icon: "trash", tooltip: "Delete", appendTo: document.body }) captures b then await Promise.resolve() then (b.options.tooltip = null) -> !b.elem.hasAttribute("aria-labelledby") && b.elem.querySelector("[popover]") === null
