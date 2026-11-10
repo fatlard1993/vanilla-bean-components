@@ -66,6 +66,11 @@ class FormDialog extends styled(
 		& .failure:empty {
 			display: none;
 		}
+
+		/* Apart from the others, at the far end from Save, so a slip doesn't land on it */
+		& .footer > [data-action='delete'] {
+			margin-inline-end: auto;
+		}
 	`,
 ) {
 	static schema = {
@@ -95,9 +100,10 @@ class FormDialog extends styled(
 			buttons:
 				options.buttons ??
 				conditionalList([
-					{ alwaysItem: { textContent: options.saveLabel, 'data-action': 'save' } },
+					// The confirming button last, as Dialog.confirm's and as macOS, iOS, Android and GNOME order theirs
 					{ if: !!options.onDelete, thenItem: { textContent: options.deleteLabel, 'data-action': 'delete' } },
 					{ alwaysItem: { textContent: options.cancelLabel, 'data-action': 'cancel' } },
+					{ alwaysItem: { textContent: options.saveLabel, 'data-action': 'save' } },
 				]),
 			onButtonPress: press => press.dialog._press(press, ownButtonPress),
 		};

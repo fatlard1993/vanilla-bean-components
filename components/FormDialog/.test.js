@@ -17,15 +17,15 @@ describe('FormDialog', () => {
 		await settle();
 
 		expect(dialog.form.inputElements.name.elem.value).toBe('Garden');
-		expect(labels()).toEqual(['Save', 'Cancel']);
+		expect(labels()).toEqual(['Cancel', 'Save']);
 	});
 
-	test('onDelete adds Delete between them', async () => {
+	test('onDelete adds Delete first, apart from Save', async () => {
 		new FormDialog({ inputs: [nameField], data: { name: 'Garden' }, onDelete: () => {} });
 
 		await settle();
 
-		expect(labels()).toEqual(['Save', 'Delete', 'Cancel']);
+		expect(labels()).toEqual(['Delete', 'Cancel', 'Save']);
 	});
 
 	test('an invalid form does not save', async () => {

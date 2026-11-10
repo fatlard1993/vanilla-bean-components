@@ -23,8 +23,8 @@ A Dialog that holds a Form and ends in Save, Delete or Cancel. The design decisi
 
 ## Delete appears only when there is something to delete
 
-- without onDelete the buttons are Save and Cancel; with it, Delete sits between them
-  - new Subject({ inputs: [{ key: "name" }], appendTo: document.body }) captures plain then new Subject({ inputs: [{ key: "name" }], onDelete: () => {}, appendTo: document.body }) captures deletable -> Array.from(plain.elem.querySelectorAll(".footer button")).map(b => b.textContent).join() === "Save,Cancel" && Array.from(deletable.elem.querySelectorAll(".footer button")).map(b => b.textContent).join() === "Save,Delete,Cancel"
+- without onDelete the buttons are Cancel then Save; with it, Delete comes first, set apart at the far end from Save
+  - new Subject({ inputs: [{ key: "name" }], appendTo: document.body }) captures plain then new Subject({ inputs: [{ key: "name" }], onDelete: () => {}, appendTo: document.body }) captures deletable -> Array.from(plain.elem.querySelectorAll(".footer button")).map(b => b.textContent).join() === "Cancel,Save" && Array.from(deletable.elem.querySelectorAll(".footer button")).map(b => b.textContent).join() === "Delete,Cancel,Save"
 
 ## A button is known by what it does, not what it says
 
