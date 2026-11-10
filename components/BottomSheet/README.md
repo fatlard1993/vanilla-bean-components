@@ -48,7 +48,7 @@ Every way out ends on the dialog's own `close` event, so `onClose` hears each of
 - a drag down on the handle past the threshold (100px or a quarter of the sheet's height, whichever is smaller), with the mouse, a finger or a pen; a shorter drag springs back
 - the page navigating away (`hashchange` or `popstate`)
 
-The sheet stays in the page after closing, to open again; `destroy()` removes it.
+The sheet stays in the page after closing, to open again; `destroy()` removes it. A sheet made for one use takes `removeOnClose: true` and is destroyed once it has slid out, however it closed.
 
 ## Example
 

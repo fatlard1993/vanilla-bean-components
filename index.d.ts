@@ -312,6 +312,8 @@ export interface BottomSheetOptions extends ComponentOptions {
 	autoOpen?: number | boolean;
 	/** Hears `close`, however the sheet closed */
 	onClose?: (...args: any[]) => any;
+	/** Destroy the sheet once it has closed and slid out, for a sheet made for one use; left false, it stays to open again (default: false) */
+	removeOnClose?: boolean;
 	/** What the sheet is, for assistive technology; without one, the first heading in its body names it */
 	label?: string;
 }

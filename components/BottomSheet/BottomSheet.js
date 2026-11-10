@@ -16,6 +16,8 @@ const defaultOpenDelay = 16;
  * @param {number|boolean} [options.autoOpen=false] - Open a moment after rendering; a number is that moment in
  *   milliseconds
  * @param {Function} [options.onClose] - Hears `close`, however the sheet closed
+ * @param {boolean} [options.removeOnClose=false] - Destroy the sheet once it has closed and slid out, for a sheet made
+ *   for one use; left false, it stays to open again
  * @param {string} [options.label] - What the sheet is, for assistive technology; without one, the first heading in its
  *   body names it
  * @param {...(Component|HTMLElement|string)} children - Appended to the sheet body
@@ -123,6 +125,8 @@ class BottomSheet extends styled(
 				else this.elem.removeAttribute('aria-label');
 			},
 		},
+		// Read from this.options.removeOnClose when the sheet closes
+		removeOnClose: { default: false },
 		autoOpen: {
 			default: false,
 			set(value) {
@@ -213,11 +217,18 @@ class BottomSheet extends styled(
 		if (this.isOpen) this.elem.close();
 	}
 
-	_closed() {
+	async _closed() {
 		this._stopNavigateClose();
 
 		if (this._opener?.isConnected) this._opener.focus();
 		this._opener = null;
+
+		if (!this.options.removeOnClose) return;
+
+		await Promise.all((this.elem.getAnimations?.() ?? []).map(animation => animation.finished.catch(() => {})));
+
+		// Opened again while it slid out
+		if (!this.elem.open) this.destroy();
 	}
 
 	_stopNavigateClose() {

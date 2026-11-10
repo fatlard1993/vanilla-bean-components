@@ -56,3 +56,12 @@ An overlay that slides over everything belongs to the page, not to whatever comp
 
 - a pointer moving over the handle without having pressed it moves nothing
   - new Subject({}) captures s then s.open() then s.elem.querySelector(".sheet-drag-zone").dispatchEvent(new PointerEvent("pointermove", { clientY: 300, bubbles: true })) -> s.elem.style.transform === ""
+
+## A sheet made for one use can leave once it's closed
+
+A sheet is usually built once and opened again, so it stays after closing. One built for a single use was destroyed
+by the app on a timer guessed to outlast the slide; `removeOnClose` destroys it once the slide has finished, however
+it closed.
+
+- with removeOnClose a closed sheet is destroyed; without it, it stays to open again
+  - new Subject({ removeOnClose: true }) captures once then new Subject({}) captures kept then once.open() then kept.open() then once.close() then kept.close() then await new Promise(r => setTimeout(r, 30)) -> once.elem.isConnected === false && kept.elem.isConnected === true
