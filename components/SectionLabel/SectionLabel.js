@@ -15,6 +15,12 @@ class SectionLabel extends styled(
 	Component,
 	({ colors, fontSize, space }) => `
 		margin: ${space.lg} 0 ${space.sm};
+
+		/* Opening its container, the container's own padding is the space above it, as for an h1 */
+		&:first-child {
+			margin-top: 0;
+		}
+
 		font-size: ${fontSize.xs};
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
