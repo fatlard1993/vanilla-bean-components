@@ -154,6 +154,14 @@ class ColorPicker extends StyledInput {
 		return options.value === 'random' ? { ...options, value: randomColor().toHslString() } : options;
 	}
 
+	/**
+	 * The part a Label belongs on: the text box, the one control here that takes a label.
+	 * @returns {Input} The text box
+	 */
+	get labelTarget() {
+		return this.textInput;
+	}
+
 	build() {
 		const areaMove = event => this[`${this._gestureArea}Move`](event);
 

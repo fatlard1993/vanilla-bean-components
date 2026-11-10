@@ -161,6 +161,14 @@ class TagList extends StyledComponent {
 		return errors.length ? errors : undefined;
 	}
 
+	/**
+	 * The part a Label belongs on: the box new tags are typed into, or the list itself when there is none.
+	 * @returns {Component} The tag input, or this list
+	 */
+	get labelTarget() {
+		return this.tagInput ?? this;
+	}
+
 	build() {
 		if (!this.options.readOnly) {
 			this.tagInput = new TagListInput({ placeholder: 'New Tag' });

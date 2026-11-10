@@ -60,3 +60,14 @@ A label is usually a string, and stays that short. When it needs more it carries
 
 - the collapsible variant's text is a tab stop with the button role; the simple variant's is not
   - new Subject({ variant: "collapsible", label: "S", appendTo: document.body }) captures c then new Subject({ label: "P", appendTo: document.body }) captures p -> c.elem.querySelector("label").tabIndex === 0 && c.elem.querySelector("label").getAttribute("role") === "button" && !p.elem.querySelector("label").hasAttribute("tabindex")
+
+## A label is tied to its field however the field was given
+
+`new Label({ label, append: field })` reads the same as passing the field as a child, and used to tie the label to
+nothing. Either way the field is found. A field made of parts (a color picker's swatch and text box) names the part a
+label belongs on as its `labelTarget`, since a label pointing at a wrapper labels nothing.
+
+- a field given through append is labelled as one given as a child
+  - Object.assign(document.createElement("input"), { id: "appended-field" }) captures field then new Subject({ label: "Name", append: field, appendTo: document.body }) captures l -> l.elem.querySelector("label").htmlFor === "appended-field"
+- a field with a labelTarget is labelled at that part
+  - Object.assign(document.createElement("input"), { id: "inner-part" }) captures inner then ({ labelTarget: inner, elem: document.createElement("div"), uniqueId: "wrapper" }) captures composite then new Subject({ label: "Color", for: composite, appendTo: document.body }) captures l -> l.elem.querySelector("label").htmlFor === "inner-part"

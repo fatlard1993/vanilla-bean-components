@@ -138,7 +138,8 @@ const StyledLabel = styled(
  * @param {object|string} [options={}] - Label configuration options, or label text string
  * @param {('overlay'|'collapsible'|'inline'|'inline-after'|'simple')} [options.variant='simple'] - Label display variant
  * @param {string|object} [options.label] - Label text content or label component options
- * @param {Component|string} [options.for] - Input component or ID to associate label with
+ * @param {Component|string} [options.for] - Input component or ID to associate label with; a component with a
+ *   `labelTarget` (a field made of parts) is labelled at that part. Unset, it's the first element child or appended
  * @param {boolean} [options.collapsed] - Whether collapsible variant starts collapsed
  * @param {string} [options.tooltip] - Tooltip text for the label
  * @param {...(Component|HTMLElement|string)} children - Child elements, typically input components
@@ -177,6 +178,9 @@ class Label extends StyledLabel {
 		},
 		for: {
 			set(value) {
+				// A field made of parts names the one a label belongs on: a color picker's text box, not its wrapper
+				if (typeof value === 'object' && value?.labelTarget) value = value.labelTarget;
+
 				let forId = typeof value === 'string' ? value : value?.id || value?.elem?.id;
 
 				if (!forId) {
@@ -197,9 +201,13 @@ class Label extends StyledLabel {
 	};
 
 	static prepareOptions(options, children) {
-		// The first child is the field the label is for, when it is an element and not text
+		// The field the label is for: its first child when that's an element and not text, or else the first element it
+		// was given to append, which reads the same at the call site and used to leave the label tied to nothing
+		const isField = child => child != null && typeof child !== 'string';
+		const field = [children[0]].find(isField) ?? [].concat(options.append ?? []).find(isField);
+
 		return {
-			...(children.length > 0 && typeof children[0] !== 'string' && { for: children[0] }),
+			...(field && { for: field }),
 			...options,
 		};
 	}

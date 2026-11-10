@@ -436,6 +436,8 @@ export interface ColorPickerOptions extends InputOptions {
 
 export declare class ColorPicker extends Input {
 	constructor(options?: ColorPickerOptions, ...children: Array<Elem | HTMLElement | string>);
+	/** The part a Label belongs on: the text box, the one control here that takes a label. */
+	readonly labelTarget: Input;
 	/** Changes the color value and triggers change event. */
 	change(value: string | Record<string, any>): void;
 	/** Parses color value into HSL components and TinyColor instance. */
@@ -680,7 +682,7 @@ export interface LabelOptions extends TooltipWrapperOptions {
 	variant?: 'overlay' | 'collapsible' | 'inline' | 'inline-after' | 'simple';
 	/** Label text content or label component options */
 	label?: string | Record<string, any>;
-	/** Input component or ID to associate label with */
+	/** Input component or ID to associate label with; a component with a `labelTarget` (a field made of parts) is labelled at that part. Unset, it's the first element child or appended */
 	for?: Component | string;
 	/** Whether collapsible variant starts collapsed */
 	collapsed?: boolean;
@@ -914,6 +916,8 @@ export interface TagListOptions extends ComponentOptions {
 
 export declare class TagList extends Component {
 	constructor(options?: TagListOptions, ...children: Array<Elem | HTMLElement | string>);
+	/** The part a Label belongs on: the box new tags are typed into, or the list itself when there is none. */
+	readonly labelTarget: Component;
 	/** Checks the tags against the `validate` option, showing what's wrong below the list (or clearing it), and marking the new-tag field invalid for assistive technology. */
 	validate(): Array<string> | undefined;
 }
