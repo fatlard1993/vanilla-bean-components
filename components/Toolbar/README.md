@@ -4,7 +4,10 @@ A row of controls (buttons, a search field, filters), centred on one line and wr
 
 ```js
 new Toolbar({
-	append: [new Button({ icon: 'plus', textContent: 'Add' }), new Input({ placeholder: 'Search' })],
+	append: [
+		new Button({ icon: 'plus', textContent: 'Add' }),
+		new Input({ type: 'search', placeholder: 'Search', 'aria-label': 'Search' }),
+	],
 });
 ```
 

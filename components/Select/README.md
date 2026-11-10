@@ -43,6 +43,15 @@ Each entry in the `options` array is either:
 options: ['plain string', { label: 'Display Text', value: 42 }, { label: 'Unavailable', value: 'x', disabled: true }];
 ```
 
+An object with its own `options` array is a group, an `<optgroup>` labelled by its `label`:
+
+```js
+options: [
+	{ label: 'Fruit', options: ['Apple', 'Pear'] },
+	{ label: 'Veg', options: [{ label: 'Leek', value: 'leek' }] },
+];
+```
+
 ## Methods
 
 ```js
