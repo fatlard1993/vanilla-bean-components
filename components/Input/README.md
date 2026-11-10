@@ -21,7 +21,7 @@ const input = new Input({
 | --- | --- | --- | --- |
 | `tag` | `string` | `'input'` | HTML tag: `'input'` or `'textarea'` |
 | `type` | `string` | auto-detected | Input type (the list is `input.optionEnum('type')`). Auto-detected from value: `number` → `'number'`, `boolean` → `'checkbox'`, `string` → `'text'` |
-| `value` | `any` | `''` | Initial value. Setting `options.value` reactively updates the element |
+| `value` | `any` | `''` | The value. Setting `options.value` updates the element, and what's typed updates `options.value` (a number field's as a number, a checkbox's as `true`/`false`) |
 | `placeholder` | `string` | `''` | Placeholder text |
 | `autocomplete` | `string` | `'off'` | Native autocomplete attribute |
 | `autocapitalize` | `string` | `'off'` | Native autocapitalize attribute |
@@ -53,7 +53,7 @@ validate: [
 ];
 ```
 
-The field is checked as its value changes and whenever `validate()` is called. What's wrong is written below the field in the `danger` color and read out with it (`aria-describedby`); the field is marked `aria-invalid` and gets the `validation-errors` class. A value that passes clears all three.
+The field is checked when its value changes and whenever `validate()` is called. What's typed is checked once the change is made (when the field loses focus); while typing, only a message already shown is rechecked, so it clears the moment the value is fixed without a new one appearing mid-word. What's wrong is written below the field in the `danger` color and read out with it (`aria-describedby`); the field is marked `aria-invalid` and gets the `validation-errors` class. A value that passes clears all three.
 
 It is the same shape every field takes: a [Form](../Form/README.md) field's `validate`, a TagList's, and a server `createStore` field's (see the [app kit](../../app/README.md)), so one function can check a field in the browser and in the store.
 
@@ -102,13 +102,10 @@ const editor = new Input({
 	language: 'javascript',
 	value: 'const x = 1;',
 	validate: value => (value ? null : 'Editor must not be empty'),
-	onChange: ({ value }) => {
-		editor.options.value = value;
-		const errors = editor.validate();
-		if (errors) console.warn(errors);
-	},
 	appendTo: document.body,
 });
+
+save.onPointerPress(() => editor.validate() || send(editor.options.value));
 ```
 
 Tab and shift-Tab adjust indentation within the textarea when `syntaxHighlighting` is enabled.

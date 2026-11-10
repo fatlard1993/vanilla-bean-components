@@ -636,7 +636,7 @@ export interface InputOptions extends ComponentOptions {
 	syntaxHighlighting?: boolean;
 	/** Programming language for syntax highlighting */
 	language?: string;
-	/** `value => message`: what's wrong with the value, or nothing when it's fine; or a list of them. Checked as the value changes and by validate(), the message shown below the field */
+	/** `value => message`: what's wrong with the value, or nothing when it's fine; or a list of them. Checked when the value changes (what's typed is checked once the change is made, and rechecked as it's typed only to clear what's shown) and by validate(), the message shown below the field */
 	validate?: ((...args: any[]) => any) | Array<(...args: any[]) => any>;
 }
 

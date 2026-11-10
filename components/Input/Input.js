@@ -58,7 +58,8 @@ const dataTypeToInputType = { number: 'number', boolean: 'checkbox', string: 'te
  * @param {boolean} [options.syntaxHighlighting] - Enable syntax highlighting for textarea
  * @param {string} [options.language] - Programming language for syntax highlighting
  * @param {Function|Array<Function>} [options.validate] - `value => message`: what's wrong with the value, or nothing
- *   when it's fine; or a list of them. Checked as the value changes and by validate(), the message shown below the field
+ *   when it's fine; or a list of them. Checked when the value changes (what's typed is checked once the change is made,
+ *   and rechecked as it's typed only to clear what's shown) and by validate(), the message shown below the field
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Input} Input component instance
  */
@@ -156,9 +157,14 @@ export default class Input extends Component {
 			default: '',
 			set(value) {
 				if (this.options.type === 'checkbox') this.elem.checked = value;
-				else this.elem.value = value;
+				// What was just typed is already there; writing it back would move the caret
+				else if (this.elem.value !== String(value ?? '')) this.elem.value = value;
 
-				if (this.rendered && this.options.validate) retry(() => this.validate(), { delay: 500, max: 1 });
+				// Mid-typing, only a shown error is rechecked, so it clears as soon as it's fixed without a new one
+				// appearing before the user is done; the change, when they are, checks it in full
+				const midTyping = this._typing && !this.hasClass('validation-errors');
+
+				if (this.rendered && this.options.validate && !midTyping) retry(() => this.validate(), { delay: 500, max: 1 });
 			},
 		},
 		syntaxHighlighting: {
@@ -222,6 +228,27 @@ export default class Input extends Component {
 	}
 
 	build() {
+		if (this.typesText) {
+			const typed = () => {
+				this._typing = true;
+				this.options.value = this._elemValue();
+				this._typing = false;
+			};
+			// Typing has usually set the value already, so setting it again checks nothing: the change checks it here
+			const committed = () => {
+				this.options.value = this._elemValue();
+
+				if (this.options.validate) this.validate();
+			};
+
+			this.elem.addEventListener('input', typed);
+			this.elem.addEventListener('change', committed);
+			this.replaceDestroyCleanup('valueSync', () => {
+				this.elem.removeEventListener('input', typed);
+				this.elem.removeEventListener('change', committed);
+			});
+		}
+
 		if (this.options.type === 'file') {
 			const picked = event => {
 				// A field read the plain way (its own change listener, a form's FormData) keeps what was picked
@@ -235,6 +262,21 @@ export default class Input extends Component {
 			this.elem.addEventListener('change', picked);
 			this.replaceDestroyCleanup('filesPicked', () => this.elem.removeEventListener('change', picked));
 		}
+	}
+
+	// A field the user types or ticks into, whose value is theirs to change: not a file picker, nor a select
+	get typesText() {
+		return this.tag === 'textarea' || (this.tag === 'input' && this.options.type !== 'file');
+	}
+
+	// The element's value as the option holds it: a checkbox's checked state, a number field's number
+	_elemValue() {
+		const { type, value, checked } = this.elem;
+
+		if (type === 'checkbox') return checked;
+		if ((type === 'number' || type === 'range') && value !== '') return Number(value);
+
+		return value;
 	}
 
 	_takeFiles(files, event) {

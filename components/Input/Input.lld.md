@@ -79,3 +79,16 @@ Picking, dropping and pasting are three routes to one question (which files did 
 
 - accepted files reach onFiles and answer true; none answer false
   - new Array() captures got then new Subject({ type: "file", onFiles: files => got.push(...files), appendTo: document.body }) captures i then i._takeFiles([new File(["x"], "a.txt", { type: "text/plain" })]) captures took then i._takeFiles([]) captures tookNone -> took === true && got.length === 1 && tookNone === false
+
+## What's typed is the value
+
+An Input's value is what the user typed, not what it was built with: `isDirty`, `validate()` and a later re-render all
+read `options.value`, so the field keeps it there as it's typed. A number field holds a number and a checkbox its checked
+state, as they were given.
+
+- typing updates the value, so isDirty and validate() see it
+  - new Subject({ value: "", validate: v => (v ? null : "required"), appendTo: document.body }) captures i then (i.elem.value = "typed") then i.elem.dispatchEvent(new Event("input", { bubbles: true })) then i.validate() captures errors -> i.options.value === "typed" && i.isDirty === true && errors === undefined
+- a number field holds a number, and a checkbox whether it's ticked
+  - new Subject({ value: 1, appendTo: document.body }) captures n then (n.elem.value = "7") then n.elem.dispatchEvent(new Event("input", { bubbles: true })) then new Subject({ value: false, appendTo: document.body }) captures c then (c.elem.checked = true) then c.elem.dispatchEvent(new Event("change", { bubbles: true })) -> n.options.value === 7 && c.options.value === true
+- mid-typing, no new error appears; one already shown clears as soon as the value passes
+  - new Subject({ value: "", validate: v => (v.length > 2 ? null : "too short"), appendTo: document.body }) captures i then (i.elem.value = "a") then i.elem.dispatchEvent(new Event("input", { bubbles: true })) then await new Promise(r => setTimeout(r, 10)) then i.elem.classList.contains("validation-errors") captures early then i.elem.dispatchEvent(new Event("change", { bubbles: true })) then await new Promise(r => setTimeout(r, 10)) then i.elem.classList.contains("validation-errors") captures shown then (i.elem.value = "abc") then i.elem.dispatchEvent(new Event("input", { bubbles: true })) then await new Promise(r => setTimeout(r, 10)) -> early === false && shown === true && i.elem.classList.contains("validation-errors") === false

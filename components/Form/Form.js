@@ -240,9 +240,11 @@ export default class Form extends Component {
 	 * no focus, would otherwise judge the form by what the field held before.
 	 */
 	commitPendingEdit() {
-		const field = Object.values(this.inputElements || {}).find(input => input?.elem === document.activeElement);
+		const [key, field] =
+			Object.entries(this.inputElements || {}).find(([, input]) => input?.elem === document.activeElement) ?? [];
 
-		if (field && 'value' in field.elem && String(field.elem.value) !== String(field.options.value ?? '')) {
+		// Pending against the form's data, not the field's own value, which an Input keeps in step as it's typed
+		if (field && 'value' in field.elem && String(field.elem.value) !== String(this.options.data[key] ?? '')) {
 			field.elem.dispatchEvent(new Event('change', { bubbles: true }));
 		}
 	}
