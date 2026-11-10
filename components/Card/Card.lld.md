@@ -16,3 +16,8 @@ A raised patch holding one thing. The decision is that the accent and the hover 
   - new Subject({ appendTo: document.body }) captures card -> card.elem.classList.contains("interactive") === false
 - a card that does something is reached and pressed by keyboard like a button
   - new Array() captures pressed then new Subject({ onPointerPress: () => pressed.push(1), appendTo: document.body }) captures card then card.elem.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true })) -> pressed.length === 1 && card.elem.tabIndex === 0 && card.elem.getAttribute("role") === "button"
+
+## A card that goes somewhere is a link
+
+- a card on an anchor with an href is interactive without being told
+  - new Subject({ tag: "a", href: "#/x", appendTo: document.body }) captures link then new Subject({ appendTo: document.body }) captures plain -> link.elem.classList.contains("interactive") && !plain.elem.classList.contains("interactive")

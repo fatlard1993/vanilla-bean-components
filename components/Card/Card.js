@@ -80,7 +80,8 @@ class Card extends styled(
 	};
 
 	static prepareOptions(options) {
-		return { interactive: !!options.onPointerPress, ...options };
+		// A card that goes somewhere is a link, and answers the pointer as a pressable one does
+		return { interactive: !!options.onPointerPress || (options.tag === 'a' && !!options.href), ...options };
 	}
 }
 
