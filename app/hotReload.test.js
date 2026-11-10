@@ -3,7 +3,7 @@ import { tmpdir } from 'os';
 import { join } from 'path';
 
 import { delay } from '../utils/data';
-import { hotReload } from './hotReload';
+import { HOT_RELOAD_DEBOUNCE, hotReload } from './hotReload';
 import { HOT_RELOAD_PATH } from './hotReloadPath';
 
 const pageSocket = () => ({ data: { hotReload: true }, send: mock() });
@@ -38,9 +38,11 @@ describe('hotReload', () => {
 	});
 
 	const buildOptions = { entrypoints: ['client/index.js'], outdir: 'client/build' };
+	// The wait these tests can sit through; left to itself the watcher waits HOT_RELOAD_DEBOUNCE
+	const soon = { debounce: 50 };
 
 	test('a file the client starts importing is watched from the next build', async () => {
-		await hotReload.watch(buildOptions);
+		await hotReload.watch(buildOptions, soon);
 
 		const page = pageSocket();
 
@@ -60,7 +62,7 @@ describe('hotReload', () => {
 	test('rebuilds and reloads on request, only while watching', async () => {
 		expect(hotReload.rebuild()).toBeUndefined();
 
-		await hotReload.watch(buildOptions);
+		await hotReload.watch(buildOptions, soon);
 
 		const page = pageSocket();
 
@@ -78,7 +80,7 @@ describe('hotReload', () => {
 	});
 
 	test('takes only its own path while watching', async () => {
-		await hotReload.watch(buildOptions);
+		await hotReload.watch(buildOptions, soon);
 
 		const server = { upgrade: mock(() => true) };
 
@@ -88,7 +90,7 @@ describe('hotReload', () => {
 	});
 
 	test('builds, then reloads connected pages after each rebuild', async () => {
-		const first = await hotReload.watch(buildOptions);
+		const first = await hotReload.watch(buildOptions, soon);
 
 		expect(first.success).toBe(true);
 
@@ -107,7 +109,7 @@ describe('hotReload', () => {
 	});
 
 	test('a closed page is not reloaded', async () => {
-		await hotReload.watch(buildOptions);
+		await hotReload.watch(buildOptions, soon);
 
 		const closed = pageSocket();
 		const open = pageSocket();
@@ -124,8 +126,8 @@ describe('hotReload', () => {
 	});
 
 	test('watching again keeps the one watcher and takes the new build options', async () => {
-		const first = hotReload.watch(buildOptions);
-		const second = hotReload.watch({ ...buildOptions, define: { VERSION: '"again"' } });
+		const first = hotReload.watch(buildOptions, soon);
+		const second = hotReload.watch({ ...buildOptions, define: { VERSION: '"again"' } }, soon);
 
 		expect(second).toBe(first);
 
@@ -143,7 +145,7 @@ describe('hotReload', () => {
 	});
 
 	test('only a change to a file the client was built from triggers a build', async () => {
-		await hotReload.watch(buildOptions);
+		await hotReload.watch(buildOptions, soon);
 
 		const page = pageSocket();
 
@@ -155,5 +157,32 @@ describe('hotReload', () => {
 		await delay(400);
 
 		expect(page.send).not.toHaveBeenCalled();
+	});
+
+	test('a run of changes is one build, once they have been quiet for the wait, which a later watch may change', async () => {
+		expect(HOT_RELOAD_DEBOUNCE).toBe(30_000);
+
+		await hotReload.watch(buildOptions, { debounce: 300 });
+
+		const page = pageSocket();
+		const write = version => writeFileSync(join(root, 'client/index.js'), `globalThis.version = ${version};\n`);
+
+		hotReload.websocket.open(page);
+		// Each change inside the wait puts the build off again
+		for (const version of [1, 2, 3]) {
+			write(version);
+			await delay(150);
+		}
+
+		expect(page.send).not.toHaveBeenCalled();
+		await until(() => page.send.mock.calls.length > 0);
+		await delay(400);
+		expect(page.send).toHaveBeenCalledTimes(1);
+		expect(await Bun.file(join(root, 'client/build/index.js')).text()).toContain('3');
+
+		// Watching again (a hot reload of the server) joins the same watcher, with the wait it's now given
+		await hotReload.watch(buildOptions, { debounce: 20 });
+		write(4);
+		await until(() => page.send.mock.calls.length === 2, 250);
 	});
 });

@@ -12,6 +12,7 @@ const state = (globalThis[Symbol.for('@vanilla-bean/components/app/hotReload')] 
 	buildOptions: undefined,
 	inputs: new Set(),
 	pendingRebuild: undefined,
+	quietTime: undefined,
 	building: Promise.resolve(),
 });
 
@@ -52,6 +53,14 @@ const queueRebuild = () =>
 	(state.building = state.building.then(rebuild).catch(error => console.error('Rebuild failed', error)));
 
 /**
+ * How long the client's files are left quiet before a rebuild, in milliseconds, unless `watch` is told otherwise. A
+ * rebuild reloads every open page, and a change is rarely one write: a save then a format, several files from one
+ * command, a long run of edits. A page that takes a while to draw stutters through each of those reloads, so the wait
+ * is long; `hotReload.rebuild()` (the dev console's `b`) builds without it.
+ */
+export const HOT_RELOAD_DEBOUNCE = 30_000;
+
+/**
  * Development hot reload: rebuild the client when a file it was built from changes, then reload every page that loaded
  * `@vanilla-bean/components/app/reloadOnBuild`.
  */
@@ -80,21 +89,22 @@ export const hotReload = {
 
 	/**
 	 * Build the client, then rebuild whenever a file under the working directory that the build read changes. Later
-	 * calls (a hot reload of the server) only replace the build options, used from the next rebuild.
+	 * calls (a hot reload of the server) only replace the build options and the wait, used from the next change.
 	 * @param {object} [buildOptions] - Passed to buildClient
 	 * @param {object} [watchOptions] - Watcher settings
-	 * @param {number} [watchOptions.debounce] - Milliseconds of quiet before a rebuild
+	 * @param {number} [watchOptions.debounce] - Milliseconds of quiet before a rebuild (HOT_RELOAD_DEBOUNCE)
 	 * @returns {Promise<object>} The first build's result
 	 */
-	watch(buildOptions = {}, { debounce: quietTime = 100 } = {}) {
+	watch(buildOptions = {}, { debounce = HOT_RELOAD_DEBOUNCE } = {}) {
 		state.buildOptions = buildOptions;
+		state.quietTime = debounce;
 
 		if (state.watcher) return state.watcher.firstBuild;
 
 		const root = process.cwd();
 		const scheduleRebuild = () => {
 			clearTimeout(state.pendingRebuild);
-			state.pendingRebuild = setTimeout(queueRebuild, quietTime);
+			state.pendingRebuild = setTimeout(queueRebuild, state.quietTime);
 		};
 
 		const current = {};

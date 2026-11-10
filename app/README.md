@@ -57,7 +57,7 @@ The bundler hashes a linked `manifest.json` and leaves the paths inside it as wr
 
 ## `hotReload`
 
-- **`watch(buildOptions?, { debounce? }?)`** builds once, then rebuilds whenever a file under the working directory that the last build read changes, and tells every connected page to reload. Server code, logs and databases never trigger a rebuild, because the client wasn't built from them.
+- **`watch(buildOptions?, { debounce? }?)`** builds once, then rebuilds whenever a file under the working directory that the last build read changes, and tells every connected page to reload. It waits for `debounce` milliseconds of quiet first (`HOT_RELOAD_DEBOUNCE`, thirty seconds, by default): a rebuild reloads every open page, and a run of edits would otherwise be a run of reloads. One build runs at a time. `rebuild()` (the dev console's `b`) builds at once. Server code, logs and databases never trigger a rebuild, because the client wasn't built from them.
 - **`upgrade(request, server)`** takes a page's reload socket at `/hotReload`, and only while watching. It returns true when it took the request, and then `fetch` returns nothing.
 - **`websocket`** is `{ open, close }` for `Bun.serve`. An app with its own sockets calls `hotReload.websocket.open(socket)` and `hotReload.websocket.close(socket)` from its handlers. Sockets it didn't take are ignored.
 - **`rebuild()`** rebuilds now and reloads connected pages, for a dev console's build command. It does nothing while not watching.
@@ -152,13 +152,13 @@ The page's half is [`crudResource(path)`](../utils/README.md#collections), from 
 
 ## Serving an app
 
-### `serve({ router, websocket?, build?, ...options })`
+### `serve({ router, websocket?, build?, watch?, ...options })`
 
 Starts the server with what every app's server repeats. Anything else `Bun.serve` takes (`hostname`, `tls`, `maxRequestBodySize`, …) passes through.
 
 - A write or socket from another site is refused before the router sees it (`sameOrigin`).
 - A thrown error becomes an answer (`withErrors`), and anything the router leaves is a 404.
-- The page's hot reload socket is taken; in development the client is watched, with `build` as its build options.
+- The page's hot reload socket is taken; in development the client is watched, with `build` as its build options and `watch` as the watcher's settings (`{ debounce }`, the milliseconds of quiet before a rebuild; thirty seconds by default).
 - Sockets the router upgrades itself (`server.upgrade(request, { data })`) reach `websocket`'s `open`, `message` and `close`; the hot reload ones never do. `websocket`'s settings (`perMessageDeflate`, …) pass through.
 - A port already in use fails saying so.
 

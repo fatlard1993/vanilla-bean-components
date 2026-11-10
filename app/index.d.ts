@@ -35,6 +35,9 @@ export declare const fieldTypes: {
 /** How the server process ends. Ctrl+C exits 130 and being asked to stop (a service manager, `kill`) exits 0, both after `flush`. An uncaught error or unhandled rejection is logged, then exits 99 or 1 after `flush`, unless `survive`. */
 export declare function handleExit(options?: Record<string, any>): void;
 
+/** How long the client's files are left quiet before a rebuild, in milliseconds, unless `watch` is told otherwise. A rebuild reloads every open page, and a change is rarely one write: a save then a format, several files from one command, a long run of edits. A page that takes a while to draw stutters through each of those reloads, so the wait is long; `hotReload.rebuild()` (the dev console's `b`) builds without it. */
+export declare const HOT_RELOAD_DEBOUNCE: number;
+
 /** Development hot reload: rebuild the client when a file it was built from changes, then reload every page that loaded `@vanilla-bean/components/app/reloadOnBuild`. */
 export declare const hotReload: {
 	websocket: Record<string, any>;

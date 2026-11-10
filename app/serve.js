@@ -10,9 +10,11 @@ import { sameOrigin, withErrors } from './serveApp';
  * @param {Function} options.router - (request, server) => Response or undefined, maybe async
  * @param {object} [options.websocket] - Handlers and settings for the app's own sockets
  * @param {object} [options.build] - Passed to hotReload.watch in development
+ * @param {object} [options.watch] - hotReload.watch's settings in development: `{ debounce }`, the milliseconds of quiet
+ * before the client is rebuilt and its pages reloaded
  * @returns {Promise<object>} The Bun server
  */
-export const serve = async ({ router, websocket = {}, build, ...options }) => {
+export const serve = async ({ router, websocket = {}, build, watch, ...options }) => {
 	const answer = withErrors(router);
 	const own =
 		handler =>
@@ -40,7 +42,7 @@ export const serve = async ({ router, websocket = {}, build, ...options }) => {
 
 	console.log(`Listening on ${options.tls ? 'https' : 'http'}://${server.hostname}:${server.port}`);
 
-	if (process.env.NODE_ENV === 'development') await hotReload.watch(build);
+	if (process.env.NODE_ENV === 'development') await hotReload.watch(build, watch);
 
 	return server;
 };
