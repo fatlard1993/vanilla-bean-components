@@ -337,6 +337,10 @@ export interface ButtonOptions extends TooltipWrapperOptions {
 	variant?: 'flat' | 'chip' | 'raised';
 	/** What pressing it does, drawn in that status role: 'danger' for a delete, 'success' for a confirm. A flat or chip button takes it as its text color */
 	intent?: 'info' | 'success' | 'warning' | 'danger';
+	/** Makes it a toggle, on (true) or off (false), announced as aria-pressed and drawn in the selected role; unset, it isn't a toggle. Pressing doesn't flip it: the app sets it from what it toggles */
+	pressed?: boolean;
+	/** 'small' is compact, for a row of minor actions; any variant takes it */
+	size?: 'small';
 }
 
 export declare class Button extends TooltipWrapper {

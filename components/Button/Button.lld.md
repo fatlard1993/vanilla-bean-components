@@ -63,3 +63,22 @@ A `<button>` is disabled by the browser; any other tag has to be told, and has t
   - new Subject({ textContent: "b", disabled: true, appendTo: document.body }) captures b -> b.elem.disabled === true && !b.elem.hasAttribute("aria-disabled")
 - a disabled non-button says so with aria-disabled and presses nothing; enabled again, it presses
   - new Array() captures presses then new Subject({ tag: "div", textContent: "d", disabled: true, onPointerPress: () => presses.push(1), appendTo: document.body }) captures d then d.elem.click() then presses.length captures whileDisabled then (d.options.disabled = false) then d.elem.click() -> d.elem.getAttribute("aria-disabled") === null && whileDisabled === 0 && presses.length === 1
+
+## A toggle says it's on
+
+Apps showed a toggle's state six ways (a class of their own, a swapped variant, intent or icon, disabled), and only
+one said so to assistive technology. `pressed` is the one way: it is announced, and the theme draws it in the selected
+role in every variant. It is set, never flipped by a press, so the button can't drift from the state it shows.
+
+- `pressed` true or false is announced; unset, the button isn't a toggle
+  - new Subject({ pressed: true, appendTo: document.body }) captures on then new Subject({ pressed: false, appendTo: document.body }) captures off then new Subject({ appendTo: document.body }) captures plain -> on.elem.getAttribute("aria-pressed") === "true" && off.elem.getAttribute("aria-pressed") === "false" && plain.elem.hasAttribute("aria-pressed") === false
+- a press leaves it as it was, and taking the option away stops it being a toggle
+  - new Subject({ pressed: false, appendTo: document.body }) captures b then b.elem.click() then b.elem.getAttribute("aria-pressed") captures afterPress then (b.options.pressed = undefined) -> afterPress === "false" && b.elem.hasAttribute("aria-pressed") === false
+
+## A small button is a size, not a chip
+
+Apps reached for the chip to get a smaller button, which made a Refresh look like a filter. `size: 'small'` is compact
+in any variant, and leaves the chip for choices.
+
+- `size: 'small'` marks the button small, beside its variant
+  - new Subject({ size: "small", variant: "flat", textContent: "Refresh", appendTo: document.body }) captures b -> b.elem.classList.contains("size-small") && b.elem.classList.contains("variant-flat")

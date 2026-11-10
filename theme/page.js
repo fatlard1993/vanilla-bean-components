@@ -161,6 +161,18 @@ export default theme => `
 	/* The bevelled look that sinks as it's pressed */
 	.vbc-button:where(.variant-raised), a.variant-button:where(.variant-raised) { ${raised(theme)} }
 
+	/* Compact, whatever the variant: a row of minor actions */
+	.vbc-button:where(.size-small) {
+		padding: ${space.xs} ${space.sm};
+		font-size: ${fontSize.sm};
+
+		&:is(:empty, .icon) {
+			width: 24px;
+			height: 24px;
+			padding: 0;
+		}
+	}
+
 	/* A button that says what pressing it does: filled in its status role, or, flat or a chip, written in it */
 	${intents
 		.map(
