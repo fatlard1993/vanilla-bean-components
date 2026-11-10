@@ -128,7 +128,7 @@ class SettingsView extends View {
 ## Example - full SPA shell
 
 ```js
-import { Button, Component, Page, Router, Toolbar, View } from '@vanilla-bean/components';
+import { Component, Link, Page, Router, Toolbar, View } from '@vanilla-bean/components';
 
 class HomeView extends View {
 	build() {
@@ -161,8 +161,10 @@ new Toolbar({
 	variant: 'bar',
 	prependTo: page,
 	append: [
-		new Button({ variant: 'flat', textContent: 'Home', onPointerPress: () => (router.path = '/') }),
-		new Button({ variant: 'flat', textContent: 'Latest', onPointerPress: () => (router.path = '/articles/latest') }),
+		new Link({ variant: 'flat', tooltip: false, textContent: 'Home', href: '#/' }),
+		new Link({ variant: 'flat', tooltip: false, textContent: 'Latest', href: '#/articles/latest' }),
 	],
 });
 ```
+
+The nav is Links, not Buttons that set `router.path`: going somewhere is a link, so it can open in a new tab and show where it goes, and the Router follows the hash it changes. `router.path =` is for navigating from code, after a save, say.
