@@ -405,12 +405,12 @@ FormDialog compared a pressed button's label with `saveLabel`, `deleteLabel` and
 // before
 buttons: ['Save', 'Mark Resolved', 'Delete', 'Cancel'],
 
-// after
+// after, in 7.2's order: Delete, the way out, the app's own action, then the confirming one
 buttons: [
-	{ textContent: 'Save', 'data-action': 'save' },
-	'Mark Resolved',
 	{ textContent: 'Delete', 'data-action': 'delete' },
 	{ textContent: 'Cancel', 'data-action': 'cancel' },
+	'Mark Resolved',
+	{ textContent: 'Save', 'data-action': 'save' },
 ],
 ```
 

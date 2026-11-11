@@ -29,8 +29,8 @@ new Toolbar({
 	variant: 'bar',
 	heading: field.name,
 	append: [
-		new Button({ icon: 'arrow-left', variant: 'flat', addClass: 'start', onPointerPress: back }),
-		new Button({ icon: 'pen', variant: 'flat', onPointerPress: edit }),
+		new Button({ icon: 'arrow-left', tooltip: 'Back', variant: 'flat', addClass: 'start', onPointerPress: back }),
+		new Button({ icon: 'pen', tooltip: 'Edit', variant: 'flat', onPointerPress: edit }),
 	],
 });
 ```

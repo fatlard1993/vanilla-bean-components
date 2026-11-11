@@ -38,7 +38,7 @@ The choice, by what the moment is:
 
 **overlay.record-in-formdialog** · settled · audit: A dialog that creates or edits a record is a FormDialog. Save/Delete/Cancel built on a plain Dialog loses what FormDialog gives: it stays open when the save fails, and shows why. A dialog that lists many records is a Dialog; editing one of them opens a FormDialog, or a Form inside the row.
 
-**overlay.save-failure-in-form** · settled · audit: A failed save is reported inside the form (a field's `validate`, or FormDialog's failure line), not in a toast that leaves the user guessing which field. FormDialog fills its failure line itself when `onSubmit` throws or returns the failed request: write nothing into `failure.elem` by hand.
+**overlay.save-failure-in-form** · settled · audit: A failed save is reported inside the form (a field's `validate`, or FormDialog's failure line), not in a toast that leaves the user guessing which field. FormDialog fills its failure line itself when `onSave` throws or returns the failed request: write nothing into `failure.elem` by hand.
 
 **overlay.dialog-size-by-content** · settled · audit: A form is `'fit'` at any length: it hugs its content and scrolls once taller than the screen. `'large'` is for what needs the width: viewers, tables, imports. `'small'` (the default) and `'standard'` are fixed boxes, right for content of a known size such as a short message. A form in `'large'` (a one-field dialog filling the screen) is a finding. Don't set width or height through `style`.
 
