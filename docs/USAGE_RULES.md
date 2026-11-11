@@ -10,6 +10,9 @@ Each rule has an id, a status and a check:
 - **proposed**: the library intends it but few apps show it yet, or it waits on a library change; report, don't fail
 - **lint**: a static pattern can find it
 - **audit**: it takes judgment about what the code is for
+- **since 7.2**: the rule leans on something added in that version. On an app with an older install, report it as "upgrade, then fix", not as a failure: the fix may not exist there yet.
+
+A lint pattern counts wherever it is written. When an app's own helper produces it (an `element()` that builds raw fields, a `button()` that sets `.disabled`), report it once at the helper with the number of call sites, not at each caller and not as clean.
 
 ## Overlays and feedback
 
@@ -18,7 +21,7 @@ The choice, by what the moment is:
 | The moment | Reach for |
 | --- | --- |
 | A yes-or-no question before a consequential action | `Dialog.confirm` |
-| Creating or editing a record (including login, settings) | FormDialog |
+| Creating or editing a record in a dialog (including settings, a login dialog) | FormDialog; on a page of its own, a Form |
 | Showing something to read or work through: a viewer, an import, a confirm that needs a checkbox | Dialog |
 | A quick-entry panel on a phone, opened from a floating button (`removeOnClose` if it's made for one use) | BottomSheet |
 | The outcome of an action taken outside a dialog | Notify |
@@ -29,25 +32,25 @@ The choice, by what the moment is:
 
 **overlay.confirm-wording** · settled · audit: The header is the question ("Delete this bookmark?") and `confirmLabel` is the verb ("Delete"). Never "OK" or "Yes": a verb says what will happen, so the answer doesn't depend on reading the header.
 
-**overlay.danger-before-irreversible** · settled · audit: An action that can't be undone (a delete with no undo, a dropped stash) is confirmed first, and the confirm carries `intent: 'danger'`. A danger-colored Button that acts on press, with no confirm, is a finding. An action an undo follows isn't danger: leave the intent off, or toast the undo instead of confirming (overlay.notify-undo).
+**overlay.danger-before-irreversible** · settled · audit: An action that can't be undone (a delete with no undo, a dropped stash, an overwrite) is confirmed first, and the confirm carries `intent: 'danger'`. A delete or overwrite that happens on press with no confirm and no undo is a finding, whatever its color; so is danger coloring set through `style` or a class instead of `intent`. One that can be undone is not confirmed: it is toasted with Undo (overlay.notify-undo). Confirming and then offering Undo asks twice.
 
-**overlay.button-order** · settled · audit: In a dialog's buttons the safe way out comes before the action: Cancel, then the verb. `Dialog.confirm` and FormDialog order theirs so (FormDialog: Delete, Cancel, Save, with Delete set apart); a dialog's own `buttons` array follows suit.
+**overlay.button-order** · settled · since 7.2 · audit: Wherever a set of buttons ends an edit or a question (a dialog's footer, an inline Save/Cancel pair), the safe way out comes before the action: Cancel, then the verb, the main verb last. `Dialog.confirm` and FormDialog order theirs so (FormDialog: Delete, Cancel, Save, with Delete set apart); a dialog's own `buttons` array follows suit, and an extra action ("Mark resolved") sits between Cancel and the main verb.
 
-**overlay.record-in-formdialog** · settled · audit: A dialog that creates or edits a record is a FormDialog. Save/Delete/Cancel built on a plain Dialog loses what FormDialog gives: it stays open when the save fails, and shows why.
+**overlay.record-in-formdialog** · settled · audit: A dialog that creates or edits a record is a FormDialog. Save/Delete/Cancel built on a plain Dialog loses what FormDialog gives: it stays open when the save fails, and shows why. A dialog that lists many records is a Dialog; editing one of them opens a FormDialog, or a Form inside the row.
 
-**overlay.save-failure-in-form** · settled · audit: A failed save is reported inside the form (a field's `validate`, or FormDialog's failure line), not in a toast that leaves the user guessing which field.
+**overlay.save-failure-in-form** · settled · audit: A failed save is reported inside the form (a field's `validate`, or FormDialog's failure line), not in a toast that leaves the user guessing which field. FormDialog fills its failure line itself when `onSubmit` throws or returns the failed request: write nothing into `failure.elem` by hand.
 
-**overlay.dialog-size-by-content** · settled · audit: `'fit'` for forms and short content, `'large'` for viewers, tables and imports. Don't set width or height through `style`.
+**overlay.dialog-size-by-content** · settled · audit: A form is `'fit'` at any length: it hugs its content and scrolls once taller than the screen. `'large'` is for what needs the width: viewers, tables, imports. `'small'` (the default) and `'standard'` are fixed boxes, right for content of a known size such as a short message. A form in `'large'` (a one-field dialog filling the screen) is a finding. Don't set width or height through `style`.
 
-**overlay.notify-failure** · settled · audit: A failed action gets `new Notify({ intent: 'danger', content: '<what failed>: <reason>' })`. A failure that isn't reported at all is a finding.
+**overlay.notify-failure** · settled · audit: A failed action gets `new Notify({ intent: 'danger', content: '<what failed>: <reason>' })`, with the reason whenever one is known (`textContent` instead of `content` is fine). A failure that isn't reported at all is a finding: an empty `.catch(() => {})` on something the user is waiting on, or a success toast after a failure was swallowed. A background fetch the user never asked for may fail quietly.
 
-**overlay.notify-error-stays** · settled · audit: A warning or danger toast keeps its default and stays until pressed. Notify counts a repeated message on the toast already showing, and folds a long stack behind "+N more", so a timeout isn't needed to keep the corner clear. A `timeout` on one is right only when the toast isn't the one place the problem shows: the app is retrying and will say if it gives up, the failure also shows where it happened, or a later success replaces it.
+**overlay.notify-error-stays** · settled · since 7.2 · audit: A warning or danger toast keeps its default and stays until pressed. Notify counts a repeated message on the toast already showing, and folds a long stack behind "+N more", so a timeout isn't needed to keep the corner clear. A `timeout` on one is right only when the toast isn't the one place the problem shows: the app is retrying and will say if it gives up, the failure also shows where it happened, or a later success replaces it.
 
 **overlay.notify-intents** · settled · audit: `success`: it's done. `warning`: it didn't happen, and nothing broke (refused, a precondition unmet, partly done). `info`: a neutral note. `danger`: it failed.
 
-**overlay.notify-undo** · settled · audit: An action that can be undone is toasted with `actions: [{ textContent: 'Undo', onPointerPress }]` rather than confirmed first.
+**overlay.notify-undo** · settled · audit: An action that can be undone is toasted with `actions: [{ textContent: 'Undo', onPointerPress }]` rather than confirmed first, however much it touches: the undo is the safety, and a confirm on top of it is a finding.
 
-**overlay.notify-not-progress** · settled · audit: Don't hold a Notify open as a progress indicator and destroy it by hand. A view's loading state is EmptyState's `loading`, or a Button's disabled state while its action runs.
+**overlay.notify-not-progress** · settled · audit: Don't hold a Notify open as a progress indicator ("Uploading…", "Finding your location…") and destroy it by hand. A view's loading state is EmptyState's `loading`; an action's is its Button disabled while it runs.
 
 **overlay.menu-anchored** · proposed · lint: A menu opened from a button is opened with `menu.open({ anchor: button })`, which ties the menu to the button: it toggles from it and tells assistive tech that it's open. Opening it at the click's `x`/`y` loses both.
 
@@ -55,7 +58,7 @@ The choice, by what the moment is:
 
 **overlay.emptystate-options** · settled · lint: EmptyState takes `title` and `message`, not Dialog's `header` and `body`; given the wrong names it shows nothing.
 
-**overlay.emptystate-four-states** · settled · audit: A view that fetches has four states, each an EmptyState: `loading: true` while fetching; then empty, no match, or failed.
+**overlay.emptystate-four-states** · settled · audit: A view that fetches has four states, each an EmptyState: `loading: true` while fetching; then empty, no match, or failed. A view fed live updates has the same until its first data arrives, and the failed state when the feed drops.
 
 **overlay.emptystate-failed** · settled · audit: A failed load: icon `triangle-exclamation`, a title saying it failed, the reason as `message`, and `action: { textContent: 'Try again' }`.
 
@@ -63,7 +66,7 @@ The choice, by what the moment is:
 
 ## Actions and navigation
 
-**action.press-handler** · settled · lint: A press is `onPointerPress`. `onPointerDown`, `onPointerUp` and `onClick` don't answer the keyboard.
+**action.press-handler** · settled · audit: A press is `onPointerPress`, given as an option or called on the component. It makes an element that isn't natively pressable answer Enter and Space, and its listener is removed when the component is destroyed; an `addEventListener('click')` on `button.elem` gets neither guarantee, and `onPointerDown`/`onPointerUp` fire on a touch that was meant as a scroll. An app's own `onClick` prop handed on to `onPointerPress`, and a map or canvas library's own events, are not findings.
 
 **action.primary-filled** · settled · audit: A view's main or confirming action is a default (filled) Button; the other tools beside it are `variant: 'flat'`. More than one filled Button in a toolbar is worth a look.
 
@@ -77,15 +80,15 @@ The choice, by what the moment is:
 
 **action.intent-is-effect** · settled · audit: A Button's `intent` says what pressing it does. It doesn't show that a toggle is on: `success` meaning "selected" is a finding.
 
-**action.toggle-pressed** · settled · lint: A Button that stays on or off shows it with `pressed: true|false`, set from the state it toggles. A class of the app's own (`selected`, `active`), a swapped variant, intent or icon, or `disabled` standing for "on" is a finding: it looks on without saying so.
+**action.toggle-pressed** · settled · since 7.2 · lint: A Button that stays on or off shows it with `pressed: true|false`, set from the state it toggles. A class of the app's own (`selected`, `active`), a swapped variant, intent or icon, or `disabled` standing for "on" is a finding: it looks on without saying so.
 
-**action.chip-is-choice** · settled · audit: `variant: 'chip'` is a choice: a filter or one of a few options, usually a `pressed` toggle. A small action (Refresh, Copy link) is `size: 'small'` in whatever variant fits, not a chip.
+**action.chip-is-choice** · settled · since 7.2 · audit: `variant: 'chip'` is a choice: a filter, or one of a few options shown together, each a `pressed` toggle. A small action (Refresh, Copy link, Accept all) is `size: 'small'` in whatever variant fits, not a chip.
 
 **action.disabled-option** · settled · lint: Disable through the `disabled` option, not `button.elem.disabled`, which skips `aria-disabled` and the styles.
 
 **action.link-navigates** · settled · audit: Going somewhere is a Link (an anchor with an `href`); doing something is a Button. A navigation that should look like a button is `new Link({ variant: 'button' })` (or `'flat'`, `'raised'`), so it still opens in a new tab and shows its address.
 
-**action.card-navigates-as-link** · settled · audit: A Card that goes somewhere is `tag: 'a'` with an `href` (it answers the pointer by itself), not an `onPointerPress` that calls the router.
+**action.card-navigates-as-link** · settled · since 7.2 · audit: A Card that goes somewhere is `tag: 'a'` with an `href` (it answers the pointer by itself), not an `onPointerPress` that calls the router.
 
 **action.link-tooltip-off-in-nav** · settled · lint: A Link in a nav bar or in-app navigation sets `tooltip: false`; its default tooltip, the address, is for links in prose. `false` or `null` turns it off.
 
@@ -93,21 +96,25 @@ The choice, by what the moment is:
 
 **action.icon-meaning-named** · settled · audit: A standalone Icon beside visible text is decoration and hides itself from assistive tech. An Icon that means something on its own (a status, a lock) has an `aria-label` or text beside it.
 
+**action.nav-current** · proposed · audit: The nav item for the view on screen carries `aria-current: 'page'`, not only a class of the app's own (`active`) that looks current without saying so.
+
 ## Page shell and layout
 
-**layout.page-once** · settled · audit: One `new Page({ appendTo: document.body, append: router })`; the router's views fill it.
+**layout.page-once** · settled · audit: One Page per app, holding the router so its views fill it: `new Page({ appendTo: document.body, append: router })`, or inside an app shell that adds a bottom nav or a side rail. A second Page, or views appended outside it, is the finding.
 
 **layout.view-shape** · settled · audit: A routed view is a Toolbar with `variant: 'bar'` for its header, then a Content for what scrolls.
 
 **layout.title-in-heading** · settled · lint: The view's title is the bar's `heading`, not an element built beside it.
 
-**layout.back-first** · settled · audit: A back control is first in the bar: `addClass: 'start'`, `icon: 'arrow-left'`, and a `title`.
+**layout.back-first** · settled · audit: A back control is first in the bar: `addClass: 'start'`, `icon: 'arrow-left'`, and a name (action.icon-only-named) when it has no text.
 
-**layout.scroll-in-content** · settled · audit: What scrolls is a Content, not a box given `overflow: auto` by hand. Give it `column` to keep reading width on wide screens, and don't combine `column` with `padding`.
+**layout.scroll-in-content** · settled · audit: What scrolls in a view, or in a Dialog body that holds a long list, is a Content, not a box given `overflow: auto` by hand. Give it `column` to keep reading width on wide screens; `column` is the side padding, so don't also set side padding on it (neither the `padding` option nor CSS `padding` shorthand: use `padding-block`).
 
 **layout.router-vs-tabs** · settled · audit: Router for the app's top-level destinations; Tabs (or `variant: 'segmented'`) for switching panes inside one view. Segmented Tabs that switch the whole view's mode sit in the header bar.
 
-**layout.route-paths** · settled · lint: Route paths are lowercase kebab-case (`/fields`, not `/Fields`), kept in one exported map that navigation uses.
+**layout.route-paths** · settled · lint: Route paths are lowercase kebab-case (`/fields`, not `/Fields`).
+
+**layout.route-map** · settled · audit: The paths live in one exported map that the router, the nav and every link build from, not as hash strings written out by hand.
 
 ## Forms
 
@@ -115,7 +122,7 @@ The choice, by what the moment is:
 
 **form.validate-on-field** · settled · audit: Validation is the field's `validate: value => message`, and submitting waits on `form.hasErrors()`. Required-field errors reported in a toast are a finding.
 
-**form.every-field-labeled** · settled · audit: Every field has a label tied to it: a Form `label`, a Label holding the field (`new Label('Name', input)`, or the field in `append`), or a `<label for>`. A caption element with no `for`, sitting above the field, ties nothing to it. A field component made of parts names the control its label belongs on with a `labelTarget` getter.
+**form.every-field-labeled** · settled · audit: Every field has a label tied to it: a Form `label`, a Label holding the field (`new Label('Name', input)`, or the field in `append`), or a `<label for>`. A caption element with no `for`, sitting above the field, ties nothing to it. A field component made of parts names the control its label belongs on with a `labelTarget` getter (since 7.2). A label tied at runtime (an observer that finds the next field) works, but hides the tie from an audit: prefer one of the above.
 
 **form.read-options-value** · settled · lint: An Input's value is `input.options.value`, kept up to date as it's typed; `isDirty` and `validate()` read it too. Reading `input.elem.value`, or copying it into `options.value` before validating, is a finding.
 
@@ -123,33 +130,33 @@ The choice, by what the moment is:
 
 **form.filter-select-named** · settled · lint: A Select used as a filter has an accessible name; a first option like "Any setting" isn't one.
 
-**form.single-choice** · settled · audit: Choosing one of a closed set is a Select. Free text with common values is an Input with `suggestions`. Segmented Tabs switch a view or a mode; they aren't a form value.
+**form.single-choice** · settled · audit: Choosing one of a closed set is a Select. A set of two to five options that reads better shown all at once may instead be a row of `pressed` chips (action.chip-is-choice); a longer set in buttons is a finding. Free text with common values is an Input with `suggestions`. Segmented Tabs switch a view or a mode; they aren't a form value.
 
 **form.checkbox-label-after** · settled · audit: A checkbox's label follows it on the same line: Form does this itself; by hand, `new Label({ label, variant: 'inline-after' }, checkbox)`.
 
 **form.value-components-in-form** · proposed · audit: TagList, ColorPicker and other components that hold a value join a Form as `InputComponent`, not beside it.
 
-**form.no-raw-fields** · settled · lint: No raw `<input>`, `<select>` or `<option>` built through `tag:` or `document.createElement` in app UI. Select takes options, including optgroups. A tool's own dev UI is exempt.
+**form.no-raw-fields** · settled · lint: No raw `<input>`, `<textarea>`, `<select>`, `<option>` or `<optgroup>` built through `tag:`, `document.createElement`, or by turning another element into one (`Object.assign(input.elem, { type: 'checkbox' })`). A textarea is `new Input({ tag: 'textarea' })`; a checkbox is `new Input({ type: 'checkbox' })`; Select takes options, including optgroups. A tool's own dev UI is exempt.
 
 ## Structure and display
 
-**structure.group-heading** · settled · audit: A heading over a group inside a view is a SectionLabel. The page or document title is the bar's `heading` (or a real heading element); `vbc-markdown` is for rendered markdown only. Copying SectionLabel's look onto an `h3` is a finding.
+**structure.group-heading** · settled · audit: A heading over a group inside a view is a SectionLabel. The page or document title is the bar's `heading` (or a real heading element); `vbc-markdown` is for rendered markdown only. Copying SectionLabel's look (uppercase, muted, letter-spaced) onto any other element is a finding.
 
-**structure.sectionlabel-margin** · settled · lint: Leave a SectionLabel's margin alone; first in its container it already drops its top margin. Space it from its neighbors with the container's `gap` or padding.
+**structure.sectionlabel-margin** · settled · since 7.2 · lint: Leave a SectionLabel's margin alone; first in its container it already drops its top margin. Space it from its neighbors with the container's `gap` or padding.
 
 **structure.card-no-margin** · settled · audit: A Card has no margin; the container spaces its cards with `gap`.
 
-**structure.card-accent** · settled · lint: A Card's colored edge is `accent`, not a hand-made `border-left` or inset shadow.
+**structure.card-accent** · settled · lint: A Card's colored edge is `accent`, not a hand-made `border-left` or inset shadow. A card look built by hand on an Elem is itself a finding: it's a Card.
 
 **structure.card-states** · settled · audit: Don't restyle a pressable Card's hover, active or disabled states; the Card has them.
 
-**structure.floating-surface** · settled · audit: Something floating over other content is a Popover or Notify, or sits on the theme's `surface` role, not a Card given a hand-set opaque background.
+**structure.floating-surface** · settled · audit: Something floating over other content is a Popover, Dialog or Notify, or sits on the theme's `surface` role, not a Card given a hand-set opaque background. A hand-built fixed overlay (an image viewer on a `position: fixed` box) is a Dialog, which brings the focus trap, Escape and the backdrop.
 
 **structure.list-nostyle** · settled · lint: An unbulleted List is `noStyle`, not `list-style: none` by hand.
 
 **structure.chrome-in-components** · settled · audit: App UI is built from Elem, Component and the library's components. Raw `document.createElement` is for canvases, game worlds and download anchors.
 
-**structure.theme-tokens** · settled · audit: Colors and sizes come from the theme: secondary text in `colors.muted`, sizes from `theme.fontSize`. A hex literal in UI chrome is a finding; in canvas art it isn't. Re-theme by assigning theme roles before the components load, not by keeping a second palette in CSS variables.
+**structure.theme-tokens** · settled · audit: Colors and sizes come from the theme: secondary text in `colors.muted`, font sizes from `theme.fontSize`, spacing from `theme.space`. A color literal (hex, `rgb`, `hsl`) or a `px`/`em` font size in UI chrome is a finding. Canvas art isn't chrome, and neither is a color the user chose (a map line, a tag color). Re-theme by assigning theme roles before the components load, not by keeping a second palette in CSS variables.
 
 ## Open questions
 
