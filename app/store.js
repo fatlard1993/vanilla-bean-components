@@ -51,7 +51,8 @@ export const openDatabase = async ({ path, defaults = {} }) => {
  * Only fields it knows are stored, checked against their types; ids name only the collection's own records; and a
  * change that fails to write is undone in memory too.
  * @param {object} options - Options
- * @param {object} options.db - The database: a lowdb instance from openDatabase, or `{ data, write() }`
+ * @param {object} options.db - The database: a lowdb instance from openDatabase, or `{ data, write() }`; `data` is
+ *   read only when the store is used, so it may be a getter that fails until the database is open
  * @param {string} [options.collection] - Key under `db.data`; without one, `db.data` is the collection
  * @param {Array<string>|object} options.fields - The fields records have; see normalizeFields
  * @param {boolean} [options.versioned] - Number each record's versions in `_v`, and refuse an update made
@@ -67,9 +68,7 @@ export const createStore = ({ db, collection, fields, versioned = false, hooks =
 	const spec = normalizeFields(fields);
 
 	// A collection the file doesn't hold yet starts empty, rather than failing every call
-	if (collection && db.data) db.data[collection] ??= {};
-
-	const data = () => (collection ? db.data[collection] : db.data);
+	const data = () => (collection ? (db.data[collection] ??= {}) : db.data);
 
 	// The write, or putting things back as they were if it fails
 	const commit = async (touched, undo) => {

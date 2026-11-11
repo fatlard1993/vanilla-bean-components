@@ -205,6 +205,31 @@ describe('createStore', () => {
 		expect(games.has(id)).toBe(false);
 	});
 
+	test('a collection the file does not hold yet starts empty', async () => {
+		const db = memoryDb({});
+		const games = createStore({ db, collection: 'games', fields: ['name'] });
+
+		expect(games.list()).toEqual([]);
+		await games.create({ name: 'Go' });
+		expect(Object.values(db.data.games)[0].name).toBe('Go');
+	});
+
+	test('the database is not read until the store is used, so stores can be made before it loads', () => {
+		const db = {
+			loaded: undefined,
+			get data() {
+				if (!this.loaded) throw new Error('not loaded');
+
+				return this.loaded;
+			},
+			write: async () => {},
+		};
+		const games = createStore({ db, collection: 'games', fields: ['name'] });
+
+		db.loaded = {};
+		expect(games.list()).toEqual([]);
+	});
+
 	test('without a collection, the whole database is the collection', async () => {
 		const db = memoryDb({});
 		const store = createStore({ db, fields: ['name'] });

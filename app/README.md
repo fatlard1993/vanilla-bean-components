@@ -95,7 +95,7 @@ Opens the file, creating it with `defaults` (its collections, e.g. `{ games: {},
 
 ### `createStore({ db, collection?, fields, versioned?, hooks? })`
 
-One collection, keyed by generated ids. `db` is from `openDatabase`, or anything with `data` and `write()`; without `collection`, `db.data` is the collection.
+One collection, keyed by generated ids. `db` is from `openDatabase`, or anything with `data` and `write()`; without `collection`, `db.data` is the collection. `db.data` is read only when the store is used, so stores can be made at import from a stand-in whose `data` getter reaches the database once it's open; a collection the file doesn't hold yet starts empty on first use.
 
 ```js
 const games = createStore({
