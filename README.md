@@ -449,6 +449,16 @@ import '@vanilla-bean/components/test-setup.js';
 
 `eslint.config.cjs` is the library's own stricter config, which the app profile builds on.
 
+The app profile also warns where the app strays from a [usage rule](./docs/USAGE_RULES.md) that a pattern can find, as `vbc/<rule id>`: `vbc/form.no-raw-fields` is the rule form.no-raw-fields, and the warning names it. They are off in server, script and test files. An app turns one off, or off for some files, like any other rule:
+
+```js
+module.exports = [
+	...require('@vanilla-bean/components/eslint.app.config.cjs'),
+	{ rules: { 'vbc/layout.route-paths': 'off' } },
+	{ files: ['client/devTools/**'], rules: { 'vbc/form.no-raw-fields': 'off' } },
+];
+```
+
 ## Development
 
 ### Local Development

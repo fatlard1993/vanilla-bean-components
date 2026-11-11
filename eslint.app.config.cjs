@@ -3,6 +3,7 @@ const { join } = require('path');
 const globals = require('globals');
 
 const libraryConfig = require('./eslint.config.cjs');
+const usageRules = require('./eslint/usageRules.cjs');
 const librarySpellcheck = require('./spellcheck.config.cjs');
 
 // The app's own words, from the spellcheck.config.cjs beside its eslint config, join the library's
@@ -14,7 +15,8 @@ const appSpellcheck =
 
 /**
  * The library's lint config, set up for an app: the app's spellcheck words merged in, node and Bun globals for its
- * server and scripts, and JSDoc left optional. An app's eslint.config.cjs spreads it and adds only what is its own.
+ * server and scripts, JSDoc left optional, and the usage rules a pattern can find (docs/USAGE_RULES.md) as warnings
+ * named `vbc/<rule id>`. An app's eslint.config.cjs spreads it and adds only what is its own.
  * @example module.exports = [...require('@vanilla-bean/components/eslint.app.config.cjs'), { rules: { ... } }];
  */
 module.exports = [
@@ -49,6 +51,11 @@ module.exports = [
 		},
 	},
 	{
+		files: ['**/*.js', '**/*.mjs'],
+		plugins: { vbc: usageRules },
+		rules: Object.fromEntries(Object.keys(usageRules.rules).map(id => [`vbc/${id}`, 'warn'])),
+	},
+	{
 		files: [
 			'server/**/*.js',
 			'scripts/**/*.js',
@@ -66,10 +73,16 @@ module.exports = [
 			},
 		},
 		rules: {
+			...Object.fromEntries(Object.keys(usageRules.rules).map(id => [`vbc/${id}`, 'off'])),
 			'no-console': 'off',
 			// Browser support doesn't apply to code Bun runs
 			'compat/compat': 'off',
 		},
+	},
+	{
+		// Tests build raw elements to drive what they test, and a tool's own dev UI isn't what the app's users see
+		files: ['**/*.test.js', '**/devTools/**', '**/DevTools/**', '**/devtools/**'],
+		rules: Object.fromEntries(Object.keys(usageRules.rules).map(id => [`vbc/${id}`, 'off'])),
 	},
 	{
 		// Fixture strings and shorthand identifiers aren't prose, and a word list read as prose flags itself

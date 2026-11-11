@@ -51,6 +51,7 @@
 		"!/plugins/*.test.js",
 		"eslint.config.cjs",
 		"eslint.app.config.cjs",
+		"/eslint/*.cjs",
 		"prettier.config.cjs",
 		"spellcheck.config.cjs",
 		"test-setup.js"

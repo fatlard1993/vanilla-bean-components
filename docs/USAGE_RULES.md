@@ -8,7 +8,7 @@ Each rule has an id, a status and a check:
 
 - **settled**: most apps follow it, or the apps disagreed and it was decided; the library agrees, and a deviation is a finding
 - **proposed**: the library intends it but few apps show it yet, or it waits on a library change; report, don't fail
-- **lint**: a static pattern can find it
+- **lint**: a static pattern can find it, and `eslint.app.config.cjs` does, as the warning `vbc/<id>`. It sees one file at a time, so it finds a component only where that file shows what it is; the audit covers the rest
 - **audit**: it takes judgment about what the code is for
 - **since 7.2**: the rule leans on something added in that version. On an app with an older install, report it as "upgrade, then fix", not as a failure: the fix may not exist there yet.
 
@@ -52,9 +52,9 @@ The choice, by what the moment is:
 
 **overlay.notify-not-progress** · settled · audit: Don't hold a Notify open as a progress indicator ("Uploading…", "Finding your location…") and destroy it by hand. A view's loading state is EmptyState's `loading`; an action's is its Button disabled while it runs.
 
-**overlay.menu-anchored** · proposed · lint: A menu opened from a button is opened with `menu.open({ anchor: button })`, which ties the menu to the button: it toggles from it and tells assistive tech that it's open. Opening it at the click's `x`/`y` loses both.
+**overlay.menu-anchored** · proposed · audit: A menu opened from a button is opened with `menu.open({ anchor: button })`, which ties the menu to the button: it toggles from it and tells assistive tech that it's open. Opening it at the click's `x`/`y` loses both.
 
-**overlay.popover-close** · settled · lint: Close a Popover with `close()` or `destroy()`. `elem.remove()` skips its cleanup and the `close` that `onClose` listens for. Lint: `.elem.remove()` on anything that is a Popover, ContextMenu, Notify or Tooltip.
+**overlay.popover-close** · settled · lint: Close a Popover, ContextMenu, Notify or Tooltip with `close()` or `destroy()`. `elem.remove()` skips its cleanup and the `close` that `onClose` listens for.
 
 **overlay.emptystate-options** · settled · lint: EmptyState takes `title` and `message`, not Dialog's `header` and `body`; given the wrong names it shows nothing.
 
@@ -90,7 +90,7 @@ The choice, by what the moment is:
 
 **action.card-navigates-as-link** · settled · since 7.2 · audit: A Card that goes somewhere is `tag: 'a'` with an `href` (it answers the pointer by itself), not an `onPointerPress` that calls the router.
 
-**action.link-tooltip-off-in-nav** · settled · lint: A Link in a nav bar or in-app navigation sets `tooltip: false`; its default tooltip, the address, is for links in prose. `false` or `null` turns it off.
+**action.link-tooltip-off-in-nav** · settled · audit: A Link in a nav bar or in-app navigation sets `tooltip: false`; its default tooltip, the address, is for links in prose. `false` or `null` turns it off.
 
 **action.no-handbuilt-button** · settled · lint: No `tag: 'button'` on a Component; use Button. An element that must not look like a button can still be a Button with its own styles.
 
@@ -104,7 +104,7 @@ The choice, by what the moment is:
 
 **layout.view-shape** · settled · audit: A routed view is a Toolbar with `variant: 'bar'` for its header, then a Content for what scrolls.
 
-**layout.title-in-heading** · settled · lint: The view's title is the bar's `heading`, not an element built beside it.
+**layout.title-in-heading** · settled · audit: The view's title is the bar's `heading`, not an element built beside it.
 
 **layout.back-first** · settled · audit: A back control is first in the bar: `addClass: 'start'`, `icon: 'arrow-left'`, and a name (action.icon-only-named) when it has no text.
 
@@ -126,9 +126,9 @@ The choice, by what the moment is:
 
 **form.read-options-value** · settled · lint: An Input's value is `input.options.value`, kept up to date as it's typed; `isDirty` and `validate()` read it too. Reading `input.elem.value`, or copying it into `options.value` before validating, is a finding.
 
-**form.placeholder-not-label** · settled · lint: A placeholder is a hint or an example beside a label, never the only label. This holds for search fields in a toolbar too: give them an `aria-label`. Lint: an Input or Select with a placeholder and no label, `aria-label` or `title`.
+**form.placeholder-not-label** · settled · lint: A placeholder is a hint or an example beside a label, never the only label. This holds for search fields in a toolbar too: give them an `aria-label`.
 
-**form.filter-select-named** · settled · lint: A Select used as a filter has an accessible name; a first option like "Any setting" isn't one.
+**form.filter-select-named** · settled · audit: A Select used as a filter has an accessible name; a first option like "Any setting" isn't one.
 
 **form.single-choice** · settled · audit: Choosing one of a closed set is a Select. A set of two to five options that reads better shown all at once may instead be a row of `pressed` chips (action.chip-is-choice); a longer set in buttons is a finding. Free text with common values is an Input with `suggestions`. Segmented Tabs switch a view or a mode; they aren't a form value.
 
