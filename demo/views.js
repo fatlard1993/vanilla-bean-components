@@ -58,6 +58,7 @@ const startDocumentation = styled(DocumentationView, () => '', {
 	nextLabel: 'Elem',
 	nextUrl: '#/documentation/Elem',
 });
+const usageDocumentation = styled(DocumentationView, () => '', { fileName: 'docs/USAGE_RULES.md' });
 const MarkdownDocumentation = styled(DocumentationView, () => '', { folderName: 'markdown' });
 const appDocumentation = styled(DocumentationView, () => '', { folderName: 'app' });
 const ComponentDocumentation = styled(DocumentationView, () => '', {
@@ -144,6 +145,7 @@ export default {
 	['/examples/Todo']: TodoExample,
 
 	['/documentation/start']: startDocumentation,
+	['/documentation/usage']: usageDocumentation,
 	['/documentation/markdown']: MarkdownDocumentation,
 	['/documentation/app']: appDocumentation,
 	['/documentation/Component']: ComponentDocumentation,

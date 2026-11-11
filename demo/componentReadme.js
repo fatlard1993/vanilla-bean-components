@@ -10,6 +10,21 @@ import { processTemplate } from '../devTools/processTemplate.js';
  * @param {string} [options.readme] - The component's own README.md, when it has one
  * @returns {string} Markdown, ready for parseMarkdown
  */
+const DOC_ROUTES = {
+	'../../docs/USAGE_RULES.md': '#/documentation/usage',
+	'../../docs/GETTING_STARTED.md': '#/documentation/start',
+	'../../app/README.md': '#/documentation/app',
+};
+
+// A README's links are relative to its file, for GitHub and the package; the explorer routes by hash, so a section
+// rides in the query, where the router ignores it and followSections finds it
+const toExplorerLinks = markdown =>
+	markdown
+		.replaceAll(/\]\(\.\.\/(\w+)\/README\.md\)/g, '](#/$1)')
+		.replaceAll(/\]\((\.\.\/\.\.\/[\w/]+\.md)(?:#([^)]*))?\)/g, (link, path, section) =>
+			DOC_ROUTES[path] ? `](${DOC_ROUTES[path]}${section ? `?section=${section}` : ''})` : link,
+		);
+
 export const componentReadme = ({ name, template, readme }) => {
 	const [description, ...sections] = processTemplate(
 		template.replaceAll('{ComponentName}', name),
@@ -21,7 +36,7 @@ export const componentReadme = ({ name, template, readme }) => {
 
 	// A level down, under one heading of their own, so the README's own sections keep their place
 	const reference = filled.map(section => section.replace(/^(#+) /gm, '#$1 ')).join('');
-	const own = readme.replace(/^#[^\n]*\n+/, '').trimEnd();
+	const own = toExplorerLinks(readme.replace(/^#[^\n]*\n+/, '').trimEnd());
 
 	return reference ? `${own}\n\n## Reference\n\n${reference.trim()}` : own;
 };

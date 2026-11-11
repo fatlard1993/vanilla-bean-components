@@ -8,6 +8,8 @@ import GettingStartedReadme from '../../docs/GETTING_STARTED.md';
 import StyledReadme from '../../styled/README.md';
 import ThemeReadme from '../../theme/README.md';
 import UtilsReadme from '../../utils/README.md';
+import UsageRulesReadme from '../../docs/USAGE_RULES.md';
+import { followSections } from '../followSections.js';
 import DemoView from '.';
 
 const StyledLabel = styled(
@@ -42,6 +44,7 @@ export default class DocumentationView extends DemoView {
 				'Elem/README.md': ElemReadme,
 				'demo/README.md': DemoReadme,
 				'docs/GETTING_STARTED.md': GettingStartedReadme,
+				'docs/USAGE_RULES.md': UsageRulesReadme,
 				'styled/README.md': StyledReadme,
 				'theme/README.md': ThemeReadme,
 				'utils/README.md': UtilsReadme,
@@ -52,10 +55,10 @@ export default class DocumentationView extends DemoView {
 			const html = readme ?? (await GET(markdownPath).then(r => (r.response.ok ? r.body : null)));
 
 			if (html) {
-				new StyledLabel(
-					{ label: 'README', style: { marginTop: '2%' }, appendTo: this },
-					new Elem({ addClass: 'vbc-markdown', style: { overflow: 'auto' }, innerHTML: html }),
-				);
+				const markdown = new Elem({ addClass: 'vbc-markdown', style: { overflow: 'auto' }, innerHTML: html });
+
+				new StyledLabel({ label: 'README', style: { marginTop: '2%' }, appendTo: this }, markdown);
+				followSections(markdown.elem, this.signal);
 			} else {
 				console.warn(`No documentation found for ${markdownPath}`);
 			}

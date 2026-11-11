@@ -48,6 +48,7 @@
 		"!/styled/*.test.js",
 		"!/Component/*.test.js",
 		"!/Elem/*.test.js",
+		"!/plugins/*.test.js",
 		"eslint.config.cjs",
 		"eslint.app.config.cjs",
 		"prettier.config.cjs",

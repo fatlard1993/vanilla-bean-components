@@ -32,6 +32,20 @@ const extractDesign = (fileText, markdownPath) => {
 	}
 };
 
+/**
+ * The id GitHub gives a heading, so a link written for GitHub (`USAGE_RULES.md#forms`) lands on the same section here.
+ * @param {string} html - The heading's inner HTML
+ * @returns {string} Lowercase, punctuation dropped, spaces as hyphens
+ */
+export const headingId = html =>
+	html
+		.replaceAll(/<[^>]+>/g, '')
+		.replaceAll(/&[a-z]+;|&#\d+;/g, '')
+		.trim()
+		.toLowerCase()
+		.replaceAll(/[^\p{L}\p{N}\s_-]/gu, '')
+		.replaceAll(/\s/g, '-');
+
 export const parseMarkdown = (markdown, path) => {
 	const id = idGen();
 
@@ -78,7 +92,11 @@ export const parseMarkdown = (markdown, path) => {
 			/<pre><code class="language-([^\s"]+)/g,
 			`<pre class="language-$1">${copyToClipboardButton(id)}<code id=${id} class="language-$1`,
 		)
-		.replaceAll(/<blockquote>\s?<p>\s?\[!(\w+)]/g, `<blockquote class="$1"><p>$1</p><p>`);
+		.replaceAll(/<blockquote>\s?<p>\s?\[!(\w+)]/g, `<blockquote class="$1"><p>$1</p><p>`)
+		.replaceAll(
+			/<h([1-6])>(.*?)<\/h\1>/g,
+			(heading, level, html) => `<h${level} id="${headingId(html)}">${html}</h${level}>`,
+		);
 
 	return emoji.replace_colons(parsed);
 };

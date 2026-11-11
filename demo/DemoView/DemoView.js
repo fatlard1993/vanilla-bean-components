@@ -1,6 +1,7 @@
 import { GET, POST } from '@vanilla-bean/hypertether';
 import * as vbc from '../..';
 import { Elem, Link, View, styled, Label, Button, Icon, Input, removeExcessIndentation } from '../..';
+import { followSections } from '../followSections.js';
 import { renderLLD, resultsByDescription } from './lldMarkdown';
 
 const extractBuildBody = source =>
@@ -167,10 +168,10 @@ export class DemoView extends View {
 		}
 
 		if (readme.response.ok) {
-			new StyledLabel(
-				{ label: 'README', appendTo: this.demoMetadata },
-				new Elem({ addClass: 'vbc-markdown', style: { overflow: 'auto' }, innerHTML: readme.body }),
-			);
+			const markdown = new Elem({ addClass: 'vbc-markdown', style: { overflow: 'auto' }, innerHTML: readme.body });
+
+			new StyledLabel({ label: 'README', appendTo: this.demoMetadata }, markdown);
+			followSections(markdown.elem, this.signal);
 		}
 
 		if (lld.response.ok) {

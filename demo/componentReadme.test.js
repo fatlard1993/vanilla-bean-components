@@ -28,4 +28,14 @@ describe('componentReadme', () => {
 		expect(markdown).not.toMatch(/^## Enums$/m);
 		expect(markdown).not.toMatch(/^## Design$/m);
 	});
+
+	test("a README's relative links become the explorer's routes", () => {
+		const readme =
+			'# Menu\n\nSee [Popover](../Popover/README.md), the [rules](../../docs/USAGE_RULES.md#forms) and [ethos](../../docs/ETHOS.md).\n';
+		const markdown = componentReadme({ name: 'Menu', template, readme });
+
+		expect(markdown).toContain('[Popover](#/Popover)');
+		expect(markdown).toContain('[rules](#/documentation/usage?section=forms)');
+		expect(markdown).toContain('[ethos](../../docs/ETHOS.md)');
+	});
 });

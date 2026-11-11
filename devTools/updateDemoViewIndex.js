@@ -28,7 +28,7 @@ examples.forEach(file => {
 
 result += `\nimport DocumentationView from './DemoView/DocumentationView.js';\n\n`;
 
-result += `const startDocumentation = styled(DocumentationView, () => '', { fileName: 'docs/GETTING_STARTED.md', nextLabel: 'Elem', nextUrl: '#/documentation/Elem' });\nconst MarkdownDocumentation = styled(DocumentationView, () => '', { folderName: 'markdown' });\n`;
+result += `const startDocumentation = styled(DocumentationView, () => '', { fileName: 'docs/GETTING_STARTED.md', nextLabel: 'Elem', nextUrl: '#/documentation/Elem' });\nconst usageDocumentation = styled(DocumentationView, () => '', { fileName: 'docs/USAGE_RULES.md' });\nconst MarkdownDocumentation = styled(DocumentationView, () => '', { folderName: 'markdown' });\n`;
 
 const documentationChain = {
 	demo: `, nextLabel: 'Getting Started', nextUrl: '#/documentation/start'`,
@@ -73,7 +73,7 @@ examples.forEach(file => {
 	result += `\t['/examples/${match[2]}']: ${match[2]}Example,\n`;
 });
 
-result += `\n\t['/documentation/start']: startDocumentation,\n\t['/documentation/markdown']: MarkdownDocumentation,\n`;
+result += `\n\t['/documentation/start']: startDocumentation,\n\t['/documentation/usage']: usageDocumentation,\n\t['/documentation/markdown']: MarkdownDocumentation,\n`;
 
 documentation.forEach(file => {
 	const match = file.match(/(.+?)\/(.+)\/(.+?)(\..+)?$/);
