@@ -7,6 +7,7 @@ module.exports = {
 	lang: 'en_US',
 	skipWords: [
 		'loc',
+		'ast',
 		'devtools',
 		'callee',
 		'sectionlabel',

@@ -38,17 +38,43 @@ const propertyOf = (object, name) => object?.properties.find(property => keyOf(p
 const optionsOf = newExpression => newExpression.arguments.find(argument => argument.type === 'ObjectExpression');
 
 /**
- * The class a NewExpression constructs, by name: `new Button()` and `new vbc.Button()` are both Button.
+ * The class a NewExpression constructs, by name: `new Button()` and `new vbc.Button()` are both Button, and with the
+ * context, an app's own `styled(Button, ...)` or subclass of it is too.
  * @param {object} newExpression - A NewExpression
+ * @param {object} [context] - The rule context, to follow the file's own names back to a library class
  * @returns {string|undefined} The class name
  */
-const constructed = newExpression => {
+const constructed = (newExpression, context) => {
 	const { callee } = newExpression;
 
-	if (callee.type === 'Identifier') return callee.name;
+	if (callee.type === 'Identifier') return context ? baseOf(context, callee) : callee.name;
 	if (callee.type === 'MemberExpression' && !callee.computed) return callee.property.name;
 
 	return undefined;
+};
+
+/**
+ * The library class a name stands for, through the file's own `styled(Base, ...)` and `class X extends Base`, so an
+ * app's `const Editor = styled(Input, ...)` is an Input. A name defined any other way is itself.
+ * @param {object} context - The rule context
+ * @param {object} identifier - An Identifier naming a class
+ * @param {number} [depth] - Guards against a cycle of names
+ * @returns {string} The class name
+ */
+const baseOf = (context, identifier, depth = 0) => {
+	const definition = depth < 5 && variableOf(context, identifier)?.defs.at(-1);
+	const fromExpression = expression => {
+		if (expression?.type === 'Identifier') return baseOf(context, expression, depth + 1);
+		if (expression?.type === 'CallExpression' && expression.callee.name === 'styled')
+			return fromExpression(expression.arguments[0]);
+
+		return undefined;
+	};
+
+	if (definition?.type === 'Variable') return fromExpression(definition.node.init) ?? identifier.name;
+	if (definition?.type === 'ClassName') return fromExpression(definition.node.superClass) ?? identifier.name;
+
+	return identifier.name;
 };
 
 /**
@@ -120,7 +146,7 @@ const classFieldInit = (node, name) => {
  */
 const componentOf = (context, node, depth = 0) => {
 	if (!node || depth > 5) return undefined;
-	if (node.type === 'NewExpression') return constructed(node);
+	if (node.type === 'NewExpression') return constructed(node, context);
 	if (node.type === 'Identifier') {
 		const definition = variableOf(context, node)?.defs.at(-1);
 
@@ -131,10 +157,72 @@ const componentOf = (context, node, depth = 0) => {
 	if (node.type === 'MemberExpression' && node.object.type === 'ThisExpression' && !node.computed) {
 		const init = classFieldInit(node, node.property.name);
 
-		return init && constructed(init);
+		return init && constructed(init, context);
 	}
 
 	return undefined;
+};
+
+/**
+ * Whether the field a NewExpression makes is handed to a Label elsewhere in the file: held by a name (`const name =` or
+ * `this.name =`) that a `new Label(...)` takes as a child, in `append`, or as `for`.
+ * @param {object} context - The rule context
+ * @param {object} node - The field's NewExpression
+ * @returns {boolean} Whether a Label takes it
+ */
+const labelledLater = (context, node) => {
+	const { parent } = node;
+	const heldAs = () => {
+		if (parent.type === 'VariableDeclarator' && parent.id.type === 'Identifier')
+			return candidate => candidate.type === 'Identifier' && candidate.name === parent.id.name;
+
+		const { left } = parent;
+
+		if (parent.type !== 'AssignmentExpression' || left.type !== 'MemberExpression') return undefined;
+		if (left.object.type !== 'ThisExpression' || left.computed) return undefined;
+
+		return candidate =>
+			candidate.type === 'MemberExpression' &&
+			candidate.object.type === 'ThisExpression' &&
+			!candidate.computed &&
+			candidate.property.name === left.property.name;
+	};
+	const held = heldAs();
+
+	if (!held) return false;
+
+	const takes = argument => {
+		if (!argument) return false;
+		if (held(argument)) return true;
+		if (argument.type === 'ArrayExpression') return argument.elements.some(takes);
+		if (argument.type === 'ObjectExpression')
+			return ['append', 'for'].some(name => takes(propertyOf(argument, name)?.value));
+
+		return false;
+	};
+
+	let found = false;
+	const visit = child => {
+		if (found || !child || typeof child.type !== 'string') return;
+		if (child.type === 'NewExpression' && constructed(child, context) === 'Label' && child.arguments.some(takes)) {
+			found = true;
+
+			return;
+		}
+
+		for (const key of Object.keys(child)) {
+			if (key === 'parent') continue;
+
+			const value = child[key];
+
+			if (Array.isArray(value)) value.forEach(visit);
+			else if (value && typeof value.type === 'string') visit(value);
+		}
+	};
+
+	visit(context.sourceCode.ast);
+
+	return found;
 };
 
 /**
@@ -196,7 +284,7 @@ const rules = {
 		"EmptyState takes title and message, not Dialog's header and body",
 		(context, report) => ({
 			NewExpression(node) {
-				if (constructed(node) !== 'EmptyState') return;
+				if (constructed(node, context) !== 'EmptyState') return;
 
 				const options = optionsOf(node);
 
@@ -214,7 +302,7 @@ const rules = {
 		'An icon-only Button needs a name: a tooltip, a title or an aria-label',
 		(context, report) => ({
 			NewExpression(node) {
-				if (constructed(node) !== 'Button') return;
+				if (constructed(node, context) !== 'Button') return;
 
 				const options = optionsOf(node);
 
@@ -241,7 +329,7 @@ const rules = {
 		"A Button's or Link's glyph goes in the icon option, not an appended Icon or <i>",
 		(context, report) => ({
 			NewExpression(node) {
-				if (!['Button', 'Link'].includes(constructed(node))) return;
+				if (!['Button', 'Link'].includes(constructed(node, context))) return;
 
 				const append = propertyOf(optionsOf(node), 'append')?.value;
 				const parts = append?.type === 'ArrayExpression' ? append.elements : [append];
@@ -249,7 +337,8 @@ const rules = {
 				for (const part of parts) {
 					if (part?.type !== 'NewExpression') continue;
 
-					const isIcon = constructed(part) === 'Icon' || stringOf(propertyOf(optionsOf(part), 'tag')?.value) === 'i';
+					const isIcon =
+						constructed(part, context) === 'Icon' || stringOf(propertyOf(optionsOf(part), 'tag')?.value) === 'i';
 
 					if (isIcon) report(part);
 				}
@@ -288,10 +377,29 @@ const rules = {
 
 	'action.no-handbuilt-button': rule(
 		'action.no-handbuilt-button',
-		"Use Button, not tag: 'button' on another component",
+		"Use Button, not a <button> built by hand or tag: 'button' on another component",
 		(context, report) => ({
+			CallExpression(node) {
+				const { callee } = node;
+
+				if (
+					callee.type === 'MemberExpression' &&
+					!callee.computed &&
+					callee.property.name === 'createElement' &&
+					stringOf(node.arguments[0]) === 'button'
+				)
+					report(node);
+
+				if (callee.type !== 'Identifier' || callee.name !== 'styled') return;
+				if (node.arguments[0]?.type === 'Identifier' && baseOf(context, node.arguments[0]) === 'Button') return;
+
+				const options = node.arguments.slice(1).find(argument => argument.type === 'ObjectExpression');
+				const tag = propertyOf(options, 'tag');
+
+				if (stringOf(tag?.value) === 'button') report(tag);
+			},
 			NewExpression(node) {
-				if (constructed(node) === 'Button') return;
+				if (constructed(node, context) === 'Button') return;
 
 				const tag = propertyOf(optionsOf(node), 'tag');
 
@@ -315,7 +423,7 @@ const rules = {
 
 			return {
 				NewExpression(node) {
-					if (constructed(node) !== 'Router') return;
+					if (constructed(node, context) !== 'Router') return;
 
 					let routes = propertyOf(optionsOf(node), 'views')?.value;
 
@@ -349,7 +457,7 @@ const rules = {
 		'A placeholder is never the only label: give the field a Label, an aria-label or a title',
 		(context, report) => ({
 			NewExpression(node) {
-				if (!['Input', 'Select'].includes(constructed(node))) return;
+				if (!['Input', 'Select'].includes(constructed(node, context))) return;
 
 				const options = optionsOf(node);
 				const attributes = propertyOf(options, 'attributes')?.value;
@@ -366,14 +474,16 @@ const rules = {
 						['title', 'aria-label', 'aria-labelledby', 'id'].some(name => propertyOf(attributes, name)));
 				const { parent } = node;
 				const inLabel =
-					(parent.type === 'NewExpression' && constructed(parent) === 'Label') ||
+					(parent.type === 'NewExpression' && constructed(parent, context) === 'Label') ||
 					(parent.type === 'ArrayExpression' &&
 						parent.parent.type === 'Property' &&
 						keyOf(parent.parent) === 'append' &&
-						constructed(parent.parent.parent.parent) === 'Label') ||
-					(parent.type === 'Property' && keyOf(parent) === 'append' && constructed(parent.parent.parent) === 'Label');
+						constructed(parent.parent.parent.parent, context) === 'Label') ||
+					(parent.type === 'Property' &&
+						keyOf(parent) === 'append' &&
+						constructed(parent.parent.parent, context) === 'Label');
 
-				if (!named && !inLabel) report(placeholder);
+				if (!named && !inLabel && !labelledLater(context, node)) report(placeholder);
 			},
 		}),
 	),
@@ -389,7 +499,7 @@ const rules = {
 				if (RAW_FIELDS.has(stringOf(node.arguments[0]))) report(node);
 			},
 			NewExpression(node) {
-				const name = constructed(node);
+				const name = constructed(node, context);
 				const tag = propertyOf(optionsOf(node), 'tag');
 				const value = stringOf(tag?.value);
 
@@ -406,7 +516,7 @@ const rules = {
 		"Leave a SectionLabel's margin alone; space it with its container's gap or padding",
 		(context, report) => ({
 			NewExpression(node) {
-				if (constructed(node) !== 'SectionLabel') return;
+				if (constructed(node, context) !== 'SectionLabel') return;
 
 				const style = propertyOf(optionsOf(node), 'style')?.value;
 
@@ -435,7 +545,7 @@ const rules = {
 		"A Card's colored edge is its accent option, not a hand-made border-left or inset shadow",
 		(context, report) => ({
 			NewExpression(node) {
-				if (constructed(node) !== 'Card') return;
+				if (constructed(node, context) !== 'Card') return;
 
 				const style = propertyOf(optionsOf(node), 'style')?.value;
 

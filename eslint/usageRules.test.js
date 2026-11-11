@@ -54,8 +54,17 @@ const cases = {
 		invalid: ['save.elem.disabled = true;', 'this.save.elem.disabled = busy;'],
 	},
 	'action.no-handbuilt-button': {
-		valid: ["new Button({ textContent: 'Go' });", "new Elem({ tag: 'span' });"],
-		invalid: ["new Component({ tag: 'button' });", "new Elem({ tag: 'button', textContent: 'Go' });"],
+		valid: [
+			"const Big = styled(Button, '', { tag: 'button' });",
+			"new Button({ textContent: 'Go' });",
+			"new Elem({ tag: 'span' });",
+		],
+		invalid: [
+			"document.createElement('button');",
+			"const Tile = styled(Card, '', { tag: 'button' });",
+			"new Component({ tag: 'button' });",
+			"new Elem({ tag: 'button', textContent: 'Go' });",
+		],
 	},
 	'layout.route-paths': {
 		valid: [
@@ -73,6 +82,7 @@ const cases = {
 	'form.read-options-value': {
 		valid: ['const name = new Input({}); name.options.value;', 'const box = new Elem({}); box.elem.value;'],
 		invalid: [
+			"const Editor = styled(Input, ''); class A { build() { this.editor = new Editor({}); } get value() { return this.editor.elem.value; } }",
 			'const name = new Input({}); send(name.elem.value);',
 			'this.password.elem.value;',
 			"const kind = new Select({}); kind.elem.value = 'a';",
@@ -80,18 +90,24 @@ const cases = {
 	},
 	'form.placeholder-not-label': {
 		valid: [
+			"const source = new Input({ placeholder: 'A link' }); new Label({ label: 'Source', for: source });",
+			"class A { build() { this.name = new Input({ placeholder: 'Name' }); this.row = new Label({ label: 'New' }, this.name); } }",
+			"const f = new Input({ placeholder: 'x' }); new Label('Name', f);",
 			"new Input({ placeholder: 'Search', attributes: { 'aria-label': 'Search games' } });",
 			"new Label('Name', new Input({ placeholder: 'e.g. Home Farm' }));",
 			"new Label({ label: 'Name', append: [new Input({ placeholder: 'e.g. Home Farm' })] });",
 			"new Input({ placeholder: 'Search', ...field });",
 		],
 		invalid: [
+			"const f = new Input({ placeholder: 'x' }); new Label('Name', other);",
 			"new Input({ placeholder: 'Search' });",
 			"new Select({ attributes: { placeholder: 'Pick one' }, options: [] });",
 		],
 	},
 	'form.no-raw-fields': {
 		valid: [
+			"const Editor = styled(Input, ''); new Editor({ tag: 'textarea' });",
+			"class Big extends Input {} new Big({ tag: 'textarea' });",
 			"new Input({ tag: 'textarea' });",
 			"new Select({ options: [{ label: 'Fields', options: ['A'] }] });",
 			"document.createElement('canvas');",

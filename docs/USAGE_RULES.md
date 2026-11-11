@@ -8,7 +8,7 @@ Each rule has an id, a status and a check:
 
 - **settled**: most apps follow it, or the apps disagreed and it was decided; the library agrees, and a deviation is a finding
 - **proposed**: the library intends it but few apps show it yet, or it waits on a library change; report, don't fail
-- **lint**: a static pattern can find it, and `eslint.app.config.cjs` does, as the warning `vbc/<id>`. It sees one file at a time, so it finds a component only where that file shows what it is; the audit covers the rest
+- **lint**: a static pattern can find it, and `eslint.app.config.cjs` does, as the warning `vbc/<id>`. It sees one file at a time, so it finds a component only where that file shows what it is (made there, or through the file's own `styled()` or subclass of it); the audit covers the rest. It leaves test files and `devTools` folders alone
 - **audit**: it takes judgment about what the code is for
 - **since 7.2**: the rule leans on something added in that version. On an app with an older install, report it as "upgrade, then fix", not as a failure: the fix may not exist there yet.
 
@@ -80,7 +80,7 @@ The choice, by what the moment is:
 
 **action.intent-is-effect** · settled · audit: A Button's `intent` says what pressing it does. It doesn't show that a toggle is on: `success` meaning "selected" is a finding.
 
-**action.toggle-pressed** · settled · since 7.2 · lint: A Button that stays on or off shows it with `pressed: true|false`, set from the state it toggles. A class of the app's own (`selected`, `active`), a swapped variant, intent or icon, or `disabled` standing for "on" is a finding: it looks on without saying so.
+**action.toggle-pressed** · settled · since 7.2 · lint: A Button that stays on or off shows it with `pressed: true|false`, set from the state it toggles. A class of the app's own (`selected`, `active`), a swapped variant, intent or icon, or `disabled` standing for "on" is a finding: it looks on without saying so. Lint finds a state class added to a Button it can see; a swapped variant, intent or icon takes the audit.
 
 **action.chip-is-choice** · settled · since 7.2 · audit: `variant: 'chip'` is a choice: a filter, or one of a few options shown together, each a `pressed` toggle. A small action (Refresh, Copy link, Accept all) is `size: 'small'` in whatever variant fits, not a chip.
 
@@ -92,7 +92,7 @@ The choice, by what the moment is:
 
 **action.link-tooltip-off-in-nav** · settled · audit: A Link in a nav bar or in-app navigation sets `tooltip: false`; its default tooltip, a small link icon on hover that marks it as a link, is for links in prose. `false` or `null` turns it off.
 
-**action.no-handbuilt-button** · settled · lint: No `tag: 'button'` on a Component; use Button. An element that must not look like a button can still be a Button with its own styles.
+**action.no-handbuilt-button** · settled · lint: No `<button>` built by hand, through `tag: 'button'` on another component (`styled(Card, css, { tag: 'button' })` too) or `document.createElement('button')`; use Button. An element that must not look like a button can still be a Button with its own styles.
 
 **action.icon-meaning-named** · settled · audit: A standalone Icon beside visible text is decoration and hides itself from assistive tech. An Icon that means something on its own (a status, a lock) has an `aria-label` or text beside it.
 
