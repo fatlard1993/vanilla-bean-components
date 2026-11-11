@@ -2,6 +2,10 @@
 
 A modal panel that slides up from the bottom of the screen, on the native `<dialog>`. Mounts to `document.body` by default. A downward drag on its handle past the threshold closes it.
 
+## Usage rules
+
+When to reach for BottomSheet rather than another overlay is in the [usage rules](../../docs/USAGE_RULES.md#overlays-and-feedback).
+
 ## Usage
 
 ```js

@@ -18,6 +18,10 @@ new Toolbar({
 
 Pair it with [Content](../Content/README.md) for the usual view: a toolbar that stays put over content that scrolls.
 
+## Usage rules
+
+The [usage rules](../../docs/USAGE_RULES.md) that bear on Toolbar: [layout.view-shape](../../docs/USAGE_RULES.md#page-shell-and-layout), [layout.title-in-heading](../../docs/USAGE_RULES.md#page-shell-and-layout), [layout.back-first](../../docs/USAGE_RULES.md#page-shell-and-layout), [action.primary-filled](../../docs/USAGE_RULES.md#actions-and-navigation), [action.icon-only-flat](../../docs/USAGE_RULES.md#actions-and-navigation), [action.link-tooltip-off-in-nav](../../docs/USAGE_RULES.md#actions-and-navigation), [form.placeholder-not-label](../../docs/USAGE_RULES.md#forms).
+
 ## As a page's header
 
 ```js

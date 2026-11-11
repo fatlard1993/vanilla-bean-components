@@ -2,6 +2,10 @@
 
 Client-side router that maps paths to component classes, from the URL's hash by default or, with `mode: 'history'`, from its pathname. Each route pattern maps to a view class; the Router instantiates the matching view and destroys the previous one on navigation.
 
+## Usage rules
+
+The [usage rules](../../docs/USAGE_RULES.md) that bear on Router: [layout.page-once](../../docs/USAGE_RULES.md#page-shell-and-layout), [layout.view-shape](../../docs/USAGE_RULES.md#page-shell-and-layout), [layout.router-vs-tabs](../../docs/USAGE_RULES.md#page-shell-and-layout), [layout.route-paths](../../docs/USAGE_RULES.md#page-shell-and-layout), [layout.route-map](../../docs/USAGE_RULES.md#page-shell-and-layout), [action.link-navigates](../../docs/USAGE_RULES.md#actions-and-navigation).
+
 ## Usage
 
 ```js

@@ -2,6 +2,10 @@
 
 What a list or view shows when there's nothing in it: an icon, a title, a line saying why or what to do, and the button that does it. Apps were writing this five ways.
 
+## Usage rules
+
+The [usage rules](../../docs/USAGE_RULES.md) that bear on EmptyState: [overlay.emptystate-options](../../docs/USAGE_RULES.md#overlays-and-feedback), [overlay.emptystate-four-states](../../docs/USAGE_RULES.md#overlays-and-feedback), [overlay.emptystate-failed](../../docs/USAGE_RULES.md#overlays-and-feedback), [overlay.emptystate-empty-vs-nomatch](../../docs/USAGE_RULES.md#overlays-and-feedback), [overlay.notify-not-progress](../../docs/USAGE_RULES.md#overlays-and-feedback).
+
 ## Usage
 
 ```js

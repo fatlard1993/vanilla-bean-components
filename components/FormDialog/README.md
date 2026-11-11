@@ -2,6 +2,10 @@
 
 A [Dialog](../Dialog/README.md) holding a [Form](../Form/README.md), with Save, Delete and Cancel: the record dialog apps kept writing by hand.
 
+## Usage rules
+
+The [usage rules](../../docs/USAGE_RULES.md) that bear on FormDialog: [overlay.record-in-formdialog](../../docs/USAGE_RULES.md#overlays-and-feedback), [overlay.save-failure-in-form](../../docs/USAGE_RULES.md#overlays-and-feedback), [overlay.button-order](../../docs/USAGE_RULES.md#overlays-and-feedback), [overlay.dialog-size-by-content](../../docs/USAGE_RULES.md#overlays-and-feedback), [form.declared-inputs](../../docs/USAGE_RULES.md#forms), [form.validate-on-field](../../docs/USAGE_RULES.md#forms).
+
 ## Usage
 
 ```js

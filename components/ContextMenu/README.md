@@ -2,6 +2,10 @@
 
 A [Menu](../Menu/README.md) in a [Popover](../Popover/README.md) that opens at a point (a right-click, a long press) or under the button that asked for it.
 
+## Usage rules
+
+The [usage rules](../../docs/USAGE_RULES.md) that bear on ContextMenu: [overlay.menu-anchored](../../docs/USAGE_RULES.md#overlays-and-feedback), [overlay.popover-close](../../docs/USAGE_RULES.md#overlays-and-feedback).
+
 ## Usage
 
 ```js

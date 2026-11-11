@@ -2,6 +2,10 @@
 
 Versatile input component supporting all HTML input types, textarea with auto-height, syntax highlighting, validation, and automatic type detection from value type.
 
+## Usage rules
+
+The [usage rules](../../docs/USAGE_RULES.md) that bear on Input: [form.read-options-value](../../docs/USAGE_RULES.md#forms), [form.validate-on-field](../../docs/USAGE_RULES.md#forms), [form.every-field-labeled](../../docs/USAGE_RULES.md#forms), [form.placeholder-not-label](../../docs/USAGE_RULES.md#forms), [form.no-raw-fields](../../docs/USAGE_RULES.md#forms).
+
 ## Usage
 
 ```js

@@ -296,7 +296,7 @@ devConsole(); // in development: type `b` (or `build`) to rebuild and reload the
 
 ## Component Library
 
-33 pre-built components handle common UI patterns:
+33 pre-built components handle common UI patterns. Which one to reach for, and what a misuse looks like, is in [docs/USAGE_RULES.md](./docs/USAGE_RULES.md): rules drawn from the apps built on the library, written for a person learning it and for an audit of an app's source. An app's own copy is at `node_modules/@vanilla-bean/components/docs/USAGE_RULES.md`.
 
 ### Forms & Input
 
@@ -506,7 +506,7 @@ This creates implementation, demo, tests, and documentation files following proj
 5. **Update documentation** - Include README updates and demos
 6. **Run validation** - `bun run lint && bun test` before submitting
 
-[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) covers how Elem, Component, styled and the app kit fit together, and [docs/NAMING_CONVENTIONS.md](./docs/NAMING_CONVENTIONS.md) how files, classes and options are named. The component READMEs cover each component.
+[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) covers how Elem, Component, styled and the app kit fit together, and [docs/NAMING_CONVENTIONS.md](./docs/NAMING_CONVENTIONS.md) how files, classes and options are named. The component READMEs cover each component, and [docs/USAGE_RULES.md](./docs/USAGE_RULES.md) when to use which.
 
 Coming from 6.x? [docs/MIGRATING_7.md](./docs/MIGRATING_7.md) lists every rename and removal in 7.0, before and after, and what else changed.
 
@@ -516,4 +516,4 @@ MIT License - see [LICENSE](./LICENSE) file for details.
 
 ---
 
-**[Browse Components](./components/)** • **[API Documentation](./docs/)** • **[Live Demo](./demo/)** • **[Getting Started Guide](./docs/GETTING_STARTED.md)** • **[Architecture](./docs/ARCHITECTURE.md)** • **[Naming Conventions](./docs/NAMING_CONVENTIONS.md)** • **[Migrating to 7](./docs/MIGRATING_7.md)** • **[Design Philosophy](./docs/ETHOS.md)**
+**[Browse Components](./components/)** • **[API Documentation](./docs/)** • **[Live Demo](./demo/)** • **[Getting Started Guide](./docs/GETTING_STARTED.md)** • **[Usage Rules](./docs/USAGE_RULES.md)** • **[Architecture](./docs/ARCHITECTURE.md)** • **[Naming Conventions](./docs/NAMING_CONVENTIONS.md)** • **[Migrating to 7](./docs/MIGRATING_7.md)** • **[Design Philosophy](./docs/ETHOS.md)**

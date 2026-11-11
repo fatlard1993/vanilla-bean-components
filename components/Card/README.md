@@ -10,6 +10,10 @@ new Card(
 );
 ```
 
+## Usage rules
+
+The [usage rules](../../docs/USAGE_RULES.md) that bear on Card: [action.card-navigates-as-link](../../docs/USAGE_RULES.md#actions-and-navigation), [structure.card-no-margin](../../docs/USAGE_RULES.md#structure-and-display), [structure.card-accent](../../docs/USAGE_RULES.md#structure-and-display), [structure.card-states](../../docs/USAGE_RULES.md#structure-and-display), [structure.floating-surface](../../docs/USAGE_RULES.md#structure-and-display).
+
 ## Options
 
 | Option | Type | Default | Description |

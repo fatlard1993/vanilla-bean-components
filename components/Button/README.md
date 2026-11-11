@@ -2,6 +2,10 @@
 
 A press: a `<button>` that runs `onPointerPress` for a click, a tap, or Enter and Space from the keyboard. It can carry an icon and a tooltip.
 
+## Usage rules
+
+The [usage rules](../../docs/USAGE_RULES.md) that bear on Button: [action.press-handler](../../docs/USAGE_RULES.md#actions-and-navigation), [action.primary-filled](../../docs/USAGE_RULES.md#actions-and-navigation), [action.icon-only-flat](../../docs/USAGE_RULES.md#actions-and-navigation), [action.icon-only-named](../../docs/USAGE_RULES.md#actions-and-navigation), [action.icon-option](../../docs/USAGE_RULES.md#actions-and-navigation), [action.label-wording](../../docs/USAGE_RULES.md#actions-and-navigation), [action.intent-is-effect](../../docs/USAGE_RULES.md#actions-and-navigation), [action.toggle-pressed](../../docs/USAGE_RULES.md#actions-and-navigation), [action.chip-is-choice](../../docs/USAGE_RULES.md#actions-and-navigation), [action.disabled-option](../../docs/USAGE_RULES.md#actions-and-navigation), [action.link-navigates](../../docs/USAGE_RULES.md#actions-and-navigation), [action.no-handbuilt-button](../../docs/USAGE_RULES.md#actions-and-navigation), [overlay.button-order](../../docs/USAGE_RULES.md#overlays-and-feedback).
+
 ## Usage
 
 ```js

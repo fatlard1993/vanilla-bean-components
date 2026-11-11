@@ -37,6 +37,7 @@
 		"/components/**/*",
 		"/theme/**/*",
 		"/utils/**/*",
+		"/docs/*.md",
 		"index.js",
 		"index.d.ts",
 		"FontWithASyntaxHighlighter-Regular.woff2",

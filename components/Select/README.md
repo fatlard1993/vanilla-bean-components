@@ -2,6 +2,10 @@
 
 Select dropdown component extending Input, with dynamic option rendering and enhanced value access for both string and object-based option lists.
 
+## Usage rules
+
+The [usage rules](../../docs/USAGE_RULES.md) that bear on Select: [form.single-choice](../../docs/USAGE_RULES.md#forms), [form.filter-select-named](../../docs/USAGE_RULES.md#forms), [form.placeholder-not-label](../../docs/USAGE_RULES.md#forms), [form.no-raw-fields](../../docs/USAGE_RULES.md#forms).
+
 ## Usage
 
 ```js

@@ -2,6 +2,10 @@
 
 Modal and non-modal dialog component built on the native `<dialog>` element with animated open/close, configurable sizes, an intent that colors it, and flexible button configurations.
 
+## Usage rules
+
+The [usage rules](../../docs/USAGE_RULES.md) that bear on Dialog: [overlay.confirm-not-handbuilt](../../docs/USAGE_RULES.md#overlays-and-feedback), [overlay.confirm-wording](../../docs/USAGE_RULES.md#overlays-and-feedback), [overlay.danger-before-irreversible](../../docs/USAGE_RULES.md#overlays-and-feedback), [overlay.button-order](../../docs/USAGE_RULES.md#overlays-and-feedback), [overlay.record-in-formdialog](../../docs/USAGE_RULES.md#overlays-and-feedback), [overlay.dialog-size-by-content](../../docs/USAGE_RULES.md#overlays-and-feedback), [layout.scroll-in-content](../../docs/USAGE_RULES.md#page-shell-and-layout), [structure.floating-surface](../../docs/USAGE_RULES.md#structure-and-display).
+
 ## Usage
 
 ```js

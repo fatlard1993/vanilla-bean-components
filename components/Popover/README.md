@@ -2,6 +2,10 @@
 
 Content over the page, on the native popover API: placed at a point and kept on screen, or wherever its styles put it. Tooltip, [ContextMenu](../ContextMenu/README.md) and [Notify](../Notify/README.md) are Popovers.
 
+## Usage rules
+
+The [usage rules](../../docs/USAGE_RULES.md) that bear on Popover: [overlay.popover-close](../../docs/USAGE_RULES.md#overlays-and-feedback), [overlay.menu-anchored](../../docs/USAGE_RULES.md#overlays-and-feedback), [structure.floating-surface](../../docs/USAGE_RULES.md#structure-and-display).
+
 ## Usage
 
 ```js

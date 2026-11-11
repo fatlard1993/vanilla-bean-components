@@ -2,6 +2,10 @@
 
 A toast: a short message that says what just happened. Its `intent` (`info`, `success`, `warning`, `danger`, the status roles of the same names) picks its colour, its icon, how loudly a screen reader announces it, and how long it stays. Pressing it anywhere dismisses it, and however it leaves it announces `close`, as every overlay does, so `onClose` hears it.
 
+## Usage rules
+
+The [usage rules](../../docs/USAGE_RULES.md) that bear on Notify: [overlay.notify-failure](../../docs/USAGE_RULES.md#overlays-and-feedback), [overlay.notify-error-stays](../../docs/USAGE_RULES.md#overlays-and-feedback), [overlay.notify-intents](../../docs/USAGE_RULES.md#overlays-and-feedback), [overlay.notify-undo](../../docs/USAGE_RULES.md#overlays-and-feedback), [overlay.notify-not-progress](../../docs/USAGE_RULES.md#overlays-and-feedback), [overlay.popover-close](../../docs/USAGE_RULES.md#overlays-and-feedback).
+
 ## Usage
 
 ```js

@@ -6,3 +6,7 @@ A small, quiet heading over a group of things: muted, uppercase and letter-space
 new SectionLabel({ textContent: 'Recent' });
 new SectionLabel({ textContent: 'Archived', level: 4 });
 ```
+
+## Usage rules
+
+The [usage rules](../../docs/USAGE_RULES.md) that bear on SectionLabel: [structure.group-heading](../../docs/USAGE_RULES.md#structure-and-display), [structure.sectionlabel-margin](../../docs/USAGE_RULES.md#structure-and-display).

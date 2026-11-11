@@ -2,6 +2,10 @@
 
 A list of choices, for the keyboard as much as the pointer. [ContextMenu](../ContextMenu/README.md) puts one in a [Popover](../Popover/README.md).
 
+## Usage rules
+
+The [usage rules](../../docs/USAGE_RULES.md) that bear on Menu: [overlay.menu-anchored](../../docs/USAGE_RULES.md#overlays-and-feedback).
+
 ## Usage
 
 ```js
