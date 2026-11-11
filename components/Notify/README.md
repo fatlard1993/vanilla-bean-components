@@ -40,8 +40,9 @@ The stack shows the newest three. Older ones fold behind a "+N more" button abov
 `actions` puts buttons on the toast, for the one thing worth doing about the message: undo it, refresh for it, retry it.
 
 ```js
+// It's done, so success; longer than success's four seconds, to leave time to undo
 new Notify({
-	intent: 'warning',
+	intent: 'success',
 	timeout: 10000,
 	content: 'Deleted 3 bookmarks',
 	actions: [{ textContent: 'Undo', onPointerPress: () => restore(deleted) }],
