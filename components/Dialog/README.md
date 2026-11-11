@@ -11,16 +11,16 @@ The [usage rules](../../docs/USAGE_RULES.md) that bear on Dialog: [overlay.confi
 ```js
 import { Dialog } from '@vanilla-bean/components';
 
-const dialog = new Dialog({
-	header: 'Confirm Action',
-	body: 'Are you sure you want to proceed?',
-	buttons: ['Cancel', { textContent: 'Confirm', intent: 'success' }],
-	onButtonPress: ({ button, closeDialog }) => {
-		console.log('pressed', button);
-		closeDialog();
-	},
+new Dialog({
+	header: 'Import log',
+	size: 'standard',
+	body: importLog,
+	buttons: ['Close', 'Download'],
+	onButtonPress: ({ button, closeDialog }) => (button === 'Download' ? download(importLog) : closeDialog()),
 });
 ```
+
+A Dialog shows something to read or work through; its way out comes before its action. A yes-or-no question before an action is [`Dialog.confirm`](#methods), and creating or editing a record is a [FormDialog](../FormDialog/README.md).
 
 ## Options
 
