@@ -48,6 +48,17 @@ HTMLDialogElement.prototype.close = function () {
 	if (wasOpen) this.dispatchEvent(new Event('close'));
 };
 
+// A failed assertion prints what it got. Printed in full, a node in the document that has a listener (every
+// component's) walks out through the document into the whole window, and bun test never finishes printing: the run
+// hangs instead of failing. Printed as its markup, it fails at once and says what it was.
+const PRINTED_MARKUP = 300;
+
+Node.prototype[Bun.inspect.custom] = function () {
+	const markup = this.outerHTML ?? this.textContent ?? '';
+
+	return markup.length > PRINTED_MARKUP ? `${markup.slice(0, PRINTED_MARKUP)}…` : markup;
+};
+
 // happy dom doesn't support canvas yet: a context that draws nothing, with every call a stroke makes
 HTMLCanvasElement.prototype.getContext = function () {
 	return {
