@@ -2,6 +2,10 @@
 
 Data table component with configurable columns, client-side sorting, optional footer rows, and custom cell rendering.
 
+## Usage rules
+
+The [usage rules](../../docs/USAGE_RULES.md) that bear on Table: [structure.table-for-records](../../docs/USAGE_RULES.md#structure-and-display).
+
 ## Usage
 
 ```js

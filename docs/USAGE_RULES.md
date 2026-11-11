@@ -90,7 +90,7 @@ The choice, by what the moment is:
 
 **action.card-navigates-as-link** · settled · since 7.2 · audit: A Card that goes somewhere is `tag: 'a'` with an `href` (it answers the pointer by itself), not an `onPointerPress` that calls the router.
 
-**action.link-tooltip-off-in-nav** · settled · audit: A Link in a nav bar or in-app navigation sets `tooltip: false`; its default tooltip, the address, is for links in prose. `false` or `null` turns it off.
+**action.link-tooltip-off-in-nav** · settled · audit: A Link in a nav bar or in-app navigation sets `tooltip: false`; its default tooltip, a small link icon on hover that marks it as a link, is for links in prose. `false` or `null` turns it off.
 
 **action.no-handbuilt-button** · settled · lint: No `tag: 'button'` on a Component; use Button. An element that must not look like a button can still be a Button with its own styles.
 
@@ -154,12 +154,57 @@ The choice, by what the moment is:
 
 **structure.list-nostyle** · settled · lint: An unbulleted List is `noStyle`, not `list-style: none` by hand.
 
+**structure.table-for-records** · proposed · audit: Records laid out under column headings are a Table: `columns` and `data`, with sorting and a `footer` row when they're wanted. A `<table>` built by hand from `thead`, `tr` and `td` Elems is a finding. A grid that only arranges things on the page isn't a table, and isn't one either way.
+
+**structure.code-for-code** · proposed · audit: Code, a command or a path shown on a page is Code, which picks inline or block by whether the text spans lines; `copyButton` gives it the copy action. A styled `<code>` or `<pre>` with a Copy button made beside it is a finding.
+
 **structure.chrome-in-components** · settled · audit: App UI is built from Elem, Component and the library's components. Raw `document.createElement` is for canvases, game worlds and download anchors.
 
 **structure.theme-tokens** · settled · audit: Colors and sizes come from the theme: secondary text in `colors.muted`, font sizes from `theme.fontSize`, spacing from `theme.space`. A color literal (hex, `rgb`, `hsl`) or a `px`/`em` font size in UI chrome is a finding. Canvas art isn't chrome, and neither is a color the user chose (a map line, a tag color). Re-theme by assigning theme roles before the components load, not by keeping a second palette in CSS variables.
+
+## Every component
+
+The rules that bear on each component, and where none do, why. A component with no rule yet has no pattern in the apps to draw one from; the first app that uses it, or builds its job by hand, is where its rule starts.
+
+| Component | Rules |
+| --- | --- |
+| BottomSheet | the [overlay choice](#overlays-and-feedback) |
+| Button | [overlay.button-order](#overlays-and-feedback), [action.press-handler](#actions-and-navigation), [action.primary-filled](#actions-and-navigation), [action.icon-only-flat](#actions-and-navigation), [action.icon-only-named](#actions-and-navigation), [action.icon-option](#actions-and-navigation), [action.label-wording](#actions-and-navigation), [action.intent-is-effect](#actions-and-navigation), [action.toggle-pressed](#actions-and-navigation), [action.chip-is-choice](#actions-and-navigation), [action.disabled-option](#actions-and-navigation), [action.link-navigates](#actions-and-navigation), [action.no-handbuilt-button](#actions-and-navigation) |
+| Calendar | No rule yet: no app uses it; the one app with a calendar has an older one of its own. |
+| Card | [action.card-navigates-as-link](#actions-and-navigation), [structure.card-no-margin](#structure-and-display), [structure.card-accent](#structure-and-display), [structure.card-states](#structure-and-display), [structure.floating-surface](#structure-and-display) |
+| Code | [structure.code-for-code](#structure-and-display) |
+| ColorPicker | [form.value-components-in-form](#forms) |
+| Content | [layout.view-shape](#page-shell-and-layout), [layout.scroll-in-content](#page-shell-and-layout) |
+| ContextMenu | [overlay.menu-anchored](#overlays-and-feedback), [overlay.popover-close](#overlays-and-feedback), the [overlay choice](#overlays-and-feedback) |
+| Dialog | [overlay.confirm-not-handbuilt](#overlays-and-feedback), [overlay.confirm-wording](#overlays-and-feedback), [overlay.danger-before-irreversible](#overlays-and-feedback), [overlay.button-order](#overlays-and-feedback), [overlay.record-in-formdialog](#overlays-and-feedback), [overlay.dialog-size-by-content](#overlays-and-feedback), [layout.scroll-in-content](#page-shell-and-layout), [structure.floating-surface](#structure-and-display) |
+| EmptyState | [overlay.notify-not-progress](#overlays-and-feedback), [overlay.emptystate-options](#overlays-and-feedback), [overlay.emptystate-four-states](#overlays-and-feedback), [overlay.emptystate-failed](#overlays-and-feedback), [overlay.emptystate-empty-vs-nomatch](#overlays-and-feedback) |
+| Form | [overlay.record-in-formdialog](#overlays-and-feedback), [overlay.save-failure-in-form](#overlays-and-feedback), [form.declared-inputs](#forms), [form.validate-on-field](#forms), [form.every-field-labeled](#forms), [form.read-options-value](#forms), [form.placeholder-not-label](#forms), [form.single-choice](#forms), [form.checkbox-label-after](#forms), [form.value-components-in-form](#forms), [form.no-raw-fields](#forms) |
+| FormDialog | [overlay.button-order](#overlays-and-feedback), [overlay.record-in-formdialog](#overlays-and-feedback), [overlay.save-failure-in-form](#overlays-and-feedback), [overlay.dialog-size-by-content](#overlays-and-feedback), [form.declared-inputs](#forms), [form.validate-on-field](#forms) |
+| Icon | [action.icon-option](#actions-and-navigation), [action.icon-meaning-named](#actions-and-navigation) |
+| Input | [form.validate-on-field](#forms), [form.every-field-labeled](#forms), [form.read-options-value](#forms), [form.placeholder-not-label](#forms), [form.single-choice](#forms), [form.no-raw-fields](#forms) |
+| Keyboard | No rule yet: one app uses it, extended with layouts of its own, which is what it is for. |
+| Label | [form.every-field-labeled](#forms), [form.checkbox-label-after](#forms), [form.placeholder-not-label](#forms) |
+| Link | [action.icon-option](#actions-and-navigation), [action.link-navigates](#actions-and-navigation), [action.link-tooltip-off-in-nav](#actions-and-navigation) |
+| List | [structure.list-nostyle](#structure-and-display) |
+| Menu | [overlay.menu-anchored](#overlays-and-feedback) |
+| Notify | [overlay.notify-failure](#overlays-and-feedback), [overlay.notify-error-stays](#overlays-and-feedback), [overlay.notify-intents](#overlays-and-feedback), [overlay.notify-undo](#overlays-and-feedback), [overlay.notify-not-progress](#overlays-and-feedback), [overlay.popover-close](#overlays-and-feedback) |
+| Page | [layout.page-once](#page-shell-and-layout) |
+| Popover | [overlay.menu-anchored](#overlays-and-feedback), [overlay.popover-close](#overlays-and-feedback), [structure.floating-surface](#structure-and-display) |
+| RadioButton | No rule yet: no app uses it. Where it fits beside a Select or chips is an [open question](#open-questions). |
+| Router | [action.link-navigates](#actions-and-navigation), [layout.page-once](#page-shell-and-layout), [layout.view-shape](#page-shell-and-layout), [layout.router-vs-tabs](#page-shell-and-layout), [layout.route-paths](#page-shell-and-layout), [layout.route-map](#page-shell-and-layout) |
+| SectionLabel | [structure.group-heading](#structure-and-display), [structure.sectionlabel-margin](#structure-and-display) |
+| Select | [form.placeholder-not-label](#forms), [form.filter-select-named](#forms), [form.single-choice](#forms), [form.no-raw-fields](#forms) |
+| Table | [structure.table-for-records](#structure-and-display) |
+| Tabs | [layout.router-vs-tabs](#page-shell-and-layout), [form.single-choice](#forms) |
+| TagList | [form.value-components-in-form](#forms) |
+| Toolbar | [action.primary-filled](#actions-and-navigation), [action.icon-only-flat](#actions-and-navigation), [action.link-tooltip-off-in-nav](#actions-and-navigation), [layout.view-shape](#page-shell-and-layout), [layout.title-in-heading](#page-shell-and-layout), [layout.back-first](#page-shell-and-layout), [form.placeholder-not-label](#forms) |
+| Tooltip | [action.icon-only-named](#actions-and-navigation), [action.link-tooltip-off-in-nav](#actions-and-navigation), [overlay.popover-close](#overlays-and-feedback) |
+| TooltipWrapper | No rule yet: apps give a tooltip through the `tooltip` option of Button or Link, and none uses it directly. |
+| Whiteboard | No rule yet: no app uses it. |
 
 ## Open questions
 
 Still undecided. An audit reports what it sees but flags neither side.
 
+- **RadioButton beside Select and chips.** form.single-choice names a Select, or two to five `pressed` chips, for a closed set. When a group of radios is the better choice (a setting whose options each need a sentence?) waits for an app that wants one.
 - **A toast at the pointer.** Notify at `x`/`y`, acknowledging the thing just pressed ("Copied"): when is that right rather than the stack?

@@ -4,7 +4,7 @@ Dynamic form component that generates labeled inputs from a configuration array 
 
 ## Usage rules
 
-The [usage rules](../../docs/USAGE_RULES.md) that bear on Form: [form.declared-inputs](../../docs/USAGE_RULES.md#forms), [form.validate-on-field](../../docs/USAGE_RULES.md#forms), [form.every-field-labeled](../../docs/USAGE_RULES.md#forms), [form.read-options-value](../../docs/USAGE_RULES.md#forms), [form.placeholder-not-label](../../docs/USAGE_RULES.md#forms), [form.single-choice](../../docs/USAGE_RULES.md#forms), [form.checkbox-label-after](../../docs/USAGE_RULES.md#forms), [form.value-components-in-form](../../docs/USAGE_RULES.md#forms), [form.no-raw-fields](../../docs/USAGE_RULES.md#forms), [overlay.save-failure-in-form](../../docs/USAGE_RULES.md#overlays-and-feedback).
+The [usage rules](../../docs/USAGE_RULES.md) that bear on Form: [overlay.record-in-formdialog](../../docs/USAGE_RULES.md#overlays-and-feedback), [form.declared-inputs](../../docs/USAGE_RULES.md#forms), [form.validate-on-field](../../docs/USAGE_RULES.md#forms), [form.every-field-labeled](../../docs/USAGE_RULES.md#forms), [form.read-options-value](../../docs/USAGE_RULES.md#forms), [form.placeholder-not-label](../../docs/USAGE_RULES.md#forms), [form.single-choice](../../docs/USAGE_RULES.md#forms), [form.checkbox-label-after](../../docs/USAGE_RULES.md#forms), [form.value-components-in-form](../../docs/USAGE_RULES.md#forms), [form.no-raw-fields](../../docs/USAGE_RULES.md#forms), [overlay.save-failure-in-form](../../docs/USAGE_RULES.md#overlays-and-feedback).
 
 ## Usage
 
