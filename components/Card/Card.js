@@ -54,9 +54,9 @@ class Card extends styled(
 			filter: none;
 		}
 
+		/* Dimmed whole, so what the card holds fades too, whatever colors it sets for itself */
 		&:disabled, &.disabled {
-			background-color: ${colors.alpha(colors.white, 0.03)};
-			color: ${colors.alpha(colors.white, 0.4)};
+			opacity: 0.5;
 			cursor: not-allowed;
 		}
 	`,
