@@ -12,6 +12,8 @@ Each rule has an id, a status and a check:
 - **audit**: it takes judgment about what the code is for
 - **since 7.2**: the rule leans on something added in that version. On an app with an older install, report it as "upgrade, then fix", not as a failure: the fix may not exist there yet.
 
+A view a framework or shared package supplies is audited once, in that package. An app is audited for what it passes in and for the views it builds; a finding the app could fix through an option the framework gives is the app's.
+
 A game's play screens, and a screen built picture-first for players who don't read, may take their own layout, sizes and choice controls: layout.view-shape, the sizes in structure.theme-tokens, action.label-wording and form.single-choice don't bind them. The rules on naming, pressing, focus and reporting failure still do.
 
 A pattern counts wherever it is written, whether lint finds it or the audit does. When an app's own helper produces it (an `element()` that builds raw fields, a `button()` that sets `.disabled`, a `Screen()` that builds every view's bar by hand), report it once at the helper with the number of call sites, not at each caller and not as clean.
@@ -38,7 +40,7 @@ The choice, by what the moment is:
 
 **overlay.button-order** · settled · since 7.2 · audit: Wherever a set of buttons ends an edit or a question (a dialog's footer, an inline Save/Cancel pair), the safe way out comes before the action: Cancel, then the verb, the main verb last. `Dialog.confirm` and FormDialog order theirs so (FormDialog: Delete, Cancel, Save, with Delete set apart); a dialog's own `buttons` array follows suit, and an extra action ("Mark resolved") sits between Cancel and the main verb.
 
-**overlay.record-in-formdialog** · settled · audit: A dialog that creates or edits a record is a FormDialog. Save/Delete/Cancel built on a plain Dialog loses what FormDialog gives: it stays open when the save fails, and shows why. A dialog that lists many records is a Dialog; editing one of them opens a FormDialog, or a Form inside the row.
+**overlay.record-in-formdialog** · settled · audit: A dialog that creates or edits a record is a FormDialog. Save/Delete/Cancel built on a plain Dialog loses what FormDialog gives: it stays open when the save fails, and shows why. A dialog that lists many records is a Dialog; editing one of them opens a FormDialog, or a Form inside the row. A settings panel whose changes take effect as they're made, with no Save, is a Dialog of labelled fields and a Close; FormDialog is for changes that wait for Save. Don't mix the two in one dialog.
 
 **overlay.save-failure-in-form** · settled · audit: A failed save is reported inside the form (a field's `validate`, or FormDialog's failure line), not in a toast that leaves the user guessing which field. FormDialog fills its failure line itself when `onSave` throws or returns the failed request: write nothing into `failure.elem` by hand.
 
@@ -98,7 +100,7 @@ The choice, by what the moment is:
 
 **action.icon-meaning-named** · settled · audit: A standalone Icon beside visible text is decoration and hides itself from assistive tech. An Icon that means something on its own (a status, a lock) has an `aria-label` or text beside it.
 
-**action.nav-current** · proposed · audit: The nav item for the view on screen carries `aria-current: 'page'`, not only a class of the app's own (`active`) that looks current without saying so.
+**action.nav-current** · proposed · audit: The nav item for the view on screen carries `aria-current: 'page'`, not only a class of the app's own (`active`) that looks current without saying so. Outside nav, the current position in a sequence (a step, a round, a page of results) carries `aria-current` with its kind (`'step'`, `'true'`); a choice that stays chosen (a tool, an avatar) is `pressed` (action.chip-is-choice). A class of the app's own alone is a finding.
 
 ## Page shell and layout
 
@@ -156,7 +158,7 @@ The choice, by what the moment is:
 
 **structure.list-nostyle** · settled · lint: An unbulleted List is `noStyle`, not `list-style: none` by hand.
 
-**structure.table-for-records** · proposed · audit: Records laid out under column headings are a Table: `columns` and `data`, with sorting and a `footer` row when they're wanted. A `<table>` built by hand from `thead`, `tr` and `td` Elems is a finding. A grid that only arranges things on the page isn't a table, and isn't one either way.
+**structure.table-for-records** · settled · audit: Records laid out under column headings are a Table: `columns` and `data`, with sorting and a `footer` row when they're wanted. A `<table>` built by hand from `thead`, `tr` and `td` Elems is a finding. A grid that only arranges things on the page isn't a table, and isn't one either way.
 
 **structure.code-for-code** · proposed · audit: Code, a command or a path shown on a page is Code, which picks inline or block by whether the text spans lines; `copyButton` gives it the copy action. A styled `<code>` or `<pre>` with a Copy button made beside it is a finding.
 
