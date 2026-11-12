@@ -130,6 +130,12 @@ const StyledLabel = styled(
 	`,
 );
 
+// The elements a <label for> labels; anything else is named by aria-labelledby
+const LABELABLE = new Set(['BUTTON', 'INPUT', 'METER', 'OUTPUT', 'PROGRESS', 'SELECT', 'TEXTAREA']);
+
+// A role that can be named; a plain element (no role, or none or presentation) can't
+const hasNameableRole = elem => !['', 'none', 'presentation', 'generic'].includes(elem.getAttribute('role') ?? '');
+
 // Adds or takes one id from an attribute holding a list of them, leaving the others
 const setToken = (elem, attribute, id, present) => {
 	const ids = new Set((elem.getAttribute(attribute) ?? '').split(/\s+/).filter(Boolean));
@@ -207,18 +213,22 @@ class Label extends StyledLabel {
 
 				if (this._labelText) this._labelText.elem.htmlFor = forId ?? '';
 
+				// Held as given when it is an element, so it is found before it is in the page or in this label
 				this._field = forId;
+				this._fieldNode = value?.elem ?? (value?.nodeType === 1 ? value : null);
 				this._linkField();
+				this._nameField();
 			},
 		},
 	};
 
 	/**
-	 * The element the label is for, found by the id `for` resolved to.
+	 * The element the label is for: the one given, or else the one with the id given.
 	 * @returns {HTMLElement|null} The labelled control, or null when there is none to be found
 	 * @private
 	 */
 	_fieldElem() {
+		if (this._fieldNode) return this._fieldNode;
 		if (!this._field) return null;
 
 		return (
@@ -251,6 +261,30 @@ class Label extends StyledLabel {
 
 		setToken(field, 'aria-describedby', id, false);
 		this._describedField = null;
+	}
+
+	/**
+	 * `for` labels only a control that can be labelled (an input, a select, a button...). Anything else the label is
+	 * for that has a role to be named by, a radio group say, is named by the label's text through `aria-labelledby`,
+	 * kept beside any name it has. A plain div is left alone: naming one is not allowed.
+	 * @private
+	 */
+	_nameField() {
+		if (this._namedField) {
+			const { field, id } = this._namedField;
+
+			setToken(field, 'aria-labelledby', id, false);
+			this._namedField = null;
+		}
+
+		const field = this._fieldElem();
+
+		if (!field || !this._labelText || LABELABLE.has(field.tagName) || !hasNameableRole(field)) return;
+
+		const id = (this._labelText.elem.id ||= `${this.uniqueId}-text`);
+
+		setToken(field, 'aria-labelledby', id, true);
+		this._namedField = { field, id };
 	}
 
 	_linkTooltip() {

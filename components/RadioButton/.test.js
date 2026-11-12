@@ -1,5 +1,6 @@
-import { findByText } from '@testing-library/dom';
+import { findByText, getAllByRole, getByRole, getByText } from '@testing-library/dom';
 
+import { Label } from '../Label';
 import { RadioButton } from '.';
 
 describe('RadioButton', () => {
@@ -48,5 +49,41 @@ describe('RadioButton values', () => {
 
 		// eslint-disable-next-line testing-library/no-node-access
 		expect(radio.elem.querySelectorAll('input')[1].checked).toBe(true);
+	});
+});
+
+describe('RadioButton as a group', () => {
+	test('the group is a radiogroup, and its label names it and is shown', () => {
+		const radio = new RadioButton({ label: 'Size', options: ['S', 'M'], appendTo: container });
+		const group = getByRole(container, 'radiogroup', { name: 'Size' });
+
+		expect(group).toBe(radio.elem);
+		expect(getByText(group, 'Size')).toBeVisible();
+
+		radio.options.options = ['S', 'M', 'L'];
+
+		expect(getAllByRole(group, 'radio')).toHaveLength(3);
+		expect(getByRole(container, 'radiogroup', { name: 'Size' })).toBe(group);
+
+		radio.options.label = 'Shirt size';
+
+		expect(getByRole(container, 'radiogroup', { name: 'Shirt size' })).toBe(group);
+	});
+
+	test('with no label it is still a radiogroup, claiming no name', () => {
+		const radio = new RadioButton({ options: ['a'], appendTo: container });
+
+		expect(radio.elem).toHaveAttribute('role', 'radiogroup');
+		expect(radio.elem).not.toHaveAttribute('aria-labelledby');
+	});
+
+	test('a Label around the group names it', () => {
+		const radio = new RadioButton({ options: ['S', 'M'] });
+
+		new Label({ label: 'Size', appendTo: container }, radio);
+
+		expect(getByRole(container, 'radiogroup', { name: 'Size' })).toBe(radio.elem);
+		// Each radio is still named by its own text, not by the group's label
+		expect(getByRole(container, 'radio', { name: 'S' })).toBeDefined();
 	});
 });

@@ -804,6 +804,8 @@ export declare class Popover extends Icon {
 }
 
 export interface RadioButtonOptions extends ComponentOptions {
+	/** The group's name, shown above the options and tying the group to it (`aria-labelledby`). A Label around the group names it too */
+	label?: string;
 	/** Array of radio button options */
 	options?: Array<string | Record<string, any>>;
 	/** Currently selected value */

@@ -29,6 +29,8 @@ The Label ties its text to the field it holds, found in this order:
 
 A field made of parts (a [ColorPicker](../ColorPicker/README.md), a [TagList](../TagList/README.md)) names the part a label belongs on with a `labelTarget` getter, and the label points there rather than at the wrapper. A field you build from parts yourself can do the same.
 
+A `<label for>` labels only a control (an input, a select, a button). A field the label is for that is not one but has a role, such as a [RadioButton](../RadioButton/README.md)'s `radiogroup`, is named by the label's text through `aria-labelledby` instead; an element with no role is left unnamed.
+
 A placeholder is not a label: give the field a Label and keep the placeholder for a hint or an example.
 
 ## Variants

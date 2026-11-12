@@ -85,6 +85,7 @@ module.exports = {
 		'callout',
 		'tabpanel',
 		'tablist',
+		'radiogroup',
 		'haspopup',
 		'focusin',
 		'focusout',

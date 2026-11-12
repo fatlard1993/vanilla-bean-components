@@ -17,6 +17,13 @@ const RadioButtonLabel = styled(
 	`,
 );
 
+const RadioButtonHeading = styled(
+	Component,
+	({ space }) => `
+		margin-bottom: ${space.sm};
+	`,
+);
+
 const RadioButtonInput = styled(
 	Component,
 	theme => `
@@ -61,6 +68,8 @@ const RadioButtonInput = styled(
  * Renders a group of radio button options with consistent styling and behavior.
  * Each radio button is properly labeled and grouped for exclusive selection.
  * @param {object} [options={}] - RadioButton configuration options
+ * @param {string} [options.label] - The group's name, shown above the options and tying the group to it
+ *   (`aria-labelledby`). A Label around the group names it too
  * @param {Array<string|object>} [options.options] - Array of radio button options
  * @param {*} [options.value] - Currently selected value
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
@@ -68,9 +77,34 @@ const RadioButtonInput = styled(
  */
 class RadioButton extends Component {
 	static schema = {
+		label: {
+			set(value) {
+				const hasLabel = value != null && value !== '';
+
+				if (hasLabel && !this._heading) {
+					this._heading = new RadioButtonHeading({ id: `${this.uniqueId}-label` });
+				}
+
+				if (this._heading) {
+					this._heading.elem.textContent = hasLabel ? value : '';
+					if (hasLabel) this.prepend(this._heading);
+					else this._heading.elem.remove();
+				}
+
+				const ids = new Set((this.elem.getAttribute('aria-labelledby') ?? '').split(/\s+/).filter(Boolean));
+
+				ids[hasLabel ? 'add' : 'delete'](`${this.uniqueId}-label`);
+
+				if (ids.size) this.elem.setAttribute('aria-labelledby', [...ids].join(' '));
+				else this.elem.removeAttribute('aria-labelledby');
+			},
+		},
 		options: {
 			set(value) {
 				this.empty();
+
+				// The heading is kept, put back before the options
+				if (this._heading && this.options.label != null && this.options.label !== '') this.prepend(this._heading);
 
 				if (!value) return;
 
@@ -112,6 +146,11 @@ class RadioButton extends Component {
 			},
 		},
 	};
+
+	// A radiogroup: its radios share a name, so the browser moves the choice by the arrow keys
+	static prepareOptions(options) {
+		return { role: 'radiogroup', ...options };
+	}
 }
 
 export default RadioButton;

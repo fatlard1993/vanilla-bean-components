@@ -74,6 +74,20 @@ describe('Label text and field', () => {
 	});
 });
 
+describe('Label naming what for cannot label', () => {
+	test('an element with a role is named by the label text; a plain one is left alone', () => {
+		const group = document.createElement('div');
+		group.setAttribute('role', 'group');
+		const plain = document.createElement('div');
+
+		new Label({ label: 'Choices', appendTo: container }, group);
+		new Label({ label: 'Content', appendTo: container }, plain);
+
+		expect(group).toHaveAccessibleName('Choices');
+		expect(plain).not.toHaveAttribute('aria-labelledby');
+	});
+});
+
 describe('Label tooltip', () => {
 	test("the tooltip describes the field the label is for, alongside the field's own description", async () => {
 		const input = new Input({ 'aria-describedby': 'own-hint' });
