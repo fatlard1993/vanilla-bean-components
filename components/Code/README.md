@@ -25,5 +25,5 @@ new Code({ code: 'bun install\nbun run build', language: 'shell', copyButton: tr
 | --- | --- | --- | --- |
 | `code` | `string` | - | The text shown; reactive |
 | `language` | `string` | `'javascript'` | Adds a `language-<name>` class, the hook highlighting libraries look for. Code highlights nothing itself |
-| `multiline` | `boolean\|'auto'` | `'auto'` | Block or inline; `'auto'` is a block when `code` has a newline. Decided once, at construction |
+| `multiline` | `boolean\|'auto'` | `'auto'` | Block or inline; `'auto'` is a block while `code` has a newline, and changes element (`code` to `pre>code` and back) as `code` changes |
 | `copyButton` | `boolean` | `false` | A button that copies `code` to the clipboard |

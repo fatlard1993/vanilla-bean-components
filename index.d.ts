@@ -417,7 +417,7 @@ export declare class Card extends Component {
 export interface CodeOptions extends ComponentOptions {
 	/** Programming language for syntax highlighting class (default: "javascript") */
 	language?: string;
-	/** Whether to render as multiline block ('auto' detects newlines) (default: "auto") */
+	/** Whether to render as multiline block ('auto' follows the code: a block while it has a newline) (default: "auto") */
 	multiline?: string | boolean;
 	/** Code content to display */
 	code?: string;
