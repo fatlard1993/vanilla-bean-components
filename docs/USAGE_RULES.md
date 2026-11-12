@@ -8,7 +8,7 @@ Each rule has an id, a status and a check:
 
 - **settled**: most apps follow it, or the apps disagreed and it was decided; the library agrees, and a deviation is a finding
 - **proposed**: the library intends it but few apps show it yet, or it waits on a library change; report, don't fail
-- **lint**: a static pattern can find it, and `eslint.app.config.cjs` does, as the warning `vbc/<id>`. It sees one file at a time, so it finds a component only where that file shows what it is (made there, or through the file's own `styled()` or subclass of it); the audit covers the rest. It leaves test files and `devTools` folders alone
+- **lint**: a static pattern can find it, and `eslint.usage.config.cjs` does, as the warning `vbc/<id>`, in an app that spreads it into its lint config (it is opt-in). It sees one file at a time, so it finds a component only where that file shows what it is (made there, or through the file's own `styled()` or subclass of it); the audit covers the rest. It leaves test files and `devTools` folders alone
 - **audit**: it takes judgment about what the code is for
 - **since 7.2**: the rule leans on something added in that version. On an app with an older install, report it as "upgrade, then fix", not as a failure: the fix may not exist there yet.
 
