@@ -75,11 +75,15 @@ const StyledLabel = styled(
 
 		/* Drawn after its control even when the control was appended after the text was placed */
 		&.variant-inline-after {
+			/* Its control is a checkbox or radio, shorter than a text field: the text centres on it */
+			align-items: center;
+
 			& > .label-text {
 				order: 1;
 			}
 
 			& label {
+				margin-top: 0;
 				margin-left: ${space.md};
 				margin-right: 0;
 			}
