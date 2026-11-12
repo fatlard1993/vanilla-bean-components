@@ -26,6 +26,19 @@ describe('Code', () => {
 		expect(getByRole(container, 'button', { name: 'Copy to clipboard' })).toBeDefined();
 	});
 
+	test('an inline code keeps its copy button, made and as its code changes', () => {
+		const code = new Code({ code: 'bun install', copyButton: true, appendTo: container });
+
+		expect(code.elem.tagName).toBe('CODE');
+		expect(getByRole(container, 'button', { name: 'Copy to clipboard' })).toBeDefined();
+		expect(code.elem.firstChild.textContent).toBe('bun install');
+
+		code.options.code = 'bun update';
+
+		expect(getByRole(container, 'button', { name: 'Copy to clipboard' })).toBeDefined();
+		expect(code.elem.firstChild.textContent).toBe('bun update');
+	});
+
 	test('the code follows its option', () => {
 		const code = new Code({ code: 'a\nb', appendTo: container });
 

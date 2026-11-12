@@ -41,7 +41,8 @@ class Code extends Component {
 				// A change of shape builds the element again, code and all
 				if (this._reshape()) return;
 
-				(this._code ?? this).elem.textContent = value;
+				if (this._code) this._code.elem.textContent = value;
+				else if (this._text) this._text.data = value ?? '';
 			},
 		},
 		// Decides the tag: 'auto' follows the code as it changes, true or false holds
@@ -83,6 +84,7 @@ class Code extends Component {
 		this.tag = tag;
 		elem._component = this;
 		this._code = undefined;
+		this._text = undefined;
 
 		// The connection observer watched the old element; one is made again for the new when the options ask
 		this.elemObserver?.disconnect();
@@ -107,6 +109,9 @@ class Code extends Component {
 				textContent: this.options.code,
 				appendTo: this.elem,
 			});
+		} else {
+			this._text = document.createTextNode(this.options.code ?? '');
+			this.elem.append(this._text);
 		}
 
 		if (this.options.copyButton)
