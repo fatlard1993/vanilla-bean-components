@@ -1,5 +1,5 @@
 import { describe, test, expect, mock } from 'bun:test';
-import { findByText, getAllByRole, getByText, queryByText } from '@testing-library/dom';
+import { findByText, getAllByRole, getByText, queryAllByRole, queryByText } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 
 import { Form } from '../Form';
@@ -134,6 +134,23 @@ describe('TagList editing', () => {
 
 		// eslint-disable-next-line testing-library/no-node-access
 		expect(tagList.elem.querySelector('input')).not.toBeNull();
+	});
+
+	test('read-only set later is read-only as if given at the start: the tags stay, without remove buttons', () => {
+		const later = new TagList({ value: ['a', 'b'], appendTo: container });
+		const atStart = new TagList({ readOnly: true, value: ['a', 'b'], appendTo: container });
+
+		later.options.readOnly = true;
+
+		expect(later.elem.textContent).toBe(atStart.elem.textContent);
+		expect(queryAllByRole(later.elem, 'button')).toHaveLength(0);
+		expect(getAllByRole(later.elem, 'listitem').map(({ dataset }) => dataset.value)).toEqual(['a', 'b']);
+
+		later.options.readOnly = false;
+
+		expect(getAllByRole(later.elem, 'button', { name: 'Remove a' })).toHaveLength(1);
+		expect(getAllByRole(later.elem, 'button', { name: 'Remove b' })).toHaveLength(1);
+		expect(getAllByRole(later.elem, 'button', { name: 'Add tag' })).toHaveLength(1);
 	});
 
 	test('the buttons have names', () => {
