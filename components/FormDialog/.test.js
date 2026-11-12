@@ -157,6 +157,46 @@ describe('FormDialog', () => {
 		expect(dialog.failure.elem.textContent).toBe('');
 	});
 
+	test('onSave returning a message keeps the dialog open and shows it, without reporting an error', async () => {
+		const reportError = spyOn(globalThis, 'reportError').mockImplementation(() => {});
+		const dialog = new FormDialog({
+			inputs: [nameField],
+			data: { name: 'Garden' },
+			onSave: () => 'That name is taken',
+		});
+
+		await settle();
+
+		expect(await dialog.save()).toBe(false);
+		expect(dialog.elem.isConnected).toBe(true);
+		expect(dialog.failure.elem.textContent).toBe('That name is taken');
+		expect(reportError).not.toHaveBeenCalled();
+
+		reportError.mockRestore();
+	});
+
+	test('save(action) runs a button of its own through the same checks, failure line and close', async () => {
+		const markResolved = mock(async () => 'Resolve it after the field is mapped');
+		const dialog = new FormDialog({ inputs: [nameField], data: { name: '' }, onSave: mock() });
+
+		await settle();
+
+		expect(await dialog.save(markResolved)).toBe(false);
+		expect(markResolved).not.toHaveBeenCalled();
+
+		dialog.form.inputElements.name.options.value = 'Garden';
+		dialog.form.options.data.name = 'Garden';
+
+		expect(await dialog.save(markResolved)).toBe(false);
+		expect(markResolved).toHaveBeenCalledWith({ name: 'Garden' }, dialog);
+		expect(dialog.failure.elem.textContent).toBe('Resolve it after the field is mapped');
+
+		markResolved.mockImplementation(async () => {});
+
+		expect(await dialog.save(markResolved)).toBe(true);
+		expect(dialog.options.onSave).not.toHaveBeenCalled();
+	});
+
 	test('Enter in a single-line field saves; Enter in a textarea is a new line', async () => {
 		const onSave = mock();
 		const dialog = new FormDialog({

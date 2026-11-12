@@ -33,7 +33,7 @@ new FormDialog({
 | `intro` | `string\|Component\|Array` | - | Content shown above the form; reactive |
 | `formOptions` | `object` | - | Any further Form options |
 | `FormComponent` | `Function` | `Form` | The Form class to build, for a form with fields and behaviour of its own |
-| `onSave` | `Function` | - | `(data, dialog)` once the form is valid. Returning `false`, returning a failed request (a hypertether result with `status: 'error'`, or a `Response` that isn't ok), or throwing, keeps the dialog open; otherwise it closes |
+| `onSave` | `Function` | - | `(data, dialog)` once the form is valid. Returning `false`, returning a message (a string), returning a failed request (a hypertether result with `status: 'error'`, or a `Response` that isn't ok), or throwing, keeps the dialog open; otherwise it closes |
 | `onDelete` | `Function` | - | `(data, dialog)`. Its presence adds the Delete button |
 | `confirmDelete` | `string\|object\|boolean` | - | Ask before deleting: the question, or `Dialog.confirm` options |
 | `saveLabel`, `deleteLabel`, `cancelLabel` | `string` | `'Save'`, `'Delete'`, `'Cancel'` | Button labels |
@@ -46,7 +46,7 @@ Everything else is a Dialog option. A subclass sets its own defaults in `static 
 ## Behaviour
 
 - **Save** runs `form.hasErrors()` first, which also commits what is being typed in the focused field; an invalid form stays as it is, with its errors showing.
-- A failed request shows why above the buttons in the danger color (hypertether's `failureReason`: the server's `{ error }`, `{ message }` or text, else the status), and a throw shows its message; the next Save or Delete clears it. Returning `false` shows nothing, for an app that said why itself.
+- A failed request shows why above the buttons in the danger color (hypertether's `failureReason`: the server's `{ error }`, `{ message }` or text, else the status), and a throw shows its message; the next Save or Delete clears it. A returned message shows as it is, for a reason the app knows (a hand-checked field, a refusal it found); unlike a throw, it isn't reported as a bug. Returning `false` shows nothing, for an app that said why itself.
 - While a save or delete is under way, Save and Delete are disabled, so a double press can't send it twice.
 - **Enter** in a single-line field saves; in a textarea it is a new line, and a field that uses Enter itself (a TagList, an autocomplete) claims it with `preventDefault` so it doesn't save.
 - **Delete** with `confirmDelete` asks over the form, in the `danger` intent; no leaves the form open as it was.
@@ -56,5 +56,6 @@ Everything else is a Dialog option. A subclass sets its own defaults in `static 
 ```js
 dialog.form; // the Form
 await dialog.save(); // true once saved and closed
+await dialog.save(data => markResolved(data)); // a button of its own, through the same checks, failure line and close
 await dialog.delete(); // true once deleted and closed
 ```

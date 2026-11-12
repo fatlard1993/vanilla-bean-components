@@ -24,9 +24,9 @@ const reasonOf = result => {
  * A Dialog holding a Form, with Save, Delete (when there is something to delete) and Cancel.
  *
  * Save checks the form, then hands its data to onSave and closes once that settles; onSave returning false, returning
- * a failed request (a hypertether result with status 'error', or a Response that isn't ok), or throwing, keeps the
- * dialog open with the data as typed, and a failed request's reason or the error's message shows above the buttons
- * until the next try. Delete asks first when confirmDelete is set. Enter in a
+ * a message, returning a failed request (a hypertether result with status 'error', or a Response that isn't ok), or
+ * throwing, keeps the dialog open with the data as typed, and the message, the request's reason or the error's message
+ * shows above the buttons until the next try. A thrown error is also reported as a bug; a returned message is not. Delete asks first when confirmDelete is set. Enter in a
  * single-line field saves. Any other button reaches onButtonPress as it would on a Dialog.
  *
  * The buttons are known by a `data-action` of `save`, `delete` or `cancel`, not by their labels: a dialog that lists its
@@ -37,7 +37,7 @@ const reasonOf = result => {
  * @param {string|Component|Array} [options.intro] - Content shown above the form
  * @param {object} [options.formOptions] - Further options for the Form
  * @param {Function} [options.FormComponent] - The Form class to build, for a form with fields and behaviour of its own
- * @param {Function} [options.onSave] - Called with (data, dialog) when the form is valid; false, a failed request or a throw keeps it open
+ * @param {Function} [options.onSave] - Called with (data, dialog) when the form is valid; false, a message, a failed request or a throw keeps it open
  * @param {Function} [options.onDelete] - Called with (data, dialog); its presence adds the Delete button
  * @param {string|object|boolean} [options.confirmDelete] - Ask before deleting: a message, or Dialog.confirm options
  * @param {string} [options.saveLabel] - Label of the save button
@@ -162,6 +162,13 @@ class FormDialog extends styled(
 
 			if (result === false) return false;
 
+			// A message returned is the reason it didn't save, said in the dialog and not reported as an error
+			if (typeof result === 'string' && result) {
+				this.failure.elem.textContent = result;
+
+				return false;
+			}
+
 			if (failedRequest(result)) {
 				this.failure.elem.textContent = reasonOf(result);
 
@@ -183,17 +190,19 @@ class FormDialog extends styled(
 	}
 
 	/**
-	 * Checks the form and, when it's valid, saves it through onSave.
+	 * Checks the form and, when it's valid, saves it through onSave, or through the action given: a button of the
+	 * dialog's own (Mark resolved) takes the same checks, busy state, failure line and close as Save.
+	 * @param {Function} [action] - Called with (data, dialog) in place of onSave
 	 * @returns {Promise<boolean>} Whether it saved and closed
 	 */
-	async save() {
+	async save(action = this.options.onSave) {
 		if (this.busy) return false;
 
 		this.failure.elem.textContent = '';
 
 		if (this.form.hasErrors()) return false;
 
-		return this._settle(this.options.onSave ?? (() => {}));
+		return this._settle(action ?? (() => {}));
 	}
 
 	/**
