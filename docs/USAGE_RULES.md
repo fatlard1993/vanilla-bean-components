@@ -12,6 +12,8 @@ Each rule has an id, a status and a check:
 - **audit**: it takes judgment about what the code is for
 - **since 7.2**: the rule leans on something added in that version. On an app with an older install, report it as "upgrade, then fix", not as a failure: the fix may not exist there yet.
 
+A game's play screens, and a screen built picture-first for players who don't read, may take their own layout, sizes and choice controls: layout.view-shape, the sizes in structure.theme-tokens, action.label-wording and form.single-choice don't bind them. The rules on naming, pressing, focus and reporting failure still do.
+
 A pattern counts wherever it is written, whether lint finds it or the audit does. When an app's own helper produces it (an `element()` that builds raw fields, a `button()` that sets `.disabled`, a `Screen()` that builds every view's bar by hand), report it once at the helper with the number of call sites, not at each caller and not as clean.
 
 ## Overlays and feedback
@@ -66,7 +68,7 @@ The choice, by what the moment is:
 
 ## Actions and navigation
 
-**action.press-handler** · settled · audit: A press is `onPointerPress`, given as an option or called on the component. It makes an element that isn't natively pressable answer Enter and Space, and its listener is removed when the component is destroyed; an `addEventListener('click')` on `button.elem` gets neither guarantee, and `onPointerDown`/`onPointerUp` fire on a touch that was meant as a scroll. An app's own `onClick` prop handed on to `onPointerPress`, and a map or canvas library's own events, are not findings.
+**action.press-handler** · settled · audit: A press is `onPointerPress`, given as an option or called on the component. It makes an element that isn't natively pressable answer Enter and Space, and its listener is removed when the component is destroyed; an `addEventListener('click')` on `button.elem` gets neither guarantee, and `onPointerDown`/`onPointerUp` fire on a touch that was meant as a scroll. An app's own `onClick` prop handed on to `onPointerPress`, and a map or canvas library's own events, are not findings. A control that acts while it's held (thrust, a repeating key) is still a Button and may listen to `pointerdown` and `pointerup` itself; it answers Space or Enter held down the same way.
 
 **action.primary-filled** · settled · audit: A view's main or confirming action is a default (filled) Button; the other tools beside it are `variant: 'flat'`. More than one filled Button in a toolbar is worth a look.
 
@@ -104,7 +106,7 @@ The choice, by what the moment is:
 
 **layout.view-shape** · settled · audit: A routed view is a Toolbar with `variant: 'bar'` for its header, then a Content for what scrolls.
 
-**layout.title-in-heading** · settled · audit: The view's title is the bar's `heading`, not an element built beside it.
+**layout.title-in-heading** · settled · audit: The view's title is the bar's `heading`, not an element built beside it. A breadcrumb trail is Links to the views above, placed before the heading; the view itself is the heading, not a link.
 
 **layout.back-first** · settled · audit: A back control is first in the bar: `addClass: 'start'`, `icon: 'arrow-left'`, and a name (action.icon-only-named) when it has no text.
 
@@ -140,13 +142,13 @@ The choice, by what the moment is:
 
 ## Structure and display
 
-**structure.group-heading** · settled · audit: A heading over a group inside a view is a SectionLabel. The page or document title is the bar's `heading` (or a real heading element); `vbc-markdown` is for rendered markdown only. Copying SectionLabel's look (uppercase, muted, letter-spaced) onto any other element is a finding.
+**structure.group-heading** · settled · audit: A heading over a group inside a view is a SectionLabel. The view's title is the bar's `heading` (layout.title-in-heading); `vbc-markdown` is for rendered markdown only. Copying SectionLabel's look (uppercase, muted, letter-spaced) onto any other element is a finding.
 
 **structure.sectionlabel-margin** · settled · since 7.2 · lint: Leave a SectionLabel's margin alone; first in its container it already drops its top margin. Space it from its neighbors with the container's `gap` or padding.
 
 **structure.card-no-margin** · settled · audit: A Card has no margin; the container spaces its cards with `gap`.
 
-**structure.card-accent** · settled · lint: A Card's colored edge is `accent`, not a hand-made `border-left` or inset shadow. A card look built by hand on an Elem is itself a finding: it's a Card.
+**structure.card-accent** · settled · lint: A Card's colored edge is `accent`, not a hand-made `border-left` or inset shadow. A card look built by hand on an Elem is itself a finding: it's a Card. Restyling a Card with `styled(Card)` is how an app gives it a look of its own; a pressable Card that can't be pressed now takes `disabled`, not a `<button>` tag to reach `:disabled`.
 
 **structure.card-states** · settled · audit: Don't restyle a pressable Card's hover, active or disabled states; the Card has them.
 
