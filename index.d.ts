@@ -688,7 +688,7 @@ export interface LabelOptions extends TooltipWrapperOptions {
 	for?: Component | string;
 	/** Whether collapsible variant starts collapsed */
 	collapsed?: boolean;
-	/** Tooltip text for the label */
+	/** Tooltip text for the label; it also describes the field the label is for */
 	tooltip?: string;
 }
 

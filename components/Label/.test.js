@@ -74,6 +74,38 @@ describe('Label text and field', () => {
 	});
 });
 
+describe('Label tooltip', () => {
+	test("the tooltip describes the field the label is for, alongside the field's own description", async () => {
+		const input = new Input({ 'aria-describedby': 'own-hint' });
+		const hint = Object.assign(document.createElement('span'), { id: 'own-hint', textContent: 'Required.' });
+		container.append(hint);
+		const label = new Label({ label: 'Name', tooltip: 'As on your passport', appendTo: container }, input);
+
+		await Promise.resolve();
+
+		expect(input.elem).toHaveAccessibleDescription('Required. As on your passport');
+
+		label.options.tooltip = null;
+
+		expect(input.elem).toHaveAccessibleDescription('Required.');
+	});
+
+	test('the tooltip moves with for, and reaches a field given by id', async () => {
+		const first = new Input({ appendTo: container });
+		const second = new Input({ id: 'second-field', appendTo: container });
+		const label = new Label({ label: 'Name', for: first, tooltip: 'Help', appendTo: container });
+
+		await Promise.resolve();
+
+		expect(first.elem).toHaveAccessibleDescription('Help');
+
+		label.options.for = 'second-field';
+
+		expect(first.elem).not.toHaveAttribute('aria-describedby');
+		expect(second.elem).toHaveAccessibleDescription('Help');
+	});
+});
+
 describe('Label variants', () => {
 	test('each variant marks the element, and only one at a time', () => {
 		const label = new Label({ label: 'L', variant: 'inline', appendTo: container });

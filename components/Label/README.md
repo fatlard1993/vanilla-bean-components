@@ -49,4 +49,4 @@ Changing `variant` later moves the existing text; it doesn't add a second one.
 | `variant` | `string` | `'simple'` | `'simple'`, `'inline'`, `'inline-after'`, `'overlay'` or `'collapsible'` |
 | `for` | `string\|Component\|HTMLElement` | the field held | The field to tie the label to; see above |
 | `collapsed` | `boolean` | - | `collapsible` only: folded shut |
-| `tooltip` | `string\|object` | - | A tooltip on the whole Label (a [Tooltip](../Tooltip/README.md)) |
+| `tooltip` | `string\|object` | - | A tooltip on the whole Label (a [Tooltip](../Tooltip/README.md)); its text also describes the field (`aria-describedby`), beside any description the field has |

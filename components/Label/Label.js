@@ -130,6 +130,16 @@ const StyledLabel = styled(
 	`,
 );
 
+// Adds or takes one id from an attribute holding a list of them, leaving the others
+const setToken = (elem, attribute, id, present) => {
+	const ids = new Set((elem.getAttribute(attribute) ?? '').split(/\s+/).filter(Boolean));
+
+	ids[present ? 'add' : 'delete'](id);
+
+	if (ids.size) elem.setAttribute(attribute, [...ids].join(' '));
+	else elem.removeAttribute(attribute);
+};
+
 /**
  * Label component with multiple display variants and input association.
  *
@@ -141,7 +151,7 @@ const StyledLabel = styled(
  * @param {Component|string} [options.for] - Input component or ID to associate label with; a component with a
  *   `labelTarget` (a field made of parts) is labelled at that part. Unset, it's the first element child or appended
  * @param {boolean} [options.collapsed] - Whether collapsible variant starts collapsed
- * @param {string} [options.tooltip] - Tooltip text for the label
+ * @param {string} [options.tooltip] - Tooltip text for the label; it also describes the field the label is for
  * @param {...(Component|HTMLElement|string)} children - Child elements, typically input components
  * @returns {Label} Label component instance
  */
@@ -196,9 +206,62 @@ class Label extends StyledLabel {
 				}
 
 				if (this._labelText) this._labelText.elem.htmlFor = forId ?? '';
+
+				this._field = forId;
+				this._linkField();
 			},
 		},
 	};
+
+	/**
+	 * The element the label is for, found by the id `for` resolved to.
+	 * @returns {HTMLElement|null} The labelled control, or null when there is none to be found
+	 * @private
+	 */
+	_fieldElem() {
+		if (!this._field) return null;
+
+		return (
+			this.elem.querySelector(`#${CSS.escape(this._field)}`) ?? this.elem.ownerDocument.getElementById(this._field)
+		);
+	}
+
+	/**
+	 * The tooltip reaches the field as well as the label: the field is what a screen reader is on, and the wrapper's
+	 * description is never heard there. Added to the field's own descriptions (an error, a hint), not in their place.
+	 * @private
+	 */
+	_linkField() {
+		this._unlinkField();
+
+		const id = this._tooltip?.elem.id;
+		const field = id && this._fieldElem();
+
+		if (!field) return;
+
+		setToken(field, 'aria-describedby', id, true);
+		this._describedField = { field, id };
+	}
+
+	/** @private */
+	_unlinkField() {
+		if (!this._describedField) return;
+
+		const { field, id } = this._describedField;
+
+		setToken(field, 'aria-describedby', id, false);
+		this._describedField = null;
+	}
+
+	_linkTooltip() {
+		super._linkTooltip();
+		this._linkField();
+	}
+
+	_unlinkTooltip() {
+		this._unlinkField();
+		super._unlinkTooltip();
+	}
 
 	static prepareOptions(options, children) {
 		// The field the label is for: its first child when that's an element and not text, or else the first element it
