@@ -10,6 +10,18 @@ const KeyRow = styled(
 	`,
 );
 
+const DEFAULT_KEY_DEFINITIONS = {
+	simple: { text: 'ABC' },
+	number: { text: '123' },
+	shift: { class: 'u1_5' },
+	return: { class: 'u1_5' },
+	backspace: { class: 'u1_5' },
+	clear: { class: 'u1_5' },
+	done: { class: 'u1_5' },
+	exponent: { key: 'e', text: 'e', class: 'u1_5' },
+	space: { key: ' ', text: ' ', class: 'u6' },
+};
+
 /**
  * Virtual keyboard component with customizable layouts and tactile feedback.
  *
@@ -18,7 +30,8 @@ const KeyRow = styled(
  * @param {object} [options={}] - Keyboard configuration options
  * @param {string} [options.layout='simple'] - Initial keyboard layout name
  * @param {boolean} [options.tactileResponse=true] - Whether to provide haptic feedback on key press
- * @param {object} [options.keyDefinitions] - Key configuration object mapping key names to definitions
+ * @param {object} [options.keyDefinitions] - Key configuration object mapping key names to definitions, merged over the
+ *   defaults: an entry given replaces that key's definition
  * @param {object} [options.layouts] - Layout configuration object mapping layout names to key arrays
  * @param {Function} [options.onKeyDown] - Hears `keyDown`: a key pressed down; `event.detail` holds key, keyDefinition, target and event
  * @param {Function} [options.onKeyUp] - Hears `keyUp`: a key let go
@@ -54,18 +67,9 @@ class Keyboard extends Component {
 				],
 			},
 		},
+		// Merged over DEFAULT_KEY_DEFINITIONS in setLayout(): an entry given replaces that key's, the rest are kept
 		keyDefinitions: {
-			default: {
-				simple: { text: 'ABC' },
-				number: { text: '123' },
-				shift: { class: 'u1_5' },
-				return: { class: 'u1_5' },
-				backspace: { class: 'u1_5' },
-				clear: { class: 'u1_5' },
-				done: { class: 'u1_5' },
-				exponent: { key: 'e', text: 'e', class: 'u1_5' },
-				space: { key: ' ', text: ' ', class: 'u6' },
-			},
+			default: DEFAULT_KEY_DEFINITIONS,
 		},
 		tactileResponse: { default: true },
 	};
@@ -87,14 +91,16 @@ class Keyboard extends Component {
 		this.empty();
 		this.removeClass(/\blayout-\S+\b/g).addClass(`layout-${name}`);
 
+		const keyDefinitions = { ...DEFAULT_KEY_DEFINITIONS, ...this.options.keyDefinitions };
+
 		rows.forEach(columns => {
 			const row = new KeyRow({ appendTo: this });
 
 			columns.forEach(key => {
-				let keyDefinition = this.options.keyDefinitions[key];
+				let keyDefinition = keyDefinitions[key];
 
 				if (!keyDefinition) {
-					Object.entries(this.options.keyDefinitions).forEach(([keyName, definition]) => {
+					Object.entries(keyDefinitions).forEach(([keyName, definition]) => {
 						if (!keyName.startsWith('^') || !keyName.endsWith('$')) return;
 
 						if (new RegExp(keyName, 'i').test(key)) keyDefinition = definition;

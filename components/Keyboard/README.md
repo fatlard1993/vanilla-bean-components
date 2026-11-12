@@ -24,7 +24,7 @@ Switching layouts is the app's to do: the `simple` and `number` keys (shown as "
 
 ## Layouts and key definitions
 
-A layout is a list of rows, each a list of key names. A key's name is its label and its class (`button.shift`); its definition in `keyDefinitions` can change what it sends (`key`), its label (`text`), its width (`class: 'u1_5'`, flex 1.25 to 7) and take any Button option, such as `icon`. A definition named `'^[0-9]$'`, anchored at both ends, applies to every key it matches. Your `layouts` and `keyDefinitions` replace the defaults rather than adding to them.
+A layout is a list of rows, each a list of key names. A key's name is its label and its class (`button.shift`); its definition in `keyDefinitions` can change what it sends (`key`), its label (`text`), its width (`class: 'u1_5'`, flex 1.25 to 7) and take any Button option, such as `icon`. A definition named `'^[0-9]$'`, anchored at both ends, applies to every key it matches. Your `keyDefinitions` are merged over the defaults, an entry of yours replacing that key's definition, so the default layouts keep their labels and widths; your `layouts` replace the defaults rather than adding to them.
 
 ```js
 new Keyboard({
@@ -40,7 +40,7 @@ new Keyboard({
 | --- | --- | --- | --- |
 | `layout` | `string` | `'simple'` | The layout shown; setting it rebuilds the keys |
 | `layouts` | `object` | `simple`, `number` | Layout name to rows of key names |
-| `keyDefinitions` | `object` | widths and labels for the defaults | Key name (or anchored pattern) to its definition |
+| `keyDefinitions` | `object` | widths and labels for the defaults | Key name (or anchored pattern) to its definition, merged over the defaults |
 | `tactileResponse` | `boolean` | `true` | A short vibration on each key down, where the device has one |
 
 ## Events

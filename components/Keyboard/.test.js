@@ -120,6 +120,19 @@ describe('Keyboard layouts and keys', () => {
 		expect(getByRole(keyboard.elem, 'button', { name: 'No' })).toHaveClass('u2');
 	});
 
+	test("key definitions of the app's own are merged over the defaults, an entry of its own replacing that key's", () => {
+		const keyboard = new Keyboard({
+			keyDefinitions: { q: { text: 'Q!' }, number: { text: '#' } },
+			appendTo: container,
+		});
+
+		expect(getByRole(keyboard.elem, 'button', { name: 'ABC' })).toBeDefined();
+		expect(getByRole(keyboard.elem, 'button', { name: '#' })).toBeDefined();
+		expect(getByRole(keyboard.elem, 'button', { name: 'Q!' })).toBeDefined();
+		// eslint-disable-next-line testing-library/no-node-access
+		expect(keyboard.elem.querySelector('.space')).toHaveClass('u6');
+	});
+
 	test('a pressed key vibrates the device unless told not to', () => {
 		navigator.vibrate = mock();
 

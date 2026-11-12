@@ -661,7 +661,7 @@ export interface KeyboardOptions extends ComponentOptions {
 	layout?: string;
 	/** Whether to provide haptic feedback on key press (default: true) */
 	tactileResponse?: boolean;
-	/** Key configuration object mapping key names to definitions */
+	/** Key configuration object mapping key names to definitions, merged over the defaults: an entry given replaces that key's definition */
 	keyDefinitions?: Record<string, any>;
 	/** Layout configuration object mapping layout names to key arrays */
 	layouts?: Record<string, any>;
