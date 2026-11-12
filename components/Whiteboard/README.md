@@ -22,7 +22,7 @@ const board = new Whiteboard({
 board.clearCanvas();
 ```
 
-`lines` draws strokes onto what is already there: setting it to `[]` erases nothing, so clear with `clearCanvas()` first. Resizing the canvas blanks it and draws `lines` again. `readOnly` stops new strokes and keeps the drawing.
+`lines` is the whole picture: setting it clears what was drawn and draws the new set, so `[]` erases the canvas. Resizing the canvas blanks it and draws `lines` again. `readOnly` stops new strokes and keeps the drawing.
 
 ## Options
 
@@ -32,7 +32,7 @@ board.clearCanvas();
 | `background` | `string` | `'#FFF'` | Background color |
 | `color` | `string` | `'#000'` | Color of new strokes |
 | `lineWidth` | `number` | `3` | Width of new strokes |
-| `lines` | `Array<object>` | - | Strokes to draw, each `{ color, width, line: [{ x, y }, ...] }` |
+| `lines` | `Array<object>` | - | Strokes to draw in place of what was drawn, each `{ color, width, line: [{ x, y }, ...] }` |
 | `readOnly` | `boolean` | `false` | Stop new strokes |
 | `drawThrottle` | `number` | from `lineWidth` | Milliseconds between sampled points; `0` samples every move |
 

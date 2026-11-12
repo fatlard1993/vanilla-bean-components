@@ -46,7 +46,9 @@ export default class Whiteboard extends Component {
 			},
 		},
 		lines: {
+			// The set given is the picture: what was drawn before is cleared, so `[]` erases
 			set(value) {
+				this.canvas.clearRect(0, 0, this.elem.width, this.elem.height);
 				(value ?? []).forEach(line => this.drawLine(line));
 			},
 		},

@@ -112,4 +112,28 @@ describe('Whiteboard strokes', () => {
 		expect(board.elem.width).toBe(200);
 		expect(stroke).toHaveBeenCalledTimes(2);
 	});
+
+	test('assigning lines replaces what was drawn: it clears, then draws the new set', () => {
+		const line = {
+			color: '#000',
+			width: 2,
+			line: [
+				{ x: 0, y: 0 },
+				{ x: 5, y: 5 },
+			],
+		};
+		const board = new Whiteboard({ lines: [line], appendTo: container });
+		const clearRect = spyOn(board.canvas, 'clearRect');
+		const stroke = spyOn(board.canvas, 'stroke');
+
+		board.options.lines = [line, line];
+
+		expect(clearRect).toHaveBeenCalledTimes(1);
+		expect(stroke).toHaveBeenCalledTimes(2);
+
+		board.options.lines = [];
+
+		expect(clearRect).toHaveBeenCalledTimes(2);
+		expect(stroke).toHaveBeenCalledTimes(2);
+	});
 });
