@@ -287,6 +287,36 @@ describe('Calendar', () => {
 		});
 	});
 
+	describe('a date given in part', () => {
+		test('a month without a year is that month this year', async () => {
+			const cal = new Calendar({ month: 1, appendTo: container });
+
+			expect(cal.options.year).toBe(thisYear);
+			expect(cal.options.month).toBe(1);
+			expect(cal.options.day).toBe(Math.min(now.getDate(), new Date(thisYear, 2, 0).getDate()));
+
+			await findByText(container, monthString(1, thisYear));
+		});
+
+		test('a year without a month is the current month of that year', async () => {
+			const cal = new Calendar({ year: 2020, appendTo: container });
+
+			expect(cal.options.year).toBe(2020);
+			expect(cal.options.month).toBe(thisMonth);
+
+			await findByText(container, monthString(thisMonth, 2020));
+		});
+
+		test('a year and month without a day is a real day of that month', () => {
+			const cal = new Calendar({ year: 2021, month: 1, appendTo: container });
+
+			expect(cal.options.year).toBe(2021);
+			expect(cal.options.month).toBe(1);
+			expect(cal.options.day).toBeLessThanOrEqual(28);
+			expect(cal.options.weekday).toBe(new Date(2021, 1, cal.options.day).getDay());
+		});
+	});
+
 	describe('setView()', () => {
 		test('switches from month to week view', async () => {
 			// Seeded mid-month so the expected week range does not depend on when the suite runs.

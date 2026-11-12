@@ -32,7 +32,7 @@ Each entry in `events` needs `at` (a Date, timestamp or date string); `label`, `
 | `view` | `'month'\|'week'\|'day'` | `'month'` | The view shown; reactive |
 | `views` | `Array<string>` | all three | The views the switch offers |
 | `events` | `Array<object>` | `[]` | The events; reactive |
-| `year`, `month`, `day` | `number` | today | The date shown; give all three, `month` counting from 0 |
+| `year`, `month`, `day` | `number` | today | The date shown, `month` counting from 0; each part given is kept and a missing one is today's (a `year` alone shows this month of that year) |
 | `display24h` | `boolean` | `false` | 24-hour times in the day view |
 | `height` | `string` | `'420px'` | The calendar's height |
 

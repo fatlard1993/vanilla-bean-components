@@ -438,10 +438,15 @@ class Calendar extends StyledComponent {
 
 		this.wrapper = new CalendarWrapper({ appendTo: this, onKeyDown: event => this._roveKey(event) });
 
-		if (this.options.month == null) {
-			const now = new Date();
+		// Each part of the date given is kept; a missing one is today's (the day kept within the month)
+		const { year, month, day } = this.options;
 
-			this.setDate(now.getFullYear(), now.getMonth(), now.getDate());
+		if (year == null || month == null || day == null) {
+			const now = new Date();
+			const shownYear = year ?? now.getFullYear();
+			const shownMonth = month ?? now.getMonth();
+
+			this.setDate(shownYear, shownMonth, day ?? Math.min(now.getDate(), daysInMonth(shownYear, shownMonth)));
 
 			this.adjustDateToView();
 		}
