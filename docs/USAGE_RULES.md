@@ -160,7 +160,7 @@ The choice, by what the moment is:
 
 **structure.table-for-records** · settled · audit: Records laid out under column headings are a Table: `columns` and `data`, with sorting and a `footer` row when they're wanted. A `<table>` built by hand from `thead`, `tr` and `td` Elems is a finding. A grid that only arranges things on the page isn't a table, and isn't one either way.
 
-**structure.code-for-code** · proposed · audit: Code, a command or a path shown on a page is Code, which picks inline or block by whether the text spans lines; `copyButton` gives it the copy action. A styled `<code>` or `<pre>` with a Copy button made beside it is a finding.
+**structure.code-for-code** · settled · audit: Code, a command or a path shown on a page is Code, which picks inline or block by whether the text spans lines; `copyButton` gives it the copy action. A styled `<code>` or `<pre>` with a Copy button made beside it is a finding.
 
 **structure.chrome-in-components** · settled · audit: App UI is built from Elem, Component and the library's components. Raw `document.createElement` is for canvases, game worlds and download anchors.
 
