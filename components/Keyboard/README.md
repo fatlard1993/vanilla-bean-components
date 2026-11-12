@@ -20,7 +20,7 @@ const keyboard = new Keyboard({
 });
 ```
 
-Switching layouts is the app's to do: the `simple` and `number` keys (shown as "ABC" and "123") are keys like any other, and `setLayout(name)` (or setting `layout`) rebuilds the keys from that layout.
+Switching layouts is the app's to do: the `simple` and `number` keys (shown as "ABC" and "123") are keys like any other, and `setLayout(name)` (or setting `layout`; the two stay in step) rebuilds the keys from that layout.
 
 ## Layouts and key definitions
 
@@ -38,7 +38,7 @@ new Keyboard({
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `layout` | `string` | `'simple'` | The layout shown; setting it rebuilds the keys |
+| `layout` | `string` | `'simple'` | The layout shown; setting it rebuilds the keys, and `setLayout()` sets it |
 | `layouts` | `object` | `simple`, `number` | Layout name to rows of key names |
 | `keyDefinitions` | `object` | widths and labels for the defaults | Key name (or anchored pattern) to its definition, merged over the defaults |
 | `tactileResponse` | `boolean` | `true` | A short vibration on each key down, where the device has one |

@@ -133,6 +133,25 @@ describe('Keyboard layouts and keys', () => {
 		expect(keyboard.elem.querySelector('.space')).toHaveClass('u6');
 	});
 
+	test('the layout option follows setLayout, and setting it still switches the layout', () => {
+		const keyboard = new Keyboard({ appendTo: container });
+
+		keyboard.setLayout('number');
+
+		expect(keyboard.options.layout).toBe('number');
+		expect(keys(keyboard)).toContain('1');
+
+		keyboard.options.layout = 'simple';
+
+		expect(keyboard.options.layout).toBe('simple');
+		expect(keys(keyboard)).toContain('q');
+		expect(keys(keyboard).filter(key => key === 'q')).toHaveLength(1);
+
+		keyboard.setLayout('nope');
+
+		expect(keyboard.options.layout).toBe('simple');
+	});
+
 	test('a pressed key vibrates the device unless told not to', () => {
 		navigator.vibrate = mock();
 

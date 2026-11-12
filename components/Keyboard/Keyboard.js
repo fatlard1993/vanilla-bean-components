@@ -87,6 +87,12 @@ class Keyboard extends Component {
 
 		if (typeof name !== 'string' || !rows) return;
 
+		// The layout option is kept in step: set here, its setter comes back with the name now equal and builds
+		if (this.options.layout !== name) {
+			this.options.layout = name;
+			return;
+		}
+
 		this.children.forEach(child => child.destroy?.());
 		this.empty();
 		this.removeClass(/\blayout-\S+\b/g).addClass(`layout-${name}`);
