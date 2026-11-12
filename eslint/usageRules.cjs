@@ -7,7 +7,7 @@
 
 const DOC = 'https://github.com/fatlard1993/vanilla-bean-components/blob/main/docs/USAGE_RULES.md';
 const VALUE_COMPONENTS = new Set(['Input', 'Select', 'TagList', 'ColorPicker', 'RadioButton']);
-const POPOVERS = new Set(['Popover', 'ContextMenu', 'Notify', 'Tooltip']);
+const OVERLAYS = new Set(['Popover', 'ContextMenu', 'Notify', 'Tooltip', 'Dialog', 'FormDialog', 'BottomSheet']);
 const RAW_FIELDS = new Set(['input', 'textarea', 'select', 'option', 'optgroup']);
 const TOGGLE_CLASSES = new Set(['active', 'selected', 'on', 'pressed', 'toggled', 'checked']);
 
@@ -265,7 +265,7 @@ const rule = (id, message, create) => ({
 const rules = {
 	'overlay.popover-close': rule(
 		'overlay.popover-close',
-		'Close a Popover, ContextMenu, Notify or Tooltip with close() or destroy(); elem.remove() skips its cleanup',
+		'Close an overlay (Popover, ContextMenu, Notify, Tooltip, Dialog, BottomSheet) with close() or destroy(); elem.remove() skips its cleanup',
 		(context, report) => ({
 			CallExpression(node) {
 				const { callee } = node;
@@ -274,7 +274,7 @@ const rules = {
 
 				const owner = elemOwner(callee.object);
 
-				if (owner && POPOVERS.has(componentOf(context, owner))) report(node);
+				if (owner && OVERLAYS.has(componentOf(context, owner))) report(node);
 			},
 		}),
 	),

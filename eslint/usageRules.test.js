@@ -13,6 +13,9 @@ const cases = {
 	'overlay.popover-close': {
 		valid: ['const menu = new ContextMenu({}); menu.close();', 'const card = new Card({}); card.elem.remove();'],
 		invalid: [
+			'const dialog = new Dialog({}); dialog.elem.remove();',
+			'const edit = new FormDialog({}); edit.elem.remove();',
+			'class A { build() { this.sheet = new BottomSheet({}); } hide() { this.sheet.elem.remove(); } }',
 			'const menu = new ContextMenu({}); menu.elem.remove();',
 			'class A { build() { this.tip = new Tooltip({}); } hide() { this.tip.elem.remove(); } }',
 		],

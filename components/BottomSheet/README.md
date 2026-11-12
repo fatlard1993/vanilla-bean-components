@@ -4,7 +4,7 @@ A modal panel that slides up from the bottom of the screen, on the native `<dial
 
 ## Usage rules
 
-When to reach for BottomSheet rather than another overlay is in the [usage rules](../../docs/USAGE_RULES.md#overlays-and-feedback).
+When to reach for BottomSheet rather than another overlay is in the [usage rules](../../docs/USAGE_RULES.md#overlays-and-feedback). Close it with `close()` or `destroy()`, never `elem.remove()`: [overlay.popover-close](../../docs/USAGE_RULES.md#overlays-and-feedback).
 
 ## Usage
 

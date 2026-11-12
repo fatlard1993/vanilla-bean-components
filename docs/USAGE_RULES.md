@@ -58,7 +58,7 @@ The choice, by what the moment is:
 
 **overlay.menu-anchored** · proposed · audit: A menu opened from a button is opened with `menu.open({ anchor: button })`, which ties the menu to the button: it toggles from it and tells assistive tech that it's open. Opening it at the click's `x`/`y` loses both.
 
-**overlay.popover-close** · settled · lint: Close a Popover, ContextMenu, Notify or Tooltip with `close()` or `destroy()`. `elem.remove()` skips its cleanup and the `close` that `onClose` listens for.
+**overlay.popover-close** · settled · lint: Close an overlay (a Popover, ContextMenu, Notify, Tooltip, Dialog, FormDialog or BottomSheet) with `close()` or `destroy()`. `elem.remove()` skips its cleanup, the focus it hands back, and the `close` that `onClose` listens for.
 
 **overlay.emptystate-options** · settled · lint: EmptyState takes `title` and `message`, not Dialog's `header` and `body`; given the wrong names it shows nothing.
 
@@ -172,7 +172,7 @@ The rules that bear on each component, and where none do, why. A component with 
 
 | Component | Rules |
 | --- | --- |
-| BottomSheet | the [overlay choice](#overlays-and-feedback) |
+| BottomSheet | [overlay.popover-close](#overlays-and-feedback), the [overlay choice](#overlays-and-feedback) |
 | Button | [overlay.button-order](#overlays-and-feedback), [action.press-handler](#actions-and-navigation), [action.primary-filled](#actions-and-navigation), [action.icon-only-flat](#actions-and-navigation), [action.icon-only-named](#actions-and-navigation), [action.icon-option](#actions-and-navigation), [action.label-wording](#actions-and-navigation), [action.intent-is-effect](#actions-and-navigation), [action.toggle-pressed](#actions-and-navigation), [action.chip-is-choice](#actions-and-navigation), [action.disabled-option](#actions-and-navigation), [action.link-navigates](#actions-and-navigation), [action.no-handbuilt-button](#actions-and-navigation) |
 | Calendar | No rule yet: no app uses it; the one app with a calendar has an older one of its own. |
 | Card | [action.card-navigates-as-link](#actions-and-navigation), [structure.card-no-margin](#structure-and-display), [structure.card-accent](#structure-and-display), [structure.card-states](#structure-and-display), [structure.floating-surface](#structure-and-display) |
@@ -180,10 +180,10 @@ The rules that bear on each component, and where none do, why. A component with 
 | ColorPicker | [form.value-components-in-form](#forms) |
 | Content | [layout.view-shape](#page-shell-and-layout), [layout.scroll-in-content](#page-shell-and-layout) |
 | ContextMenu | [overlay.menu-anchored](#overlays-and-feedback), [overlay.popover-close](#overlays-and-feedback), the [overlay choice](#overlays-and-feedback) |
-| Dialog | [overlay.confirm-not-handbuilt](#overlays-and-feedback), [overlay.confirm-wording](#overlays-and-feedback), [overlay.danger-before-irreversible](#overlays-and-feedback), [overlay.button-order](#overlays-and-feedback), [overlay.record-in-formdialog](#overlays-and-feedback), [overlay.dialog-size-by-content](#overlays-and-feedback), [layout.scroll-in-content](#page-shell-and-layout), [structure.floating-surface](#structure-and-display) |
+| Dialog | [overlay.confirm-not-handbuilt](#overlays-and-feedback), [overlay.confirm-wording](#overlays-and-feedback), [overlay.danger-before-irreversible](#overlays-and-feedback), [overlay.button-order](#overlays-and-feedback), [overlay.record-in-formdialog](#overlays-and-feedback), [overlay.dialog-size-by-content](#overlays-and-feedback), [overlay.popover-close](#overlays-and-feedback), [layout.scroll-in-content](#page-shell-and-layout), [structure.floating-surface](#structure-and-display) |
 | EmptyState | [overlay.notify-not-progress](#overlays-and-feedback), [overlay.emptystate-options](#overlays-and-feedback), [overlay.emptystate-four-states](#overlays-and-feedback), [overlay.emptystate-failed](#overlays-and-feedback), [overlay.emptystate-empty-vs-nomatch](#overlays-and-feedback) |
 | Form | [overlay.record-in-formdialog](#overlays-and-feedback), [overlay.save-failure-in-form](#overlays-and-feedback), [form.declared-inputs](#forms), [form.validate-on-field](#forms), [form.every-field-labeled](#forms), [form.read-options-value](#forms), [form.placeholder-not-label](#forms), [form.single-choice](#forms), [form.checkbox-label-after](#forms), [form.value-components-in-form](#forms), [form.no-raw-fields](#forms) |
-| FormDialog | [overlay.button-order](#overlays-and-feedback), [overlay.record-in-formdialog](#overlays-and-feedback), [overlay.save-failure-in-form](#overlays-and-feedback), [overlay.dialog-size-by-content](#overlays-and-feedback), [form.declared-inputs](#forms), [form.validate-on-field](#forms) |
+| FormDialog | [overlay.button-order](#overlays-and-feedback), [overlay.record-in-formdialog](#overlays-and-feedback), [overlay.save-failure-in-form](#overlays-and-feedback), [overlay.dialog-size-by-content](#overlays-and-feedback), [overlay.popover-close](#overlays-and-feedback), [form.declared-inputs](#forms), [form.validate-on-field](#forms) |
 | Icon | [action.icon-option](#actions-and-navigation), [action.icon-meaning-named](#actions-and-navigation) |
 | Input | [form.validate-on-field](#forms), [form.every-field-labeled](#forms), [form.read-options-value](#forms), [form.placeholder-not-label](#forms), [form.single-choice](#forms), [form.no-raw-fields](#forms) |
 | Keyboard | [action.icon-only-named](#actions-and-navigation), [action.toggle-pressed](#actions-and-navigation) |
