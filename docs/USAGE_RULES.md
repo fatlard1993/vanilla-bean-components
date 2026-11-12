@@ -12,7 +12,7 @@ Each rule has an id, a status and a check:
 - **audit**: it takes judgment about what the code is for
 - **since 7.2**: the rule leans on something added in that version. On an app with an older install, report it as "upgrade, then fix", not as a failure: the fix may not exist there yet.
 
-A lint pattern counts wherever it is written. When an app's own helper produces it (an `element()` that builds raw fields, a `button()` that sets `.disabled`), report it once at the helper with the number of call sites, not at each caller and not as clean.
+A pattern counts wherever it is written, whether lint finds it or the audit does. When an app's own helper produces it (an `element()` that builds raw fields, a `button()` that sets `.disabled`, a `Screen()` that builds every view's bar by hand), report it once at the helper with the number of call sites, not at each caller and not as clean.
 
 ## Overlays and feedback
 
@@ -72,7 +72,7 @@ The choice, by what the moment is:
 
 **action.icon-only-flat** · settled · audit: A Button with only an icon is `variant: 'flat'`, unless it is the view's main add action.
 
-**action.icon-only-named** · settled · lint: A Button with an icon and no `textContent` has a name: a `tooltip`, a `title` or an `aria-label`. Any of the three will do; the tooltip names it through `aria-labelledby`.
+**action.icon-only-named** · settled · lint: A Button or Link whose visible content isn't words (an icon, a sprite or image, an emoji, a color swatch) has a name: a `tooltip`, a `title` or an `aria-label`. Any of the three will do; the tooltip names it through `aria-labelledby`. A Keyboard key is a Button, and an icon-only key is named the same way. Lint finds a Button given `icon` and no text; the other kinds take the audit.
 
 **action.icon-option** · settled · lint: A Button's or Link's glyph goes in `icon`, not in an appended Icon or `<i>`. Appended, the Button doesn't know it's icon-only and loses the square shape and the spacing.
 
@@ -80,7 +80,7 @@ The choice, by what the moment is:
 
 **action.intent-is-effect** · settled · audit: A Button's `intent` says what pressing it does. It doesn't show that a toggle is on: `success` meaning "selected" is a finding.
 
-**action.toggle-pressed** · settled · since 7.2 · lint: A Button that stays on or off shows it with `pressed: true|false`, set from the state it toggles. A class of the app's own (`selected`, `active`), a swapped variant, intent or icon, or `disabled` standing for "on" is a finding: it looks on without saying so. Lint finds a state class added to a Button it can see; a swapped variant, intent or icon takes the audit.
+**action.toggle-pressed** · settled · since 7.2 · lint: A Button that stays on or off shows it with `pressed: true|false`, set from the state it toggles. A class of the app's own (`selected`, `active`), a swapped variant, intent or icon, or `disabled` standing for "on" is a finding: it looks on without saying so. A Keyboard key that latches (shift, caps) is a Button too. Lint finds a state class added to a Button it can see; a swapped variant, intent or icon takes the audit.
 
 **action.chip-is-choice** · settled · since 7.2 · audit: `variant: 'chip'` is a choice: a filter, or one of a few options shown together, each a `pressed` toggle. A small action (Refresh, Copy link, Accept all) is `size: 'small'` in whatever variant fits, not a chip.
 
@@ -160,7 +160,7 @@ The choice, by what the moment is:
 
 **structure.chrome-in-components** · settled · audit: App UI is built from Elem, Component and the library's components. Raw `document.createElement` is for canvases, game worlds and download anchors.
 
-**structure.theme-tokens** · settled · audit: Colors and sizes come from the theme: secondary text in `colors.muted`, font sizes from `theme.fontSize`, spacing from `theme.space`. A color literal (hex, `rgb`, `hsl`) or a `px`/`em` font size in UI chrome is a finding. Canvas art isn't chrome, and neither is a color the user chose (a map line, a tag color). Re-theme by assigning theme roles before the components load, not by keeping a second palette in CSS variables.
+**structure.theme-tokens** · settled · audit: Colors and sizes come from the theme: secondary text in `colors.muted`, font sizes from `theme.fontSize`, spacing from `theme.space`. A color literal (hex, `rgb`, `hsl`), a font size given as a literal (`px`, `em` or `rem`), or a `font-family` not from `theme.fonts` in UI chrome is a finding. Canvas art isn't chrome, and neither is a color the user chose (a map line, a tag color). Re-theme by assigning theme roles before the components load, not by keeping a second palette in CSS variables.
 
 ## Every component
 
@@ -182,7 +182,7 @@ The rules that bear on each component, and where none do, why. A component with 
 | FormDialog | [overlay.button-order](#overlays-and-feedback), [overlay.record-in-formdialog](#overlays-and-feedback), [overlay.save-failure-in-form](#overlays-and-feedback), [overlay.dialog-size-by-content](#overlays-and-feedback), [form.declared-inputs](#forms), [form.validate-on-field](#forms) |
 | Icon | [action.icon-option](#actions-and-navigation), [action.icon-meaning-named](#actions-and-navigation) |
 | Input | [form.validate-on-field](#forms), [form.every-field-labeled](#forms), [form.read-options-value](#forms), [form.placeholder-not-label](#forms), [form.single-choice](#forms), [form.no-raw-fields](#forms) |
-| Keyboard | No rule yet: one app uses it, extended with layouts of its own, which is what it is for. |
+| Keyboard | [action.icon-only-named](#actions-and-navigation), [action.toggle-pressed](#actions-and-navigation) |
 | Label | [form.every-field-labeled](#forms), [form.checkbox-label-after](#forms), [form.placeholder-not-label](#forms) |
 | Link | [action.icon-option](#actions-and-navigation), [action.link-navigates](#actions-and-navigation), [action.link-tooltip-off-in-nav](#actions-and-navigation) |
 | List | [structure.list-nostyle](#structure-and-display) |

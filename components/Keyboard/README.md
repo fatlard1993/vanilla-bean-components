@@ -4,7 +4,7 @@ An on-screen keyboard: rows of buttons that announce each press, for a touch scr
 
 ## Usage rules
 
-No [usage rule](../../docs/USAGE_RULES.md#every-component) bears on Keyboard yet.
+A key is a Button, so the [usage rules](../../docs/USAGE_RULES.md) for buttons bear on Keyboard: [action.icon-only-named](../../docs/USAGE_RULES.md#actions-and-navigation), [action.toggle-pressed](../../docs/USAGE_RULES.md#actions-and-navigation).
 
 ## Usage
 
