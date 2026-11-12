@@ -57,3 +57,25 @@ describe('Card accent and press', () => {
 		expect(card.elem.hasAttribute('tabindex')).toBe(false);
 	});
 });
+
+describe('Card disabled', () => {
+	test('a disabled card says so, presses nothing by pointer or keyboard, and presses again once enabled', () => {
+		const onPointerPress = mock();
+		const card = new Card({ onPointerPress, disabled: true, appendTo: container }, 'Barracks');
+
+		expect(card.elem.getAttribute('aria-disabled')).toBe('true');
+		expect(card.elem).toHaveClass('disabled');
+
+		card.elem.click();
+		card.elem.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+
+		expect(onPointerPress).not.toHaveBeenCalled();
+
+		card.options.disabled = false;
+		card.elem.click();
+
+		expect(card.elem.hasAttribute('aria-disabled')).toBe(false);
+		expect(card.elem).not.toHaveClass('disabled');
+		expect(onPointerPress).toHaveBeenCalledTimes(1);
+	});
+});

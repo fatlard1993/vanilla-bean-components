@@ -9,6 +9,7 @@ import { Component } from '../../Component';
  * @param {string|object} [options.accent] - A color for the left edge (a CSS color or a theme color)
  * @param {boolean} [options.interactive] - Answer hover and focus, and Enter or Space like a press; on by default when
  *   onPointerPress is given
+ * @param {boolean} [options.disabled] - A pressable card that can't be pressed now: dimmed, no hover, and aria-disabled
  * @param {...(Component|HTMLElement|string)} children - What the card holds
  * @returns {Card} Card component instance
  * @example new Card({ accent: theme.colors.green, onPointerPress: open }, title, meta)
@@ -39,7 +40,7 @@ class Card extends styled(
 			cursor: pointer;
 			transition: background-color ${duration.fast};
 
-			&:hover, &:focus-visible {
+			&:not(.disabled):hover, &:focus-visible {
 				background-color: ${colors.alpha(colors.white, 0.09)};
 			}
 
@@ -53,7 +54,7 @@ class Card extends styled(
 			filter: none;
 		}
 
-		&:disabled {
+		&:disabled, &.disabled {
 			background-color: ${colors.alpha(colors.white, 0.03)};
 			color: ${colors.alpha(colors.white, 0.4)};
 			cursor: not-allowed;
@@ -69,6 +70,17 @@ class Card extends styled(
 				else this.elem.style.removeProperty('--card-accent');
 			},
 		},
+		// A <button> is disabled by the browser; any other tag is told so for assistive technology, and swallows its presses
+		disabled: {
+			set(value, next) {
+				if (this.elem.tagName === 'BUTTON') return next(value);
+
+				this.toggleClass('disabled', !!value);
+
+				if (value) this.elem.setAttribute('aria-disabled', 'true');
+				else this.elem.removeAttribute('aria-disabled');
+			},
+		},
 		interactive: {
 			set(value) {
 				this.toggleClass('interactive', !!value);
@@ -78,6 +90,20 @@ class Card extends styled(
 			},
 		},
 	};
+
+	// Ahead of every other listener on the element, so a disabled card presses nothing
+	build() {
+		this.elem.addEventListener(
+			'click',
+			event => {
+				if (this.elem.tagName === 'BUTTON' || this.elem.getAttribute('aria-disabled') !== 'true') return;
+
+				event.preventDefault();
+				event.stopImmediatePropagation();
+			},
+			{ capture: true, signal: this.signal },
+		);
+	}
 
 	static prepareOptions(options) {
 		// A card that goes somewhere is a link, and answers the pointer as a pressable one does

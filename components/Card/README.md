@@ -20,6 +20,7 @@ The [usage rules](../../docs/USAGE_RULES.md) that bear on Card: [action.card-nav
 | --- | --- | --- | --- |
 | `accent` | `string\|object` | - | A color for a stripe down the left edge |
 | `interactive` | `boolean` | when `onPointerPress` or an `href` is | Answer hover and focus, and show the pointer as a hand |
+| `disabled` | `boolean` | `false` | A pressable card that can't be pressed now: dimmed, no hover, `aria-disabled`, and presses nothing |
 
 A card's look is quiet on purpose: a faint lift off the page, rounded corners, no border. Lay cards out in a flex column or grid with a gap; the card itself has no margin.
 
