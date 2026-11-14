@@ -62,7 +62,7 @@ The choice, by what the moment is:
 
 **overlay.emptystate-options** · settled · lint: EmptyState takes `title` and `message`, not Dialog's `header` and `body`; given the wrong names it shows nothing.
 
-**overlay.emptystate-four-states** · settled · audit: A view that fetches has four states, each an EmptyState: `loading: true` while fetching; then empty, no match, or failed. A view fed live updates has the same until its first data arrives, and the failed state when the feed drops.
+**overlay.emptystate-four-states** · settled · audit: A view that fetches has four states, each an EmptyState: `loading: true` while fetching, with `progress` when the wait is long and its extent known; then empty, no match, or failed. A view fed live updates has the same until its first data arrives, and the failed state when the feed drops.
 
 **overlay.emptystate-failed** · settled · audit: A failed load: icon `triangle-exclamation`, a title saying it failed, the reason as `message`, and `action: { textContent: 'Try again' }`.
 

@@ -2,6 +2,8 @@ import { styled } from '../../styled';
 import { Component } from '../../Component';
 import { Button } from '../Button';
 import { Icon } from '../Icon';
+import { Elem } from '../../Elem';
+import { radius } from '../../theme/tokens';
 
 /**
  * What a list or view shows when it has nothing in it: an icon, a title, a line saying why or what to do, and
@@ -12,6 +14,7 @@ import { Icon } from '../Icon';
  * @param {string} [options.message] - A line under it
  * @param {object|Component} [options.action] - Button options ({ textContent, onPointerPress }) or a Component
  * @param {boolean} [options.loading] - Show a spinner in place of the icon, while what would fill the view is on its way
+ * @param {number} [options.progress] - How far a long load has come, from 0 to 1, shown as a bar under the message
  * @param {...(Component|HTMLElement|string)} children - Appended below the rest
  * @returns {EmptyState} EmptyState component instance
  * @example new EmptyState({ icon: 'seedling', title: 'No fields yet', message: 'Draw one on the map.' })
@@ -59,7 +62,31 @@ class EmptyState extends styled(
 			margin-top: ${space.sm};
 		}
 
-		& > :empty:not(.icon) {
+		& > .progress {
+			appearance: none;
+			width: min(320px, 100%);
+			height: 6px;
+			margin-top: ${space.sm};
+			border: none;
+			border-radius: ${radius.pill};
+			overflow: hidden;
+			background: ${colors.alpha(colors.white, 0.12)};
+
+			&::-webkit-progress-bar {
+				background: transparent;
+			}
+
+			&::-webkit-progress-value {
+				background: ${colors.light(colors.info)};
+				transition: width 0.2s ease-out;
+			}
+
+			&::-moz-progress-bar {
+				background: ${colors.light(colors.info)};
+			}
+		}
+
+		& > :empty:not(.icon, .progress) {
 			display: none;
 		}
 	`,
@@ -76,9 +103,15 @@ class EmptyState extends styled(
 				this._showIcon();
 			},
 		},
+		progress: {
+			set() {
+				this._showProgress();
+			},
+		},
 		title: {
 			set(value) {
 				this._title.options.textContent = value ?? '';
+				this._showProgress();
 			},
 		},
 		message: {
@@ -95,7 +128,7 @@ class EmptyState extends styled(
 
 				this._action = value instanceof Component ? value : new Button(value);
 				this._action.addClass('action');
-				this.elem.insertBefore(this._action.elem, this._message.elem.nextSibling);
+				this.elem.insertBefore(this._action.elem, this._progress.elem.nextSibling);
 			},
 		},
 	};
@@ -105,7 +138,19 @@ class EmptyState extends styled(
 		this._icon.elem.hidden = true;
 		this._title = new Component({ addClass: 'title', appendTo: this });
 		this._message = new Component({ addClass: 'message', appendTo: this });
+		this._progress = new Elem({ tag: 'progress', addClass: 'progress', appendTo: this });
+		this._progress.elem.max = 1;
+		this._progress.elem.hidden = true;
 		this._action = null;
+	}
+
+	_showProgress() {
+		const { progress, title } = this.options;
+		const bar = this._progress.elem;
+
+		bar.hidden = typeof progress !== 'number' || Number.isNaN(progress);
+		bar.value = Math.min(Math.max(progress || 0, 0), 1);
+		bar.setAttribute('aria-label', title || 'Loading');
 	}
 
 	_showIcon() {

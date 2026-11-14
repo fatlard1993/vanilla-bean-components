@@ -21,12 +21,13 @@ new EmptyState({
 
 ## Options
 
-| Option    | Type                | Default | Description                                                           |
-| --------- | ------------------- | ------- | --------------------------------------------------------------------- |
-| `icon`    | `string`            | -       | A Font Awesome icon name; none shows nothing                          |
-| `title`   | `string`            | -       | The headline                                                          |
-| `message` | `string`            | -       | A line under it                                                       |
-| `action`  | `object\|Component` | -       | Button options, or a Component of your own, placed under the message  |
-| `loading` | `boolean`           | `false` | A spinner in place of the icon while the view's content is on its way |
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `icon` | `string` | - | A Font Awesome icon name; none shows nothing |
+| `title` | `string` | - | The headline |
+| `message` | `string` | - | A line under it |
+| `action` | `object\|Component` | - | Button options, or a Component of your own, placed under the message |
+| `loading` | `boolean` | `false` | A spinner in place of the icon while the view's content is on its way |
+| `progress` | `number` | - | How far a long load has come, 0 to 1, as a bar under the message; named by the title |
 
-Each part follows its option, and an empty part takes no room. A view loading its data shows `new EmptyState({ loading: true })`, then sets the title and message, or removes it, once the data is in. It grows to fill a flex parent and centres itself, so it sits in the middle of an emptied view.
+Each part follows its option, and an empty part takes no room. A view loading its data shows `new EmptyState({ loading: true })`, then sets the title and message, or removes it, once the data is in. A load long enough to wait through says how far it has come: `new EmptyState({ loading: true, title: 'Loading the map', progress: 0.4 })`, with `progress` updated as it goes. It grows to fill a flex parent and centres itself, so it sits in the middle of an emptied view.

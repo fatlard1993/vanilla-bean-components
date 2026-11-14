@@ -22,3 +22,12 @@ A view that's fetching shows where its content will be, then becomes the empty s
 
 - an action set to nothing takes the button away, rather than drawing an empty one
   - new Subject({ action: { textContent: "Add" }, appendTo: document.body }) captures e then e.elem.querySelector(".action") captures had then (e.options.action = null) -> had !== null && e.elem.querySelector(".action") === null
+
+## A long load can say how far it has come
+
+A spinner says something is coming, not when. A load long enough to wait through (a game's assets, a big import) shows a bar instead of leaving the spinner to turn, and the bar is named by the title so a screen reader hears what is loading.
+
+- a progress from 0 to 1 shows a named bar at that value, and clearing it takes the bar away
+  - new Subject({ loading: true, title: "Loading the map", progress: 0.4, appendTo: document.body }) captures e then e.elem.querySelector("progress") captures bar then bar.hidden captures hiddenDuring then bar.value captures during then (e.options.progress = undefined) -> hiddenDuring === false && Math.abs(during - 0.4) < 0.001 && bar.getAttribute("aria-label") === "Loading the map" && bar.hidden === true
+- a value outside 0 to 1 is held to its ends
+  - new Subject({ progress: 3, appendTo: document.body }) captures e -> e.elem.querySelector("progress").value === 1
