@@ -78,4 +78,17 @@ describe('Card disabled', () => {
 		expect(card.elem).not.toHaveClass('disabled');
 		expect(onPointerPress).toHaveBeenCalledTimes(1);
 	});
+
+	test('a control inside a disabled card still presses, and the card still does not', () => {
+		const onPointerPress = mock();
+		const more = mock();
+		const button = Object.assign(document.createElement('button'), { onclick: more, textContent: 'More' });
+		const card = new Card({ onPointerPress, disabled: true, appendTo: container }, button);
+
+		button.click();
+
+		expect(more).toHaveBeenCalledTimes(1);
+		expect(onPointerPress).not.toHaveBeenCalled();
+		card.destroy();
+	});
 });

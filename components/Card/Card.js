@@ -2,6 +2,9 @@ import { styled } from '../../styled';
 import { duration } from '../../theme/tokens';
 import { Component } from '../../Component';
 
+// What inside a card presses for itself
+const NESTED_CONTROL = 'button, a[href], input, select, textarea, summary, [role="button"]';
+
 /**
  * A raised patch of the page holding one thing: a record in a list, a summary, a group of details. Given an accent it
  * carries a stripe of that color down its left edge; given onPointerPress it answers the pointer.
@@ -9,7 +12,8 @@ import { Component } from '../../Component';
  * @param {string|object} [options.accent] - A color for the left edge (a CSS color or a theme color)
  * @param {boolean} [options.interactive] - Answer hover and focus, and Enter or Space like a press; on by default when
  *   onPointerPress is given
- * @param {boolean} [options.disabled] - A pressable card that can't be pressed now: dimmed, no hover, and aria-disabled
+ * @param {boolean} [options.disabled] - A card that can't be used now: dimmed, no hover, aria-disabled, and pressing it
+ *   does nothing; a control inside it keeps its own state
  * @param {...(Component|HTMLElement|string)} children - What the card holds
  * @returns {Card} Card component instance
  * @example new Card({ accent: theme.colors.green, onPointerPress: open }, title, meta)
@@ -91,12 +95,20 @@ class Card extends styled(
 		},
 	};
 
-	// Ahead of every other listener on the element, so a disabled card presses nothing
+	// Ahead of every other listener on the element, so a disabled card presses nothing. A control inside it (a "More"
+	// on an item that can't be bought) has its own disabled state, and still presses.
 	build() {
 		this.elem.addEventListener(
 			'click',
 			event => {
 				if (this.elem.tagName === 'BUTTON' || this.elem.getAttribute('aria-disabled') !== 'true') return;
+				const control = event.target.closest?.(NESTED_CONTROL);
+
+				// The control hears its press; the card's own press, after it on the way up, doesn't
+				if (control && control !== this.elem) {
+					control.addEventListener('click', stop => stop.stopPropagation(), { once: true });
+					return;
+				}
 
 				event.preventDefault();
 				event.stopImmediatePropagation();
