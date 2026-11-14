@@ -170,6 +170,57 @@ const componentOf = (context, node, depth = 0) => {
  * @param {object} node - The field's NewExpression
  * @returns {boolean} Whether a Label takes it
  */
+// A field labelled by the statement before it: an app's own label component (a FormLabel, a Caption, any name ending
+// in Label or Caption but a SectionLabel, which heads a group) put into the same parent, which names the field it
+// precedes at runtime
+const labelBefore = (context, node) => {
+	const into = propertyOf(optionsOf(node), 'appendTo')?.value;
+
+	if (!into) return false;
+
+	let statement = node;
+
+	while (statement.parent && !['BlockStatement', 'Program'].includes(statement.parent.type))
+		statement = statement.parent;
+
+	const body = statement.parent?.body ?? [];
+	const before = body[body.indexOf(statement) - 1];
+	const { sourceCode } = context;
+	let found = false;
+	const visit = child => {
+		if (found || !child || typeof child.type !== 'string') return;
+
+		if (child.type === 'NewExpression' && child.callee.type === 'Identifier') {
+			const { name } = child.callee;
+			const parent = propertyOf(optionsOf(child), 'appendTo')?.value;
+
+			if (
+				/(Label|Caption)$/.test(name) &&
+				name !== 'SectionLabel' &&
+				parent &&
+				sourceCode.getText(parent) === sourceCode.getText(into)
+			) {
+				found = true;
+
+				return;
+			}
+		}
+
+		for (const key of Object.keys(child)) {
+			if (key === 'parent') continue;
+
+			const value = child[key];
+
+			if (Array.isArray(value)) value.forEach(visit);
+			else if (value && typeof value === 'object') visit(value);
+		}
+	};
+
+	visit(before);
+
+	return found;
+};
+
 const labelledLater = (context, node) => {
 	const { parent } = node;
 	const heldAs = () => {
@@ -479,6 +530,24 @@ const rules = {
 
 				if (component ? VALUE_COMPONENTS.has(component) : owner && !written) report(node);
 			},
+			// Object.assign(field.elem, { value }) writes the element as surely as an assignment does
+			CallExpression(node) {
+				const {
+					callee,
+					arguments: [target, ...sources],
+				} = node;
+
+				if (callee.type !== 'MemberExpression' || callee.object.name !== 'Object' || callee.property.name !== 'assign')
+					return;
+
+				const owner = target && elemOwner(target);
+				const component = owner && componentOf(context, owner);
+				const value = sources
+					.map(source => source.type === 'ObjectExpression' && propertyOf(source, 'value'))
+					.find(Boolean);
+
+				if (value && component && VALUE_COMPONENTS.has(component)) report(value);
+			},
 		}),
 	),
 
@@ -513,7 +582,7 @@ const rules = {
 						keyOf(parent) === 'append' &&
 						constructed(parent.parent.parent, context) === 'Label');
 
-				if (!named && !inLabel && !labelledLater(context, node)) report(placeholder);
+				if (!named && !inLabel && !labelledLater(context, node) && !labelBefore(context, node)) report(placeholder);
 			},
 		}),
 	),
@@ -533,6 +602,10 @@ const rules = {
 			},
 			NewExpression(node) {
 				const name = constructed(node, context);
+
+				// The platform's own option constructor is a raw <option> too
+				if (node.callee.type === 'Identifier' && node.callee.name === 'Option') return report(node);
+
 				const tag = propertyOf(optionsOf(node), 'tag');
 				const value = stringOf(tag?.value);
 

@@ -132,7 +132,7 @@ The choice, by what the moment is:
 
 **form.read-options-value** · settled · lint: An Input's value is `input.options.value`, kept up to date as it's typed; `isDirty` and `validate()` read it too. Reading or writing `input.elem.value` (`Object.assign(input.elem, { value })` included), or copying it into `options.value` before validating, is a finding: a write there leaves `options.value` behind. A number field's `options.value` is a number or `''`, so a typed 0 is falsy: test `!== ''`, not truthiness. A Select's is what it shows.
 
-**form.placeholder-not-label** · settled · lint: A placeholder is a hint or an example beside a label, never the only label. This holds for search fields in a toolbar too: give them an `aria-label`.
+**form.placeholder-not-label** · settled · lint: A placeholder is a hint or an example beside a label, never the only label. This holds for search fields in a toolbar too: give them an `aria-label`. An app's own label component (a name ending in Label or Caption) put into the same parent just before the field counts as its label.
 
 **form.filter-select-named** · settled · audit: A Select used as a filter has an accessible name; a first option like "Any setting" isn't one.
 
@@ -142,7 +142,7 @@ The choice, by what the moment is:
 
 **form.value-components-in-form** · proposed · audit: TagList, ColorPicker and other components that hold a value join a Form as `InputComponent`, not beside it.
 
-**form.no-raw-fields** · settled · lint: No raw `<input>`, `<textarea>`, `<select>`, `<option>` or `<optgroup>` built through `tag:`, `document.createElement`, or by turning another element into one (`Object.assign(input.elem, { type: 'checkbox' })`). A textarea is `new Input({ tag: 'textarea' })`; a checkbox is `new Input({ type: 'checkbox' })`; Select takes options, including optgroups. A file input made in code only to open the file chooser, and never put on the page, is exempt, as a download anchor is. A tool's own dev UI is exempt.
+**form.no-raw-fields** · settled · lint: No raw `<input>`, `<textarea>`, `<select>`, `<option>` or `<optgroup>` built through `tag:`, `document.createElement`, or by turning another element into one (`Object.assign(input.elem, { type: 'checkbox' })`). A textarea is `new Input({ tag: 'textarea' })`; a checkbox is `new Input({ type: 'checkbox' })`; Select takes options, including optgroups. `new Option()` is a raw `<option>` too. A file input made in code only to open the file chooser, and never put on the page, is exempt, as a download anchor is. A tool's own dev UI is exempt.
 
 ## Structure and display
 

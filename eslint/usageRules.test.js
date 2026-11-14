@@ -84,11 +84,13 @@ const cases = {
 	},
 	'form.read-options-value': {
 		valid: [
+			'const bar = new Elem({}); Object.assign(bar.elem, { value: 3 });',
 			'const name = new Input({}); name.options.value;',
 			'const box = new Elem({}); box.elem.value;',
 			'const show = view => { view.elem.value = 3; };',
 		],
 		invalid: [
+			'const name = new Input({}); Object.assign(name.elem, { value: 3 });',
 			"const Editor = styled(Input, ''); class A { build() { this.editor = new Editor({}); } get value() { return this.editor.elem.value; } }",
 			'const name = new Input({}); send(name.elem.value);',
 			'this.password.elem.value;',
@@ -97,6 +99,8 @@ const cases = {
 	},
 	'form.placeholder-not-label': {
 		valid: [
+			"function f() { new Caption({ appendTo: this.body, textContent: 'Rate' }); const rate = new Input({ appendTo: this.body, placeholder: '0' }); }",
+			"new FormLabel({ appendTo: row, textContent: 'Name' }); new Input({ appendTo: row, placeholder: 'e.g. Home Farm' });",
 			"const source = new Input({ placeholder: 'A link' }); new Label({ label: 'Source', for: source });",
 			"class A { build() { this.name = new Input({ placeholder: 'Name' }); this.row = new Label({ label: 'New' }, this.name); } }",
 			"const f = new Input({ placeholder: 'x' }); new Label('Name', f);",
@@ -106,6 +110,8 @@ const cases = {
 			"new Input({ placeholder: 'Search', ...field });",
 		],
 		invalid: [
+			"new FormLabel({ appendTo: other, textContent: 'Name' }); new Input({ appendTo: row, placeholder: 'x' });",
+			"new SectionLabel({ appendTo: row, textContent: 'Name' }); new Input({ appendTo: row, placeholder: 'x' });",
 			"const f = new Input({ placeholder: 'x' }); new Label('Name', other);",
 			"new Input({ placeholder: 'Search' });",
 			"new Select({ attributes: { placeholder: 'Pick one' }, options: [] });",
@@ -121,6 +127,7 @@ const cases = {
 			"document.createElement('canvas');",
 		],
 		invalid: [
+			"select.append(new Option('A', 'a'));",
 			"document.createElement('option');",
 			"new Elem({ tag: 'select' });",
 			"new Component({ tag: 'textarea' });",
