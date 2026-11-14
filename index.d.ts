@@ -855,7 +855,7 @@ export declare class SectionLabel extends Component {
 export interface SelectOptions extends InputOptions {
 	/** Array of select options */
 	options?: Array<string | Record<string, any>>;
-	/** Currently selected value */
+	/** Currently selected value (default: "") */
 	value?: any;
 	/** default: "off" */
 	autocomplete?: string;

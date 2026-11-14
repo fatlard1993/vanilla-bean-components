@@ -55,9 +55,30 @@ class Select extends Input {
 
 				// As a string: an option's value is one, and a select given a number elsewhere than a browser selects nothing
 				if (selected !== undefined && (selected !== '' || emptyIsSelectable())) this.elem.value = String(selected);
+
+				this._holdShown();
+			},
+		},
+		value: {
+			default: '',
+			set(value) {
+				Input.schema.value.set.call(this, value);
+				this._holdShown();
 			},
 		},
 	};
+
+	// options.value is what the select shows: its first option when given no value, and nothing when given one it doesn't
+	// list (an id since deleted), rather than a value no one can see or pick being saved
+	_holdShown() {
+		if (!this.elem.options.length) return;
+
+		const shown = this.elem.selectedIndex === -1 ? '' : this._pickedValue();
+
+		if (!Object.is(shown, this.options.value) && String(shown) !== String(this.options.value ?? '')) {
+			this.options.value = shown;
+		}
+	}
 
 	// A pick lands in options.value, as RadioButton's and TagList's do, so a later options re-render keeps it and
 	// isDirty tells the truth. The option's own value, not the element's string of it, so a number stays a number.

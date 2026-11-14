@@ -49,3 +49,14 @@ An entry that carries its own `options` array is a group rather than a choice, s
   - new Subject({ options: [{ label: "G", options: [{ label: "One", value: 1 }] }], appendTo: document.body }) captures s then (s.elem.value = "1") then s.elem.dispatchEvent(new Event("change")) -> s.options.value === 1
 - a pick that matches no option is the element's value
   - new Subject({ options: ["a", "b"], appendTo: document.body }) captures s then (s.elem.value = "b") then s.elem.dispatchEvent(new Event("change")) -> s.options.value === "b"
+
+## Its value is what it shows
+
+A select given no value shows its first option, and one given a value it doesn't list (an id since deleted) shows nothing. Code reading `options.value` should read what the person sees, so a form doesn't save a choice no one can see or pick.
+
+- with no value, options.value is the first option shown; with an unlisted one, it is empty
+  - new Subject({ options: ["oz/ac", "lb/ac"], appendTo: document.body }) captures plain then new Subject({ options: ["a", "b"], value: "gone", appendTo: document.body }) captures stale -> plain.options.value === "oz/ac" && stale.options.value === "" && stale.elem.selectedIndex === -1
+- writing an unlisted value empties it, and writing empty after a pick clears the pick
+  - new Subject({ options: ["", "a", "b"], value: "a", appendTo: document.body }) captures s then (s.options.value = "zzz") then s.options.value captures afterUnlisted then (s.options.value = "b") then (s.options.value = "") -> afterUnlisted === "" && s.options.value === "" && s.elem.value === ""
+- a value given as a number to string options keeps reading as the option picked
+  - new Subject({ options: [{ label: "One", value: 1 }, { label: "Two", value: 2 }], value: 2, appendTo: document.body }) captures s -> s.options.value === 2 && s.isDirty === false

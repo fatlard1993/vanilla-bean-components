@@ -130,7 +130,7 @@ The choice, by what the moment is:
 
 **form.every-field-labeled** · settled · audit: Every field has a label tied to it: a Form `label`, a Label holding the field (`new Label('Name', input)`, or the field in `append`), or a `<label for>`. A caption element with no `for`, sitting above the field, ties nothing to it. A field component made of parts names the control its label belongs on with a `labelTarget` getter (since 7.2). A label tied at runtime (an observer that finds the next field) works, but hides the tie from an audit: prefer one of the above.
 
-**form.read-options-value** · settled · lint: An Input's value is `input.options.value`, kept up to date as it's typed; `isDirty` and `validate()` read it too. Reading `input.elem.value`, or copying it into `options.value` before validating, is a finding.
+**form.read-options-value** · settled · lint: An Input's value is `input.options.value`, kept up to date as it's typed; `isDirty` and `validate()` read it too. Reading or writing `input.elem.value` (`Object.assign(input.elem, { value })` included), or copying it into `options.value` before validating, is a finding: a write there leaves `options.value` behind. A number field's `options.value` is a number or `''`, so a typed 0 is falsy: test `!== ''`, not truthiness. A Select's is what it shows.
 
 **form.placeholder-not-label** · settled · lint: A placeholder is a hint or an example beside a label, never the only label. This holds for search fields in a toolbar too: give them an `aria-label`.
 

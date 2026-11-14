@@ -25,7 +25,7 @@ Select inherits all options from `Input`. Key additions:
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `options` | `Array<string\|object>` | - | List of selectable options. See shape below. Reactive: reassigning `options.options` rebuilds the `<option>` elements |
-| `value` | `any` | - | Currently selected value. Matched against option `value` attributes |
+| `value` | `any` | - | Currently selected value. Matched against option `value` attributes. `options.value` is always what the select shows: its first option when given none, `''` when given one it doesn't list |
 | `onChange` | `Function` | - | Called with an enhanced event containing `.value` (the selected value string) on change |
 
 All other `Input` options (`placeholder`, `validate`, `onInput`, etc.) are available but less commonly used with Select.
