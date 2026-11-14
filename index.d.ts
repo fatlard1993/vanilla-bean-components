@@ -748,7 +748,9 @@ export interface NotifyOptions extends PopoverOptions {
 	timeout?: number;
 	/** Custom icon name, defaults to the intent's icon */
 	icon?: string;
-	/** X position for the notification; without x and y it stacks in the bottom-right corner */
+	/** What the message is about; the toast shows beside it. Left out, it is the control pressed in the last few seconds, if any; false stacks it in the corner regardless */
+	anchor?: Element | Component | false;
+	/** X position for the notification; with no point and no anchor it stacks in the bottom-right corner */
 	x?: number;
 	/** Y position for the notification */
 	y?: number;

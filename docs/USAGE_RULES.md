@@ -14,7 +14,7 @@ Each rule has an id, a status and a check:
 
 A view a framework or shared package supplies is audited once, in that package. An app is audited for what it passes in and for the views it builds; a finding the app could fix through an option the framework gives is the app's.
 
-A game's play screens, and a screen built picture-first for players who don't read, may take their own layout, sizes and choice controls: layout.view-shape, the sizes in structure.theme-tokens, action.label-wording and form.single-choice don't bind them. The rules on naming, pressing, focus and reporting failure still do.
+A game's play screens, and a screen built picture-first for players who don't read, may take their own layout, sizes and choice controls: layout.view-shape, the sizes in structure.theme-tokens, action.label-wording, form.single-choice and overlay.notify-placement don't bind them. The rules on naming, pressing, focus and reporting failure still do.
 
 A pattern counts wherever it is written, whether lint finds it or the audit does. When an app's own helper produces it (an `element()` that builds raw fields, a `button()` that sets `.disabled`, a `Screen()` that builds every view's bar by hand), report it once at the helper with the number of call sites, not at each caller and not as clean.
 
@@ -53,6 +53,8 @@ The choice, by what the moment is:
 **overlay.notify-intents** · settled · audit: `success`: it's done. `warning`: it didn't happen, and nothing broke (refused, a precondition unmet, partly done). `info`: a neutral note. `danger`: it failed.
 
 **overlay.notify-undo** · settled · audit: An action that can be undone is toasted with `actions: [{ textContent: 'Undo', onPointerPress }]` rather than confirmed first, however much it touches: the undo is the safety, and a confirm on top of it is a finding.
+
+**overlay.notify-placement** · settled · since 7.4 · audit: A toast shows beside what it's about. The outcome of a press needs nothing: Notify shows beside the control pressed in the last three seconds, on a side that covers no other control, and moves to the corner stack when there's no such side or the next press lands elsewhere. A toast about something else passes `anchor` (the row a sync changed); one nothing on screen caused (a server's push, a timer, a background failure) passes `anchor: false` for the corner stack. A toast at a hand-picked `x`/`y`, or at the pointer, where an anchor would do is a finding, except on a game's play screen, which may place its own feedback.
 
 **overlay.notify-not-progress** · settled · audit: Don't hold a Notify open as a progress indicator ("Uploading…", "Finding your location…") and destroy it by hand. A view's loading state is EmptyState's `loading`; an action's is its Button disabled while it runs.
 
@@ -191,7 +193,7 @@ The rules that bear on each component, and where none do, why. A component with 
 | Link | [action.icon-option](#actions-and-navigation), [action.link-navigates](#actions-and-navigation), [action.link-tooltip-off-in-nav](#actions-and-navigation) |
 | List | [structure.list-nostyle](#structure-and-display) |
 | Menu | [overlay.menu-anchored](#overlays-and-feedback) |
-| Notify | [overlay.notify-failure](#overlays-and-feedback), [overlay.notify-error-stays](#overlays-and-feedback), [overlay.notify-intents](#overlays-and-feedback), [overlay.notify-undo](#overlays-and-feedback), [overlay.notify-not-progress](#overlays-and-feedback), [overlay.popover-close](#overlays-and-feedback) |
+| Notify | [overlay.notify-failure](#overlays-and-feedback), [overlay.notify-error-stays](#overlays-and-feedback), [overlay.notify-intents](#overlays-and-feedback), [overlay.notify-undo](#overlays-and-feedback), [overlay.notify-placement](#overlays-and-feedback), [overlay.notify-not-progress](#overlays-and-feedback), [overlay.popover-close](#overlays-and-feedback) |
 | Page | [layout.page-once](#page-shell-and-layout) |
 | Popover | [overlay.menu-anchored](#overlays-and-feedback), [overlay.popover-close](#overlays-and-feedback), [structure.floating-surface](#structure-and-display) |
 | RadioButton | No rule yet: no app uses it. Where it fits beside a Select or chips is an [open question](#open-questions). |
@@ -211,4 +213,3 @@ The rules that bear on each component, and where none do, why. A component with 
 Still undecided. An audit reports what it sees but flags neither side.
 
 - **RadioButton beside Select and chips.** form.single-choice names a Select, or two to five `pressed` chips, for a closed set. When a group of radios is the better choice (a setting whose options each need a sentence?) waits for an app that wants one.
-- **A toast at the pointer.** Notify at `x`/`y`, acknowledging the thing just pressed ("Copied"): when is that right rather than the stack?
