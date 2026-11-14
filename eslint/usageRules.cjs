@@ -262,6 +262,32 @@ const rule = (id, message, create) => ({
 	create: context => create(context, (node, loc) => context.report({ node, messageId: id, ...(loc && { loc }) })),
 });
 
+// A file input made in code and set to type file only to open the system's file chooser, never put on the page: the
+// upload twin of a download anchor
+const filePicker = (context, node) => {
+	const declarator = node.parent;
+
+	if (declarator.type !== 'VariableDeclarator' || declarator.id.type !== 'Identifier') return false;
+
+	const variable = context.sourceCode.getDeclaredVariables(declarator)[0];
+
+	return Boolean(
+		variable?.references.some(({ identifier }) => {
+			const member = identifier.parent;
+			const assignment = member.parent;
+
+			return (
+				member.type === 'MemberExpression' &&
+				!member.computed &&
+				member.property.name === 'type' &&
+				assignment.type === 'AssignmentExpression' &&
+				assignment.left === member &&
+				stringOf(assignment.right) === 'file'
+			);
+		}),
+	);
+};
+
 const rules = {
 	'overlay.popover-close': rule(
 		'overlay.popover-close',
@@ -500,7 +526,10 @@ const rules = {
 				const { callee } = node;
 
 				if (callee.type !== 'MemberExpression' || callee.computed || callee.property.name !== 'createElement') return;
-				if (RAW_FIELDS.has(stringOf(node.arguments[0]))) report(node);
+				if (!RAW_FIELDS.has(stringOf(node.arguments[0]))) return;
+				if (filePicker(context, node)) return;
+
+				report(node);
 			},
 			NewExpression(node) {
 				const name = constructed(node, context);

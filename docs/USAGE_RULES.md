@@ -142,7 +142,7 @@ The choice, by what the moment is:
 
 **form.value-components-in-form** · proposed · audit: TagList, ColorPicker and other components that hold a value join a Form as `InputComponent`, not beside it.
 
-**form.no-raw-fields** · settled · lint: No raw `<input>`, `<textarea>`, `<select>`, `<option>` or `<optgroup>` built through `tag:`, `document.createElement`, or by turning another element into one (`Object.assign(input.elem, { type: 'checkbox' })`). A textarea is `new Input({ tag: 'textarea' })`; a checkbox is `new Input({ type: 'checkbox' })`; Select takes options, including optgroups. A tool's own dev UI is exempt.
+**form.no-raw-fields** · settled · lint: No raw `<input>`, `<textarea>`, `<select>`, `<option>` or `<optgroup>` built through `tag:`, `document.createElement`, or by turning another element into one (`Object.assign(input.elem, { type: 'checkbox' })`). A textarea is `new Input({ tag: 'textarea' })`; a checkbox is `new Input({ type: 'checkbox' })`; Select takes options, including optgroups. A file input made in code only to open the file chooser, and never put on the page, is exempt, as a download anchor is. A tool's own dev UI is exempt.
 
 ## Structure and display
 

@@ -113,6 +113,7 @@ const cases = {
 	},
 	'form.no-raw-fields': {
 		valid: [
+			"const picker = document.createElement('input'); picker.type = 'file'; picker.click();",
 			"const Editor = styled(Input, ''); new Editor({ tag: 'textarea' });",
 			"class Big extends Input {} new Big({ tag: 'textarea' });",
 			"new Input({ tag: 'textarea' });",
