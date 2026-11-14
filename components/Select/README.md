@@ -37,11 +37,11 @@ Each entry in the `options` array is either:
 - A **string**: used as both the `label` and `value` of the `<option>` element
 - An **object**: spread directly onto the `<option>` element. Common fields:
 
-| Field      | Type      | Description                               |
-| ---------- | --------- | ----------------------------------------- |
-| `value`    | `any`     | The value submitted/returned on selection |
-| `label`    | `string`  | Display text shown in the dropdown        |
-| `disabled` | `boolean` | Disables this specific option             |
+| Field | Type | Description |
+| --- | --- | --- |
+| `value` | `any` | The value submitted/returned on selection |
+| `label` | `string` | Display text shown in the dropdown, and the option's text (`option.text`) unless `textContent` is given |
+| `disabled` | `boolean` | Disables this specific option |
 
 ```js
 options: ['plain string', { label: 'Display Text', value: 42 }, { label: 'Unavailable', value: 'x', disabled: true }];

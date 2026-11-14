@@ -1,6 +1,13 @@
 import { Elem } from '../../Elem';
 import { Input } from '../Input';
 
+// An option's label is its text too: what option.text, textContent and a search of the page read, not only what's drawn
+const optionElem = option => {
+	const given = typeof option === 'object' ? option : { label: option, value: option };
+
+	return new Elem({ tag: 'option', textContent: given.label, ...given });
+};
+
 /**
  * Select dropdown component extending Input with dynamic option management.
  *
@@ -29,13 +36,11 @@ class Select extends Input {
 						const group = document.createElement('optgroup');
 						if (option.label) group.label = option.label;
 						for (const o of option.options) {
-							group.append(new Elem({ tag: 'option', ...(typeof o === 'object' ? o : { label: o, value: o }) }).elem);
+							group.append(optionElem(o).elem);
 						}
 						this.elem.append(group);
 					} else {
-						this.append(
-							new Elem({ tag: 'option', ...(typeof option === 'object' ? option : { label: option, value: option }) }),
-						);
+						this.append(optionElem(option));
 					}
 				}
 

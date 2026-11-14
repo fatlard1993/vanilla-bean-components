@@ -26,6 +26,15 @@ An entry that carries its own `options` array is a group rather than a choice, s
   - new Subject({ options: [{ label: "Group A", options: ["a1", "a2"] }, "loose"], appendTo: document.body }) captures s then Array.from(s.elem.children).map(c => c.tagName) captures shape then s.elem.querySelector("optgroup") captures group -> shape.join(",") === "OPTGROUP,OPTION" && group.label === "Group A" && Array.from(group.children).map(o => o.value).join(",") === "a1,a2"
   - new Subject({ options: [{ label: "Group A", options: ["a1", "a2"] }, "loose"], appendTo: document.body }) captures s then s.value captures fromGroup then s.elem.options[2].selected = true then s.value captures fromTop -> fromGroup === "a1" && fromTop === "loose"
 
+## An option's label is its text
+
+What a select draws comes from an option's `label`; its text is what `option.text`, `textContent` and a find on the page read. Each option carries both, so none reads as blank to code that looks for its words.
+
+- string, object and grouped options all carry their label as their text
+  - new Subject({ options: ["plain", { value: "o", label: "Object" }, { label: "G", options: [{ value: "g", label: "Grouped" }, "loose"] }], appendTo: document.body }) captures s -> Array.from(s.elem.options).map(o => o.text).join(",") === "plain,Object,Grouped,loose"
+- an option given its own text keeps it
+  - new Subject({ options: [{ value: "t", textContent: "Own text" }], appendTo: document.body }) captures s -> s.elem.options[0].text === "Own text"
+
 ## The value getter returns the selected option's value, with label as fallback
 
 - `select.value` returns the option's `value` attribute; if absent it falls back to `label`, then `textContent`
