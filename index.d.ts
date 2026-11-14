@@ -891,7 +891,7 @@ export declare class Table extends Component {
 export interface TabsOptions extends ComponentOptions {
 	/** The tabs, e.g. { id, label, icon, count, disabled }; reactive */
 	tabs?: Array<Record<string, any>>;
-	/** The selected tab's id; defaults to the first tab */
+	/** The selected tab's id; defaults to the first usable tab, and a disabled one isn't shown */
 	selected?: string;
 	/** Each tab's panel, by id: an element or a Component, shown only while selected */
 	panels?: Record<string, any>;

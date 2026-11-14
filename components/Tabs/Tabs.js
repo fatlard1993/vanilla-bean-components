@@ -79,7 +79,7 @@ const StyledComponent = styled(
  * for content that's built on demand. A tab can carry a count (unread, items listed), shown beside its label.
  * @param {object} [options] - Tabs configuration
  * @param {Array<object>} [options.tabs] - The tabs, e.g. { id, label, icon, count, disabled }; reactive
- * @param {string} [options.selected] - The selected tab's id; defaults to the first tab
+ * @param {string} [options.selected] - The selected tab's id; defaults to the first usable tab, and a disabled one isn't shown
  * @param {object} [options.panels] - Each tab's panel, by id: an element or a Component, shown only while selected
  * @param {Function} [options.onChange] - Hears `change` when the selection changes; `event.value` is the selected tab's id
  * @param {('segmented')} [options.variant] - 'segmented' is a pill split into its choices, for switching between a
@@ -119,6 +119,11 @@ export default class Tabs extends StyledComponent {
 
 	build() {
 		this._buttons = {};
+
+		// Laid out for the first time (a dialog opening) or resized, the row scrolls the selected tab into sight
+		const sizeObserver = new ResizeObserver(() => this._keepInView());
+		sizeObserver.observe(this.elem);
+		this.addCleanup('sizeObserver', () => sizeObserver.disconnect());
 
 		this.on({
 			targetEvent: 'keydown',
@@ -171,9 +176,12 @@ export default class Tabs extends StyledComponent {
 
 	_showSelected(selected) {
 		const { tabs = [], panels = {} } = this.options;
-		const id = tabs.some(tab => tab.id === selected) ? selected : tabs[0]?.id;
+		// A disabled tab can't be the one shown: it can't be pressed, so nothing would select away to it or back
+		const id = tabs.some(tab => tab.id === selected && !tab.disabled)
+			? selected
+			: (tabs.find(tab => !tab.disabled) ?? tabs[0])?.id;
 
-		// Settled on the first tab without counting as a change
+		// Settled on the first usable tab without counting as a change
 		if (id !== undefined && id !== selected) this.options.selected = id;
 
 		// A panel whose tab is gone is hidden with the rest
@@ -198,6 +206,21 @@ export default class Tabs extends StyledComponent {
 			panel.classList.add('vbc-tabpanel');
 			panel.hidden = !chosen;
 		}
+
+		this._keepInView();
+	}
+
+	// Along the row only: scrollIntoView would scroll the page too, to a row the person may have scrolled past
+	_keepInView() {
+		const tab = this._buttons[this.options.selected]?.elem;
+
+		if (!tab || !this.elem.clientWidth) return;
+
+		const row = this.elem.getBoundingClientRect();
+		const { left, right } = tab.getBoundingClientRect();
+
+		if (left < row.left) this.elem.scrollLeft -= row.left - left;
+		else if (right > row.right) this.elem.scrollLeft += right - row.right;
 	}
 
 	/**

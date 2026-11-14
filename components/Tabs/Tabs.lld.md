@@ -9,6 +9,14 @@ A row of tabs, one selected. The design decision is that selection is the compon
 - with no selection given, the first tab is selected and says so
   - new Subject({ tabs: [{ id: "a", label: "A" }, { id: "b", label: "B" }], appendTo: document.body }) captures t -> t.options.selected === "a" && t.elem.querySelector("[aria-selected=true]").dataset.tab === "a"
 
+- a disabled tab isn't shown as selected; the first usable tab is
+  - new Subject({ tabs: [{ id: "a", label: "A", disabled: true }, { id: "b", label: "B" }], selected: "a", appendTo: document.body }) captures t -> t.options.selected === "b" && t.elem.querySelector("[aria-selected=true]").dataset.tab === "b"
+
+## The selected tab is in sight
+
+- selecting a tab past the row's edge scrolls the row, not the page, to show it
+  - new Subject({ tabs: [{ id: "a", label: "A" }, { id: "b", label: "B" }], appendTo: document.body }) captures t then Object.defineProperty(t.elem, "clientWidth", { value: 100 }) then (t.elem.getBoundingClientRect = () => ({ left: 0, right: 100 })) then (t.elem.querySelector("[data-tab=b]").getBoundingClientRect = () => ({ left: 150, right: 230 })) then t.select("b") -> t.elem.scrollLeft === 130
+
 ## Selecting is one path
 
 - selecting a tab calls onChange once; selecting it again doesn't

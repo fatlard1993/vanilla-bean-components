@@ -25,12 +25,12 @@ The [usage rules](../../docs/USAGE_RULES.md) that bear on Tabs: [layout.router-v
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `tabs` | `Array<object>` | `[]` | The tabs: `{ id, label, icon, count, disabled }`; reactive, a tab removed hides its panel |
-| `selected` | `string` | the first tab | The selected tab's id |
+| `selected` | `string` | the first usable tab | The selected tab's id |
 | `panels` | `object` | - | Each tab's panel by id, an element or a Component, shown only while selected |
 | `variant` | `'segmented'` | - | A pill split into its choices, for switching between a few views of the same thing |
 | `onChange` | `Function` | - | Hears `change` when the selection changes; `event.value` is the selected tab's id |
 
-Selecting the tab that is already selected is not a change. A disabled tab is skipped by the arrow keys and refused by `select()`.
+Selecting the tab that is already selected is not a change. A disabled tab is skipped by the arrow keys and refused by `select()`, and isn't shown as selected even when `selected` names it: the first usable tab is. In a row that scrolls, the selected tab is scrolled into sight along the row (never the page) whenever it's chosen and when the row is first laid out, as when the dialog holding it opens.
 
 ## Methods
 
