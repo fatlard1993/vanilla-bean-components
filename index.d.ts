@@ -827,7 +827,7 @@ export interface RouterOptions extends ComponentOptions {
 	notFound?: Component;
 	/** Callback fired when rendering a new view */
 	onRenderView?: (...args: any[]) => any;
-	/** Routing mode: 'hash' uses URL fragments, 'history' uses pushState (default: "hash") */
+	/** Routing mode: 'hash' uses URL fragments, 'history' uses pushState; in history mode a plain click on a same-site link to one of its routes is routed, not reloaded (default: "hash") */
 	mode?: 'hash' | 'history';
 }
 

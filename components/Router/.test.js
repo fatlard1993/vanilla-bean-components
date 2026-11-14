@@ -116,3 +116,62 @@ describe('Router routes', () => {
 		router.destroy();
 	});
 });
+
+describe('Router links under history routing', () => {
+	const views = { '/a': TestView, '/b': TestView };
+	let router;
+
+	// The test page starts at about:blank, which has no paths to route between
+	beforeEach(() => {
+		window.happyDOM.setURL('http://localhost/a');
+		router = new Router({ mode: 'history', views, appendTo: container });
+	});
+	afterEach(() => {
+		router.destroy();
+		window.happyDOM.setURL('about:blank');
+	});
+
+	const click = (href, init = {}, attributes = {}) => {
+		const link = Object.assign(document.createElement('a'), { href });
+
+		Object.entries(attributes).forEach(([name, value]) => link.setAttribute(name, value));
+		container.append(link);
+
+		const event = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0, ...init });
+
+		link.dispatchEvent(event);
+		link.remove();
+
+		return event;
+	};
+
+	test('a plain click on a link to a route is routed, not followed', () => {
+		const event = click('/b?x=1');
+
+		expect(event.defaultPrevented).toBe(true);
+		expect(window.location.pathname).toBe('/b');
+		expect(window.location.search).toBe('?x=1');
+		expect(router.currentPath).toBe('/b');
+	});
+
+	test('a click meant for a new tab, a download, another site, another target or a path not among its routes is left alone', () => {
+		expect(click('/b', { ctrlKey: true }).defaultPrevented).toBe(false);
+		expect(click('/b', { metaKey: true }).defaultPrevented).toBe(false);
+		expect(click('/b', { button: 1 }).defaultPrevented).toBe(false);
+		expect(click('/b', {}, { download: '' }).defaultPrevented).toBe(false);
+		expect(click('/b', {}, { target: '_blank' }).defaultPrevented).toBe(false);
+		expect(click('https://elsewhere.example/b').defaultPrevented).toBe(false);
+		expect(click('/api/file.zip').defaultPrevented).toBe(false);
+	});
+
+	test('a click something else already handled is left to it', () => {
+		const link = Object.assign(document.createElement('a'), { href: '/b' });
+
+		link.addEventListener('click', event => event.preventDefault());
+		container.append(link);
+		link.click();
+		link.remove();
+
+		expect(window.location.pathname).toBe('/a');
+	});
+});

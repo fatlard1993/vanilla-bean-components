@@ -11,7 +11,8 @@ import { pathMatch } from '../../app/pathMatch';
  * @param {string} [options.defaultPath] - Default route path, uses first view key if not specified
  * @param {Component} [options.notFound] - Component class for 404/not found routes
  * @param {Function} [options.onRenderView] - Callback fired when rendering a new view
- * @param {'hash'|'history'} [options.mode='hash'] - Routing mode: 'hash' uses URL fragments, 'history' uses pushState
+ * @param {'hash'|'history'} [options.mode='hash'] - Routing mode: 'hash' uses URL fragments, 'history' uses pushState;
+ *   in history mode a plain click on a same-site link to one of its routes is routed, not reloaded
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Router} Router component instance
  */
@@ -96,8 +97,32 @@ class Router extends Component {
 
 		window.addEventListener('popstate', reRenderView, { signal: this.signal });
 		if (this.options.mode !== 'history') window.addEventListener('hashchange', reRenderView, { signal: this.signal });
+		else document.addEventListener('click', event => this._routeLink(event), { signal: this.signal });
 
 		this.renderView();
+	}
+
+	// A link written as a plain href would reload the page under history routing. A plain click on one to a route of
+	// ours is routed instead; a click meant for a new tab, a download, another site or a path we don't route is left
+	// to the browser, as is one something else already handled.
+	_routeLink(event) {
+		if (event.defaultPrevented || event.button !== 0) return;
+		if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+		const link = event.target.closest?.('a[href]');
+
+		if (!link || link.hasAttribute('download')) return;
+		if (link.target && link.target !== '_self') return;
+
+		const url = new URL(link.href, window.location.href);
+
+		if (url.origin !== window.location.origin) return;
+		// A jump within this page is the browser's to make
+		if (url.pathname === window.location.pathname && url.search === window.location.search && url.hash) return;
+		if (!this.options.views[this.pathToRoute(url.pathname)]) return;
+
+		event.preventDefault();
+		this.path = `${url.pathname}${url.search}${url.hash}`;
 	}
 
 	renderView(route = this.route || this.options.defaultPath) {
