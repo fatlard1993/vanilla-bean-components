@@ -45,14 +45,14 @@ describe('Tooltip position', () => {
 		expect(placed('center')).toEqual(['320px', '410px']);
 	});
 
-	test('a tooltip that would leave the screen is kept on it', () => {
+	test('a tooltip that would leave the screen turns to the side across, and is kept a margin inside it', () => {
 		const tooltip = new Tooltip({ textContent: 'tip', position: 'top', appendTo: container });
 
-		laidOut(tooltip, { left: 0, top: 0, right: 40, bottom: 10, width: 40, height: 10 }, { width: 100, height: 30 });
+		laidOut(tooltip, { left: 0, top: 0, right: 40, bottom: 20, width: 40, height: 20 }, { width: 100, height: 30 });
 		tooltip.open();
 
-		expect(tooltip.elem.style.left).toBe('4px');
-		expect(tooltip.elem.style.top).toBe('4px');
+		expect(tooltip.elem.style.left).toBe('12px');
+		expect(tooltip.elem.style.top).toBe('22px');
 	});
 
 	test('opened at a point, it goes to the point', () => {

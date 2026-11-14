@@ -48,7 +48,19 @@ const StyledPopover = styled(
 const GAP = 2;
 const CORNER_OVERLAP = 9;
 // Kept this far inside the viewport
-const EDGE = 4;
+const EDGE = parseInt(space.md);
+// The side across from each, tried when a position would run off the screen and be pushed over what it explains
+const ACROSS = Object.freeze({
+	vertical: {
+		top: 'bottom',
+		bottom: 'top',
+		topLeft: 'bottomLeft',
+		bottomLeft: 'topLeft',
+		topRight: 'bottomRight',
+		bottomRight: 'topRight',
+	},
+	horizontal: { left: 'right', right: 'left' },
+});
 
 const POSITIONS = Object.freeze([
 	'center',
@@ -121,21 +133,33 @@ class Tooltip extends StyledPopover {
 		const { offsetWidth: w, offsetHeight: h } = this.elem;
 		const centerX = left + width / 2 - w / 2;
 		const centerY = top + height / 2 - h / 2;
-		const [x, y] = {
-			center: [centerX, centerY],
-			top: [centerX, top - GAP - h],
-			bottom: [centerX, bottom + GAP],
-			left: [left - GAP - w, centerY],
-			right: [right + GAP, centerY],
-			topLeft: [left + CORNER_OVERLAP - w, top + CORNER_OVERLAP - h],
-			topRight: [right - CORNER_OVERLAP, top + CORNER_OVERLAP - h],
-			bottomLeft: [left + CORNER_OVERLAP - w, bottom - CORNER_OVERLAP],
-			bottomRight: [right - CORNER_OVERLAP, bottom - CORNER_OVERLAP],
-		}[this.options.position];
+		const at = position =>
+			({
+				center: [centerX, centerY],
+				top: [centerX, top - GAP - h],
+				bottom: [centerX, bottom + GAP],
+				left: [left - GAP - w, centerY],
+				right: [right + GAP, centerY],
+				topLeft: [left + CORNER_OVERLAP - w, top + CORNER_OVERLAP - h],
+				topRight: [right - CORNER_OVERLAP, top + CORNER_OVERLAP - h],
+				bottomLeft: [left + CORNER_OVERLAP - w, bottom - CORNER_OVERLAP],
+				bottomRight: [right - CORNER_OVERLAP, bottom - CORNER_OVERLAP],
+			})[position];
 		// The viewport without its scrollbars; a document not laid out (a test) has no client size, the window still has
 		const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
 		const viewportHeight = document.documentElement.clientHeight || window.innerHeight;
 		const within = (value, max) => Math.max(EDGE, Math.min(value, max - EDGE));
+		const fits = (value, size, max) => value >= EDGE && value + size <= max - EDGE;
+		let [x, y] = at(this.options.position);
+
+		// A button at the top of the screen gets its hint below it, not clamped down over it
+		const vertical = ACROSS.vertical[this.options.position];
+
+		if (vertical && !fits(y, h, viewportHeight) && fits(at(vertical)[1], h, viewportHeight)) y = at(vertical)[1];
+
+		const horizontal = ACROSS.horizontal[this.options.position];
+
+		if (horizontal && !fits(x, w, viewportWidth) && fits(at(horizontal)[0], w, viewportWidth)) x = at(horizontal)[0];
 
 		this.elem.style.left = `${within(x, viewportWidth - w)}px`;
 		this.elem.style.top = `${within(y, viewportHeight - h)}px`;

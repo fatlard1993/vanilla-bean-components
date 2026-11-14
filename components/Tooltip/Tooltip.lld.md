@@ -23,10 +23,13 @@ Callers can reassign `position` freely without cleaning up after the previous va
 A tooltip is a popover, in the top layer, where nothing is placed by its parent's box: a class alone put every preset in
 the same place. Opened with no point of its own, the tooltip is placed from its parent's rect in viewport coordinates,
 which a fixed popover follows whatever the page has scrolled, and kept on the screen. Opened at a point, it goes there,
-as any popover does.
+as any popover does. A preset that would leave the screen takes the side across from it when that side has room (a
+button at the top of a phone gets its hint below), and either way it stays a margin inside the screen's edge.
 
 - opened with no point, a `bottom` tooltip sits just under its parent, where the parent is on the screen
   - new Subject({ textContent: "tip", position: "bottom", appendTo: document.body }) captures t then (document.body.getBoundingClientRect = () => ({ left: 100, top: 50, right: 200, bottom: 80, width: 100, height: 30 })) then t.open() then delete document.body.getBoundingClientRect -> t.elem.style.top === "82px" && t.elem.style.left === "150px"
+- a tooltip that would run off the top of the screen goes below its parent instead of being pushed down over it
+  - new Subject({ textContent: "tip", position: "topRight", appendTo: document.body }) captures t then Object.defineProperty(t.elem, "offsetHeight", { value: 28 }) then (document.body.getBoundingClientRect = () => ({ left: 300, top: 0, right: 332, bottom: 32, width: 32, height: 32 })) then t.open() then delete document.body.getBoundingClientRect -> t.elem.style.top === "23px"
 - opened at a point, it goes to the point
   - new Subject({ textContent: "tip", position: "bottom", appendTo: document.body }) captures t then (document.documentElement.getBoundingClientRect = () => ({ left: 0, top: 0, right: 1920, bottom: 1080 })) then t.open({ x: 10, y: 10 }) then delete document.documentElement.getBoundingClientRect -> t.elem.style.left === "22px" && t.elem.style.top === "22px"
 

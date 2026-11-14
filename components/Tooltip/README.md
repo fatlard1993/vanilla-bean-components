@@ -38,7 +38,7 @@ It is a [Popover](../Popover/README.md): it starts closed, `open({ x, y })` puts
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `textContent` | `string` | - | The hint |
-| `position` | `string` | `'topRight'` | `'center'`, `'top'`, `'bottom'`, `'left'`, `'right'`, `'topLeft'`, `'topRight'`, `'bottomLeft'` or `'bottomRight'`, against its parent. Anything else throws |
+| `position` | `string` | `'topRight'` | `'center'`, `'top'`, `'bottom'`, `'left'`, `'right'`, `'topLeft'`, `'topRight'`, `'bottomLeft'` or `'bottomRight'`, against its parent; one that would leave the screen takes the side across, and it stays 12px inside the screen's edge. Anything else throws |
 | `autoOpen` | `boolean\|number` | `false` | Open a moment after it's added to the page, as a Popover does |
 | `icon` | `string` | - | A Font Awesome icon name beside the text |
 | `onClose` | `Function` | - | Hears `close`, however it closed |
