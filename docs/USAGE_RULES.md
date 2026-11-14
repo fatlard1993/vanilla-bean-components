@@ -148,7 +148,7 @@ The choice, by what the moment is:
 
 **structure.group-heading** · settled · audit: A heading over a group inside a view is a SectionLabel. The view's title is the bar's `heading` (layout.title-in-heading); `vbc-markdown` is for rendered markdown only. Copying SectionLabel's look (uppercase, muted, letter-spaced) onto any other element is a finding.
 
-**structure.sectionlabel-margin** · settled · since 7.2 · lint: Leave a SectionLabel's margin alone; first in its container it already drops its top margin. Space it from its neighbors with the container's `gap` or padding.
+**structure.sectionlabel-margin** · settled · since 7.2 · lint: Leave a SectionLabel's margin alone; first in its container it already drops its top margin. Space it from its neighbors with the container's `gap` or padding. In a header row beside a total or a button, give it `inRow`, which drops its margin for the row to space.
 
 **structure.card-no-margin** · settled · audit: A Card has no margin; the container spaces its cards with `gap`.
 

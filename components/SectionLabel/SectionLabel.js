@@ -7,6 +7,8 @@ import { Component } from '../../Component';
  * @param {object} [options={}] - SectionLabel configuration
  * @param {string} [options.textContent] - The label
  * @param {number} [options.level=3] - The heading level announced
+ * @param {boolean} [options.inRow] - It shares a line with other things (a header row with a total or a button), which
+ *   space it: no margin of its own
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {SectionLabel} SectionLabel component instance
  * @example new SectionLabel({ textContent: 'Recent' })
@@ -21,6 +23,11 @@ class SectionLabel extends styled(
 			margin-top: 0;
 		}
 
+		/* Sharing a line with the row's figures or controls, which space it */
+		&.in-row {
+			margin: 0;
+		}
+
 		font-size: ${fontSize.xs};
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
@@ -28,6 +35,11 @@ class SectionLabel extends styled(
 	`,
 ) {
 	static schema = {
+		inRow: {
+			set(value) {
+				this.toggleClass('in-row', !!value);
+			},
+		},
 		level: {
 			default: 3,
 			set(value) {

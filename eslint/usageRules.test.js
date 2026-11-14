@@ -137,6 +137,7 @@ const cases = {
 	'structure.sectionlabel-margin': {
 		valid: [
 			"new SectionLabel({ textContent: 'Members' });",
+			"new SectionLabel({ textContent: 'Net worth', inRow: true });",
 			"const box = new Elem({}); box.elem.style.marginTop = '0';",
 		],
 		invalid: [

@@ -852,6 +852,8 @@ export declare class Router extends Component {
 export interface SectionLabelOptions extends ComponentOptions {
 	/** The heading level announced (default: 3) */
 	level?: number;
+	/** It shares a line with other things (a header row with a total or a button), which space it: no margin of its own */
+	inRow?: boolean;
 }
 
 export declare class SectionLabel extends Component {

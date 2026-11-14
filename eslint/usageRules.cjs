@@ -619,7 +619,7 @@ const rules = {
 
 	'structure.sectionlabel-margin': rule(
 		'structure.sectionlabel-margin',
-		"Leave a SectionLabel's margin alone; space it with its container's gap or padding",
+		"Leave a SectionLabel's margin alone; space it with its container's gap or padding, or give it inRow in a header row",
 		(context, report) => ({
 			NewExpression(node) {
 				if (constructed(node, context) !== 'SectionLabel') return;
