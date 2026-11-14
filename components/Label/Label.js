@@ -90,7 +90,7 @@ const StyledLabel = styled(
 		}
 
 		&.variant-collapsible {
-			border: 2px solid ${colors.lighter(colors.teal).setAlpha(0.5)};
+			border: 2px solid ${colors.alpha(colors.lighter(colors.accent), 0.5)};
 			border-radius: ${radius.sm};
 
 			&.collapsed {
@@ -102,7 +102,7 @@ const StyledLabel = styled(
 					&:before {
 						content: "" !important;
 						opacity: 1;
-						color: ${colors.lightest(colors.blue)};
+						color: ${colors.lightest(colors.action)};
 					}
 				}
 

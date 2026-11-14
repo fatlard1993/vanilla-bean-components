@@ -46,6 +46,11 @@ const roles = {
 	surface: () => colors.darker(colors.gray),
 	// The lift of a card, or a group of fields, off whatever it sits on
 	raised: () => colors.alpha(colors.white, 0.05),
+	// A button's fill; its text is whichever of white and black reads on it
+	action: () => colors.blue,
+	// A link's text, and one already visited
+	link: () => colors.light(colors.blue),
+	visited: () => colors.light(colors.purple),
 	// The library's own accent: the edge of whatever floats over the page
 	accent: () => colors.teal,
 	// The edge itself: a dialog's, a popover's, a menu's, a sheet's

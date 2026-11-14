@@ -326,10 +326,10 @@ export const elements = theme => `
 	}
 
 	a {
-		color: ${colors.light(colors.blue)};
+		color: ${colors.link};
 
 		&:visited {
-			color: ${colors.light(colors.purple)};
+			color: ${colors.visited};
 		}
 
 		&.disabled {

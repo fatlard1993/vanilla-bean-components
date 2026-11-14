@@ -18,4 +18,16 @@ describe('button styles', () => {
 		expect(css).not.toContain('translate');
 		expect(css).toContain('filter: brightness(1.15)');
 	});
+
+	test("a button is filled in the action role, with text that reads on whatever color it's given", () => {
+		const paper = theme.colors.alpha('#f3f0e7', 1);
+
+		theme.colors.action = paper;
+		const css = button(theme);
+
+		theme.colors.action = undefined;
+		expect(css).toContain(`background-color: ${paper}`);
+		expect(css).toContain(`color: ${theme.colors.black}`);
+		expect(button(theme)).toContain(`background-color: ${theme.colors.blue}`);
+	});
 });

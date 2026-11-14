@@ -34,7 +34,13 @@ export interface ThemeColors {
 	raised: ThemeColor;
 	/** The dimming behind a dialog or context menu */
 	overlay: ThemeColor;
-	/** The library's own accent (teal) */
+	/** A button's fill (blue); its text is whichever of white and black reads on it */
+	action: ThemeColor;
+	/** A link's text */
+	link: ThemeColor;
+	/** A visited link's text */
+	visited: ThemeColor;
+	/** The library's own accent (teal): a tag's outline, a collapsible group's border */
 	accent: ThemeColor;
 	/** The edge of whatever floats over the page, drawn from accent */
 	edge: ThemeColor;

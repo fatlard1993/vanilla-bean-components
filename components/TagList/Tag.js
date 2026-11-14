@@ -14,7 +14,7 @@ const StyledComponent = styled(
 		font-size: ${fontSize.sm};
 		line-height: 1;
 		background-color: ${colors.black};
-		border: 1px solid ${colors.alpha(colors.teal, 0.35)};
+		border: 1px solid ${colors.alpha(colors.accent, 0.35)};
 		border-radius: ${radius.sm};
 		white-space: nowrap;
 		user-select: none;
@@ -22,7 +22,7 @@ const StyledComponent = styled(
 		list-style: none;
 
 		&:not(.readOnly):not(.add-tag):hover {
-			border-color: ${colors.light(colors.teal)};
+			border-color: ${colors.light(colors.accent)};
 		}
 
 		&:focus-visible {

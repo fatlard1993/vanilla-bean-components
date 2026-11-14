@@ -12,8 +12,8 @@ export default theme => {
 	margin: 0;
 	box-sizing: border-box;
 	text-decoration: none;
-	color: ${colors.white};
-	background-color: ${colors.blue};
+	color: ${colors.mostReadable(colors.action, [colors.white, colors.black])};
+	background-color: ${colors.action};
 	border: none;
 	border-radius: ${radius.md};
 	text-align: center;

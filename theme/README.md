@@ -71,10 +71,11 @@ The theme singleton is imported once and shared across all `styled()` calls. Mut
 import { theme } from '@vanilla-bean/components';
 import { TinyColor } from '@ctrl/tinycolor';
 
-// Replace the accent color - affects every component that uses colors.teal
-theme.colors.teal = new TinyColor('#3d7aed');
+// Give the library's accent role a color of its own (see Roles below); assigning a hue, colors.teal, recolors
+// everything drawn from that hue instead
+theme.colors.accent = new TinyColor('#3d7aed');
 
-// Then import and use components as normal - they'll use your teal
+// Then import and use components as normal - they'll use your accent
 import { Button, Dialog } from '@vanilla-bean/components';
 ```
 
@@ -452,7 +453,9 @@ Colors also have names for their jobs. Reach for the job's name before the hue's
 | `surface` | gray, darker | Anything that floats over the page: a dialog, popover, menu, sheet, toast or top bar |
 | `raised` | white at 0.05 | The lift of a card, or a group of fields, off whatever it sits on |
 | `overlay` | black at 0.6 | The backdrop behind a dialog or context menu |
-| `accent` | teal | The library's own accent |
+| `action` | blue | A button's fill; its text is whichever of white and black reads on it |
+| `link`, `visited` | blue, light; purple, light | A link's text, and a visited link's |
+| `accent` | teal | The library's own accent: a tag's outline, a collapsible group's border |
 | `edge` | accent, light, at 0.6 | The edge of whatever floats over the page |
 | `success`, `info`, `warning`, `danger` | green, blue, yellow, red | Status: Notify, Dialog's variants, quoted notes, a field's errors |
 | `muted` | gray, light | Secondary text: meta lines, counts, hints, section labels |
@@ -463,6 +466,7 @@ Each follows its hues until it's given a color of its own, and assigning `undefi
 ```js
 theme.colors.danger = new TinyColor('#e5484d');
 theme.colors.selected = new TinyColor('#3d7aed'); // focus rings and selections go blue
+theme.colors.action = new TinyColor('#f3f0e7'); // paper buttons, their text turning dark to read on it
 ```
 
 ## Focus
@@ -593,6 +597,9 @@ interface ColorSystem {
 	surface: TinyColor;
 	raised: TinyColor;
 	overlay: TinyColor;
+	action: TinyColor;
+	link: TinyColor;
+	visited: TinyColor;
 	accent: TinyColor;
 	edge: TinyColor;
 	success: TinyColor;

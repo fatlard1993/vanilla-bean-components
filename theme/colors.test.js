@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+
 import colors from './colors';
 
 describe('theme colors', () => {
@@ -45,6 +47,9 @@ describe('theme colors', () => {
 			'muted',
 			'border',
 			'selected',
+			'action',
+			'link',
+			'visited',
 		];
 		const own = colors.alpha('#123456', 1);
 
@@ -71,5 +76,15 @@ describe('theme colors', () => {
 		expect(theme.page).toContain(String(own));
 		colors.selected = undefined;
 		expect(theme.page).not.toContain(String(own));
+	});
+
+	test('every role is declared in the types an editor reads', () => {
+		const declared = readFileSync(new URL('../index.d.ts', import.meta.url), 'utf8').match(
+			/interface ThemeColors \{([\s\S]*?)\n\}/,
+		)[1];
+		const roles = Object.keys(colors).filter(key => Object.getOwnPropertyDescriptor(colors, key).set);
+
+		expect(roles.length).toBeGreaterThan(0);
+		for (const role of roles) expect(declared).toContain(`\t${role}: ThemeColor;`);
 	});
 });
