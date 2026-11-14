@@ -83,7 +83,11 @@ const cases = {
 		],
 	},
 	'form.read-options-value': {
-		valid: ['const name = new Input({}); name.options.value;', 'const box = new Elem({}); box.elem.value;'],
+		valid: [
+			'const name = new Input({}); name.options.value;',
+			'const box = new Elem({}); box.elem.value;',
+			'const show = view => { view.elem.value = 3; };',
+		],
 		invalid: [
 			"const Editor = styled(Input, ''); class A { build() { this.editor = new Editor({}); } get value() { return this.editor.elem.value; } }",
 			'const name = new Input({}); send(name.elem.value);',

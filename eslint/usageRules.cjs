@@ -447,7 +447,11 @@ const rules = {
 				const owner = elemOwner(node.object);
 				const component = owner && componentOf(context, owner);
 
-				if (component ? VALUE_COMPONENTS.has(component) : owner) report(node);
+				// Written to, an element of no known component is most likely one that isn't a field at all (a progress
+				// bar's value); a known field written this way still loses its options.value
+				const written = node.parent.type === 'AssignmentExpression' && node.parent.left === node;
+
+				if (component ? VALUE_COMPONENTS.has(component) : owner && !written) report(node);
 			},
 		}),
 	),
