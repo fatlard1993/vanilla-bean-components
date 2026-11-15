@@ -112,7 +112,7 @@
 		"@ctrl/tinycolor": "^4.3.1",
 		"@fontsource-variable/kode-mono": "^5.3.0",
 		"@fortawesome/fontawesome-free": "^7.3.1",
-		"@vanilla-bean/hypertether": "^1.2.1",
+		"@vanilla-bean/hypertether": "^1.2.2",
 		"@vanilla-bean/oxject": "^1.0.0",
 		"nanoid": "^6.0.2"
 	},

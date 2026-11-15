@@ -8,7 +8,7 @@
         "@ctrl/tinycolor": "^4.3.1",
         "@fontsource-variable/kode-mono": "^5.3.0",
         "@fortawesome/fontawesome-free": "^7.3.1",
-        "@vanilla-bean/hypertether": "^1.2.1",
+        "@vanilla-bean/hypertether": "^1.2.2",
         "@vanilla-bean/oxject": "^1.0.0",
         "nanoid": "^6.0.2",
       },
@@ -187,7 +187,7 @@
 
     "@typescript-eslint/visitor-keys": ["@typescript-eslint/visitor-keys@8.72.2", "", { "dependencies": { "@typescript-eslint/types": "8.72.2", "eslint-visitor-keys": "^5.0.0" } }, "sha512-NAGrjn0Pitjqzq/GkgMC4kBYm233PQ8GffyQ9+kTA3AlNQYEzOf25EIM02BAHZv5FRJSpHpJk+OGUxVkOB93GQ=="],
 
-    "@vanilla-bean/hypertether": ["@vanilla-bean/hypertether@1.2.1", "", {}, "sha512-IrRWJRRLUiHnuMeTvOrVUiS/cD6Q4I5DyzYP3eUp+TYktyocc5+p83uwrjDTDG7LkdLTDfGrgu40zemDhESnPA=="],
+    "@vanilla-bean/hypertether": ["@vanilla-bean/hypertether@1.2.2", "", {}, "sha512-hg7k4jsR77f8SKY25M00ZtqL9lUQ6XPrlmh9NnaWLbLpYTczpfrHr81hg8Wfnkeuw9dLku7lQdzuTBzP66sNrg=="],
 
     "@vanilla-bean/oxject": ["@vanilla-bean/oxject@1.0.0", "", {}, "sha512-/VusT7+8r61Q8Q6cN0HWGhkpdTr1q0hYu/i9U8glU3nw2fp9CCb071f46nlI/DOsq/BAI1gXEdD8JvS49HS+mg=="],
 
