@@ -42,10 +42,14 @@ class Card extends styled(
 
 		&.interactive {
 			cursor: pointer;
-			transition: background-color ${duration.fast};
+			transition: box-shadow ${duration.fast};
 
+			/* Laid over the card's own fill as an inset shadow, so a card given a background of its own keeps it under the
+			   tint; drawn with the accent's stripe, which is a shadow too */
 			&:not(.disabled):hover, &:focus-visible {
-				background-color: ${colors.alpha(colors.white, 0.09)};
+				box-shadow:
+					inset 3px 0 var(--card-accent, transparent),
+					inset 0 0 0 100vmax ${colors.alpha(colors.white, 0.09)};
 			}
 
 			&:focus-visible {
