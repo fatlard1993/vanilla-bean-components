@@ -260,6 +260,8 @@ class Dialog extends styled(
 
 				// The button's own press first, then the dialog's, which hears every button by what was pressed
 				return new DialogButton({
+					// The safe way out sits flat beside the filled action it backs out of
+					...(buttonOptions['data-action'] === 'cancel' && { variant: 'flat' }),
 					...buttonOptions,
 					onPointerPress: event => {
 						onPointerPress?.(event);

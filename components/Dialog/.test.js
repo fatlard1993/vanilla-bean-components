@@ -370,6 +370,14 @@ describe('Dialog', () => {
 			expect(await answer(confirmation, 'Cancel')).toBe(false);
 		});
 
+		test('draws its cancel button flat beside the filled confirm', async () => {
+			const confirmation = Dialog.confirm({ header: 'Delete it?', confirmLabel: 'Delete' });
+
+			expect(await findByRole(document.body, 'button', { name: 'Cancel', hidden: true })).toHaveClass('variant-flat');
+			expect(getByRole(document.body, 'button', { name: 'Delete', hidden: true })).not.toHaveClass('variant-flat');
+			expect(await answer(confirmation, 'Cancel')).toBe(false);
+		});
+
 		test('resolves false when closed any other way', async () => {
 			const confirmation = Dialog.confirm({ header: 'Leave?', confirmLabel: 'Leave' });
 

@@ -28,7 +28,7 @@ A Dialog shows something to read or work through; its way out comes before its a
 | --- | --- | --- | --- |
 | `header` | `string` | - | Text of the header, which labels the dialog |
 | `body` | `string\|Component\|Array` | - | Content for the scrollable body section. Reactive: updating `options.body` replaces content |
-| `buttons` | `Array<string\|object>` | - | Shorthand footer buttons. Each entry is a string label or `{ textContent, intent?, variant?, onPointerPress?, ...buttonOptions }` |
+| `buttons` | `Array<string\|object>` | - | Shorthand footer buttons. Each entry is a string label or `{ textContent, intent?, variant?, onPointerPress?, ...buttonOptions }`; one marked `'data-action': 'cancel'` is flat unless given a `variant` |
 | `footer` | `Array<Component>` | - | Fully custom footer components. Takes precedence over `buttons` |
 | `onButtonPress` | `Function` | - | Called when any `buttons` entry is pressed, after that button's own `onPointerPress`. Receives `{ button, closeDialog, event, dialog }` |
 | `autoOpen` | `number\|boolean` | `true` | Open a moment (16ms) after render; a number is the delay in ms. Set to `false` to open it with `open()` |
