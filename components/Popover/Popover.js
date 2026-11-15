@@ -170,8 +170,11 @@ export default class Popover extends StyledIcon {
 
 		if (!this.elem.isConnected) return;
 
-		// Sized as a point-placed one is, before it's measured to hang
-		if (anchor) this.elem.style.maxWidth = `${options.maxWidth ?? this.options.maxWidth}px`;
+		// Sized as a point-placed one is, and measured free of the height an earlier open capped it to
+		if (anchor) {
+			this.elem.style.maxWidth = `${options.maxWidth ?? this.options.maxWidth}px`;
+			this.elem.style.maxHeight = '';
+		}
 
 		this.elem.showPopover();
 		this._open = true;
