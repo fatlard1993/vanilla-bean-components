@@ -141,7 +141,8 @@ const StyledPopover = styled(
 			text-overflow: ellipsis;
 			/* The list's first-line indent as padding, so a row's text starts where it did and its detail line lines up */
 			text-indent: 0;
-			padding-left: ${space.md};
+			/* As much on the right, so a long item doesn't end against the menu's edge */
+			padding-inline: ${space.md};
 		}
 
 		& li .label, & li .detail {
