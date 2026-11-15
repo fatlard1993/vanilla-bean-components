@@ -2,8 +2,6 @@
 
 import { beforeEach, mock, spyOn, expect, setSystemTime } from 'bun:test';
 
-import * as matchers from '@testing-library/jest-dom/matchers';
-
 import { GlobalRegistrator } from '@happy-dom/global-registrator';
 
 // expose globals
@@ -19,7 +17,8 @@ GlobalRegistrator.register({ width: 1920, height: 1080 });
 
 global.EventTarget = (await import('happy-dom')).EventTarget;
 
-expect.extend(matchers);
+// After the globals: jest-dom loads Testing Library, whose screen binds to the document there is when it loads
+expect.extend(await import('@testing-library/jest-dom/matchers'));
 
 // happy dom doesn't support popovers yet
 HTMLElement.prototype.showPopover = function () {
