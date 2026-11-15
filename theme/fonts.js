@@ -51,9 +51,14 @@ const family = {
 	},
 };
 
+// CSS an app set in place of the code look or the page text before the roles existed: assigning still works
+const replaced = {};
+
 export default {
 	family,
 	get code() {
+		if (replaced.code !== undefined) return replaced.code;
+
 		return `
 		font-family: "FontWithASyntaxHighlighter", ${family.code};
 		font-palette: --vbc-javascript-theme;
@@ -62,6 +67,9 @@ export default {
 		color: ${colors.light(colors.red)}; /* default color */
 		background-color: ${colors.black};
 	`;
+	},
+	set code(css) {
+		replaced.code = css;
 	},
 	fontAwesome,
 	fontAwesomeBrands: `
@@ -77,9 +85,14 @@ export default {
 	`,
 	// The page's text, in the body family
 	get kodeMono() {
+		if (replaced.kodeMono !== undefined) return replaced.kodeMono;
+
 		return `
 		font-family: ${family.body};
 		line-height: normal;
 	`;
+	},
+	set kodeMono(css) {
+		replaced.kodeMono = css;
 	},
 };

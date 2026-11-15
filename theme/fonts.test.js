@@ -34,6 +34,20 @@ describe('font roles', () => {
 		expect(theme.page).toContain("font-family: 'Press Start 2P', monospace;");
 	});
 
+	test('the page text and the code look can still be replaced whole, as before the roles', () => {
+		fonts.kodeMono = 'font-family: VT323;';
+		fonts.code = 'font-family: Menlo;';
+
+		expect(fonts.kodeMono).toBe('font-family: VT323;');
+		expect(fonts.code).toBe('font-family: Menlo;');
+		expect(theme.page).toContain('font-family: VT323;');
+
+		fonts.kodeMono = undefined;
+		fonts.code = undefined;
+
+		expect(fonts.kodeMono).toContain(fonts.family.body);
+	});
+
 	test('assigning undefined hands a role back', () => {
 		fonts.family.display = 'Impact';
 		fonts.family.display = undefined;
