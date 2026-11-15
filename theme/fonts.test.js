@@ -10,7 +10,8 @@ describe('font roles', () => {
 
 	test("each role has today's family until it's given its own", () => {
 		expect(fonts.family.body).toBe("'Kode Mono Variable', monospace");
-		expect(fonts.family.code).toBe('"FontWithASyntaxHighlighter", monospace');
+		expect(fonts.family.code).toBe("ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace");
+		expect(fonts.code).toContain('font-family: "FontWithASyntaxHighlighter", ui-monospace');
 		expect(fonts.family.display).toBe(fonts.family.body);
 		expect(fonts.family.hasDisplay).toBe(false);
 	});
@@ -20,7 +21,7 @@ describe('font roles', () => {
 		fonts.family.code = 'Menlo, monospace';
 
 		expect(fonts.kodeMono).toContain('font-family: Georgia, serif;');
-		expect(fonts.code).toContain('font-family: Menlo, monospace;');
+		expect(fonts.code).toContain('font-family: "FontWithASyntaxHighlighter", Menlo, monospace;');
 		expect(theme.page).toContain('font-family: Georgia, serif;');
 	});
 

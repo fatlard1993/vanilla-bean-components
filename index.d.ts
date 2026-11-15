@@ -72,7 +72,7 @@ export interface Theme {
 		family: {
 			/** The page's text */
 			body: string;
-			/** Code alone, without the code look `code` carries */
+			/** Code as plain text (the system's monospace), without the code look `code` carries */
 			code: string;
 			/** Headings and type set apart; follows body until given its own */
 			display: string;

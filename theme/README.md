@@ -476,7 +476,7 @@ Fonts have job names too, in `theme.fonts.family`. Each is a CSS font-family lis
 | Role | Default | For |
 | --- | --- | --- |
 | `body` | Kode Mono | The page's text |
-| `code` | the syntax-highlighting code font | Code alone: a textarea of markdown, a token, an ear tag. `fonts.code` is the whole code look (padding, colors) and uses this family |
+| `code` | the system's monospace | Code as plain text: a textarea of markdown, a token, an ear tag. `fonts.code` is the whole code look (padding, colors), set in the syntax-highlighting font with this family behind it |
 | `display` | `body` | Headings, and type set apart from the text: a game's title font. Headings take it once it's assigned |
 
 ```js

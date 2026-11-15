@@ -21,7 +21,8 @@ const fontAwesome = `
  */
 const defaults = {
 	body: "'Kode Mono Variable', monospace",
-	code: '"FontWithASyntaxHighlighter", monospace',
+	// Plain monospace: the syntax-highlighting font colours text by itself, so it's fonts.code's alone, in front of this
+	code: "ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace",
 };
 const assigned = {};
 
@@ -54,7 +55,7 @@ export default {
 	family,
 	get code() {
 		return `
-		font-family: ${family.code};
+		font-family: "FontWithASyntaxHighlighter", ${family.code};
 		font-palette: --vbc-javascript-theme;
 		padding: ${space.xs};
 		width: fit-content;
