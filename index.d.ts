@@ -823,7 +823,7 @@ export declare class Popover extends Icon {
 	constructor(options?: PopoverOptions, ...children: Array<Elem | HTMLElement | string>);
 	/** Whether the popover is open. */
 	readonly isOpen: boolean;
-	/** Opens the popover, placed at a point when one is given. */
+	/** Opens the popover: hung from an anchor when one is given (opening it again from the same anchor closes it), or placed at a point. */
 	open(options?: Record<string, any>): void;
 	/** Closes the popover, announcing `close` if it was open. */
 	close(): void;

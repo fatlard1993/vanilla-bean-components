@@ -20,6 +20,8 @@ It's appended to `document.body` and opens a moment after it's added, unless `au
 
 ## Placement
 
+Opened from a button, give it the button: `popover.open({ anchor: button })` hangs it under the button (or over it when there's more room above), lines its left edge up, and keeps it inside the viewport. Opening it again from the same button closes it, so the button toggles it, and the button carries `aria-haspopup="dialog"` and `aria-expanded` for as long as it's open. ContextMenu anchors the same way.
+
 Given `x` and `y` (as options, or to `open()`), it sits just below and right of the point. Near the right edge it opens to the left of it instead, near the bottom above it, and a point off the viewport is moved onto it first. `maxWidth` and `maxHeight` size it, and the edges it keeps clear of are the `viewport` element's.
 
 ## Dismissing
@@ -44,7 +46,7 @@ With `state: 'manual'` (the default) it stays until `close()`. `outsideClose: tr
 ## Methods
 
 ```js
-popover.open({ x, y, maxWidth?, maxHeight? }?) // Opens it, placed at the point when one is given
+popover.open({ anchor?, x?, y?, maxWidth?, maxHeight? }?) // Opens it: under the anchor (again from it, closes), or at the point
 popover.close()                                  // Closes it, announcing close if it was open
 popover.isOpen                                   // Whether it's open
 ```

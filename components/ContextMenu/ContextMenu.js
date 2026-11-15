@@ -6,8 +6,6 @@ import { Popover } from '../Popover';
 import { duration, fontSize, space } from '../../theme/tokens';
 
 // Between the menu and the button it hangs from, and between the menu and the viewport's edge
-const ANCHOR_GAP = 4;
-const VIEWPORT_EDGE = 8;
 
 const reticleWidth = 32; // Click indicator width in px
 // The hexangle's own proportion is width * 0.857142857 = 27.43px; 28 keeps the placement offset on
@@ -208,6 +206,9 @@ const menuItem = (item, choose) => {
  * moreButton.onPointerPress(() => menu.open({ anchor: moreButton }));
  */
 class ContextMenu extends StyledPopover {
+	// An anchor opens a menu, for assistive technology
+	static popupRole = 'menu';
+
 	static schema = {
 		autoOpen: { default: false },
 		outsideClose: { default: true },
@@ -312,36 +313,6 @@ class ContextMenu extends StyledPopover {
 	_removeReticle() {
 		this._reticle?.elem.remove();
 		this._reticle = null;
-	}
-
-	_setAnchor(anchor) {
-		this._anchor?.setAttribute('aria-expanded', 'false');
-		this._anchor = anchor ?? null;
-
-		if (!anchor) return;
-
-		anchor.setAttribute('aria-haspopup', 'menu');
-		anchor.setAttribute('aria-expanded', 'true');
-	}
-
-	// Under the element, or over it when there's more room above; its left edge lined up, moved in from the viewport's
-	_placeUnder(anchor) {
-		const at = anchor.getBoundingClientRect();
-		const viewportWidth = document.documentElement.clientWidth;
-		const viewportHeight = window.innerHeight;
-		const width = Math.min(this.elem.offsetWidth || this.options.maxWidth, this.options.maxWidth);
-		const below = viewportHeight - at.bottom - ANCHOR_GAP - VIEWPORT_EDGE;
-		const above = at.top - ANCHOR_GAP - VIEWPORT_EDGE;
-		const downward = this.elem.offsetHeight <= below || below >= above;
-		const height = Math.min(this.elem.offsetHeight, downward ? below : above);
-
-		Object.assign(this.elem.style, {
-			maxHeight: `${Math.max(downward ? below : above, 0)}px`,
-			left: `${Math.max(VIEWPORT_EDGE, Math.min(at.left, viewportWidth - width - VIEWPORT_EDGE))}px`,
-			top: `${downward ? at.bottom + ANCHOR_GAP : at.top - ANCHOR_GAP - height}px`,
-			right: 'unset',
-			bottom: 'unset',
-		});
 	}
 }
 

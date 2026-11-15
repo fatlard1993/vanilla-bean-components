@@ -58,7 +58,7 @@ The choice, by what the moment is:
 
 **overlay.notify-not-progress** · settled · audit: Don't hold a Notify open as a progress indicator ("Uploading…", "Finding your location…") and destroy it by hand. A view's loading state is EmptyState's `loading`; an action's is its Button disabled while it runs.
 
-**overlay.menu-anchored** · proposed · audit: A menu opened from a button is opened with `menu.open({ anchor: button })`, which ties the menu to the button: it toggles from it and tells assistive tech that it's open. Opening it at the click's `x`/`y` loses both.
+**overlay.menu-anchored** · proposed · audit: A menu or popover opened from a button is opened with `open({ anchor: button })` (ContextMenu and Popover both take it), which ties the menu to the button: it toggles from it and tells assistive tech that it's open. Opening it at the click's `x`/`y` loses both.
 
 **overlay.popover-close** · settled · lint: Close an overlay (a Popover, ContextMenu, Notify, Tooltip, Dialog, FormDialog or BottomSheet) with `close()` or `destroy()`. `elem.remove()` skips its cleanup, the focus it hands back, and the `close` that `onClose` listens for.
 

@@ -2,6 +2,10 @@ import { styled } from '../../styled';
 import { Icon } from '../Icon';
 import { elevation, radius, space } from '../../theme/tokens';
 
+// How far an anchored popover hangs from its anchor, and how far it keeps inside the viewport
+const ANCHOR_GAP = 4;
+const VIEWPORT_EDGE = 8;
+
 const StyledIcon = styled(
 	Icon,
 	({ colors }) => `
@@ -146,19 +150,33 @@ export default class Popover extends StyledIcon {
 	}
 
 	/**
-	 * Opens the popover, placed at a point when one is given.
-	 * @param {object} [options] - Position and sizing: { x, y, maxWidth, maxHeight }
+	 * Opens the popover: hung from an anchor when one is given (opening it again from the same anchor closes it), or
+	 * placed at a point.
+	 * @param {object} [options] - Position and sizing: { anchor, x, y, maxWidth, maxHeight }
 	 */
 	open(options) {
 		clearTimeout(this._outsideHide);
 
+		const anchor = options?.anchor?.elem ?? options?.anchor;
+
+		// The button that opened it closes it again: a toggle, as a menu's button is
+		if (anchor && this.isOpen && this._anchor === anchor) {
+			this.close();
+			return;
+		}
+
 		// Placed only by a whole point: half of one would place it at NaN
-		if (options?.x !== undefined && options?.y !== undefined) this.edgeAwarePlacement(options);
+		if (!anchor && options?.x !== undefined && options?.y !== undefined) this.edgeAwarePlacement(options);
 
 		if (!this.elem.isConnected) return;
 
 		this.elem.showPopover();
 		this._open = true;
+
+		if (anchor) {
+			this._setAnchor(anchor);
+			this._placeUnder(anchor);
+		}
 
 		if (this.options.outsideClose) {
 			// Cancel any pending registration from a previous open()
@@ -183,6 +201,39 @@ export default class Popover extends StyledIcon {
 		}
 	}
 
+	// The popup an anchor opens, for assistive technology: a dialog of content; a menu says menu
+	static popupRole = 'dialog';
+
+	_setAnchor(anchor) {
+		this._anchor?.setAttribute('aria-expanded', 'false');
+		this._anchor = anchor ?? null;
+
+		if (!anchor) return;
+
+		anchor.setAttribute('aria-haspopup', this.constructor.popupRole);
+		anchor.setAttribute('aria-expanded', 'true');
+	}
+
+	// Under the element, or over it when there's more room above; its left edge lined up, moved in from the viewport's
+	_placeUnder(anchor) {
+		const at = anchor.getBoundingClientRect();
+		const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
+		const viewportHeight = window.innerHeight;
+		const width = Math.min(this.elem.offsetWidth || this.options.maxWidth, this.options.maxWidth);
+		const below = viewportHeight - at.bottom - ANCHOR_GAP - VIEWPORT_EDGE;
+		const above = at.top - ANCHOR_GAP - VIEWPORT_EDGE;
+		const downward = this.elem.offsetHeight <= below || below >= above;
+		const height = Math.min(this.elem.offsetHeight, downward ? below : above);
+
+		Object.assign(this.elem.style, {
+			maxHeight: `${Math.max(downward ? below : above, 0)}px`,
+			left: `${Math.max(VIEWPORT_EDGE, Math.min(at.left, viewportWidth - width - VIEWPORT_EDGE))}px`,
+			top: `${downward ? at.bottom + ANCHOR_GAP : at.top - ANCHOR_GAP - height}px`,
+			right: 'unset',
+			bottom: 'unset',
+		});
+	}
+
 	/**
 	 * Closes the popover, announcing `close` if it was open.
 	 */
@@ -200,6 +251,7 @@ export default class Popover extends StyledIcon {
 
 	_closed() {
 		this._open = false;
+		this._setAnchor(null);
 
 		if (this._outsideDismissRaf) {
 			cancelAnimationFrame(this._outsideDismissRaf);

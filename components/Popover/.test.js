@@ -202,3 +202,57 @@ describe('Popover state', () => {
 		expect(popover.elem.isConnected).toBe(false);
 	});
 });
+
+describe('Popover anchored to a button', () => {
+	const setup = () => {
+		const button = document.createElement('button');
+
+		button.textContent = 'Info';
+		document.body.append(button);
+		button.getBoundingClientRect = () => ({ left: 100, right: 160, top: 50, bottom: 80, width: 60, height: 30 });
+
+		const popover = new Popover({ appendTo: document.body, textContent: 'About this' });
+
+		return { button, popover };
+	};
+
+	test('hangs under its anchor and tells it a dialog is open', () => {
+		const { button, popover } = setup();
+
+		popover.open({ anchor: button });
+
+		expect(popover.isOpen).toBe(true);
+		expect(popover.elem.style.left).toBe('100px');
+		expect(popover.elem.style.top).toBe('84px');
+		expect(button.getAttribute('aria-haspopup')).toBe('dialog');
+		expect(button.getAttribute('aria-expanded')).toBe('true');
+
+		popover.destroy();
+		button.remove();
+	});
+
+	test('opened again from the same anchor, closes: a toggle', () => {
+		const { button, popover } = setup();
+
+		popover.open({ anchor: button });
+		popover.open({ anchor: button });
+
+		expect(popover.isOpen).toBe(false);
+		expect(button.getAttribute('aria-expanded')).toBe('false');
+
+		popover.destroy();
+		button.remove();
+	});
+
+	test('however it closes, its anchor hears it', () => {
+		const { button, popover } = setup();
+
+		popover.open({ anchor: button });
+		popover.close();
+
+		expect(button.getAttribute('aria-expanded')).toBe('false');
+
+		popover.destroy();
+		button.remove();
+	});
+});
