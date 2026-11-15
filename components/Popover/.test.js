@@ -255,4 +255,18 @@ describe('Popover anchored to a button', () => {
 		popover.destroy();
 		button.remove();
 	});
+
+	test('keeps its maxWidth and maxHeight when hung from an anchor', () => {
+		const { button, popover } = setup();
+
+		popover.options.maxWidth = 260;
+		popover.options.maxHeight = 200;
+		popover.open({ anchor: button });
+
+		expect(popover.elem.style.maxWidth).toBe('260px');
+		expect(popover.elem.style.maxHeight).toBe('200px');
+
+		popover.destroy();
+		button.remove();
+	});
 });

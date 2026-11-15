@@ -170,12 +170,15 @@ export default class Popover extends StyledIcon {
 
 		if (!this.elem.isConnected) return;
 
+		// Sized as a point-placed one is, before it's measured to hang
+		if (anchor) this.elem.style.maxWidth = `${options.maxWidth ?? this.options.maxWidth}px`;
+
 		this.elem.showPopover();
 		this._open = true;
 
 		if (anchor) {
 			this._setAnchor(anchor);
-			this._placeUnder(anchor);
+			this._placeUnder(anchor, options.maxHeight ?? this.options.maxHeight);
 		}
 
 		if (this.options.outsideClose) {
@@ -214,8 +217,9 @@ export default class Popover extends StyledIcon {
 		anchor.setAttribute('aria-expanded', 'true');
 	}
 
-	// Under the element, or over it when there's more room above; its left edge lined up, moved in from the viewport's
-	_placeUnder(anchor) {
+	// Under the element, or over it when there's more room above; its left edge lined up, moved in from the viewport's.
+	// No taller than the room it has, nor than `cap` when one is given (a menu passes none and keeps its every row)
+	_placeUnder(anchor, cap = Infinity) {
 		const at = anchor.getBoundingClientRect();
 		const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
 		const viewportHeight = window.innerHeight;
@@ -223,10 +227,11 @@ export default class Popover extends StyledIcon {
 		const below = viewportHeight - at.bottom - ANCHOR_GAP - VIEWPORT_EDGE;
 		const above = at.top - ANCHOR_GAP - VIEWPORT_EDGE;
 		const downward = this.elem.offsetHeight <= below || below >= above;
-		const height = Math.min(this.elem.offsetHeight, downward ? below : above);
+		const room = Math.min(downward ? below : above, cap);
+		const height = Math.min(this.elem.offsetHeight, room);
 
 		Object.assign(this.elem.style, {
-			maxHeight: `${Math.max(downward ? below : above, 0)}px`,
+			maxHeight: `${Math.max(room, 0)}px`,
 			left: `${Math.max(VIEWPORT_EDGE, Math.min(at.left, viewportWidth - width - VIEWPORT_EDGE))}px`,
 			top: `${downward ? at.bottom + ANCHOR_GAP : at.top - ANCHOR_GAP - height}px`,
 			right: 'unset',
