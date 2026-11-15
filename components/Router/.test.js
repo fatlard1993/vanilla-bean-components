@@ -174,4 +174,12 @@ describe('Router links under history routing', () => {
 
 		expect(window.location.pathname).toBe('/a');
 	});
+
+	test('with routeLinks off, an app that follows its own links keeps them', () => {
+		router.destroy();
+		router = new Router({ mode: 'history', routeLinks: false, views, appendTo: container });
+
+		expect(click('/b').defaultPrevented).toBe(false);
+		expect(router.currentPath).toBe('/a');
+	});
 });

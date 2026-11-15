@@ -837,6 +837,8 @@ export interface RouterOptions extends ComponentOptions {
 	onRenderView?: (...args: any[]) => any;
 	/** Routing mode: 'hash' uses URL fragments, 'history' uses pushState; in history mode a plain click on a same-site link to one of its routes is routed, not reloaded (default: "hash") */
 	mode?: 'hash' | 'history';
+	/** In history mode, route plain clicks on same-site links; false for an app that follows its own links (default: true) */
+	routeLinks?: boolean;
 }
 
 export declare class Router extends Component {

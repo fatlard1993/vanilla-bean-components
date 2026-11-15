@@ -56,6 +56,7 @@ new Router({
 | `notFound` | `typeof Component` | - | Component class rendered when no route matches and `defaultPath` fallback also fails. Receives `{ route }` as an option. |
 | `onRenderView` | `Function` | - | Called with the matched route string whenever a new view is rendered. |
 | `mode` | `'hash' \| 'history'` | `'hash'` | `'hash'` uses URL fragments (`#/path`). `'history'` uses `pushState` and real pathnames (`/path`). History mode requires the server to serve `index.html` for all routes, and routes a plain click on a same-site link to one of its routes, so links are written as plain `href`s. |
+| `routeLinks` | `boolean` | `true` | In history mode, route plain clicks on same-site links. `false` for an app that follows its own links (a site under a base, with its own idea of a path). |
 
 ## Properties
 

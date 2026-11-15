@@ -13,6 +13,8 @@ import { pathMatch } from '../../app/pathMatch';
  * @param {Function} [options.onRenderView] - Callback fired when rendering a new view
  * @param {'hash'|'history'} [options.mode='hash'] - Routing mode: 'hash' uses URL fragments, 'history' uses pushState;
  *   in history mode a plain click on a same-site link to one of its routes is routed, not reloaded
+ * @param {boolean} [options.routeLinks=true] - In history mode, route plain clicks on same-site links; false for an app
+ *   that follows its own links
  * @param {...(Component|HTMLElement|string)} children - Child elements to append
  * @returns {Router} Router component instance
  */
@@ -24,6 +26,7 @@ class Router extends Component {
 		notFound: {},
 		onRenderView: {},
 		mode: { default: 'hash', enum: ['hash', 'history'] },
+		routeLinks: { default: true },
 	};
 
 	static prepareOptions(options) {
@@ -97,7 +100,9 @@ class Router extends Component {
 
 		window.addEventListener('popstate', reRenderView, { signal: this.signal });
 		if (this.options.mode !== 'history') window.addEventListener('hashchange', reRenderView, { signal: this.signal });
-		else document.addEventListener('click', event => this._routeLink(event), { signal: this.signal });
+		else if (this.options.routeLinks) {
+			document.addEventListener('click', event => this._routeLink(event), { signal: this.signal });
+		}
 
 		this.renderView();
 	}
