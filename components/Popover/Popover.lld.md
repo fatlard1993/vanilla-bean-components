@@ -39,3 +39,12 @@ Native popover element with edge-aware placement. The design decision: position 
 
 - open({ x, y }) places it just below and right of the point
   - new Subject({ autoOpen: false, appendTo: document.body }) captures p then (document.documentElement.getBoundingClientRect = () => ({ left: 0, top: 0, right: 1920, bottom: 1080 })) then p.open({ x: 100, y: 100 }) then delete document.documentElement.getBoundingClientRect -> p.elem.style.left === "112px" && p.elem.style.top === "112px"
+
+## An anchor given to open() ties the popover to its button
+
+A popover opened from a button hangs from it and answers to it: the same button closes it, and the button says the popover is open, so assistive tech knows what it does. ContextMenu inherits the same anchoring, saying menu where a popover says dialog.
+
+- open({ anchor }) hangs it under the button and marks the button as opening a dialog, open
+  - new Subject({ autoOpen: false, appendTo: document.body }) captures p then document.body.appendChild(document.createElement("button")) captures b then (b.getBoundingClientRect = () => ({ left: 100, right: 160, top: 50, bottom: 80, width: 60, height: 30 })) then p.open({ anchor: b }) -> p.elem.style.left === "100px" && p.elem.style.top === "84px" && b.getAttribute("aria-haspopup") === "dialog" && b.getAttribute("aria-expanded") === "true"
+- opened again from the same anchor, it closes, and the button says so
+  - new Subject({ autoOpen: false, appendTo: document.body }) captures p then document.body.appendChild(document.createElement("button")) captures b then p.open({ anchor: b }) then p.open({ anchor: b }) -> p.isOpen === false && b.getAttribute("aria-expanded") === "false"

@@ -5,8 +5,6 @@ import { Menu } from '../Menu';
 import { Popover } from '../Popover';
 import { duration, fontSize, space } from '../../theme/tokens';
 
-// Between the menu and the button it hangs from, and between the menu and the viewport's edge
-
 const reticleWidth = 32; // Click indicator width in px
 // The hexangle's own proportion is width * 0.857142857 = 27.43px; 28 keeps the placement offset on
 // whole pixels and is 2% off natural.
