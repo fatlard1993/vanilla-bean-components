@@ -303,6 +303,7 @@ export const elements = theme => `
 		color: ${colors.white};
 		font-weight: 600;
 		line-height: 1.25;
+		${fonts.family.hasDisplay ? `font-family: ${fonts.family.display};` : ''}
 	}
 
 	h1 {

@@ -67,7 +67,23 @@ export interface ThemeColors {
 
 export interface Theme {
 	colors: ThemeColors;
-	fonts: { kodeMono: string; code: string; fontAwesome: string; fontAwesomeSolid: string; fontAwesomeBrands: string };
+	fonts: {
+		/** Font families by job, each assignable before the page loads; undefined hands one back */
+		family: {
+			/** The page's text */
+			body: string;
+			/** Code alone, without the code look `code` carries */
+			code: string;
+			/** Headings and type set apart; follows body until given its own */
+			display: string;
+			readonly hasDisplay: boolean;
+		};
+		kodeMono: string;
+		code: string;
+		fontAwesome: string;
+		fontAwesomeSolid: string;
+		fontAwesomeBrands: string;
+	};
 	/** Screen insets a phone keeps for itself, as env() lengths, 0px elsewhere */
 	safeArea: { top: string; right: string; bottom: string; left: string };
 	space: { xs: string; sm: string; md: string; lg: string; xl: string };

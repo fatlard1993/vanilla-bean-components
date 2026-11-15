@@ -469,6 +469,21 @@ theme.colors.selected = new TinyColor('#3d7aed'); // focus rings and selections 
 theme.colors.action = new TinyColor('#f3f0e7'); // paper buttons, their text turning dark to read on it
 ```
 
+## Font roles
+
+Fonts have job names too, in `theme.fonts.family`. Each is a CSS font-family list, following today's font until an app gives it one of its own, and assigning `undefined` hands it back. Assign before the page loads:
+
+| Role | Default | For |
+| --- | --- | --- |
+| `body` | Kode Mono | The page's text |
+| `code` | the syntax-highlighting code font | Code alone: a textarea of markdown, a token, an ear tag. `fonts.code` is the whole code look (padding, colors) and uses this family |
+| `display` | `body` | Headings, and type set apart from the text: a game's title font. Headings take it once it's assigned |
+
+```js
+theme.fonts.family.display = "'Press Start 2P', monospace"; // headings, and anything styled with fonts.family.display
+const Token = styled(Elem, ({ fonts }) => `font-family: ${fonts.family.code};`);
+```
+
 ## Focus
 
 Everything that takes keyboard focus shows one ring: a 2px line in the `selected` role, 2px outside the control, on `:focus-visible` only. The page gives it to any focused element at no specificity, and `theme.focusRing(offset)` hands out the same declarations for your own controls; a negative offset draws it inside something that clips:
