@@ -1,5 +1,4 @@
 import { styled } from '../../styled';
-import { duration } from '../../theme/tokens';
 import { Component } from '../../Component';
 
 // What inside a card presses for itself
@@ -42,14 +41,14 @@ class Card extends styled(
 
 		&.interactive {
 			cursor: pointer;
-			transition: box-shadow ${duration.fast};
 
-			/* Laid over the card's own fill as an inset shadow, so a card given a background of its own keeps it under the
-			   tint; drawn with the accent's stripe, which is a shadow too */
+			/* A tint of the card's own text color, laid over its fill as a background layer: light text on a dark card
+			   lightens it, ink on a paper card darkens it, and the card's shadows (its own, the accent's stripe) stay */
 			&:not(.disabled):hover, &:focus-visible {
-				box-shadow:
-					inset 3px 0 var(--card-accent, transparent),
-					inset 0 0 0 100vmax ${colors.alpha(colors.white, 0.09)};
+				background-image: linear-gradient(
+					color-mix(in srgb, currentColor 9%, transparent),
+					color-mix(in srgb, currentColor 9%, transparent)
+				);
 			}
 
 			&:focus-visible {
