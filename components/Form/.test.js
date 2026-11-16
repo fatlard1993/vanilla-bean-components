@@ -717,3 +717,28 @@ test('a number field stores the number it holds, not the text of its change', ()
 
 	form.destroy();
 });
+
+test('a group of conditional fields keeps its own display when shown again', () => {
+	const form = new Form({
+		appendTo: document.body,
+		data: { kind: 'a' },
+		inputs: [
+			{ key: 'kind' },
+			{
+				type: 'group',
+				style: { display: 'grid', gridTemplateColumns: '1fr 1fr' },
+				inputs: [{ key: 'extra', condition: data => data.kind === 'b' }],
+			},
+		],
+	});
+	// eslint-disable-next-line testing-library/no-node-access
+	const group = [...form.elem.children].find(child => child.contains(form.inputElements.extra.elem));
+
+	expect(group.style.display).toBe('none');
+
+	form.options.data.kind = 'b';
+
+	expect(group.style.display).toBe('grid');
+
+	form.destroy();
+});

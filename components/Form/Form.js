@@ -139,6 +139,8 @@ export default class Form extends Component {
 		this.options.data.addEventListener('set', evaluate);
 		// replaceCleanup - safe to call multiple times (inputs handler re-wires on rebuild)
 		this.replaceCleanup('conditions', () => this.options.data.removeEventListener('set', evaluate));
+		// A group whose fields all start hidden starts hidden too
+		evaluate();
 	}
 
 	/**
@@ -154,6 +156,8 @@ export default class Form extends Component {
 		for (const inputDef of inputs) {
 			if (inputDef.type === 'group') {
 				const group = new Component({ appendTo: appendTarget, style: inputDef.style });
+				// Shown again with the display it was given (a grid of fields), not the default
+				group._shownDisplay = group.elem.style.display;
 				const priorConditionalCount = this._conditionals.length;
 				this._processInputs(inputDef.inputs, group);
 				// Track groups that contain conditional fields for container-level hide/show
@@ -258,7 +262,7 @@ export default class Form extends Component {
 		for (const group of this._conditionalGroups) {
 			const children = Array.from(group.elem.children);
 			const anyVisible = !children.length || children.some(el => el.style.display !== 'none');
-			group.elem.style.display = anyVisible ? '' : 'none';
+			group.elem.style.display = anyVisible ? group._shownDisplay : 'none';
 		}
 
 		if (newlyVisible.length && this._announcer) {
