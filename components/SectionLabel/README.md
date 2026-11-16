@@ -10,4 +10,4 @@ new SectionLabel({ textContent: 'Net worth', inRow: true, appendTo: headerRow })
 
 ## Usage rules
 
-The [usage rules](../../docs/USAGE_RULES.md) that bear on SectionLabel: [structure.group-heading](../../docs/USAGE_RULES.md#structure-and-display), [structure.sectionlabel-margin](../../docs/USAGE_RULES.md#structure-and-display).
+The [usage rules](../../docs/USAGE_RULES.md) that bear on SectionLabel: [structure.group-heading](../../docs/USAGE_RULES.md#structure-and-display), [structure.sectionlabel-margin](../../docs/USAGE_RULES.md#structure-and-display), [form.collapsible-group](../../docs/USAGE_RULES.md#forms).

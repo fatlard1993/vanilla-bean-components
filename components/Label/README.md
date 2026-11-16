@@ -4,7 +4,7 @@ A caption tied to a form field, wrapped round it. Reach for it whenever a field 
 
 ## Usage rules
 
-The [usage rules](../../docs/USAGE_RULES.md) that bear on Label: [form.every-field-labeled](../../docs/USAGE_RULES.md#forms), [form.checkbox-label-after](../../docs/USAGE_RULES.md#forms), [form.placeholder-not-label](../../docs/USAGE_RULES.md#forms).
+The [usage rules](../../docs/USAGE_RULES.md) that bear on Label: [form.every-field-labeled](../../docs/USAGE_RULES.md#forms), [form.checkbox-label-after](../../docs/USAGE_RULES.md#forms), [form.collapsible-group](../../docs/USAGE_RULES.md#forms), [form.placeholder-not-label](../../docs/USAGE_RULES.md#forms).
 
 ## Usage
 

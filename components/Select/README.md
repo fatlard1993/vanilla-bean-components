@@ -4,7 +4,7 @@ Select dropdown component extending Input, with dynamic option rendering and enh
 
 ## Usage rules
 
-The [usage rules](../../docs/USAGE_RULES.md) that bear on Select: [form.single-choice](../../docs/USAGE_RULES.md#forms), [form.filter-select-named](../../docs/USAGE_RULES.md#forms), [form.placeholder-not-label](../../docs/USAGE_RULES.md#forms), [form.no-raw-fields](../../docs/USAGE_RULES.md#forms).
+The [usage rules](../../docs/USAGE_RULES.md) that bear on Select: [form.single-choice](../../docs/USAGE_RULES.md#forms), [form.filter-select-named](../../docs/USAGE_RULES.md#forms), [form.placeholder-not-label](../../docs/USAGE_RULES.md#forms), [form.no-raw-fields](../../docs/USAGE_RULES.md#forms), [action.select-not-command](../../docs/USAGE_RULES.md#actions-and-navigation).
 
 ## Usage
 

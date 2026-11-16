@@ -92,6 +92,8 @@ The choice, by what the moment is:
 
 **action.chip-is-choice** · settled · since 7.2 · audit: `variant: 'chip'` is a choice: a filter, or one of a few options shown together, each a `pressed` toggle. A small action (Refresh, Copy link, Accept all) is `size: 'small'` in whatever variant fits, not a chip.
 
+**action.select-not-command** · proposed · audit: A Select holds a value; picking from it doesn't do something. A pick that acts (adds an item to an offer, a mineral to an ignore list) is a ContextMenu off a button ("Add item…"), or a Select beside an Add button. Some browsers fire `change` at each step as the arrow keys move through a closed select, so a Select that acts on change acts once per step, and its shown value is left meaning nothing.
+
 **action.disabled-option** · settled · lint: Disable through the `disabled` option, not `button.elem.disabled`, which skips `aria-disabled` and the styles.
 
 **action.link-navigates** · settled · audit: Going somewhere is a Link (an anchor with an `href`); doing something is a Button. A navigation that should look like a button is `new Link({ variant: 'button' })` (or `'flat'`, `'raised'`), so it still opens in a new tab and shows its address.
@@ -142,6 +144,8 @@ The choice, by what the moment is:
 
 **form.checkbox-label-after** · settled · audit: A checkbox's label follows it on the same line: Form does this itself; by hand, `new Label({ label, variant: 'inline-after' }, checkbox)`.
 
+**form.collapsible-group** · proposed · audit: A group of fields the person opens now and then (advanced settings, a filter's extra options) folds away in a Label with `variant: 'collapsible'`: its label is the button, reached by Tab and carrying `aria-expanded`. A SectionLabel heads a group that is always shown; one given a hand-made fold, or a button that hides the fields under it, is a finding. A form's main fields aren't folded away.
+
 **form.value-components-in-form** · proposed · audit: TagList, ColorPicker and other components that hold a value join a Form as `InputComponent`, not beside it.
 
 **form.no-raw-fields** · settled · lint: No raw `<input>`, `<textarea>`, `<select>`, `<option>` or `<optgroup>` built through `tag:`, `document.createElement`, or by turning another element into one (`Object.assign(input.elem, { type: 'checkbox' })`). A textarea is `new Input({ tag: 'textarea' })`; a checkbox is `new Input({ type: 'checkbox' })`; Select takes options, including optgroups. `new Option()` is a raw `<option>` too. A file input made in code only to open the file chooser, and never put on the page, is exempt, as a download anchor is. A tool's own dev UI is exempt.
@@ -163,6 +167,8 @@ The choice, by what the moment is:
 **structure.list-nostyle** · settled · lint: An unbulleted List is `noStyle`, not `list-style: none` by hand.
 
 **structure.table-for-records** · settled · audit: Records laid out under column headings are a Table: `columns` and `data`, with sorting and a `footer` row when they're wanted. A `<table>` built by hand from `thead`, `tr` and `td` Elems is a finding. A grid that only arranges things on the page isn't a table, and isn't one either way.
+
+**structure.progress-native** · proposed · audit: A quantity toward a goal (a delivery's requirements, a hunt's finds) is a native `<progress value max>`, and a measure within a known range (a fuel gauge, a signal) a `<meter>`, each named by its label: the browser tells assistive tech the value, which a bar of divs drawn by width can't. A load's progress is EmptyState's `progress` (overlay.emptystate-four-states). The library has no component for either yet; `new Elem({ tag: 'progress', value, max })`, styled, is the way until it does.
 
 **structure.code-for-code** · settled · audit: Code, a command or a path shown on a page is Code, which picks inline or block by whether the text spans lines; `copyButton` gives it the copy action. A styled `<code>` or `<pre>` with a Copy button made beside it is a finding.
 
@@ -191,7 +197,7 @@ The rules that bear on each component, and where none do, why. A component with 
 | Icon | [action.icon-option](#actions-and-navigation), [action.icon-meaning-named](#actions-and-navigation) |
 | Input | [form.validate-on-field](#forms), [form.every-field-labeled](#forms), [form.read-options-value](#forms), [form.placeholder-not-label](#forms), [form.single-choice](#forms), [form.no-raw-fields](#forms) |
 | Keyboard | [action.icon-only-named](#actions-and-navigation), [action.toggle-pressed](#actions-and-navigation) |
-| Label | [form.every-field-labeled](#forms), [form.checkbox-label-after](#forms), [form.placeholder-not-label](#forms) |
+| Label | [form.every-field-labeled](#forms), [form.checkbox-label-after](#forms), [form.collapsible-group](#forms), [form.placeholder-not-label](#forms) |
 | Link | [action.icon-option](#actions-and-navigation), [action.link-navigates](#actions-and-navigation), [action.link-tooltip-off-in-nav](#actions-and-navigation) |
 | List | [structure.list-nostyle](#structure-and-display) |
 | Menu | [overlay.menu-anchored](#overlays-and-feedback) |
@@ -200,8 +206,8 @@ The rules that bear on each component, and where none do, why. A component with 
 | Popover | [overlay.menu-anchored](#overlays-and-feedback), [overlay.popover-close](#overlays-and-feedback), [structure.floating-surface](#structure-and-display) |
 | RadioButton | No rule yet: no app uses it. Where it fits beside a Select or chips is an [open question](#open-questions). |
 | Router | [action.link-navigates](#actions-and-navigation), [layout.page-once](#page-shell-and-layout), [layout.view-shape](#page-shell-and-layout), [layout.router-vs-tabs](#page-shell-and-layout), [layout.route-paths](#page-shell-and-layout), [layout.route-map](#page-shell-and-layout) |
-| SectionLabel | [structure.group-heading](#structure-and-display), [structure.sectionlabel-margin](#structure-and-display) |
-| Select | [form.placeholder-not-label](#forms), [form.filter-select-named](#forms), [form.single-choice](#forms), [form.no-raw-fields](#forms) |
+| SectionLabel | [structure.group-heading](#structure-and-display), [structure.sectionlabel-margin](#structure-and-display), [form.collapsible-group](#forms) |
+| Select | [form.placeholder-not-label](#forms), [form.filter-select-named](#forms), [form.single-choice](#forms), [form.no-raw-fields](#forms), [action.select-not-command](#actions-and-navigation) |
 | Table | [structure.table-for-records](#structure-and-display) |
 | Tabs | [layout.router-vs-tabs](#page-shell-and-layout), [form.single-choice](#forms) |
 | TagList | [form.value-components-in-form](#forms) |
