@@ -100,6 +100,15 @@ describe('FormDialog', () => {
 		expect(await saved.save()).toBe(true);
 	});
 
+	test("its failure line is the dialog's only alert, found as .failure", () => {
+		const dialog = new FormDialog({ inputs: [nameField], data: { name: 'a' }, onSave: () => true });
+
+		// eslint-disable-next-line testing-library/no-node-access
+		expect(dialog.elem.querySelectorAll('[role="alert"]')).toHaveLength(1);
+		// eslint-disable-next-line testing-library/no-node-access
+		expect(dialog.elem.querySelector('.failure')).toBe(dialog.failure.elem);
+	});
+
 	test('a failed save shows why above the buttons, and the next try clears it', async () => {
 		let result = { status: 'error', body: { error: 'Name taken' }, response: { ok: false, status: 409 } };
 		const dialog = new FormDialog({ inputs: [nameField], data: { name: 'a' }, onSave: () => result });

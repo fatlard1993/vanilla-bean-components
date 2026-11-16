@@ -1,5 +1,5 @@
 import { describe, test, expect, afterEach } from 'bun:test';
-import { findByText, getByText, queryByText } from '@testing-library/dom';
+import { findByText, getByText, queryByRole, queryByText } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 
 import { Component } from '../../Component';
@@ -664,6 +664,16 @@ describe('Form inputs given later', () => {
 });
 
 describe('Form failure line', () => {
+	test('is made only when a failure is shown, so a form that never fails has no alert region', () => {
+		const form = new Form({ appendTo: document.body, inputs: [{ key: 'name' }], data: { name: '' } });
+
+		expect(queryByRole(form.elem, 'alert')).toBeNull();
+		form.showFailure();
+		expect(queryByRole(form.elem, 'alert')).toBeNull();
+
+		form.destroy();
+	});
+
 	test('says why a save failed under the fields, read out, and clears', () => {
 		const form = new Form({ appendTo: document.body, inputs: [{ key: 'name' }], data: { name: '' } });
 

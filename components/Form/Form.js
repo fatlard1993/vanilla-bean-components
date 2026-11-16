@@ -81,12 +81,21 @@ export default class Form extends Component {
 		this._processInputs(this.options.inputs, this);
 		this._wireConditions();
 		this._setupAnnouncer();
-		this._addFailureLine();
 	}
 
+	// Made on first use, so a form that never fails adds no alert region (a FormDialog has its own): after the fields,
+	// before the form's own children
 	/** @private */
 	_addFailureLine() {
-		this._failure = new FailureLine({ addClass: 'failure', attributes: { role: 'alert' }, appendTo: this });
+		this._failure = new FailureLine({ addClass: 'form-failure', attributes: { role: 'alert' } });
+
+		const ownChild = [this.options.append]
+			.flat()
+			.map(child => child?.elem ?? child)
+			.find(elem => elem?.parentNode === this.elem);
+
+		if (ownChild) this.elem.insertBefore(this._failure.elem, ownChild);
+		else this.elem.append(this._failure.elem);
 	}
 
 	/**
@@ -95,6 +104,7 @@ export default class Form extends Component {
 	 * @param {string} [message] - Why it failed, in words
 	 */
 	showFailure(message) {
+		if (!message && !this._failure?.elem.isConnected) return;
 		if (!this._failure?.elem.isConnected) this._addFailureLine();
 
 		this._failure.elem.textContent = message ? String(message) : '';
@@ -113,8 +123,7 @@ export default class Form extends Component {
 				this._processInputs(value, this);
 				this._wireConditions();
 				this._setupAnnouncer();
-				this._addFailureLine();
-				// The form's own children (a submit button) come after the fields and the failure line again
+				// The form's own children (a submit button) come after the fields again
 				this.append(this.options.append);
 			},
 		},
