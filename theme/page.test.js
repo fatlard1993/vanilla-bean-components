@@ -58,6 +58,16 @@ describe('theme.page and theme.elements', () => {
 		expect(visited).toContain(`color: ${theme.colors.white};`);
 	});
 
+	test("a visited link drawn as a button takes the button's own text color, which reads on a light action too", () => {
+		const paper = theme.colors.alpha('#f3f0e7', 1);
+
+		theme.colors.action = paper;
+		const visited = theme.page.match(/^\ta\.variant-button:visited:not\(\.disabled, [^)]*\) \{([^}]*)\}/m)?.[1];
+
+		theme.colors.action = undefined;
+		expect(visited).toContain(`color: ${theme.colors.black};`);
+	});
+
 	test("a Link drawn flat or as a chip has the Button's look, by a rule that outweighs a:visited", () => {
 		expect(theme.page).toContain('a.variant-button.variant-flat {');
 		expect(theme.page).toContain('a.variant-button.variant-chip {');

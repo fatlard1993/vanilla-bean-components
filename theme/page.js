@@ -88,7 +88,7 @@ export default theme => `
 
 	/* The bare a:visited is as specific as a.variant-button, so a visited link drawn as a button keeps its text by this */
 	a.variant-button:visited:not(.disabled, .variant-flat, .variant-chip) {
-		color: ${theme.colors.white};
+		color: ${theme.colors.mostReadable(theme.colors.action, [theme.colors.white, theme.colors.black])};
 	}
 
 	/*
