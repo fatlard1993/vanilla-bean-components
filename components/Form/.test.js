@@ -700,3 +700,20 @@ test("a field of an app's own can show what's wrong as library fields do", async
 	expect(typeof showFieldError).toBe('function');
 	expect(runValidators(value => (value ? null : 'Required'), '')).toEqual(['Required']);
 });
+
+test('a number field stores the number it holds, not the text of its change', () => {
+	const form = new Form({ appendTo: document.body, inputs: [{ key: 'acres', type: 'number' }], data: { acres: 0 } });
+	const field = form.inputElements.acres.elem;
+
+	field.value = '12.5';
+	field.dispatchEvent(new Event('change', { bubbles: true }));
+
+	expect(form.options.data.acres).toBe(12.5);
+
+	field.value = '';
+	field.dispatchEvent(new Event('change', { bubbles: true }));
+
+	expect(form.options.data.acres).toBe('');
+
+	form.destroy();
+});

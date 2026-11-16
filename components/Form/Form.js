@@ -182,7 +182,11 @@ export default class Form extends Component {
 				...(validate && checksItself && { validate }),
 				...(InputComponent !== Component && {
 					onChange: function (event) {
-						form.options.data[key] = this.options.value = parse(event.value, input);
+						// What the Input holds: a number field's number, not the text its change event carries
+						const numeric = ['number', 'range'].includes(event.target?.type) && event.value !== '';
+						const value = numeric ? Number(event.value) : event.value;
+
+						form.options.data[key] = this.options.value = parse(value, input);
 						this.validate?.();
 						onChange(event);
 					},
