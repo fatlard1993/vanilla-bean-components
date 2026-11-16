@@ -88,6 +88,17 @@ input.validate({ value? }?): Array | undefined
 input.isDirty: boolean  // getter - true if current value differs from the initial value
 ```
 
+## A field of your own
+
+A Form field that isn't an Input (a stepper, a picker of chips) checks and shows its errors as every library field does, with the same helpers:
+
+```js
+import { runValidators, showFieldError } from '@vanilla-bean/components';
+
+const messages = runValidators(this.options.validate, this.options.value); // what's wrong, [] when nothing
+showFieldError({ owner: this, messages }); // marks it invalid and writes the messages under it; [] clears
+```
+
 ## Events
 
 Input components emit enhanced native events. All handlers (`onInput`, `onChange`, `onKeyUp`, etc.) receive a standard DOM event augmented with a `.value` property containing the current input value.
