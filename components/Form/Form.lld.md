@@ -61,3 +61,25 @@ A form whose field list changes -- a step added, a section swapped -- must not d
 
 - `inputs = null` after rendering rebuilds nothing
   - new Subject({ inputs: [{ key: "a" }], appendTo: document.body }) captures f then (f.options.inputs = null) -> f.elem.querySelectorAll("label").length === 1
+
+## A number field's data is a number
+
+The form's data and the field agree on what was typed: a number field holds a number, so its data does too, where the change event alone would hand over text. An emptied field holds the empty string, not zero.
+
+- a number typed into a number field is stored as a number, and an emptied one as ''
+  - new Subject({ inputs: [{ key: "acres", type: "number" }], data: { acres: 0 }, appendTo: document.body }) captures f then f.elem.querySelector("input") captures input then input.value = "12.5" then input.dispatchEvent(new Event("change", { bubbles: true })) then f.options.data.acres captures typed then input.value = "" then input.dispatchEvent(new Event("change", { bubbles: true })) -> typed === 12.5 && f.options.data.acres === ""
+
+## A group of conditional fields hides with them and comes back as it was laid out
+
+A group is how a form lays fields side by side, so showing it again restores the display it was given rather than the default, and a group whose fields all start hidden starts hidden.
+
+- a grid group whose only field is hidden starts hidden, and shows as a grid once the field applies
+  - new Subject({ data: { kind: "a" }, inputs: [{ key: "kind" }, { type: "group", style: { display: "grid" }, inputs: [{ key: "extra", condition: d => d.kind === "b" }] }], appendTo: document.body }) captures f then f.elem.children[1].style.display captures before then f.options.data.kind = "b" then await new Promise(r => setTimeout(r, 40)) -> before === "none" && f.elem.children[1].style.display === "grid"
+
+## A Form placed in a page says why a save failed
+
+Only a FormDialog had a place for a refused save, so a form edited in place fell back to a toast. The line sits under the fields and above the form's own children (its buttons), is read out as it changes, and is hidden while empty.
+
+- showFailure writes the reason in an alert line after the fields, and calling it with nothing clears it
+  - new Subject({ inputs: [{ key: "name" }], appendTo: document.body }) captures f then f.showFailure("Taken") then f.elem.querySelector('[role="alert"]') captures line then line.textContent captures shown then f.showFailure() -> shown === "Taken" && line.textContent === ""
+
