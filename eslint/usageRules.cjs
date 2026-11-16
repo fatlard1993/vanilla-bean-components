@@ -303,6 +303,48 @@ const stringOf = node => {
  * @param {Function} create - (context, report) => visitors, where report(node, loc?) files the message
  * @returns {object} An ESLint rule
  */
+// A module an app keeps its requests in: './api', '../api/fields', 'client/api.js'
+const API_SOURCE = /(^|\/)api(\/|\.js$|$)/;
+
+// The variable a name resolves to from where it's used, through the enclosing scopes
+const variableNamed = (context, node, name) => {
+	for (let scope = context.sourceCode.getScope(node); scope; scope = scope.upper) {
+		const variable = scope.set.get(name);
+
+		if (variable) return variable;
+	}
+
+	return null;
+};
+
+// A call that makes a request, which resolves rather than throws when it fails: fetch, or anything imported from an
+// app's api module (getFields, plan.labels.update, api.deleteGame)
+const isRequest = (context, call) => {
+	if (call?.type !== 'CallExpression') return false;
+
+	let root = call.callee;
+
+	while (root.type === 'MemberExpression') root = root.object;
+
+	if (root.type !== 'Identifier') return false;
+
+	const variable = variableNamed(context, call, root.name);
+
+	if (root.name === 'fetch' && call.callee === root) return !variable || variable.defs.length === 0;
+
+	const definition = variable?.defs[0];
+
+	return definition?.type === 'ImportBinding' && API_SOURCE.test(definition.parent.source.value);
+};
+
+// A catch that swallows: an empty function, or one that hands back nothing
+const swallows = handler =>
+	['ArrowFunctionExpression', 'FunctionExpression'].includes(handler?.type) &&
+	(handler.body.type === 'BlockStatement'
+		? handler.body.body.length === 0
+		: (handler.body.type === 'Literal' && handler.body.value === null) ||
+			(handler.body.type === 'Identifier' && handler.body.name === 'undefined'));
+
 const rule = (id, message, create) => ({
 	meta: {
 		type: 'suggestion',
@@ -352,6 +394,29 @@ const rules = {
 				const owner = elemOwner(callee.object);
 
 				if (owner && OVERLAYS.has(componentOf(context, owner))) report(node);
+			},
+		}),
+	),
+
+	'overlay.request-result': rule(
+		'overlay.request-result',
+		"Read a request's result: it resolves when it fails, so one awaited and dropped, or caught and swallowed, hides the failure",
+		(context, report) => ({
+			ExpressionStatement(node) {
+				const call = node.expression.type === 'AwaitExpression' ? node.expression.argument : node.expression;
+
+				if (node.expression.type === 'AwaitExpression' && isRequest(context, call)) report(node);
+			},
+			CallExpression(node) {
+				const { callee } = node;
+
+				if (callee.type !== 'MemberExpression' || callee.computed || callee.property.name !== 'catch') return;
+
+				// Swallowed only when what the catch hands back goes nowhere: a value read after it is the failure handled
+				const user = node.parent.type === 'AwaitExpression' ? node.parent.parent : node.parent;
+
+				if (user.type === 'ExpressionStatement' && isRequest(context, callee.object) && swallows(node.arguments[0]))
+					report(node);
 			},
 		}),
 	),
