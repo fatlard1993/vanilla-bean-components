@@ -82,3 +82,11 @@ in any variant, and leaves the chip for choices.
 
 - `size: 'small'` marks the button small, beside its variant
   - new Subject({ size: "small", variant: "flat", textContent: "Refresh", appendTo: document.body }) captures b -> b.elem.classList.contains("size-small") && b.elem.classList.contains("variant-flat")
+
+## A success-green button is its intent, not a background
+
+A button colored green for what it confirms asks for `intent: 'success'`, and the theme draws it in the success role. A
+background colour set by hand on each such button is not the way.
+
+- `intent: 'success'` marks the button for the success role, and the button carries no background of its own
+  - new Subject({ intent: "success", textContent: "Confirm", appendTo: document.body }) captures b -> b.elem.classList.contains("intent-success") && b.elem.classList.contains("vbc-button") && b.elem.style.background === "" && b.elem.style.backgroundColor === ""
