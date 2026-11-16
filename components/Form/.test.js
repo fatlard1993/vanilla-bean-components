@@ -662,3 +662,41 @@ describe('Form inputs given later', () => {
 		expect(form._announcer.elem.getAttribute('aria-live')).toBe('polite');
 	});
 });
+
+describe('Form failure line', () => {
+	test('says why a save failed under the fields, read out, and clears', () => {
+		const form = new Form({ appendTo: document.body, inputs: [{ key: 'name' }], data: { name: '' } });
+
+		form.showFailure('The name is taken');
+
+		const line = getByText(form.elem, 'The name is taken');
+
+		expect(line.getAttribute('role')).toBe('alert');
+
+		form.showFailure();
+		expect(queryByText(form.elem, 'The name is taken')).toBeNull();
+
+		form.destroy();
+	});
+
+	test("stays above the form's own children when its inputs are rebuilt", () => {
+		const save = new Component({ tag: 'button', textContent: 'Save' });
+		const form = new Form({ appendTo: document.body, inputs: [{ key: 'name' }], data: { name: '' }, append: save });
+
+		form.options.inputs = [{ key: 'name' }, { key: 'note' }];
+		form.showFailure('Refused');
+
+		const line = getByText(form.elem, 'Refused');
+
+		expect(line.compareDocumentPosition(save.elem) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+		form.destroy();
+	});
+});
+
+test("a field of an app's own can show what's wrong as library fields do", async () => {
+	const { showFieldError, runValidators } = await import('../..');
+
+	expect(typeof showFieldError).toBe('function');
+	expect(runValidators(value => (value ? null : 'Required'), '')).toEqual(['Required']);
+});

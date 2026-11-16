@@ -5,6 +5,20 @@ import { Elem } from '../../Elem';
 import { Input } from '../Input';
 import { runValidators, showFieldError } from '../Input/fieldError';
 import { Label } from '../Label';
+import { styled } from '../../styled';
+
+// Why a save failed, under the fields and above whatever the form holds after them (its buttons); hidden while empty
+const FailureLine = styled(
+	Elem,
+	({ colors, space }) => `
+		margin-top: ${space.sm};
+		color: ${colors.light(colors.danger)};
+
+		&:empty {
+			display: none;
+		}
+	`,
+);
 
 /**
  * Dynamic form component with reactive data binding, validation, layout groups, and conditional fields.
@@ -67,6 +81,23 @@ export default class Form extends Component {
 		this._processInputs(this.options.inputs, this);
 		this._wireConditions();
 		this._setupAnnouncer();
+		this._addFailureLine();
+	}
+
+	/** @private */
+	_addFailureLine() {
+		this._failure = new FailureLine({ addClass: 'failure', attributes: { role: 'alert' }, appendTo: this });
+	}
+
+	/**
+	 * Says why a save failed, in a line under the fields that's read out as it changes; nothing clears it. A Form placed
+	 * in a page has it here; FormDialog keeps its own beside its buttons.
+	 * @param {string} [message] - Why it failed, in words
+	 */
+	showFailure(message) {
+		if (!this._failure?.elem.isConnected) this._addFailureLine();
+
+		this._failure.elem.textContent = message ? String(message) : '';
 	}
 
 	/**
@@ -82,7 +113,8 @@ export default class Form extends Component {
 				this._processInputs(value, this);
 				this._wireConditions();
 				this._setupAnnouncer();
-				// The form's own children (a submit button) come after the fields again
+				this._addFailureLine();
+				// The form's own children (a submit button) come after the fields and the failure line again
 				this.append(this.options.append);
 			},
 		},

@@ -56,6 +56,10 @@ form.hasErrors(options?): boolean
 form.commitPendingEdit(): void
 // Commits the focused field's typed value, as leaving the field would. hasErrors() calls it first.
 
+form.showFailure(message?): void
+// Why a save failed, in a line under the fields (above the form's own children, such as its buttons), read out as it
+// changes; nothing clears it. A FormDialog keeps its own line beside its buttons.
+
 form.inputElements: { [key]: InputComponent }
 // Map of key → input component instances, available after build().
 ```

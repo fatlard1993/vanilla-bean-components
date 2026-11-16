@@ -571,6 +571,8 @@ export interface FormOptions extends ComponentOptions {
 
 export declare class Form extends Component {
 	constructor(options?: FormOptions, ...children: Array<Elem | HTMLElement | string>);
+	/** Says why a save failed, in a line under the fields that's read out as it changes; nothing clears it. A Form placed in a page has it here; FormDialog keeps its own beside its buttons. */
+	showFailure(message?: string): void;
 	/** Commits the value being typed in the focused field, as leaving the field would. A field reports its value on change, which an edit only fires when the field loses focus; a Save pressed by keyboard, or on a device whose buttons take no focus, would otherwise judge the form by what the field held before. */
 	commitPendingEdit(): void;
 	/** Validates all visible form inputs and returns whether errors were found, showing each field's below it. Hidden conditional fields are excluded. */
@@ -1183,8 +1185,17 @@ export declare function retry(callback: (...args: any[]) => any, options?: Recor
 /** Get the delta between 2 rgb colors */
 export declare function rgbDelta(rgbA: [number, number, number], rgbB: [number, number, number]): number;
 
+/** Runs a field's validators against a value. A validator is `value => message`: what's wrong, in words, or nothing (null, undefined, false, '') when the value is fine. The same function checks a field on the server, as a createStore field's `validate`. */
+export declare function runValidators(
+	validate: ((...args: any[]) => any) | Array<(...args: any[]) => any> | undefined,
+	value: any,
+): Array<string>;
+
 /** CSS pipeline: theme hydration → DOM injection. Batches configs queued before document load and flushes them on window load. */
 export declare function shimCSS(styleConfig: StyleConfig): void;
+
+/** Shows what's wrong with a field, or clears it: the field is marked invalid (`aria-invalid`, the `validation-errors` class), and the messages are written below it in the danger color, read out with the field (`aria-describedby`). One display for every field: Input, Select, TagList, and whatever else a Form holds. */
+export declare function showFieldError(options?: Record<string, any>): void;
 
 /** @type {(array: Array) => Array} Shuffle an array in place (Fisher-Yates), returning it */
 export declare const shuffleArray: (array: Array<any>) => Array<any>;
