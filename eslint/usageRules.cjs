@@ -296,13 +296,6 @@ const stringOf = node => {
 	return undefined;
 };
 
-/**
- * Builds a rule from its id, the one-line message, and its visitors.
- * @param {string} id - The usage rule's id
- * @param {string} message - What's wrong and what to do instead
- * @param {Function} create - (context, report) => visitors, where report(node, loc?) files the message
- * @returns {object} An ESLint rule
- */
 // A module an app keeps its requests in: './api', '../api/fields', 'client/api.js'
 const API_SOURCE = /(^|\/)api(\/|\.js$|$)/;
 
@@ -345,6 +338,13 @@ const swallows = handler =>
 		: (handler.body.type === 'Literal' && handler.body.value === null) ||
 			(handler.body.type === 'Identifier' && handler.body.name === 'undefined'));
 
+/**
+ * Builds a rule from its id, the one-line message, and its visitors.
+ * @param {string} id - The usage rule's id
+ * @param {string} message - What's wrong and what to do instead
+ * @param {Function} create - (context, report) => visitors, where report(node, loc?) files the message
+ * @returns {object} An ESLint rule
+ */
 const rule = (id, message, create) => ({
 	meta: {
 		type: 'suggestion',
