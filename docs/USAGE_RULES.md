@@ -144,7 +144,7 @@ The choice, by what the moment is:
 
 **form.checkbox-label-after** · settled · audit: A checkbox's label follows it on the same line: Form does this itself; by hand, `new Label({ label, variant: 'inline-after' }, checkbox)`.
 
-**form.number-parse** · proposed · lint: A number field's value is a number in the Form's data already, so a `parse` that only converts it (`Number`, `parseFloat`, `value => +value`) does nothing and goes. A parse that does more (rounds, turns an empty field into `null`) stays.
+**form.number-parse** · proposed · lint: A number field's value is a number in the Form's data already, so a `parse` that only converts it (`Number`, `parseFloat`, `value => +value`) goes. Its one effect was on an emptied field, which Form keeps as `''` where `Number` made `0` and `parseFloat` made `NaN`: the field's `validate` should refuse `''` if empty isn't allowed. A parse that does more (rounds, turns an empty field into `null`) stays.
 
 **form.collapsible-group** · proposed · audit: A group of fields the person opens now and then (advanced settings, a filter's extra options) folds away in a Label with `variant: 'collapsible'`: its label is the button, reached by Tab and carrying `aria-expanded`. A SectionLabel heads a group that is always shown; one given a hand-made fold, or a button that hides the fields under it, is a finding. A form's main fields aren't folded away.
 

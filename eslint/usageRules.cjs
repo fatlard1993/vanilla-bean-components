@@ -449,7 +449,7 @@ const rules = {
 
 	'form.number-parse': rule(
 		'form.number-parse',
-		"A number field's value is already a number in the Form's data; a parse that only converts it does nothing",
+		"A number field's value is already a number in the Form's data; a parse that only converts it is redundant, except that an emptied field stays '' rather than becoming 0 or NaN",
 		(context, report) => ({
 			ObjectExpression(node) {
 				if (!['number', 'range'].includes(stringOf(propertyOf(node, 'type')?.value))) return;
