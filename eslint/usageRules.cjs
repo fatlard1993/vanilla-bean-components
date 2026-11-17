@@ -330,6 +330,32 @@ const isRequest = (context, call) => {
 	return definition?.type === 'ImportBinding' && API_SOURCE.test(definition.parent.source.value);
 };
 
+// A conversion to a number and nothing else: Number, parseFloat, or a function of one value that hands back
+// Number(value), parseFloat(value) or +value
+const onlyNumbers = node => {
+	const converts = name => ['Number', 'parseFloat'].includes(name);
+
+	if (node?.type === 'Identifier') return converts(node.name);
+	if (!['ArrowFunctionExpression', 'FunctionExpression'].includes(node?.type) || node.params.length !== 1) return false;
+
+	const [param] = node.params;
+	const body =
+		node.body.type === 'BlockStatement'
+			? node.body.body.length === 1 && node.body.body[0].type === 'ReturnStatement' && node.body.body[0].argument
+			: node.body;
+	const isParam = arg => param.type === 'Identifier' && arg?.type === 'Identifier' && arg.name === param.name;
+
+	if (body?.type === 'UnaryExpression' && body.operator === '+') return isParam(body.argument);
+
+	return (
+		body?.type === 'CallExpression' &&
+		body.callee.type === 'Identifier' &&
+		converts(body.callee.name) &&
+		body.arguments.length === 1 &&
+		isParam(body.arguments[0])
+	);
+};
+
 // A catch that swallows: an empty function, or one that hands back nothing
 const swallows = handler =>
 	['ArrowFunctionExpression', 'FunctionExpression'].includes(handler?.type) &&
@@ -417,6 +443,20 @@ const rules = {
 
 				if (user.type === 'ExpressionStatement' && isRequest(context, callee.object) && swallows(node.arguments[0]))
 					report(node);
+			},
+		}),
+	),
+
+	'form.number-parse': rule(
+		'form.number-parse',
+		"A number field's value is already a number in the Form's data; a parse that only converts it does nothing",
+		(context, report) => ({
+			ObjectExpression(node) {
+				if (!['number', 'range'].includes(stringOf(propertyOf(node, 'type')?.value))) return;
+
+				const parse = propertyOf(node, 'parse');
+
+				if (parse && onlyNumbers(parse.value)) report(parse);
 			},
 		}),
 	),

@@ -43,6 +43,23 @@ const cases = {
 			"async () => { await fetch('/x', { method: 'DELETE' }); };",
 		],
 	},
+	'form.number-parse': {
+		valid: [
+			"new Form({ inputs: [{ key: 'acres', type: 'number' }] });",
+			"new Form({ inputs: [{ key: 'head', type: 'number', parse: value => Math.round(value) }] });",
+			"new Form({ inputs: [{ key: 'head', type: 'number', parse: parseInt }] });",
+			"new Form({ inputs: [{ key: 'name', parse: value => value.trim() }] });",
+			"new Form({ inputs: [{ key: 'code', type: 'text', parse: Number }] });",
+			"new Form({ inputs: [{ key: 'cost', type: 'number', parse: value => (value === '' ? null : Number(value)) }] });",
+		],
+		invalid: [
+			"new Form({ inputs: [{ key: 'acres', type: 'number', parse: Number }] });",
+			"new Form({ inputs: [{ key: 'acres', type: 'number', parse: parseFloat }] });",
+			"new Form({ inputs: [{ key: 'acres', type: 'range', parse: value => Number(value) }] });",
+			"new Form({ inputs: [{ key: 'acres', type: 'number', parse: v => +v }] });",
+			"new Form({ inputs: [{ key: 'acres', type: 'number', parse(value) { return parseFloat(value); } }] });",
+		],
+	},
 	'overlay.emptystate-options': {
 		valid: ["new EmptyState({ title: 'No games', message: 'Add one' });"],
 		invalid: [{ code: "new EmptyState({ header: 'No games', body: 'Add one' });", errors: 2 }],
