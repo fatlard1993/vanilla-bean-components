@@ -28,6 +28,23 @@ describe('themeStyles', () => {
 		expect(result).toBe('.test-scope { color: red; font-size: 16px; }');
 	});
 
+	test('lifts @keyframes and @property out of the scope, where a nested one would be ignored', () => {
+		const result = themeStyles({
+			styles: () => `
+				color: red;
+				@property --sweep { syntax: '<length>'; inherits: false; initial-value: 0px; }
+				@keyframes sweep { to { --sweep: 4px; } }
+			`,
+			scope: '.scoped',
+		});
+		const scoped = result.slice(result.indexOf('.scoped {'));
+
+		expect(result).toContain('@property --sweep');
+		expect(result).toContain('@keyframes sweep');
+		expect(scoped).not.toContain('@property');
+		expect(scoped).not.toContain('@keyframes');
+	});
+
 	test('returns style object directly when function returns object', () => {
 		const styleObject = { color: 'red', fontSize: '16px' };
 		const styleConfig = {

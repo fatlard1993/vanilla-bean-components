@@ -24,12 +24,13 @@ export const themeStyles = ({ styles = () => '', scope }) => {
 	let css = themedStyles;
 
 	if (scope) {
-		const keyframes = [];
-		const inner = themedStyles.replace(/@keyframes\s+[\w-]+\s*\{(?:[^{}]|\{[^{}]*\})*\}/g, match => {
-			keyframes.push(match);
+		// At-rules that only work at the top level, never nested in the scope's rule
+		const topLevel = [];
+		const inner = themedStyles.replace(/@(?:keyframes|property)\s+[\w-]+\s*\{(?:[^{}]|\{[^{}]*\})*\}/g, match => {
+			topLevel.push(match);
 			return '';
 		});
-		css = keyframes.length ? `${keyframes.join('\n')}\n${scope} { ${inner} }` : `${scope} { ${inner} }`;
+		css = topLevel.length ? `${topLevel.join('\n')}\n${scope} { ${inner} }` : `${scope} { ${inner} }`;
 	}
 
 	return (isDev ? x => x : removeExcessIndentation)(css);
