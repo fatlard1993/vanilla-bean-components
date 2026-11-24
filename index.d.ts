@@ -552,7 +552,7 @@ export interface EmptyStateOptions extends ComponentOptions {
 	message?: string;
 	/** Button options ({ textContent, onPointerPress }) or a Component */
 	action?: Record<string, any> | Component;
-	/** Show a spinner in place of the icon, while what would fill the view is on its way */
+	/** Show a turning ring in place of the icon, while what would fill the view is on its way */
 	loading?: boolean;
 	/** How far a long load has come, from 0 to 1, shown as a bar under the message */
 	progress?: number;

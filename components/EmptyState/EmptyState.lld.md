@@ -15,8 +15,8 @@ What an emptied list or view shows. The decision is that every part is optional 
 
 A view that's fetching shows where its content will be, then becomes the empty state or goes away, so loading is an option of the one EmptyState rather than another component.
 
-- loading shows a spinner in place of the icon, and the icon comes back when it's done
-  - new Subject({ icon: "seedling", loading: true, appendTo: document.body }) captures e then e._icon.options.icon captures during then e.options.loading = false -> during === "spinner" && e._icon.options.icon === "seedling" && e.elem.classList.contains("loading") === false
+- loading shows a turning ring in place of the icon, and the icon comes back when it's done
+  - new Subject({ icon: "seedling", loading: true, appendTo: document.body }) captures e then e.elem.querySelector(".spinner").hidden captures ringHidden then e._icon.elem.hidden captures iconHidden then e.options.loading = false -> ringHidden === false && iconHidden === true && e.elem.querySelector(".spinner").hidden === true && e._icon.elem.hidden === false && e.elem.classList.contains("loading") === false
 
 ## No action is no button
 

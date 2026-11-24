@@ -13,7 +13,7 @@ import { radius } from '../../theme/tokens';
  * @param {string} [options.title] - The headline, e.g. 'No fields yet'
  * @param {string} [options.message] - A line under it
  * @param {object|Component} [options.action] - Button options ({ textContent, onPointerPress }) or a Component
- * @param {boolean} [options.loading] - Show a spinner in place of the icon, while what would fill the view is on its way
+ * @param {boolean} [options.loading] - Show a turning ring in place of the icon, while what would fill the view is on its way
  * @param {number} [options.progress] - How far a long load has come, from 0 to 1, shown as a bar under the message
  * @param {...(Component|HTMLElement|string)} children - Appended below the rest
  * @returns {EmptyState} EmptyState component instance
@@ -43,9 +43,23 @@ class EmptyState extends styled(
 			opacity: 0.7;
 		}
 
-		&.loading > .icon {
-			color: ${colors.light(colors.info)};
-			opacity: 1;
+		/* Drawn, not a glyph: a font glyph turns about its text box, which is not its own centre, and wobbles */
+		& > .spinner {
+			box-sizing: border-box;
+			width: 40px;
+			height: 40px;
+			border-radius: 50%;
+			background:
+				conic-gradient(transparent 25%, ${colors.light(colors.info)}),
+				${colors.alpha(colors.white, 0.12)};
+			mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+			animation: empty-state-spin 0.9s linear infinite;
+		}
+
+		@keyframes empty-state-spin {
+			to {
+				transform: rotate(1turn);
+			}
 		}
 
 		& > .title {
@@ -86,7 +100,7 @@ class EmptyState extends styled(
 			}
 		}
 
-		& > :empty:not(.icon, .progress) {
+		& > :empty:not(.icon, .spinner, .progress) {
 			display: none;
 		}
 	`,
@@ -136,6 +150,8 @@ class EmptyState extends styled(
 	build() {
 		this._icon = new Icon({ addClass: 'icon', appendTo: this });
 		this._icon.elem.hidden = true;
+		this._spinner = new Elem({ addClass: 'spinner', appendTo: this });
+		this._spinner.elem.hidden = true;
 		this._title = new Component({ addClass: 'title', appendTo: this });
 		this._message = new Component({ addClass: 'message', appendTo: this });
 		this._progress = new Elem({ tag: 'progress', addClass: 'progress', appendTo: this });
@@ -155,11 +171,10 @@ class EmptyState extends styled(
 
 	_showIcon() {
 		const { loading, icon } = this.options;
-		const name = loading ? 'spinner' : icon;
 
-		this._icon.options.animation = loading ? 'spin-pulse' : undefined;
-		this._icon.options.icon = name ?? '';
-		this._icon.elem.hidden = !name;
+		this._spinner.elem.hidden = !loading;
+		this._icon.options.icon = icon ?? '';
+		this._icon.elem.hidden = loading || !icon;
 	}
 }
 
