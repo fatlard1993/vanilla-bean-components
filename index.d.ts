@@ -554,6 +554,8 @@ export interface EmptyStateOptions extends ComponentOptions {
 	action?: Record<string, any> | Component;
 	/** Show a turning ring in place of the icon, while what would fill the view is on its way */
 	loading?: boolean;
+	/** What loading shows: a turning ring, or a cut-corner frame whose deepest cut travels round it, drawn by augmented-ui (the app loads augmented-ui's stylesheet; without it nothing shows) (default: "ring") */
+	loader?: 'ring' | 'augmented';
 	/** How far a long load has come, from 0 to 1, shown as a bar under the message */
 	progress?: number;
 }

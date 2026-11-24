@@ -18,6 +18,9 @@ A view that's fetching shows where its content will be, then becomes the empty s
 - loading shows a turning ring in place of the icon, and the icon comes back when it's done
   - new Subject({ icon: "seedling", loading: true, appendTo: document.body }) captures e then e.elem.querySelector(".spinner").hidden captures ringHidden then e._icon.elem.hidden captures iconHidden then e.options.loading = false -> ringHidden === false && iconHidden === true && e.elem.querySelector(".spinner").hidden === true && e._icon.elem.hidden === false && e.elem.classList.contains("loading") === false
 
+- an app with augmented-ui's sci-fi look loads in a cut-corner frame instead of the ring, and can switch back
+  - new Subject({ loading: true, loader: "augmented", appendTo: document.body }) captures e then e.elem.querySelector(".spinner") captures ring then ring.dataset.augmentedUi captures during then (e.options.loader = "ring") -> typeof during === "string" && during.includes("border") && ring.classList.contains("augmented") === false && ring.dataset.augmentedUi === undefined
+
 ## No action is no button
 
 - an action set to nothing takes the button away, rather than drawing an empty one

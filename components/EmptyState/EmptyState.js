@@ -14,11 +14,14 @@ import { radius } from '../../theme/tokens';
  * @param {string} [options.message] - A line under it
  * @param {object|Component} [options.action] - Button options ({ textContent, onPointerPress }) or a Component
  * @param {boolean} [options.loading] - Show a turning ring in place of the icon, while what would fill the view is on its way
+ * @param {('ring'|'augmented')} [options.loader='ring'] - What loading shows: a turning ring, or a cut-corner frame whose
+ *   deepest cut travels round it, drawn by augmented-ui (the app loads augmented-ui's stylesheet; without it nothing shows)
  * @param {number} [options.progress] - How far a long load has come, from 0 to 1, shown as a bar under the message
  * @param {...(Component|HTMLElement|string)} children - Appended below the rest
  * @returns {EmptyState} EmptyState component instance
  * @example new EmptyState({ icon: 'seedling', title: 'No fields yet', message: 'Draw one on the map.' })
  * @example new EmptyState({ loading: true })
+ * @example new EmptyState({ loading: true, loader: 'augmented' })
  */
 class EmptyState extends styled(
 	Component,
@@ -43,7 +46,7 @@ class EmptyState extends styled(
 			opacity: 0.7;
 		}
 
-		/* Drawn, not a glyph: a font glyph turns about its text box, which is not its own centre, and wobbles */
+		/* Drawn, not a glyph: a font glyph turns about its text box, which is not its own center, and wobbles */
 		& > .spinner {
 			box-sizing: border-box;
 			width: 40px;
@@ -59,6 +62,77 @@ class EmptyState extends styled(
 		@keyframes empty-state-spin {
 			to {
 				transform: rotate(1turn);
+			}
+		}
+
+		/* Registered so the cuts interpolate; augmented-ui's own --aug-* stay unregistered, or every frame in the app
+		   would lose its default corner size */
+		@property --empty-state-cut-tl {
+			syntax: '<length>';
+			inherits: false;
+			initial-value: 4px;
+		}
+
+		@property --empty-state-cut-tr {
+			syntax: '<length>';
+			inherits: false;
+			initial-value: 4px;
+		}
+
+		@property --empty-state-cut-br {
+			syntax: '<length>';
+			inherits: false;
+			initial-value: 4px;
+		}
+
+		@property --empty-state-cut-bl {
+			syntax: '<length>';
+			inherits: false;
+			initial-value: 4px;
+		}
+
+		& > .spinner.augmented {
+			border-radius: 0;
+			background: ${colors.alpha(colors.light(colors.info), 0.12)};
+			mask: none;
+			--aug-tl1: var(--empty-state-cut-tl);
+			--aug-tr1: var(--empty-state-cut-tr);
+			--aug-br1: var(--empty-state-cut-br);
+			--aug-bl1: var(--empty-state-cut-bl);
+			--aug-border-all: 2px;
+			--aug-border-bg: ${colors.light(colors.info)};
+			animation: empty-state-cut 1.6s ease-in-out infinite;
+		}
+
+		/* The deep cut goes round clockwise, one corner a beat, while the frame itself stays still */
+		@keyframes empty-state-cut {
+			0%,
+			100% {
+				--empty-state-cut-tl: 16px;
+				--empty-state-cut-tr: 4px;
+				--empty-state-cut-br: 4px;
+				--empty-state-cut-bl: 4px;
+			}
+
+			25% {
+				--empty-state-cut-tl: 4px;
+				--empty-state-cut-tr: 16px;
+				--empty-state-cut-br: 4px;
+				--empty-state-cut-bl: 4px;
+			}
+
+			50% {
+				--empty-state-cut-tl: 4px;
+				--empty-state-cut-tr: 4px;
+				--empty-state-cut-br: 16px;
+				--empty-state-cut-bl: 4px;
+			}
+
+			75% {
+				--empty-state-cut-tl: 4px;
+				--empty-state-cut-tr: 4px;
+				--empty-state-cut-br: 4px;
+				--empty-state-cut-bl: 16px;
 			}
 		}
 
@@ -115,6 +189,18 @@ class EmptyState extends styled(
 			set(value) {
 				this.toggleClass('loading', !!value);
 				this._showIcon();
+			},
+		},
+		loader: {
+			default: 'ring',
+			enum: ['ring', 'augmented'],
+			set(value) {
+				const augmented = value === 'augmented';
+
+				this._spinner.toggleClass('augmented', augmented);
+
+				if (augmented) this._spinner.elem.dataset.augmentedUi = 'tl-clip tr-clip br-clip bl-clip border';
+				else delete this._spinner.elem.dataset.augmentedUi;
 			},
 		},
 		progress: {
